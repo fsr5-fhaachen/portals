@@ -1,0 +1,28 @@
+
+$primary: #00b5ad;
+
+@import 'node_modules/bootstrap/scss/bootstrap.scss';
+body {
+    font-family: Verdana !important;
+    min-height: 100vh;
+}
+
+.bg {
+    background-image: url("/images/Logo-FB5-Roboter-schwarz.png");
+    height: 100vh;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    position: absolute;
+    width: 30%;
+    right: 33.33%;
+}
+
+@include media-breakpoint-up(md) {
+    .bg{
+        right: 3rem;
+    }
+}
+
+
+
+
