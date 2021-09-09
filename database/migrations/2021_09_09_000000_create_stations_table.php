@@ -14,7 +14,7 @@ class CreateStationsTable extends Migration
     public function up()
     {
         Schema::create('stations', function (Blueprint $table) {
-            $table->id('station_id');
+            $table->id();
             $table->timestamps();
             $table->string('station_name',50)->nullable(False)->unique('stations_name_unique');
         });

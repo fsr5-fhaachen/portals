@@ -14,7 +14,7 @@ class CreateGroupHasStationTable extends Migration
     public function up()
     {
         Schema::create('groupHasStation', function (Blueprint $table) {
-            $table->id('groupHasStation_id');
+            $table->id();
             $table->timestamps();
             $table->foreignId('group_id')->nullable(False)->constrained('groups')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('station_id')->nullable(False)->constrained('stations')->onUpdate('cascade')->onDelete('cascade');

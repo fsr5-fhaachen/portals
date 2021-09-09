@@ -14,7 +14,7 @@ class CreateGroupsTable extends Migration
     public function up()
     {
         Schema::create('groups', function (Blueprint $table) {
-            $table->id('group_id');
+            $table->id();
             $table->timestamps();
             $table->string('group_name',30)->nullable(False)->unique('groups_name_unique');
             $table->foreignId('station_id')->constrained('stations')->onUpdate('cascade')->onDelete('cascade');
