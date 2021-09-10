@@ -35,6 +35,7 @@ class DatabaseTestController extends Controller
         DB::table($tableName)->delete();
     }
 
+    // Randomly fills specified table by given amount by using the factories
     public function randomFillTable($tableName, $amount)
     {
         if ($tableName === 'students') return $this->randomFillStudents($amount);
@@ -69,5 +70,41 @@ class DatabaseTestController extends Controller
     {
         $station = Station::factory()->count($amount)->create();
         return $station;
+    }
+
+    // Returns all students where specified attribute matches provided value
+    public function getStudentsBy($attr, $val)
+    {
+        if ($attr === 'course') return $this->getStudentsByCourse($val);
+        elseif ($attr === 'attended') return $this->getStudentsByAttendance($val);
+        else return $attr+' is not a supported attribute';
+    }
+    public function getStudentsByCourse($course = '')
+    {
+        $student = Student::getByCourse($course);
+        return $student;
+    }
+    public function getStudentsByAttendance($attendance = '')
+    {
+        $student = Student::getByAttendance($attendance);
+        return $student;
+    }
+
+    // Returns all tutors where specified attribute matches provided value
+    public function getTutorsBy($attr, $val)
+    {
+        if ($attr === 'course') return $this->getTutorsByCourse($val);
+        elseif ($attr === 'available') return $this->getTutorsByAvailability($val);
+        else return $attr+' is not a supported attribute';
+    }
+    public function getTutorsByCourse($course = '')
+    {
+        $tutor = Tutor::getByCourse($course);
+        return $tutor;
+    }
+    public function getTutorsByAvailability($availability = '')
+    {
+        $tutor = Tutor::getByAvailability($availability);
+        return $tutor;
     }
 }

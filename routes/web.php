@@ -52,3 +52,6 @@ Route::get('/testfactorytimeslot', function() {
 Route::get('/cleartable/all', [DatabaseTestController::class, 'clearAllTables']);
 Route::get('/cleartable/{tableName}', [DatabaseTestController::class, 'clearTable']);
 Route::get('/randomfill/{tableName}/{amount}', [DatabaseTestController::class, 'randomFillTable']);
+
+Route::get('/students/{attr}/{val?}', [DatabaseTestController::class, 'getStudentsBy']);
+Route::get('/tutors/{attr}/{val?}', [DatabaseTestController::class, 'getTutorsBy']);
