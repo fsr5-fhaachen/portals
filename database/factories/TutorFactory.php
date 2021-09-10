@@ -28,9 +28,9 @@ class TutorFactory extends Factory
             'tutor_lastname' => $this->faker->lastName(),
             'tutor_email' => $this->faker->unique()->safeEmail(),
             'tutor_course' => $this->faker->regexify("(ET|INF|MCD|WI)"),
-            // group_id
-            // station_id
-            // timeslot_id
+            'group_id' => null,
+            'station_id' => null,
+            'timeslot_id' => null,
             'tutor_available' => 0
         ];
     }

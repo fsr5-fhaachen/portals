@@ -25,8 +25,8 @@ class GroupFactory extends Factory
             // created_at
             // updated_at
             'group_name' => $this->faker->unique()->word(),
-            // station_id
-            // timeslot_id
+            'station_id' => null,
+            'timeslot_id' => null
         ];
     }
 }

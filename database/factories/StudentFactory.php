@@ -28,8 +28,8 @@ class StudentFactory extends Factory
             'student_lastname' => $this->faker->lastName(),
             'student_email' => $this->faker->unique()->safeEmail(),
             'student_course' => $this->faker->regexify("(ET|INF|MCD|WI)"),
-            // group_id
-            // timeslot_id
+            'group_id' => null,
+            'timeslot_id' => null,
             'student_attended' => 0
         ];
     }

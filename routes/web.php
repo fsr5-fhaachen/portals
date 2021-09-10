@@ -4,6 +4,7 @@ use App\Http\Controllers\AppController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\TutorController;
 use App\Http\Controllers\TutorGroupController;
+use App\Http\Controllers\DatabaseTestController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,7 +26,7 @@ Route::get('/tutor/group/', [TutorGroupController::class, 'index']);
 Route::get('/tutor/group/create/', [TutorGroupController::class, 'create']);
 Route::get('/tutor/group/finish/', [TutorGroupController::class, 'finish']);
 
-//Routes to test factories !!
+//Routes to test factories. REMOVE BEFORE DEPLOYMENT
 Route::get('/testfactorystudent', function() {
     $student = \App\Models\Student::factory()->make();
     return $student;
@@ -46,3 +47,8 @@ Route::get('/testfactorytimeslot', function() {
     $timeslot = \App\Models\Timeslot::factory()->make();
     return $timeslot;
 });
+
+//Routes to test database. REMOVE BEFORE DEPLOYMENT
+Route::get('/cleartable/all', [DatabaseTestController::class, 'clearAllTables']);
+Route::get('/cleartable/{tableName}', [DatabaseTestController::class, 'clearTable']);
+Route::get('/randomfill/{tableName}/{amount}', [DatabaseTestController::class, 'randomFillTable']);
