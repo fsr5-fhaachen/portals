@@ -20,9 +20,9 @@ class CreateTutorsTable extends Migration
             $table->string('tutor_lastname',30)->nullable(False);
             $table->string('tutor_email',100)->nullable(False)->unique('tutors_mail_unique');
             $table->enum('tutor_course',['ET','INF','MCD','WI'])->nullable(False);
-            $table->foreignId('group_id')->constrained('groups')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('station_id')->constrained('stations')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('timeslot_id')->constrained('timeslots')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('group_id')->nullable()->constrained('groups')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('station_id')->nullable()->constrained('stations')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('timeslot_id')->nullable()->constrained('timeslots')->onUpdate('cascade')->onDelete('cascade');
             $table->boolean('tutor_available')->nullable(False);
         });
     }

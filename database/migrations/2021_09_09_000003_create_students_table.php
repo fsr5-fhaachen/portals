@@ -20,8 +20,8 @@ class CreateStudentsTable extends Migration
             $table->string('student_lastname',30)->nullable(False);
             $table->string('student_email',100)->nullable(False)->unique('students_mail_unique');
             $table->enum('student_course',['ET','INF','MCD','WI'])->nullable(False);
-            $table->foreignId('group_id')->constrained('groups')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('timeslot_id')->constrained('timeslots')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('group_id')->nullable()->constrained('groups')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('timeslot_id')->nullable()->constrained('timeslots')->onUpdate('cascade')->onDelete('cascade');
             $table->boolean('student_attended')->nullable(False);
         });
     }

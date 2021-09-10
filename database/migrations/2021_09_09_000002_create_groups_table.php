@@ -17,8 +17,8 @@ class CreateGroupsTable extends Migration
             $table->id();
             $table->timestamps();
             $table->string('group_name',30)->nullable(False)->unique('groups_name_unique');
-            $table->foreignId('station_id')->constrained('stations')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('timeslot_id')->constrained('timeslots')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('station_id')->nullable()->constrained('stations')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('timeslot_id')->nullable()->constrained('timeslots')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
