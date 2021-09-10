@@ -73,7 +73,7 @@ class DatabaseTestController extends Controller
     }
 
     // Returns all students where specified attribute matches provided value
-    public function getStudentsBy($attr, $val)
+    public function getStudentsBy($attr, $val = '')
     {
         if ($attr === 'course') return $this->getStudentsByCourse($val);
         elseif ($attr === 'attended') return $this->getStudentsByAttendance($val);
@@ -91,7 +91,7 @@ class DatabaseTestController extends Controller
     }
 
     // Returns all tutors where specified attribute matches provided value
-    public function getTutorsBy($attr, $val)
+    public function getTutorsBy($attr, $val = '')
     {
         if ($attr === 'course') return $this->getTutorsByCourse($val);
         elseif ($attr === 'available') return $this->getTutorsByAvailability($val);
@@ -106,5 +106,14 @@ class DatabaseTestController extends Controller
     {
         $tutor = Tutor::getByAvailability($availability);
         return $tutor;
+    }
+
+    //Only as example
+    public function updateStudentAttendance($studentId){
+        $ETler = Student::getByCourse('ET');
+        foreach($ETler as $et){
+            $et->student_attended = 1;
+            $et->save();
+        }
     }
 }
