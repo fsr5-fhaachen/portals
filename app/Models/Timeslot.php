@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class station extends Model
+class Timeslot extends Model
 {
     use HasFactory;
 
-    protected $table = 'stations';
+    protected $table = 'timeslots';
 }
