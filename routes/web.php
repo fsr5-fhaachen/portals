@@ -24,3 +24,25 @@ Route::get('/tutor/', [TutorController::class, 'index']);
 Route::get('/tutor/group/', [TutorGroupController::class, 'index']);
 Route::get('/tutor/group/create/', [TutorGroupController::class, 'create']);
 Route::get('/tutor/group/finish/', [TutorGroupController::class, 'finish']);
+
+//Routes to test factories !!
+Route::get('/testfactorystudent', function() {
+    $student = \App\Models\Student::factory()->make();
+    return $student;
+});
+Route::get('/testfactorytutor', function() {
+    $tutor = \App\Models\Tutor::factory()->make();
+    return $tutor;
+});
+Route::get('/testfactorygroup', function() {
+    $group = \App\Models\Group::factory()->make();
+    return $group;
+});
+Route::get('/testfactorystation', function() {
+    $station = \App\Models\Station::factory()->make();
+    return $station;
+});
+Route::get('/testfactorytimeslot', function() {
+    $timeslot = \App\Models\Timeslot::factory()->make();
+    return $timeslot;
+});
