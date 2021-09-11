@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('/', [AppController::class, 'index']);
-Route::get('/group/', [HomeController::class, 'group']);
+Route::get('/group/', [AppController::class, 'group']);
 
 Route::get('/tutor/', [TutorController::class, 'index']);
 

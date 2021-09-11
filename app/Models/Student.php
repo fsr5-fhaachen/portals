@@ -34,7 +34,7 @@ class Student extends Model
      */
     static function getByAttendance($attendance = '')
     {
-        if (empty($course)) return self::all();
+        if (empty($attendance)) return self::all();
         return self::where('student_attended', '=', $attendance)->get();
     }
 }
