@@ -21,7 +21,6 @@ class TutorFactory extends Factory
      */
     public function definition()
     {
-        // TODO Remove available and timeslot from factory
         return [
             // created_at
             // updated_at
@@ -31,18 +30,6 @@ class TutorFactory extends Factory
             'tutor_course' => $this->faker->regexify("(ET|INF|MCD|WI)"),
             'group_id' => null,
             'station_id' => null,
-            'timeslot_id' => null,
-            'tutor_available' => 0
         ];
-    }
-
-    // TODO Remove randAvailability function
-    public function randAvailability()
-    {
-        return $this->state(function (array $attributes) {
-            return [
-                'tutor_available' => $this->faker->regexify("[0-1]"),
-            ];
-        });
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -31,11 +33,13 @@ class TutorGroupController extends Controller
 
     public function setStudentAttendance($studentId, $value)
     {
-        // TODO implement setting the 'student_attended' attribute of specified student to given value
+        // TODO TEST setting the 'student_attended' attribute of specified student to given value
+        Student::find($studentId)->update(['student_attended' => $value]);
     }
 
     public function setGroupStation($groupId, $stationId)
     {
-        // TODO implement setting the 'station_id' attribute of specified group to given id
+        // TODO TEST setting the 'station_id' attribute of specified group to given id
+        Group::find($groupId)->update(['station_id' => $stationId]);
     }
 }

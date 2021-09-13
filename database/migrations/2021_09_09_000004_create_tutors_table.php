@@ -13,7 +13,6 @@ class CreateTutorsTable extends Migration
      */
     public function up()
     {
-        // TODO Remove available and timeslot from migration
         Schema::create('tutors', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
@@ -23,8 +22,6 @@ class CreateTutorsTable extends Migration
             $table->enum('tutor_course',['ET','INF','MCD','WI'])->nullable(False);
             $table->foreignId('group_id')->nullable()->constrained('groups')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('station_id')->nullable()->constrained('stations')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('timeslot_id')->nullable()->constrained('timeslots')->onUpdate('cascade')->onDelete('cascade');
-            $table->boolean('tutor_available')->nullable(False);
         });
     }
 
