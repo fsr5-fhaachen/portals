@@ -153,6 +153,7 @@ class AdminGroupController extends Controller
 
     public function randAssignCourse($course, $amountGroups, $coursePerGroup)
     {
+        if ($coursePerGroup < 1) return Student::getByCourse($course)->all();
         $studentsOfCourse = Student::getByCourse($course)->shuffle();
         for ($groupId = 1; $groupId <= $amountGroups; $groupId++){
             $chunk = $studentsOfCourse->forPage($groupId, $coursePerGroup);
