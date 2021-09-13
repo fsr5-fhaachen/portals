@@ -33,13 +33,11 @@ class TutorGroupController extends Controller
 
     public function setStudentAttendance($studentId, $value)
     {
-        // TODO TEST setting the 'student_attended' attribute of specified student to given value
         Student::find($studentId)->update(['student_attended' => $value]);
     }
 
     public function setGroupStation($groupId, $stationId)
     {
-        // TODO TEST setting the 'station_id' attribute of specified group to given id
         Group::find($groupId)->update(['station_id' => $stationId]);
     }
 }

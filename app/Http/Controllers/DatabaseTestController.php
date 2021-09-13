@@ -107,13 +107,4 @@ class DatabaseTestController extends Controller
         $tutor = Tutor::getByAvailability($availability);
         return $tutor;
     }
-
-    //Only as example
-    public function updateStudentAttendance($studentId){
-        $ETler = Student::getByCourse('ET');
-        foreach($ETler as $et){
-            $et->student_attended = 1;
-            $et->save();
-        }
-    }
 }

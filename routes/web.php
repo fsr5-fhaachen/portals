@@ -4,6 +4,7 @@ use App\Http\Controllers\AppController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\TutorController;
 use App\Http\Controllers\TutorGroupController;
+use App\Http\Controllers\AdminGroupController;
 use App\Http\Controllers\DatabaseTestController;
 use Illuminate\Support\Facades\Route;
 
@@ -55,3 +56,5 @@ Route::get('/randomfill/{tableName}/{amount}', [DatabaseTestController::class, '
 
 Route::get('/students/{attr}/{val?}', [DatabaseTestController::class, 'getStudentsBy']);
 Route::get('/tutors/{attr}/{val?}', [DatabaseTestController::class, 'getTutorsBy']);
+
+Route::get('/resetatt', [AdminGroupController::class, 'resetAttendance']);

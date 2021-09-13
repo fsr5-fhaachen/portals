@@ -21,7 +21,6 @@ class GroupController extends Controller
 
     public function updateOrCreateStudent($firstName, $lastName, $email, $course)
     {
-        // TODO TEST creation of student model from given data and persisting it in the database
         Student::query()->updateOrCreate(
             ['student_email' => $email],
             [
@@ -36,7 +35,6 @@ class GroupController extends Controller
 
     public function setStudentTimeslotPreference($studentId, $timeslotId)
     {
-        // TODO TEST implement setting the 'timeslot_id' attribute of specified student to provided timeslot
         Student::query()->find($studentId)->update(['timeslot_id' => $timeslotId]);
     }
 }

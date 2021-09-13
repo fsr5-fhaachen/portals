@@ -18,6 +18,7 @@ class Group extends Model
      */
     protected $fillable = [
         'group_name',
+        'group_course',
         'station_id',
         'timeslot_id'
     ];
