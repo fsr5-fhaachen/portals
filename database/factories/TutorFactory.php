@@ -21,6 +21,7 @@ class TutorFactory extends Factory
      */
     public function definition()
     {
+        // TODO Remove available and timeslot from factory
         return [
             // created_at
             // updated_at
@@ -35,6 +36,7 @@ class TutorFactory extends Factory
         ];
     }
 
+    // TODO Remove randAvailability function
     public function randAvailability()
     {
         return $this->state(function (array $attributes) {

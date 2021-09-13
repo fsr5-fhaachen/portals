@@ -13,6 +13,7 @@ class CreateTutorsTable extends Migration
      */
     public function up()
     {
+        // TODO Remove available and timeslot from migration
         Schema::create('tutors', function (Blueprint $table) {
             $table->id();
             $table->timestamps();

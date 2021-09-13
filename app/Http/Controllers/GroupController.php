@@ -18,7 +18,7 @@ class GroupController extends Controller
         // TODO implement retrieving the group and maybe the necessary information for specified student
     }
 
-    public function setStudentTimeslot($studentId, $timeslotId)
+    public function setStudentTimeslotPreference($studentId, $timeslotId)
     {
         // TODO implement setting the 'timeslot_id' attribute of specified student to provided timeslot
     }
