@@ -173,7 +173,6 @@ class AdminGroupController extends Controller
             $student->save();
             $groupId++;
         }
-        return $groupId;
     }
 
     public function randAssignmentGroupPhase($groupSize)
@@ -188,7 +187,7 @@ class AdminGroupController extends Controller
         }
 
         $unassignedStudents = collect($unassignedStudents)->collapse()->shuffle();
-        return $this->handleUnassignedStudents($unassignedStudents, $amountGroups, $groupSize);
+        $this->handleUnassignedStudents($unassignedStudents, $amountGroups, $groupSize);
     }
 
     public function randAssignmentFhTour($groupSize, $course){

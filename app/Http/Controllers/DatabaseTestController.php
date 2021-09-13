@@ -72,6 +72,15 @@ class DatabaseTestController extends Controller
         return $station;
     }
 
+    public function simulatedFillStudents($et, $inf, $mcd, $wi)
+    {
+        Student::factory()->state(['student_course' => 'ET'])->count($et)->create();
+        Student::factory()->state(['student_course' => 'INF'])->count($inf)->create();
+        Student::factory()->state(['student_course' => 'MCD'])->count($mcd)->create();
+        Student::factory()->state(['student_course' => 'WI'])->count($wi)->create();
+        return Student::all();
+    }
+
     // Returns all students where specified attribute matches provided value
     public function getStudentsBy($attr, $val = '')
     {
