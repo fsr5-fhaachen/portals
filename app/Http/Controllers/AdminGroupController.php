@@ -30,6 +30,14 @@ class AdminGroupController extends Controller
     }
 
 
+    private $courseNames = [
+        'ET',
+        'INF',
+        'MCD',
+        'WI'
+    ];
+
+
     public function getAdminGroupInfo()
     {
         // TODO implement retrieving all groups and necessary information
@@ -115,10 +123,78 @@ class AdminGroupController extends Controller
     }
 
 
-    public function randAssignStudents($groupSize, $byCourse = False, $byTimeslot = False)
+    public function calculateMinAmountGroups($groupSize)
     {
-        // TODO implement random assignment of students with respect to provided max group size and course + timeslot preferences if provided
+        $totalStudents = Student::query()->count();
+        return ceil($totalStudents / $groupSize);
     }
+
+    public function calculateCoursePercentages()
+    {
+        $totalStudents = Student::query()->count();
+        $coursePercentages = [];
+        foreach ($this->courseNames as $course){
+            $coursePercentages[$course] = ( Student::query()
+                ->where('student_course', 'LIKE', $course)
+                ->count() ) / $totalStudents;
+        }
+        return $coursePercentages;
+    }
+
+    public function calculateCourseDistribution($groupSize = 20)
+    {
+        $coursePercentages = $this->calculateCoursePercentages();
+        $courseDistribution = [];
+        foreach ($this->courseNames as $course){
+            $courseDistribution[$course] = floor($groupSize * $coursePercentages[$course]);
+        }
+        return $courseDistribution;
+    }
+
+    public function randAssignCourse($course, $amountGroups, $coursePerGroup)
+    {
+        $studentsOfCourse = Student::getByCourse($course)->shuffle();
+        for ($groupId = 1; $groupId <= $amountGroups; $groupId++){
+            $chunk = $studentsOfCourse->forPage($groupId, $coursePerGroup);
+            foreach ($chunk as $student){
+                $student->group_id = $groupId;
+                $student->save();
+            }
+        }
+        return $studentsOfCourse->where('group_id', '=', null);
+    }
+
+    public function handleUnassignedStudents($unassignedStudents, $amountGroups, $groupSize)
+    {
+        $groupId = 1;
+        foreach ($unassignedStudents as $student){
+            if ($groupId > $amountGroups) $groupId = 1;
+            $student->group_id = $groupId;
+            $student->save();
+            $groupId++;
+        }
+        return $groupId;
+    }
+
+    public function randAssignmentGroupPhase($groupSize)
+    {
+        // TODO TEST the random assignment of students for regular Group Phases which uses calculated distribution of courses
+        $courseDistribution = $this->calculateCourseDistribution($groupSize);
+        $amountGroups = $this->calculateMinAmountGroups($groupSize);
+
+        $unassignedStudents = [];
+        foreach ($this->courseNames as $course){
+            $unassignedStudents[$course] = $this->randAssignCourse($course, $amountGroups, $courseDistribution[$course]);
+        }
+
+        $unassignedStudents = collect($unassignedStudents)->collapse()->shuffle();
+        return $this->handleUnassignedStudents($unassignedStudents, $amountGroups, $groupSize);
+    }
+
+    public function randAssignmentFhTour($groupSize, $course){
+        // TODO implement the random assignment of students for the FH Tour which takes course and timeslots into account
+    }
+
 
     public function resetStudentAttendance()
     {

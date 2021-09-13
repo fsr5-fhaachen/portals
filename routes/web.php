@@ -57,4 +57,5 @@ Route::get('/randomfill/{tableName}/{amount}', [DatabaseTestController::class, '
 Route::get('/students/{attr}/{val?}', [DatabaseTestController::class, 'getStudentsBy']);
 Route::get('/tutors/{attr}/{val?}', [DatabaseTestController::class, 'getTutorsBy']);
 
-Route::get('/resetatt', [AdminGroupController::class, 'resetAttendance']);
+Route::get('/resetassign', [AdminGroupController::class, 'resetGroupAssignment']);
+Route::get('/assign/{groupSize}', [AdminGroupController::class, 'randAssignmentGroupPhase']);
