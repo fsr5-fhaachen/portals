@@ -10,4 +10,14 @@ class Timeslot extends Model
     use HasFactory;
 
     protected $table = 'timeslots';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'timeslot_name',
+        'timeslot_time'
+    ];
 }

@@ -10,4 +10,13 @@ class Station extends Model
     use HasFactory;
 
     protected $table = 'stations';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'station_name'
+    ];
 }

@@ -10,4 +10,15 @@ class Group extends Model
     use HasFactory;
 
     protected $table = 'groups';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'group_name',
+        'station_id',
+        'timeslot_id'
+    ];
 }

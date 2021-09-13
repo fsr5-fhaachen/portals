@@ -10,4 +10,15 @@ class Grouphasstation extends Model
     use HasFactory;
 
     protected $table = 'grouphasstation';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'group_id',
+        'station_id',
+        'groupHasStation_step'
+    ];
 }

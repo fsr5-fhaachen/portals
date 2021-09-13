@@ -13,6 +13,20 @@ class Student extends Model
     protected $table = 'students';
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'student_firstname',
+        'student_lastname',
+        'student_email',
+        'student_course',
+        'group_id',
+        'timeslot_id'
+    ];
+
+    /**
      * Returns Collection containing all students of specified course or all if none provided.
      *
      * @param string $course Course to select students by. Selects all if none provided

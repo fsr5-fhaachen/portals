@@ -13,6 +13,20 @@ class Tutor extends Model
     protected $table = 'tutors';
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'tutor_firstname',
+        'tutor_lastname',
+        'tutor_email',
+        'tutor_course',
+        'group_id',
+        'station_id'
+    ];
+
+    /**
      * Returns Collection containing all tutors of specified course or all if none provided.
      *
      * @param string $course Course to select tutors by. Selects all if none provided
