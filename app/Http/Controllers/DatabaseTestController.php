@@ -82,10 +82,11 @@ class DatabaseTestController extends Controller
     }
 
     // Returns all students where specified attribute matches provided value
-    public function getStudentsBy($attr, $val = '')
+    public function getStudentsBy($attr, $val = '', $val2 = '')
     {
         if ($attr === 'course') return $this->getStudentsByCourse($val);
         elseif ($attr === 'attended') return $this->getStudentsByAttendance($val);
+        elseif ($attr === 'timeslotcourse') return $this->getStudentsByTimeslotAndCourse($val, $val2);
         else return $attr+' is not a supported attribute';
     }
     public function getStudentsByCourse($course = '')
@@ -96,6 +97,11 @@ class DatabaseTestController extends Controller
     public function getStudentsByAttendance($attendance = '')
     {
         $student = Student::getByAttendance($attendance);
+        return $student;
+    }
+    public function getStudentsByTimeslotAndCourse($timeslotId, $course)
+    {
+        $student = Student::getByTimeslotAndCourse($timeslotId, $course);
         return $student;
     }
 

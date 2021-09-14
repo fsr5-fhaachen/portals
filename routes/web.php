@@ -55,7 +55,7 @@ Route::get('/cleartable/{tableName}', [DatabaseTestController::class, 'clearTabl
 Route::get('/randomfill/{tableName}/{amount}', [DatabaseTestController::class, 'randomFillTable']);
 Route::get('/simulatedfill/{et}/{inf}/{mcd}/{wi}', [DatabaseTestController::class, 'simulatedFillStudents']);
 
-Route::get('/students/{attr}/{val?}', [DatabaseTestController::class, 'getStudentsBy']);
+Route::get('/students/{attr}/{val?}/{val2?}', [DatabaseTestController::class, 'getStudentsBy']);
 Route::get('/tutors/{attr}/{val?}', [DatabaseTestController::class, 'getTutorsBy']);
 
 Route::get('/resetassign', [AdminGroupController::class, 'resetGroupAssignment']);

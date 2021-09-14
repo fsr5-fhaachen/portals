@@ -64,4 +64,22 @@ class Student extends Model
         if (empty($timeslotId)) return self::all();
         return self::where('timeslot_id', 'LIKE', $timeslotId)->get();
     }
+
+    /**
+     * Returns Collection containing all students of specified timeslot and course by first
+     * selecting for timeslot and then selecting that result for the course.
+     *
+     * @param string $timeslotId Timeslot to select students by. Selects all if none provided
+     * @param string $course Course to select students by. Selects all of previous result if none provided
+     *
+     * @return Collection
+     */
+    static function getByTimeslotAndCourse($timeslotId = '', $course = '')
+    {
+        $res=null;
+        if (empty($timeslotId)) $res = self::all();
+        else $res = self::where('timeslot_id', 'LIKE', $timeslotId);
+        if (empty($course))  return $res->get();
+        return $res->where('student_course', 'LIKE', $course)->get();
+    }
 }
