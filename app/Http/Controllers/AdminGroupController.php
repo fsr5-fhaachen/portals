@@ -141,7 +141,7 @@ class AdminGroupController extends Controller
         return $coursePercentages;
     }
 
-    public function calculateCourseDistribution($groupSize = 20)
+    public function calculateCourseDistribution($groupSize)
     {
         $coursePercentages = $this->calculateCoursePercentages();
         $courseDistribution = [];
@@ -151,7 +151,7 @@ class AdminGroupController extends Controller
         return $courseDistribution;
     }
 
-    public function randAssignCourse($course, $amountGroups, $coursePerGroup)
+    public function distributedAssignCourse($course, $amountGroups, $coursePerGroup)
     {
         if ($coursePerGroup < 1) return Student::getByCourse($course)->all();
         $studentsOfCourse = Student::getByCourse($course)->shuffle();
@@ -165,7 +165,7 @@ class AdminGroupController extends Controller
         return $studentsOfCourse->where('group_id', '=', null);
     }
 
-    public function handleUnassignedStudents($unassignedStudents, $amountGroups, $groupSize)
+    public function handleUnassignedStudentsGroupPhase($unassignedStudents, $amountGroups)
     {
         $groupId = 1;
         foreach ($unassignedStudents as $student){
@@ -184,16 +184,91 @@ class AdminGroupController extends Controller
 
         $unassignedStudents = [];
         foreach ($this->courseNames as $course){
-            $unassignedStudents[$course] = $this->randAssignCourse($course, $amountGroups, $courseDistribution[$course]);
+            $unassignedStudents[$course] = $this->distributedAssignCourse($course, $amountGroups, $courseDistribution[$course]);
         }
 
         $unassignedStudents = collect($unassignedStudents)->collapse()->shuffle();
-        $this->handleUnassignedStudents($unassignedStudents, $amountGroups, $groupSize);
+        $this->handleUnassignedStudentsGroupPhase($unassignedStudents, $amountGroups);
     }
 
-    public function randAssignmentFhTour($groupSize, $course=''){
-        // TODO implement the random assignment of students for the FH Tour which takes course and timeslots into account
-        // Student::query()->select('students.*')->join('timeslots', 'timeslots.id', '=', 'students.timeslot_id')->select('students.student_firstname', 'timeslots.timeslot_name', 'timeslots.timeslot_time')->get();
+    public function timeslotAssignCourse($groupSize, $timeslotId, $course){
+        $groups = Group::getByTimeslotAndCourse($timeslotId, $course);
+        $students = Student::getByTimeslotAndCourse($timeslotId, $course)->reverse();
+
+        foreach ($groups as $group){
+            $groupId = $group->id;
+            for ($i = 0; $i < $groupSize; $i++){
+                if ($students->isEmpty()) return;
+                $student = $students->pop();
+                $student->group_id = $groupId;
+                $student->save();
+            }
+        }
+    }
+
+    public function calculateFillableGroups($groupSize, $course = '')
+    {
+        $groups = Group::getByCourse($course);
+        $remainingSlotsPerGroup = [];
+
+        foreach ($groups as $group){
+            $groupId = $group->id;
+            $amountStudentsOfGroup = Student::getByGroup($groupId)->count();
+            $remainingSlots = $groupSize - $amountStudentsOfGroup;
+            if ($remainingSlots > 0) $remainingSlotsPerGroup[$groupId] = $remainingSlots;
+        }
+
+        arsort($remainingSlotsPerGroup);
+        return $remainingSlotsPerGroup;
+    }
+
+    public function calculateFillablePercentages($remainingSlotsPerGroup)
+    {
+        $totalRemainingSlots = array_sum($remainingSlotsPerGroup);
+        $fillablePercentagePerGroup = [];
+        foreach ($remainingSlotsPerGroup as $groupId => $remainingSlots){
+            $fillablePercentagePerGroup[$groupId] = $remainingSlots / $totalRemainingSlots;
+        }
+        return $fillablePercentagePerGroup;
+    }
+
+    public function calculateFillAmount($amountUnassigned, $fillablePercentages)
+    {
+        $fillAmountPerGroup = [];
+        foreach ($fillablePercentages as $groupId => $fillablePercentage){
+            $fillAmountPerGroup[$groupId] = ceil($amountUnassigned * $fillablePercentage);
+        }
+        arsort($fillAmountPerGroup);
+        return $fillAmountPerGroup;
+    }
+
+    public function balancedFillFillableGroups($groupSize, $course)
+    {
+        $unassignedStudents = Student::getByGroupAndCourse(null, $course);
+        $remainingSlotsPerGroup = $this->calculateFillableGroups($groupSize, $course);
+        $fillablePercentagesPerGroup = $this->calculateFillablePercentages($remainingSlotsPerGroup);
+        $fillAmountPerGroup = $this->calculateFillAmount($unassignedStudents->count(), $fillablePercentagesPerGroup);
+
+        foreach ($fillAmountPerGroup as $groupId => $fillAmount){
+            for ($i = 0; $i < $fillAmount; $i++){
+                if ($unassignedStudents->isEmpty()) return;
+                $student = $unassignedStudents->pop();
+                $student->group_id = $groupId;
+                $student->save();
+            }
+        }
+    }
+
+    public function randAssignmentFhTour($groupSize, $course = ''){
+        // TODO TEST the random assignment of students for the FH Tour which takes course and timeslots into account
+        $timeslots = Timeslot::all();
+
+        foreach ($timeslots as $timeslot){
+            $timeslotId = $timeslot->id;
+            $this->timeslotAssignCourse($groupSize, $timeslotId, $course);
+        }
+
+        $this->balancedFillFillableGroups($groupSize, $course);
     }
 
 

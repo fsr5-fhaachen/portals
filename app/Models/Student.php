@@ -82,4 +82,35 @@ class Student extends Model
         if (empty($course))  return $res->get();
         return $res->where('student_course', 'LIKE', $course)->get();
     }
+
+    /**
+     * Returns Collection containing all students of specified group or all unassigned if none provided.
+     *
+     * @param string $groupId Group to select students by. Selects all unassigned if none provided
+     *
+     * @return Collection
+     */
+    static function getByGroup($groupId = '')
+    {
+        if (empty($groupId)) return self::where('group_id', null)->get();
+        return self::where('group_id', 'LIKE', $groupId)->get();
+    }
+
+    /**
+     * Returns Collection containing all students of specified group and course by first
+     * selecting for group and then selecting that result for the course.
+     *
+     * @param string $groupId Group to select students by. Selects all unassigned if none provided
+     * @param string $course Course to select students by. Selects all of previous result if none provided
+     *
+     * @return Collection
+     */
+    static function getByGroupAndCourse($groupId = '', $course = '')
+    {
+        $res=null;
+        if (empty($groupId)) $res = self::where('group_id', null);
+        else $res = self::where('group_id', 'LIKE', $groupId);
+        if (empty($course))  return $res->get();
+        return $res->where('student_course', 'LIKE', $course)->get();
+    }
 }

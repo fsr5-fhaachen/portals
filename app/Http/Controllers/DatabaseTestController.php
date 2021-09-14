@@ -81,6 +81,39 @@ class DatabaseTestController extends Controller
         return Student::all();
     }
 
+    public function randomAssignTimeslots($timeslotsAmount)
+    {
+        $students = Student::all();
+        foreach ($students as $student){
+            $student->timeslot_id = random_int(1, $timeslotsAmount);
+            $student->save();
+        }
+        return $students;
+    }
+
+    // Way too specific, but wtver
+    public function simulatedAssignTimeslots($amount1, $amount2, $amount3)
+    {
+        $i = $amount1;
+        $swapped = false;
+        $timeslotId = 1;
+        $students = Student::getByCourse('ET');
+        foreach ($students as $student){
+            $student->timeslot_id = $timeslotId;
+            $student->save();
+            $i--;
+            if (!$swapped && $i == 0){
+                $i = $amount2;
+                $timeslotId++;
+                $swapped = true;
+            }
+            elseif ($swapped && $i == 0){
+                $i = $amount3;
+                $timeslotId++;
+            }
+        }
+    }
+
     // Returns all students where specified attribute matches provided value
     public function getStudentsBy($attr, $val = '', $val2 = '')
     {

@@ -55,6 +55,10 @@ Route::get('/cleartable/{tableName}', [DatabaseTestController::class, 'clearTabl
 Route::get('/randomfill/{tableName}/{amount}', [DatabaseTestController::class, 'randomFillTable']);
 Route::get('/simulatedfill/{et}/{inf}/{mcd}/{wi}', [DatabaseTestController::class, 'simulatedFillStudents']);
 
+Route::get('/randassigntimeslots/{timeslotsAmount}', [DatabaseTestController::class, 'randomAssignTimeslots']);
+// Only works with exactly 3 timeslots and only on ET Students
+Route::get('/simassigntimeslots/{amount1}/{amount2}/{amount3}', [DatabaseTestController::class, 'simulatedAssignTimeslots']);
+
 Route::get('/students/{attr}/{val?}/{val2?}', [DatabaseTestController::class, 'getStudentsBy']);
 Route::get('/tutors/{attr}/{val?}', [DatabaseTestController::class, 'getTutorsBy']);
 
