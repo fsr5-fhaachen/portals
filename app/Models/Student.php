@@ -51,4 +51,17 @@ class Student extends Model
         if (empty($attendance)) return self::all();
         return self::where('student_attended', '=', $attendance)->get();
     }
+
+    /**
+     * Returns Collection containing all students of specified timeslot or all if none provided.
+     *
+     * @param string $timeslotId Timeslot to select students by. Selects all if none provided
+     *
+     * @return Collection
+     */
+    static function getByTimeslot($timeslotId = '')
+    {
+        if (empty($timeslotId)) return self::all();
+        return self::where('timeslot_id', 'LIKE', $timeslotId)->get();
+    }
 }

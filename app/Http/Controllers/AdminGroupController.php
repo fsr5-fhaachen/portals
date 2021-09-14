@@ -191,8 +191,9 @@ class AdminGroupController extends Controller
         $this->handleUnassignedStudents($unassignedStudents, $amountGroups, $groupSize);
     }
 
-    public function randAssignmentFhTour($groupSize, $course){
+    public function randAssignmentFhTour($groupSize, $course=''){
         // TODO implement the random assignment of students for the FH Tour which takes course and timeslots into account
+        // Student::query()->select('students.*')->join('timeslots', 'timeslots.id', '=', 'students.timeslot_id')->select('students.student_firstname', 'timeslots.timeslot_name', 'timeslots.timeslot_time')->get();
     }
 
 
