@@ -56,7 +56,6 @@ class AdminGroupController extends Controller
      * @param string $lastName
      * @param string $email
      * @param string $course
-     *
      */
     public function updateOrCreateTutor($firstName, $lastName, $email, $course)
     {
@@ -75,7 +74,6 @@ class AdminGroupController extends Controller
      * Creates a Group model from provided data and persists it in the database.
      *
      * @param string $name
-     *
      */
     public function createGroup($name)
     {
@@ -91,7 +89,6 @@ class AdminGroupController extends Controller
      * Creates a Station model from provided data and persists it in the database.
      *
      * @param string $name
-     *
      */
     public function createStation($name)
     {
@@ -106,7 +103,6 @@ class AdminGroupController extends Controller
      *
      * @param string $name
      * @param string $time
-     *
      */
     public function updateOrCreateTimeslot($name, $time)
     {
@@ -123,7 +119,6 @@ class AdminGroupController extends Controller
      * @param mixed $groupId
      * @param mixed $stationId
      * @param mixed $step
-     *
      */
     public function createTourStep($groupId, $stationId, $step)
     {
@@ -141,7 +136,6 @@ class AdminGroupController extends Controller
      * @param mixed $groupId
      * @param mixed $stationId
      * @param mixed $step
-     *
      */
     public function updateTourStep($groupHasStationId, $groupId, $stationId, $step)
     {
@@ -158,7 +152,6 @@ class AdminGroupController extends Controller
      *
      * @param mixed $timeslotId
      * @param mixed $groupId
-     *
      */
     public function assignTimeslotToGroup($timeslotId, $groupId)
     {
@@ -170,7 +163,6 @@ class AdminGroupController extends Controller
      *
      * @param mixed $groupId
      * @param mixed $tutorId
-     *
      */
     public function assignGroupToTutor($groupId, $tutorId)
     {
@@ -182,7 +174,6 @@ class AdminGroupController extends Controller
      *
      * @param mixed $stationId
      * @param mixed $tutorId
-     *
      */
     public function assignStationToTutor($stationId, $tutorId)
     {
@@ -194,7 +185,6 @@ class AdminGroupController extends Controller
      *
      * @param mixed $groupId
      * @param string $course
-     *
      */
     public function setGroupCourse($groupId, $course)
     {
@@ -462,6 +452,9 @@ class AdminGroupController extends Controller
      *
      * @param int $groupSize
      * @param string $course
+     *
+     * @see AdminGroupController::timeslotAssignCourse() Used to distribute students of certain course and preferred timeslot to matching groups.
+     * @see AdminGroupController::balancedFillFillableGroups() Used to distribute unassigned students evenly to groups with open slots.
      */
     public function randAssignmentFhTour($groupSize, $course = ''){
         // TODO TEST the random assignment of students for the FH Tour which takes course and timeslots into account
