@@ -32,7 +32,7 @@
                                         <label class="input-group-text" for="student_course">Studiengang</label>
                                     </div>
                                     <select class="custom-select form-control" id="student_course" v-model="form.student_course">
-                                        <option selected>Wähle deinen Studiengang aus...</option>
+                                        <option disabled value="">Wähle deinen Studiengang aus...</option>
                                         <option value="MCD">MCD</option>
                                         <option value="WI">WI</option>
                                         <option value="INF">INF</option>
@@ -60,7 +60,7 @@
                     student_firstname: null,
                     student_lastname: null,
                     student_email: null,
-                    student_course: null,
+                    student_course: '',
                 }),
             }
         },
@@ -71,6 +71,9 @@
         },
     }
 </script>
-<style>
-
+<style scoped >
+    .input-group > .input-group-prepend > .input-group-text {
+        border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+    }
 </style>
