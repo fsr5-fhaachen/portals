@@ -9,7 +9,7 @@ class Grouphasstation extends Model
 {
     use HasFactory;
 
-    protected $table = 'grouphasstation';
+    protected $table = 'groupHasStation';
 
     /**
      * The attributes that are mass assignable.
