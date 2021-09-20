@@ -18,8 +18,10 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 Route::get('/', [AppController::class, 'index']);
-Route::get('/group/', [AppController::class, 'group']);
+Route::post('/', [AppController::class, 'store']);
+Route::get('/group/', [AppController::class, 'group'])->name('group');
 
 Route::get('/tutor/', [TutorController::class, 'index']);
 
@@ -28,23 +30,23 @@ Route::get('/tutor/group/create/', [TutorGroupController::class, 'create']);
 Route::get('/tutor/group/finish/', [TutorGroupController::class, 'finish']);
 
 //Routes to test factories. REMOVE BEFORE DEPLOYMENT
-Route::get('/testfactorystudent', function() {
+Route::get('/testfactorystudent', function () {
     $student = \App\Models\Student::factory()->make();
     return $student;
 });
-Route::get('/testfactorytutor', function() {
+Route::get('/testfactorytutor', function () {
     $tutor = \App\Models\Tutor::factory()->make();
     return $tutor;
 });
-Route::get('/testfactorygroup', function() {
+Route::get('/testfactorygroup', function () {
     $group = \App\Models\Group::factory()->make();
     return $group;
 });
-Route::get('/testfactorystation', function() {
+Route::get('/testfactorystation', function () {
     $station = \App\Models\Station::factory()->make();
     return $station;
 });
-Route::get('/testfactorytimeslot', function() {
+Route::get('/testfactorytimeslot', function () {
     $timeslot = \App\Models\Timeslot::factory()->make();
     return $timeslot;
 });

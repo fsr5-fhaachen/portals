@@ -7,33 +7,39 @@
                     <h1>Herzlich Willkommen bei der Erstiwoche des FB5!</h1>
                     <div>Melde dich bitte hier an um einer Gruppe zugeordnet zu werden.</div>
                     <div class="mt-3">
-                        <form>
+                        <form @submit.prevent="submit">
                             <div class="form-group">
-                                <label for="FirstName"></label>
-                                <input type="text" class="form-control" id="FirstName"
-                                       placeholder="Vorname">
+                                <label for="firstname"></label>
+                                <input type="text" class="form-control" id="firstname"
+                                       placeholder="Vorname" v-model="form.firstname">
+                                <div class="text-danger" v-if="form.errors.firstname"><strong>{{ form.errors.firstname }}</strong></div>
                             </div>
                             <div class="form-group mt-2">
-                                <label for="LastName"></label>
-                                <input type="text" class="form-control" id="LastName"
-                                       placeholder="Nachname">
+                                <label for="lastname"></label>
+                                <input type="text" class="form-control" id="lastname"
+                                       placeholder="Nachname" v-model="form.lastname">
+                                <div class="text-danger" v-if="form.errors.lastname"><strong>{{ form.errors.lastname }}</strong></div>
                             </div>
                             <div class="form-group mt-2">
-                                <label for="InputEmail"></label>
-                                <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp"
-                                       placeholder="E-Mail">
+                                <label for="email"></label>
+                                <input type="email" class="form-control" id="email" aria-describedby="emailHelp"
+                                       placeholder="E-Mail" v-model="form.email">
+                                <div class="text-danger" v-if="form.errors.email"><strong>{{ form.errors.email }}</strong></div>
                             </div>
-                            <div class="input-group mt-4 pt-1">
-                                <div class="input-group-prepend">
-                                    <label class="input-group-text" for="Studiengang">Studiengang</label>
+                            <div class="form-group mt-4">
+                                <div class="input-group pt-1">
+                                    <div class="input-group-prepend">
+                                        <label class="input-group-text" for="course">Studiengang</label>
+                                    </div>
+                                    <select class="custom-select form-control" id="course" v-model="form.course">
+                                        <option selected>Wähle deinen Studiengang aus...</option>
+                                        <option value="MCD">MCD</option>
+                                        <option value="WI">WI</option>
+                                        <option value="INF">INF</option>
+                                        <option value="ET">ET</option>
+                                    </select>
                                 </div>
-                                <select class="custom-select form-control" id="Studiengang">
-                                    <option selected>Wähle deinen Studiengang aus...</option>
-                                    <option value="MCD">MCD</option>
-                                    <option value="WI">WI</option>
-                                    <option value="INF">INF</option>
-                                    <option value="ET">ET</option>
-                                </select>
+                                <div class="text-danger" v-if="form.errors.course"><strong>{{ form.errors.course }}</strong></div>
                             </div>
                             <button type="submit" class="btn btn-primary text-white mt-3">Login</button>
                         </form>
@@ -48,9 +54,23 @@
 <script>
     export default {
         name: 'Home',
+        data() {
+            return {
+                form: this.$inertia.form({
+                    firstname: null,
+                    lastname: null,
+                    email: null,
+                    course: null,
+                }),
+            }
+        },
+        methods: {
+            submit() {
+                this.form.post('/');
+            },
+        },
     }
 </script>
-
 <style>
 
 </style>
