@@ -25,6 +25,23 @@ class Group extends Model
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['title'];
+
+    /**
+     * Returns the title of the group.
+     *
+     * @return string
+     */
+    public function getTitleAttribute()
+    {
+        return "Gruppe {$this->id}";
+    }
+
+    /**
      * Returns Collection containing all groups of specified course or all if none provided.
      *
      * @param string $course Course to select groups by. Selects all if none provided
