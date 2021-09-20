@@ -18,10 +18,10 @@ class Group extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
-        'course',
-        'id',
-        'id'
+        'group_name',
+        'group_course',
+        'station_id',
+        'timeslot_id'
     ];
 
     /**
@@ -34,7 +34,7 @@ class Group extends Model
     static function getByCourse($course = '')
     {
         if (empty($course)) return self::all();
-        return self::where('course', 'LIKE', $course)->get();
+        return self::where('group_course', 'LIKE', $course)->get();
     }
 
     /**
@@ -47,7 +47,7 @@ class Group extends Model
     static function getByTimeslot($timeslotId = '')
     {
         if (empty($timeslotId)) return self::all();
-        return self::where('id', 'LIKE', $timeslotId)->get();
+        return self::where('timeslot_id', 'LIKE', $timeslotId)->get();
     }
 
     /**
@@ -60,7 +60,7 @@ class Group extends Model
     static function getByStation($stationId = '')
     {
         if (empty($stationId)) return self::all();
-        return self::where('id', 'LIKE', $stationId)->get();
+        return self::where('station_id', 'LIKE', $stationId)->get();
     }
 
     /**
@@ -74,10 +74,10 @@ class Group extends Model
      */
     static function getByTimeslotAndCourse($timeslotId = '', $course = '')
     {
-        $res = null;
+        $res=null;
         if (empty($timeslotId)) $res = self::all();
-        else $res = self::where('id', 'LIKE', $timeslotId);
+        else $res = self::where('timeslot_id', 'LIKE', $timeslotId);
         if (empty($course))  return $res->get();
-        return $res->where('course', 'LIKE', $course)->get();
+        return $res->where('group_course', 'LIKE', $course)->get();
     }
 }

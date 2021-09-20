@@ -16,8 +16,8 @@ class CreateGroupsTable extends Migration
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('name', 30)->nullable(False)->unique('groups_name_unique');
-            $table->enum('course', ['ET', 'INF', 'MCD', 'WI'])->nullable();
+            $table->string('group_name',30)->nullable(False)->unique('groups_name_unique');
+            $table->enum('group_course',['ET','INF','MCD','WI'])->nullable();
             $table->foreignId('station_id')->nullable()->constrained('stations')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('timeslot_id')->nullable()->constrained('timeslots')->onUpdate('cascade')->onDelete('cascade');
         });

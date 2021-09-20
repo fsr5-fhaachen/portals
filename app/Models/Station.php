@@ -17,6 +17,6 @@ class Station extends Model
      * @var array
      */
     protected $fillable = [
-        'name'
+        'station_name'
     ];
 }

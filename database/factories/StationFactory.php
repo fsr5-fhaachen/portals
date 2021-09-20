@@ -24,7 +24,7 @@ class StationFactory extends Factory
         return [
             // created_at
             // updated_at
-            'name' => $this->faker->unique()->word()
+            'station_name' => $this->faker->unique()->word()
         ];
     }
 }

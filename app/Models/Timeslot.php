@@ -17,7 +17,7 @@ class Timeslot extends Model
      * @var array
      */
     protected $fillable = [
-        'name',
-        'time'
+        'timeslot_name',
+        'timeslot_time'
     ];
 }

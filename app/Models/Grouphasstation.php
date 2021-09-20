@@ -17,8 +17,8 @@ class Grouphasstation extends Model
      * @var array
      */
     protected $fillable = [
-        'id',
-        'id',
-        'groupHasstep'
+        'group_id',
+        'station_id',
+        'groupHasStation_step'
     ];
 }

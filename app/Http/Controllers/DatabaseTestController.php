@@ -25,7 +25,7 @@ class DatabaseTestController extends Controller
 
     public function clearAllTables()
     {
-        foreach ($this->tableNames as $tableName) {
+        foreach ($this->tableNames as $tableName){
             DB::table($tableName)->delete();
         }
     }
@@ -74,18 +74,18 @@ class DatabaseTestController extends Controller
 
     public function simulatedFillStudents($et, $inf, $mcd, $wi)
     {
-        Student::factory()->state(['course' => 'ET'])->count($et)->create();
-        Student::factory()->state(['course' => 'INF'])->count($inf)->create();
-        Student::factory()->state(['course' => 'MCD'])->count($mcd)->create();
-        Student::factory()->state(['course' => 'WI'])->count($wi)->create();
+        Student::factory()->state(['student_course' => 'ET'])->count($et)->create();
+        Student::factory()->state(['student_course' => 'INF'])->count($inf)->create();
+        Student::factory()->state(['student_course' => 'MCD'])->count($mcd)->create();
+        Student::factory()->state(['student_course' => 'WI'])->count($wi)->create();
         return Student::all();
     }
 
     public function randomAssignTimeslots($timeslotsAmount)
     {
         $students = Student::all();
-        foreach ($students as $student) {
-            $student->id = random_int(1, $timeslotsAmount);
+        foreach ($students as $student){
+            $student->timeslot_id = random_int(1, $timeslotsAmount);
             $student->save();
         }
         return $students;
@@ -98,15 +98,16 @@ class DatabaseTestController extends Controller
         $swapped = false;
         $timeslotId = 1;
         $students = Student::getByCourse('ET');
-        foreach ($students as $student) {
-            $student->id = $timeslotId;
+        foreach ($students as $student){
+            $student->timeslot_id = $timeslotId;
             $student->save();
             $i--;
-            if (!$swapped && $i == 0) {
+            if (!$swapped && $i == 0){
                 $i = $amount2;
                 $timeslotId++;
                 $swapped = true;
-            } elseif ($swapped && $i == 0) {
+            }
+            elseif ($swapped && $i == 0){
                 $i = $amount3;
                 $timeslotId++;
             }
@@ -119,7 +120,7 @@ class DatabaseTestController extends Controller
         if ($attr === 'course') return $this->getStudentsByCourse($val);
         elseif ($attr === 'attended') return $this->getStudentsByAttendance($val);
         elseif ($attr === 'timeslotcourse') return $this->getStudentsByTimeslotAndCourse($val, $val2);
-        else return $attr + ' is not a supported attribute';
+        else return $attr+' is not a supported attribute';
     }
     public function getStudentsByCourse($course = '')
     {
@@ -142,7 +143,7 @@ class DatabaseTestController extends Controller
     {
         if ($attr === 'course') return $this->getTutorsByCourse($val);
         elseif ($attr === 'available') return $this->getTutorsByAvailability($val);
-        else return $attr + ' is not a supported attribute';
+        else return $attr+' is not a supported attribute';
     }
     public function getTutorsByCourse($course = '')
     {

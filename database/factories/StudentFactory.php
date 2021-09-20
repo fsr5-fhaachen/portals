@@ -24,13 +24,13 @@ class StudentFactory extends Factory
         return [
             // created_at
             // updated_at
-            'firstname' => $this->faker->firstName(),
-            'lastname' => $this->faker->lastName(),
-            'email' => $this->faker->unique()->safeEmail(),
-            'course' => $this->faker->regexify("(ET|INF|MCD|WI)"),
-            'id' => null,
-            'id' => null,
-            'attended' => 0
+            'student_firstname' => $this->faker->firstName(),
+            'student_lastname' => $this->faker->lastName(),
+            'student_email' => $this->faker->unique()->safeEmail(),
+            'student_course' => $this->faker->regexify("(ET|INF|MCD|WI)"),
+            'group_id' => null,
+            'timeslot_id' => null,
+            'student_attended' => 0
         ];
     }
 
@@ -38,7 +38,7 @@ class StudentFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'attended' => $this->faker->regexify("[0-1]"),
+                'student_attended' => $this->faker->regexify("[0-1]"),
             ];
         });
     }
