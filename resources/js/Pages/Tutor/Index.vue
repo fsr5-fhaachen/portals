@@ -12,11 +12,9 @@
                                 <input type="email" class="form-control" id="InputEmailTutor" aria-describedby="emailHelp"
                                        placeholder="E-Mail">
                             </div>
-                            <div class="form-group row">
-                                <label for="inputPassword" class="col-sm-2 col-form-label"></label>
-                                <div class="col-sm-10">
-                                    <input type="password" class="form-control" id="inputPassword" placeholder="Passwort">
-                                </div>
+                            <div class="form-group">
+                                <label for="inputPassword" class="col-form-label"></label>
+                                <input type="password" class="form-control" id="inputPassword" placeholder="Passwort">
                             </div>
                             <button type="submit" class="btn btn-primary text-white mt-3">Login</button>
                         </form>

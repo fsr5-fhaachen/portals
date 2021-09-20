@@ -11,4 +11,9 @@ class TutorController extends Controller
     {
         return Inertia::render('Tutor/Index', []);
     }
+
+    public function station()
+    {
+        return Inertia::render('Tutor/Station', []);
+    }
 }
