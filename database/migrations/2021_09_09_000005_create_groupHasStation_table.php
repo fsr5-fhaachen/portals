@@ -18,8 +18,8 @@ class CreateGroupHasStationTable extends Migration
             $table->timestamps();
             $table->foreignId('group_id')->nullable(False)->constrained('groups')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('station_id')->nullable(False)->constrained('stations')->onUpdate('cascade')->onDelete('cascade');
-            $table->unique(['group_id','station_id'],'groupHasStation_group_station_unique');
-            $table->integer('groupHasStation_step',False,True)->nullable(False);
+            $table->unique(['group_id', 'station_id']);
+            $table->integer('step', False, True)->nullable(False);
         });
     }
 

@@ -18,8 +18,8 @@ class Group extends Model
      * @var array
      */
     protected $fillable = [
-        'group_name',
-        'group_course',
+        'name',
+        'course',
         'station_id',
         'timeslot_id'
     ];
@@ -34,7 +34,7 @@ class Group extends Model
     static function getByCourse($course = '')
     {
         if (empty($course)) return self::all();
-        return self::where('group_course', 'LIKE', $course)->get();
+        return self::where('course', 'LIKE', $course)->get();
     }
 
     /**
@@ -74,10 +74,10 @@ class Group extends Model
      */
     static function getByTimeslotAndCourse($timeslotId = '', $course = '')
     {
-        $res=null;
+        $res = null;
         if (empty($timeslotId)) $res = self::all();
         else $res = self::where('timeslot_id', 'LIKE', $timeslotId);
         if (empty($course))  return $res->get();
-        return $res->where('group_course', 'LIKE', $course)->get();
+        return $res->where('course', 'LIKE', $course)->get();
     }
 }

@@ -35,11 +35,11 @@ class TutorGroupController extends Controller
      * Gets a Student model from the database by its ID and updates the student_attendance.
      *
      * @param mixed $studentId
-     * @param mixed $value The value that gets assigned to student_attended of specified student. Should be true or false.
+     * @param mixed $value The value that gets assigned to attended of specified student. Should be true or false.
      */
     public function setStudentAttendance($studentId, $value)
     {
-        Student::find($studentId)->update(['student_attended' => $value]);
+        Student::find($studentId)->update(['attended' => $value]);
     }
 
     /**

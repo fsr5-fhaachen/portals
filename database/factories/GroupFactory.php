@@ -24,8 +24,8 @@ class GroupFactory extends Factory
         return [
             // created_at
             // updated_at
-            'group_name' => $this->faker->unique()->word(),
-            'group_course' => null,
+            'name' => $this->faker->unique()->word(),
+            'course' => null,
             'station_id' => null,
             'timeslot_id' => null
         ];

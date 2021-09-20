@@ -16,10 +16,10 @@ class CreateTutorsTable extends Migration
         Schema::create('tutors', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('tutor_firstname',30)->nullable(False);
-            $table->string('tutor_lastname',30)->nullable(False);
-            $table->string('tutor_email',100)->nullable(False)->unique('tutors_mail_unique');
-            $table->enum('tutor_course',['ET','INF','MCD','WI'])->nullable(False);
+            $table->string('firstname', 30)->nullable(False);
+            $table->string('lastname', 30)->nullable(False);
+            $table->string('email', 100)->nullable(False)->unique();
+            $table->enum('course', ['ET', 'INF', 'MCD', 'WI'])->nullable(False);
             $table->foreignId('group_id')->nullable()->constrained('groups')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('station_id')->nullable()->constrained('stations')->onUpdate('cascade')->onDelete('cascade');
         });

@@ -24,8 +24,8 @@ class TimeslotFactory extends Factory
         return [
             // created_at
             // updated_at
-            'timeslot_name' => $this->faker->unique()->word(),
-            'timeslot_time' => $this->faker->time()
+            'name' => $this->faker->unique()->word(),
+            'time' => $this->faker->time()
         ];
     }
 }

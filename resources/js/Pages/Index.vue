@@ -9,29 +9,29 @@
                     <div class="mt-3">
                         <form @submit.prevent="submit">
                             <div class="form-group">
-                                <label for="student_firstname"></label>
-                                <input type="text" class="form-control" id="student_firstname"
-                                       placeholder="Vorname" v-model="form.student_firstname">
-                                <div class="text-danger" v-if="form.errors.student_firstname"><strong>{{ form.errors.student_firstname }}</strong></div>
+                                <label for="firstname"></label>
+                                <input type="text" class="form-control" id="firstname"
+                                       placeholder="Vorname" v-model="form.firstname">
+                                <div class="text-danger" v-if="form.errors.firstname"><strong>{{ form.errors.firstname }}</strong></div>
                             </div>
                             <div class="form-group mt-2">
-                                <label for="student_lastname"></label>
-                                <input type="text" class="form-control" id="student_lastname"
-                                       placeholder="Nachname" v-model="form.student_lastname">
-                                <div class="text-danger" v-if="form.errors.student_lastname"><strong>{{ form.errors.student_lastname }}</strong></div>
+                                <label for="lastname"></label>
+                                <input type="text" class="form-control" id="lastname"
+                                       placeholder="Nachname" v-model="form.lastname">
+                                <div class="text-danger" v-if="form.errors.lastname"><strong>{{ form.errors.lastname }}</strong></div>
                             </div>
                             <div class="form-group mt-2">
-                                <label for="student_email"></label>
-                                <input type="email" class="form-control" id="student_email" aria-describedby="emailHelp"
-                                       placeholder="E-Mail" v-model="form.student_email">
-                                <div class="text-danger" v-if="form.errors.student_email"><strong>{{ form.errors.student_email }}</strong></div>
+                                <label for="email"></label>
+                                <input type="email" class="form-control" id="email" aria-describedby="emailHelp"
+                                       placeholder="E-Mail" v-model="form.email">
+                                <div class="text-danger" v-if="form.errors.email"><strong>{{ form.errors.email }}</strong></div>
                             </div>
                             <div class="form-group mt-4">
                                 <div class="input-group pt-1">
                                     <div class="input-group-prepend">
-                                        <label class="input-group-text" for="student_course">Studiengang</label>
+                                        <label class="input-group-text" for="course">Studiengang</label>
                                     </div>
-                                    <select class="custom-select form-control" id="student_course" v-model="form.student_course">
+                                    <select class="custom-select form-control" id="course" v-model="form.course">
                                         <option disabled value="">Wähle deinen Studiengang aus...</option>
                                         <option value="MCD">MCD</option>
                                         <option value="WI">WI</option>
@@ -39,7 +39,7 @@
                                         <option value="ET">ET</option>
                                     </select>
                                 </div>
-                                <div class="text-danger" v-if="form.errors.student_course"><strong>{{ form.errors.student_course }}</strong></div>
+                                <div class="text-danger" v-if="form.errors.course"><strong>{{ form.errors.course }}</strong></div>
                             </div>
                             <button type="submit" class="btn btn-primary text-white mt-3">Login</button>
                         </form>
@@ -57,10 +57,10 @@
         data() {
             return {
                 form: this.$inertia.form({
-                    student_firstname: null,
-                    student_lastname: null,
-                    student_email: null,
-                    student_course: '',
+                    firstname: null,
+                    lastname: null,
+                    email: null,
+                    course: '',
                 }),
             }
         },

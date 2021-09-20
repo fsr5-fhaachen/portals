@@ -21,7 +21,7 @@ class GroupController extends Controller
 
     /**
      * Creates a Student model from provided data and persists it in the database.
-     * If the database contains an entry with the same student_email, the entry gets updated instead.
+     * If the database contains an entry with the same email, the entry gets updated instead.
      *
      * @param string $firstName
      * @param string $lastName
@@ -31,15 +31,16 @@ class GroupController extends Controller
     public function updateOrCreateStudent($firstName, $lastName, $email, $course)
     {
         Student::query()->updateOrCreate(
-            ['student_email' => $email],
+            ['email' => $email],
             [
-                'student_firstname' => $firstName,
-                'student_lastname' => $lastName,
-                'student_course' => $course,
+                'firstname' => $firstName,
+                'lastname' => $lastName,
+                'course' => $course,
                 'group_id' => null,
                 'timeslot_id' => null,
-                'student_attended' => False
-            ]);
+                'attended' => False
+            ]
+        );
     }
 
     /**
