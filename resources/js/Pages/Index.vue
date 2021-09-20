@@ -35,32 +35,30 @@
                                         <label class="input-group-text" for="course">Studiengang</label>
                                     </div>
                                     <select class="custom-select form-control" id="course" v-model="form.course">
-                                        <option disabled value="">Wähle deinen Studiengang aus...</option>
+                                        <option disabled value="">Wähle deinen Studiengang aus</option>
                                         <option value="MCD">MCD</option>
                                         <option value="WI">WI</option>
                                         <option value="INF">INF</option>
                                         <option value="ET">ET</option>
                                     </select>
                                 </div>
-                                <div class="text-danger" v-if="form.errors.course"><strong>{{ form.errors.course
-                                    }}</strong></div>
+                                <div class="text-danger" v-if="form.errors.course"><strong>{{ form.errors.course}}</strong></div>
                             </div>
-                            <!-- nur sichtbar wenn Zeitslotauswahl gewünscht -->
-
-                    <div class="form-group mt-4">
-                        <div class="input-group pt-1">
-                            <div class="input-group-prepend">
-                                <label class="input-group-text" for="course">Zeitslot</label>
+                            <!-- TODO timeslot -->
+                            <div class="form-group mt-4">
+                                <div class="input-group pt-1">
+                                    <div class="input-group-prepend">
+                                        <label class="input-group-text" for="timeslot_id">Zeitslot</label>
+                                    </div>
+                                    <select class="custom-select form-control" id="timeslot_id" v-model="form.timeslot_id">
+                                        <option selected value="">Wähle deinen gewünschten Zeitslot aus</option>
+                                        <option value="1">10:00 - 12:15 Uhr</option>
+                                    </select>
+                                    <small class="mt-2">Wir versuchen dir deinen präferierten Zeitslot anzubieten, können dir aber nicht versprechen, dass du diesen auch bekommst. Allgemein gilt hier, wie beim Kauf einer PlayStation 5, first come first serve.</small>
+                                </div>
+                                <div class="text-danger" v-if="form.errors.timeslot_id"><strong>{{ form.errors.timeslot_id}}</strong></div>
                             </div>
-                            <select class="custom-select form-control" id="course" v-model="form.course">
-                                <option selected>Wähle deinen gewünschten Zeitslot aus...</option>
-                                <option value="1">10:00 - 12:15 Uhr</option> <!-- Schleife über DB Dtaen -->
-                            </select>
-                        </div>
-                        <div class="text-danger" v-if="form.errors.course"><strong>{{ form.errors.course
-                            }}</strong></div>
-                    </div>
-                            <button type="submit" class="btn btn-primary text-white mt-3">Login</button>
+                            <button type="submit" class="btn btn-primary text-white mt-3">Anmelden</button>
                         </form>
                     </div>
                 </div>
@@ -80,6 +78,7 @@
                     lastname: null,
                     email: null,
                     course: '',
+                    timeslot_id: '',
                 }),
             }
         },
