@@ -20,6 +20,7 @@ class TutorenSeeder extends Seeder
                 'lastname' => $data['0'],
                 'firstname' => $data['1'],
                 'email' => $data['2'],
+                'is_admin' => (!empty($data['3']) ? true : false),
             ]);
         }
         fclose($csvFile);

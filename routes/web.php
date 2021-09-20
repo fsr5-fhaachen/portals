@@ -22,27 +22,40 @@ use Illuminate\Support\Facades\Route;
 // student
 Route::get('/', [AppController::class, 'index']);
 Route::post('/', [AppController::class, 'store']);
-Route::get('/group/', [AppController::class, 'group'])->name('group');
+Route::group([
+    'middleware' => ['isStudent']
+], function () {
+    Route::get('/group/', [AppController::class, 'group'])->name('group');
+});
 
 // tutor
 Route::get('/tutor/', [TutorController::class, 'index']);
 Route::post('/tutor/', [TutorController::class, 'login']);
-// TODO fix controller
-Route::get('/tutor/overview', [AdminGroupController::class, 'overview'])->name('tutor.overview');
-Route::get('/tutor/group/', [TutorGroupController::class, 'index']);
-Route::get('/tutor/station', [TutorController::class, 'station']);
+Route::group([
+    'prefix' => 'tutor',
+    'middleware' => ['isTutor']
+], function () {
+    // TODO fix controller
+    Route::get('/overview', [AdminGroupController::class, 'overview'])->name('tutor.overview');
+    Route::get('/group/', [TutorGroupController::class, 'index']);
+    Route::get('/station', [TutorController::class, 'station']);
+});
+Route::group([
+    'prefix' => 'admin',
+    'middleware' => ['isTutor', 'isAdmin']
+], function () {
+    // hv
+    Route::get('/overview', [AdminGroupController::class, 'overview']);
+    // TODO fix controller
+    Route::get('/start/', [TutorGroupController::class, 'create']);
+    // TODO fix controller
+    Route::get('/finish/', [TutorGroupController::class, 'finish']);
 
-// hv
-Route::get('/admin/overview', [AdminGroupController::class, 'overview']);
-// TODO fix controller
-Route::get('/admin/start/', [TutorGroupController::class, 'create']);
-// TODO fix controller
-Route::get('/admin/finish/', [TutorGroupController::class, 'finish']);
-
-// maybe remove?
-Route::get('/admin/create', [AdminGroupController::class, 'adminCreate']);
-Route::get('/admin/detail', [AdminGroupController::class, 'detail']);
-Route::get('/admin/newData', [AdminGroupController::class, 'newData']);
+    // maybe remove?
+    Route::get('/create', [AdminGroupController::class, 'adminCreate']);
+    Route::get('/detail', [AdminGroupController::class, 'detail']);
+    Route::get('/newData', [AdminGroupController::class, 'newData']);
+});
 
 //Routes to test factories. REMOVE BEFORE DEPLOYMENT
 Route::get('/testfactorystudent', function () {

@@ -22,6 +22,7 @@ class Tutor extends Model
         'lastname',
         'email',
         'course',
+        'is_admin',
         'group_id',
         'station_id'
     ];

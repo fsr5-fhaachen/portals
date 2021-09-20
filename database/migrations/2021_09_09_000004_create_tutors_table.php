@@ -20,6 +20,7 @@ class CreateTutorsTable extends Migration
             $table->string('lastname', 30)->nullable(False);
             $table->string('email', 100)->nullable(False)->unique();
             $table->enum('course', ['ET', 'INF', 'MCD', 'WI'])->nullable(False);
+            $table->boolean('is_admin')->default(0);
             $table->foreignId('group_id')->nullable()->constrained('groups')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('station_id')->nullable()->constrained('stations')->onUpdate('cascade')->onDelete('cascade');
         });
