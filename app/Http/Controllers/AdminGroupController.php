@@ -478,7 +478,7 @@ class AdminGroupController extends Controller
      */
     public function resetStudentAttendance()
     {
-        Student::query()->update(['attended' => False]);
+        Student::query()->each->update(['attended' => False]);
     }
 
     /**
@@ -486,7 +486,7 @@ class AdminGroupController extends Controller
      */
     public function resetGroupCourse()
     {
-        Group::query()->update(['course' => null]);
+        Group::query()->each->update(['course' => null]);
     }
 
     /**
@@ -496,6 +496,6 @@ class AdminGroupController extends Controller
      */
     public function resetGroupAssignment($course = '')
     {
-        Student::getByCourse()->update(['group_id' => null]);
+        Student::getByCourse()->each->update(['group_id' => null]);
     }
 }
