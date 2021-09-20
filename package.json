@@ -22,6 +22,7 @@
     "dependencies": {
         "@inertiajs/inertia": "^0.10.1",
         "@inertiajs/inertia-vue": "^0.7.2",
+        "@inertiajs/inertia-vue3": "^0.5.2",
         "@inertiajs/progress": "^0.2.6",
         "bootstrap": "^5.1.0",
         "bootstrap-vue": "^2.21.2",

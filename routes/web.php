@@ -24,10 +24,16 @@ Route::post('/', [AppController::class, 'store']);
 Route::get('/group/', [AppController::class, 'group'])->name('group');
 
 Route::get('/tutor/', [TutorController::class, 'index']);
+Route::get('/tutor/station', [TutorController::class, 'station']);
 
 Route::get('/tutor/group/', [TutorGroupController::class, 'index']);
 Route::get('/tutor/group/create/', [TutorGroupController::class, 'create']);
 Route::get('/tutor/group/finish/', [TutorGroupController::class, 'finish']);
+
+Route::get('/admin/create', [AdminGroupController::class, 'adminCreate']);
+Route::get('/admin/detail', [AdminGroupController::class, 'detail']);
+Route::get('/admin/newData', [AdminGroupController::class, 'newData']);
+Route::get('/admin/overview', [AdminGroupController::class, 'overview']);
 
 //Routes to test factories. REMOVE BEFORE DEPLOYMENT
 Route::get('/testfactorystudent', function () {
