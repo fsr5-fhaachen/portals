@@ -113,4 +113,14 @@ class Student extends Model
         if (empty($course))  return $res->get();
         return $res->where('course', 'LIKE', $course)->get();
     }
+
+    /**
+     * Get the group from the student.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function phone()
+    {
+        return $this->hasOne(Group::class);
+    }
 }
