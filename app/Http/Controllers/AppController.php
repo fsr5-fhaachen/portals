@@ -17,6 +17,11 @@ class AppController extends Controller
             return Redirect::to('/group');
         }
 
+        // check if tutor is logged in and redirect to group page
+        if ($request->session()->has('tutor')) {
+            return Redirect::to('/tutor/overview');
+        }
+
         return Inertia::render('Index', []);
     }
 
