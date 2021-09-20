@@ -5,9 +5,9 @@
             <div class="col-lg-6 mx-auto mt-5 pt-5 pt-lg-0 text-center">
                 <h3 class="mt-5">Hallo {{ student.firstname }} {{ student.lastname }},</h3>
                 
-                <div v-if="student.group">
-                     Du bist in der Gruppe:
-                <h1 class="text-primary mt-3">Die redfreudigen Rentiere</h1>
+                <div v-if="group">
+                    <p>Du bist in der Gruppe:</p>
+                    <h1 class="text-primary mt-3">{{ group.title }}</h1>
                 </div>
                 <p v-else>Die Einteilung hat noch nicht begonnen, bitte warte auf weitere Anweisungen durch die Tutoren.</p>
             </div>
@@ -26,6 +26,31 @@
             group: {
                 type: Object
             }
+        },
+        methods: {
+            updateData() {
+                this.$inertia.reload({
+                    preserveState: true,
+                    preserveScroll: true,
+                });
+            },
+        },
+        created() {
+            if (!this.group) {
+                this.interval = setInterval(function () {
+                    this.updateData();
+                }.bind(this), 1000);
+            }
+        },
+        beforeDestroy() {
+            clearInterval(this.interval);
+        },
+        watch: {
+            group: function (group) {
+                if (group.id) {
+                    clearInterval(this.interval);
+                }
+            },
         }
     }
 </script>
