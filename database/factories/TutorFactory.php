@@ -24,12 +24,12 @@ class TutorFactory extends Factory
         return [
             // created_at
             // updated_at
-            'tutor_firstname' => $this->faker->firstName(),
-            'tutor_lastname' => $this->faker->lastName(),
-            'tutor_email' => $this->faker->unique()->safeEmail(),
-            'tutor_course' => $this->faker->regexify("(ET|INF|MCD|WI)"),
-            'group_id' => null,
-            'station_id' => null,
+            'firstname' => $this->faker->firstName(),
+            'lastname' => $this->faker->lastName(),
+            'email' => $this->faker->unique()->safeEmail(),
+            'course' => $this->faker->regexify("(ET|INF|MCD|WI)"),
+            'id' => null,
+            'id' => null,
         ];
     }
 }

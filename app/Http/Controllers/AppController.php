@@ -18,10 +18,10 @@ class AppController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'student_firstname' => ['required', 'max:30'],
-            'student_lastname' => ['required', 'max:30'],
-            'student_email' => ['required', 'max:100', 'email'],
-            'student_course' => ['required', Rule::in(['ET', 'INF', 'MCD', 'WI'])],
+            'firstname' => ['required', 'max:30'],
+            'lastname' => ['required', 'max:30'],
+            'email' => ['required', 'max:100', 'email'],
+            'course' => ['required', Rule::in(['ET', 'INF', 'MCD', 'WI'])],
         ]);
 
         Student::create(

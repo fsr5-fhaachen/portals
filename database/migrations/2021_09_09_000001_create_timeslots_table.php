@@ -16,8 +16,8 @@ class CreateTimeslotsTable extends Migration
         Schema::create('timeslots', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('timeslot_name',30)->nullable(False)->unique('timeslots_name_unique');
-            $table->time('timeslot_time')->nullable(False);
+            $table->string('name', 30)->nullable(False)->unique();
+            $table->time('time')->nullable(False);
         });
     }
 

@@ -18,12 +18,12 @@ class Tutor extends Model
      * @var array
      */
     protected $fillable = [
-        'tutor_firstname',
-        'tutor_lastname',
-        'tutor_email',
-        'tutor_course',
-        'group_id',
-        'station_id'
+        'firstname',
+        'lastname',
+        'email',
+        'course',
+        'id',
+        'id'
     ];
 
     /**
@@ -36,7 +36,7 @@ class Tutor extends Model
     static function getByCourse($course = '')
     {
         if (empty($course)) return self::all();
-        return self::where('tutor_course', 'LIKE', $course)->get();
+        return self::where('course', 'LIKE', $course)->get();
     }
 
     /**
@@ -49,6 +49,6 @@ class Tutor extends Model
     static function getByAvailability($availability = '')
     {
         if (empty($availability)) return self::all();
-        return self::where('tutor_available', '=', $availability)->get();
+        return self::where('available', '=', $availability)->get();
     }
 }

@@ -50,7 +50,7 @@ class AdminGroupController extends Controller
 
     /**
      * Creates a Tutor model from provided data and persists it in the database.
-     * If the database contains an entry with the same tutor_email, the entry gets updated instead.
+     * If the database contains an entry with the same email, the entry gets updated instead.
      *
      * @param string $firstName
      * @param string $lastName
@@ -60,14 +60,15 @@ class AdminGroupController extends Controller
     public function updateOrCreateTutor($firstName, $lastName, $email, $course)
     {
         Tutor::query()->updateOrCreate(
-            ['tutor_email' => $email],
+            ['email' => $email],
             [
-            'tutor_firstname' => $firstName,
-            'tutor_lastname' => $lastName,
-            'tutor_course' => $course,
-            'group_id' => null,
-            'station_id' => null
-        ]);
+                'firstname' => $firstName,
+                'lastname' => $lastName,
+                'course' => $course,
+                'id' => null,
+                'id' => null
+            ]
+        );
     }
 
     /**
@@ -78,10 +79,10 @@ class AdminGroupController extends Controller
     public function createGroup($name)
     {
         Group::query()->create([
-            'group_name' => $name,
-            'group_course' => null,
-            'station_id' => null,
-            'timeslot_id' => null
+            'name' => $name,
+            'course' => null,
+            'id' => null,
+            'id' => null
         ]);
     }
 
@@ -93,13 +94,13 @@ class AdminGroupController extends Controller
     public function createStation($name)
     {
         Station::query()->create([
-            'station_name' => $name
+            'name' => $name
         ]);
     }
 
     /**
      * Creates a Timeslot model from provided data and persists it in the database.
-     * If the database contains an entry with the same timeslot_name, the entry gets updated instead.
+     * If the database contains an entry with the same name, the entry gets updated instead.
      *
      * @param string $name
      * @param string $time
@@ -107,10 +108,11 @@ class AdminGroupController extends Controller
     public function updateOrCreateTimeslot($name, $time)
     {
         Timeslot::query()->updateOrCreate(
-            ['timeslot_name' => $name],
+            ['name' => $name],
             [
-            'timeslot_time' => $time
-        ]);
+                'time' => $time
+            ]
+        );
     }
 
     /**
@@ -123,9 +125,9 @@ class AdminGroupController extends Controller
     public function createTourStep($groupId, $stationId, $step)
     {
         Grouphasstation::query()->create([
-            'group_id' => $groupId,
-            'station_id' => $stationId,
-            'groupHasStation_step' => $step
+            'id' => $groupId,
+            'id' => $stationId,
+            'groupHasstep' => $step
         ]);
     }
 
@@ -140,55 +142,55 @@ class AdminGroupController extends Controller
     public function updateTourStep($groupHasStationId, $groupId, $stationId, $step)
     {
         Grouphasstation::query()->find($groupHasStationId)->update([
-            'group_id' => $groupId,
-            'station_id' => $stationId,
-            'groupHasStation_step' => $step
+            'id' => $groupId,
+            'id' => $stationId,
+            'groupHasstep' => $step
         ]);
     }
 
 
     /**
-     * Gets a Group model from the database by its ID and updates the timeslot_id.
+     * Gets a Group model from the database by its ID and updates the id.
      *
      * @param mixed $timeslotId
      * @param mixed $groupId
      */
     public function assignTimeslotToGroup($timeslotId, $groupId)
     {
-        Group::query()->find($groupId)->update(['timeslot_id' => $timeslotId]);
+        Group::query()->find($groupId)->update(['id' => $timeslotId]);
     }
 
     /**
-     * Gets a Tutor model from the database by its ID and updates the group_id.
+     * Gets a Tutor model from the database by its ID and updates the id.
      *
      * @param mixed $groupId
      * @param mixed $tutorId
      */
     public function assignGroupToTutor($groupId, $tutorId)
     {
-        Tutor::query()->find($tutorId)->update(['group_id' => $groupId]);
+        Tutor::query()->find($tutorId)->update(['id' => $groupId]);
     }
 
     /**
-     * Gets a Tutor model from the database by its ID and updates the station_id.
+     * Gets a Tutor model from the database by its ID and updates the id.
      *
      * @param mixed $stationId
      * @param mixed $tutorId
      */
     public function assignStationToTutor($stationId, $tutorId)
     {
-        Tutor::query()->find($tutorId)->update(['station_id' => $stationId]);
+        Tutor::query()->find($tutorId)->update(['id' => $stationId]);
     }
 
     /**
-     * Gets a Group model from the database by its ID and updates the group_course.
+     * Gets a Group model from the database by its ID and updates the course.
      *
      * @param mixed $groupId
      * @param string $course
      */
     public function setGroupCourse($groupId, $course)
     {
-        Group::query()->find($groupId)->update(['group_course' => $course]);
+        Group::query()->find($groupId)->update(['course' => $course]);
     }
 
 
@@ -217,10 +219,10 @@ class AdminGroupController extends Controller
     {
         $totalStudents = Student::query()->count();
         $coursePercentages = [];
-        foreach ($this->courseNames as $course){
-            $coursePercentages[$course] = ( Student::query()
-                ->where('student_course', 'LIKE', $course)
-                ->count() ) / $totalStudents;
+        foreach ($this->courseNames as $course) {
+            $coursePercentages[$course] = (Student::query()
+                ->where('course', 'LIKE', $course)
+                ->count()) / $totalStudents;
         }
         return $coursePercentages;
     }
@@ -239,7 +241,7 @@ class AdminGroupController extends Controller
     {
         $coursePercentages = $this->calculateCoursePercentages();
         $courseDistribution = [];
-        foreach ($this->courseNames as $course){
+        foreach ($this->courseNames as $course) {
             $courseDistribution[$course] = floor($groupSize * $coursePercentages[$course]);
         }
         return $courseDistribution;
@@ -265,17 +267,17 @@ class AdminGroupController extends Controller
         $groups = Group::all();
 
         $i = 1;
-        foreach ($groups as $group){
+        foreach ($groups as $group) {
             $chunk = $studentsOfCourse->forPage($i, $coursePerGroup);
-            foreach ($chunk as $student){
-                $student->group_id = $group->id;
+            foreach ($chunk as $student) {
+                $student->id = $group->id;
                 $student->save();
             }
             $i++;
             if ($i > $amountGroups) break;
         }
 
-        return $studentsOfCourse->where('group_id', '=', null);
+        return $studentsOfCourse->where('id', '=', null);
     }
 
     /**
@@ -290,9 +292,9 @@ class AdminGroupController extends Controller
         $groups = Group::all();
         $i = 0;
 
-        foreach ($unassignedStudents as $student){
+        foreach ($unassignedStudents as $student) {
             if ($i >= $amountGroups) $i = 0;
-            $student->group_id = $groups[$i]->id;
+            $student->id = $groups[$i]->id;
             $student->save();
             $i++;
         }
@@ -314,11 +316,11 @@ class AdminGroupController extends Controller
         // TODO TEST the random assignment of students for regular Group Phases which uses calculated distribution of courses
         $courseDistribution = $this->calculateCourseDistribution($groupSize);
         $amountGroups = $this->calculateMinAmountGroups($groupSize);
-        if($amountGroups > Group::all()->count()) return; //Assignment can't work if there aren't enough groups of that size to fit all students. Duh!
+        if ($amountGroups > Group::all()->count()) return; //Assignment can't work if there aren't enough groups of that size to fit all students. Duh!
 
         $unassignedStudents = [];
 
-        foreach ($this->courseNames as $course){
+        foreach ($this->courseNames as $course) {
             $unassignedStudents[$course] = $this->distributedAssignCourse($course, $amountGroups, $courseDistribution[$course]);
         }
 
@@ -335,16 +337,17 @@ class AdminGroupController extends Controller
      * @param int $timeslotId
      * @param string $course
      */
-    public function timeslotAssignCourse($groupSize, $timeslotId, $course){
+    public function timeslotAssignCourse($groupSize, $timeslotId, $course)
+    {
         $groups = Group::getByTimeslotAndCourse($timeslotId, $course);
         $students = Student::getByTimeslotAndCourse($timeslotId, $course)->reverse();
 
-        foreach ($groups as $group){
+        foreach ($groups as $group) {
             $groupId = $group->id;
-            for ($i = 0; $i < $groupSize; $i++){
+            for ($i = 0; $i < $groupSize; $i++) {
                 if ($students->isEmpty()) return;
                 $student = $students->pop();
-                $student->group_id = $groupId;
+                $student->id = $groupId;
                 $student->save();
             }
         }
@@ -365,7 +368,7 @@ class AdminGroupController extends Controller
         $groups = Group::getByCourse($course);
         $remainingSlotsPerGroup = [];
 
-        foreach ($groups as $group){
+        foreach ($groups as $group) {
             $groupId = $group->id;
             $amountStudentsOfGroup = Student::getByGroup($groupId)->count();
             $remainingSlots = $groupSize - $amountStudentsOfGroup;
@@ -390,7 +393,7 @@ class AdminGroupController extends Controller
         $totalRemainingSlots = array_sum($remainingSlotsPerGroup);
         $fillablePercentagePerGroup = [];
 
-        foreach ($remainingSlotsPerGroup as $groupId => $remainingSlots){
+        foreach ($remainingSlotsPerGroup as $groupId => $remainingSlots) {
             $fillablePercentagePerGroup[$groupId] = $remainingSlots / $totalRemainingSlots;
         }
 
@@ -410,7 +413,7 @@ class AdminGroupController extends Controller
     public function calculateFillAmount($amountUnassigned, $fillablePercentages)
     {
         $fillAmountPerGroup = [];
-        foreach ($fillablePercentages as $groupId => $fillablePercentage){
+        foreach ($fillablePercentages as $groupId => $fillablePercentage) {
             $fillAmountPerGroup[$groupId] = ceil($amountUnassigned * $fillablePercentage);
         }
         arsort($fillAmountPerGroup);
@@ -436,11 +439,11 @@ class AdminGroupController extends Controller
         $fillablePercentagesPerGroup = $this->calculateFillablePercentages($remainingSlotsPerGroup);
         $fillAmountPerGroup = $this->calculateFillAmount($unassignedStudents->count(), $fillablePercentagesPerGroup);
 
-        foreach ($fillAmountPerGroup as $groupId => $fillAmount){
-            for ($i = 0; $i < $fillAmount; $i++){
+        foreach ($fillAmountPerGroup as $groupId => $fillAmount) {
+            for ($i = 0; $i < $fillAmount; $i++) {
                 if ($unassignedStudents->isEmpty()) return;
                 $student = $unassignedStudents->pop();
-                $student->group_id = $groupId;
+                $student->id = $groupId;
                 $student->save();
             }
         }
@@ -456,11 +459,12 @@ class AdminGroupController extends Controller
      * @see AdminGroupController::timeslotAssignCourse() Used to distribute students of certain course and preferred timeslot to matching groups.
      * @see AdminGroupController::balancedFillFillableGroups() Used to distribute unassigned students evenly to groups with open slots.
      */
-    public function randAssignmentFhTour($groupSize, $course = ''){
+    public function randAssignmentFhTour($groupSize, $course = '')
+    {
         // TODO TEST the random assignment of students for the FH Tour which takes course and timeslots into account
         $timeslots = Timeslot::all();
 
-        foreach ($timeslots as $timeslot){
+        foreach ($timeslots as $timeslot) {
             $timeslotId = $timeslot->id;
             $this->timeslotAssignCourse($groupSize, $timeslotId, $course);
         }
@@ -470,28 +474,28 @@ class AdminGroupController extends Controller
 
 
     /**
-     * Resets student_attended for each Student to its default value.
+     * Resets attended for each Student to its default value.
      */
     public function resetStudentAttendance()
     {
-        Student::query()->update(['student_attended' => False]);
+        Student::query()->update(['attended' => False]);
     }
 
     /**
-     * Resets group_course for each group to its default value.
+     * Resets course for each group to its default value.
      */
     public function resetGroupCourse()
     {
-        Group::query()->update(['group_course' => null]);
+        Group::query()->update(['course' => null]);
     }
 
     /**
-     * Resets group_id for each student of specified course to its default value.
+     * Resets id for each student of specified course to its default value.
      *
      * @param string $course
      */
     public function resetGroupAssignment($course = '')
     {
-        Student::getByCourse()->update(['group_id' => null]);
+        Student::getByCourse()->update(['id' => null]);
     }
 }
