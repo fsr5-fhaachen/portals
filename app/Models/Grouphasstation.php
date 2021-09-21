@@ -19,6 +19,7 @@ class Grouphasstation extends Model
     protected $fillable = [
         'group_id',
         'station_id',
-        'step'
+        'step',
+        'done'
     ];
 }

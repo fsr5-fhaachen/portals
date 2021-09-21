@@ -44,6 +44,8 @@ Route::group([
         Route::post('/{id}/join', [TutorGroupController::class, 'join']);
         Route::post('/student/{id}/attended', [TutorGroupController::class, 'studentAttended']);
         Route::post('/student/{id}/unattended', [TutorGroupController::class, 'studentUnattended']);
+        Route::post('/station/{id}/done', [TutorGroupController::class, 'stationDone']);
+        Route::post('/station/{id}/undone', [TutorGroupController::class, 'stationUndone']);
     });
 
     // TODO fix controller

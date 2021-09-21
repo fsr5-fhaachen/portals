@@ -3,7 +3,7 @@
         <div class="bg mt-3 ml-5 pl-5 opacity-25"></div>
         <div class="row pt-5 pt-lg-0 position-relative">
             <div class="col mx-auto mt-5 pt-5 pt-lg-0">
-                <h1 class="mb-3">Gruppenübersicht: {{ group.title }}</h1>
+                <h1 class="mb-3">Gruppenübersicht: {{ group.title }} <Link href="/tutor/overview/" class="btn btn-primary text-white">Zurück zur Übersicht</Link></h1>
                 <div>Hier findest du Informationen über deine Gruppe.</div>
             </div>
             <div class="row">
@@ -31,7 +31,6 @@
                                             :checked="student.attended"
                                             type="checkbox" 
                                             @change="studentAttended($event, student.id)"
-                                            aria-label="Checkbox for following text input"
                                         >
                                     </td>
                                 </tr>
@@ -41,29 +40,31 @@
                 </div>
 
                 <div class="col-12 mx-auto mt-5">
-
-                    <p class="h5">Stationen/Zeitplan je nach Tag</p>
-                    <form>
-                        <div class="form-group col-md-6">
-                            <label class="my-1 mr-2" for="currentStation">Aktuelle Station</label>
-                            <select class="custom-select form-select my-1 mr-sm-2" id="currentStation">
-                                <option selected>Wähle deine aktuelle Station</option>
-                                <!-- Schleife über Dtaen aus DB -->
-                                <option value="1">Elisenbrunnen</option>
-                            </select>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label class="my-1 mr-2" for="nextStation">Nächste Station</label>
-                            <select class="custom-select form-select my-1 mr-sm-2" id="nextStation">
-                                <option selected>Wähle deine nächste Station</option>
-                                <!-- Schleife über Dtaen aus DB -->
-                                <option value="1">Ponttor</option>
-                            </select>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary text-white mt-3 mb-3">Absenden</button>
-                    </form>
-
+                    <p class="h5">Stationen</p>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Reihenfolge</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Erledigt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="station in stations" :key="station.id">
+                                    <th scope="row">{{ station.pivot.step }}</th>
+                                    <td>{{ station.name }}</td>
+                                    <td>
+                                        <input 
+                                            :checked="station.pivot.done"
+                                            type="checkbox" 
+                                            @change="stationDone($event, station.pivot.id)"
+                                        >
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 
                 <div class="col-12 mx-auto mt-5 mb-5" v-if="isAdmin">
@@ -77,8 +78,13 @@
     </div>
 </template>
 <script>
+    import { Link } from '@inertiajs/inertia-vue';
+
     export default {
         name: 'Index',
+        components: {
+            Link
+        },
         data () {
             return {
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -97,6 +103,9 @@
             students: {
                 type: Array,
                 required: true
+            },
+            stations: {
+                type: Array
             }
         },
         methods: {
@@ -118,6 +127,20 @@
                     fetch('/tutor/group/student/' + id +'/attended', requestOptions);
                 } else {
                     fetch('/tutor/group/student/' + id +'/unattended', requestOptions);
+                }
+            },
+            stationDone(event, id) {
+                const requestOptions = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": this.csrf,
+                    },
+                };
+                if(event.target.checked) {
+                    fetch('/tutor/group/station/' + id +'/done', requestOptions);
+                } else {
+                    fetch('/tutor/group/station/' + id +'/undone', requestOptions);
                 }
             },
         },

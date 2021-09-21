@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\Grouphasstation;
 use App\Models\Student;
 use App\Models\Tutor;
 use Illuminate\Http\Request;
@@ -17,7 +18,8 @@ class TutorGroupController extends Controller
         return Inertia::render('Tutor/Group/Index', [
             'group' => $group,
             'students' => $group->students()->orderBy('firstname')->get(),
-            'isAdmin' => Tutor::find($request->session()->get('tutor'))->is_admin,
+            'stations' => $group->stations()->orderBy('step')->get(),
+            'isAdmin' => (bool)Tutor::find($request->session()->get('tutor'))->is_admin,
         ]);
     }
 
@@ -46,6 +48,22 @@ class TutorGroupController extends Controller
         $student = Student::find($id);
         $student->attended = False;
         $student->save();
+    }
+
+    public function stationDone($id)
+    {
+        // update groupHasStation
+        $station = Grouphasstation::find($id);
+        $station->done = True;
+        $station->save();
+    }
+
+    public function stationUndone($id)
+    {
+        // update groupHasStation
+        $station = Grouphasstation::find($id);
+        $station->done = False;
+        $station->save();
     }
 
     public function create()

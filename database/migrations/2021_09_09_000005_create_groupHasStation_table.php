@@ -20,6 +20,7 @@ class CreateGroupHasStationTable extends Migration
             $table->foreignId('station_id')->nullable(False)->constrained('stations')->onUpdate('cascade')->onDelete('cascade');
             $table->unique(['group_id', 'station_id']);
             $table->integer('step', False, True)->nullable(False);
+            $table->boolean('done')->nullable(False)->default(False);
         });
     }
 
