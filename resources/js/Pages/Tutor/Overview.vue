@@ -28,7 +28,7 @@
                                         <p v-else>Keine Tutoren</p>
                                     </td>
                                     <td>
-                                        <p v-if="group.timeslot.name">
+                                        <p v-if="group.timeslot && group.timeslot.name">
                                             {{ group.timeslot.name }}
                                         </p>
                                         <p v-else>Keine Zeitslot</p>
