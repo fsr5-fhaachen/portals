@@ -19,7 +19,7 @@ class IsAdmin
     public function handle(Request $request, Closure $next)
     {
         //check if user is admin
-        $tutor = Tutor::find($request->session()->get('tutor'))->first();
+        $tutor = Tutor::find($request->session()->get('tutor'));
         if (!$tutor->is_admin) {
             return Redirect::to('/tutor/overview');
         }
