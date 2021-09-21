@@ -6,6 +6,12 @@
                 <h1 class="mb-3">Gruppenübersicht: {{ group.title }} <Link href="/tutor/overview/" class="btn btn-primary text-white">Zurück zur Übersicht</Link></h1>
                 <div>Hier findest du Informationen über deine Gruppe.</div>
             </div>
+                <div class="col-12 mx-auto mt-5">
+                    <p class="h5">Tutoren</p>
+                    <p v-if="group.tutors.length">
+                        {{ group.tutors.map(tutor => `${ tutor.firstname } ${ tutor.lastname }`).join(', ') }}
+                    </p>
+                </div>
             <div class="row">
                 <div class="col-12 mx-auto mt-5">
                     <p class="h5">Gruppenmitglieder</p>

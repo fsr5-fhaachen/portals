@@ -22,4 +22,14 @@ class Grouphasstation extends Model
         'step',
         'done'
     ];
+
+    /**
+     * Get the group from the student.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
+    }
 }

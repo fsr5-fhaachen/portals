@@ -54,9 +54,4 @@ class TutorController extends Controller
             'tutor' => Tutor::find($request->session()->get('tutor')),
         ]);
     }
-
-    public function station()
-    {
-        return Inertia::render('Tutor/Station', []);
-    }
 }

@@ -28,6 +28,7 @@ class TutorGroupController extends Controller
         // get tutor
         $tutor = Tutor::find($request->session()->get('tutor'));
         $tutor->group_id = $id;
+        $tutor->station_id = null;
         $tutor->save();
 
         // redirect to group page

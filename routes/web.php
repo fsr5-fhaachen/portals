@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\AppController;
-use App\Http\Controllers\GroupController;
 use App\Http\Controllers\TutorController;
 use App\Http\Controllers\TutorGroupController;
+use App\Http\Controllers\TutorStationController;
 use App\Http\Controllers\AdminGroupController;
 use App\Http\Controllers\DatabaseTestController;
 use Illuminate\Support\Facades\Route;
@@ -48,8 +48,12 @@ Route::group([
         Route::post('/station/{id}/undone', [TutorGroupController::class, 'stationUndone']);
     });
 
-    // TODO fix controller
-    Route::get('/station', [TutorController::class, 'station']);
+    Route::group([
+        'prefix' => 'station',
+    ], function () {
+        Route::get('/{id}', [TutorStationController::class, 'index']);
+        Route::post('/{id}/join', [TutorStationController::class, 'join']);
+    });
 });
 Route::group([
     'prefix' => 'admin',

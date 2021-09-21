@@ -34,7 +34,7 @@
                                         <p v-else>Keine Zeitslot</p>
                                     </td>
                                     <td>
-                                        <Link :href="'/tutor/group/' + group.id + '/join'" method="post" class="btn btn-danger text-white">Gruppe Beitreten</Link>
+                                        <Link :href="'/tutor/group/' + group.id + '/join'" method="post" class="btn btn-danger text-white">Gruppe beitreten</Link>
                                         <Link :href="'/tutor/group/' + group.id" class="btn btn-primary text-white">Details</Link>
                                     </td>
                                 </tr>
@@ -52,19 +52,20 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="station in stations" :key="station.id">
+                                <tr v-for="station in stations" :key="station.id"
+                                :class="{'bg-warning': station.id == tutor.station_id}">
                                     <td>{{ station.name }}</td>
                                     <td>
-                                        <ul v-if="station.tutors.lenght">
-                                            <li v-for="tutor in station.tutors" :key="tutor.id">
+                                        <div v-if="station.tutors.length">
+                                            <p v-for="tutor in station.tutors" :key="tutor.id">
                                                 {{ tutor.firstname }} {{ tutor.lastname }}
-                                            </li>
-                                        </ul>
+                                            </p>
+                                        </div>
                                         <p v-else>Keine Tutoren</p>
                                     </td>
                                     <td>
-                                        <a href="#" class="btn btn-danger text-white">Station Beitreten</a>
-                                        <a href="#" class="btn btn-primary text-white">Details</a>
+                                        <Link :href="'/tutor/station/' + station.id + '/join'" method="post" class="btn btn-danger text-white">Station beitreten</Link>
+                                        <Link :href="'/tutor/station/' + station.id" class="btn btn-primary text-white">Details</Link>
                                     </td>
                                 </tr>
                             </tbody>

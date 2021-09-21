@@ -34,16 +34,6 @@ class Station extends Model
      */
     public function getTutorsAttribute()
     {
-        return $this->tutors();
-    }
-
-    /**
-     * Get the tutors from the group.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function tutors()
-    {
-        return $this->hasMany(Tutor::class);
+        return Tutor::where('station_id', $this->id)->get();
     }
 }
