@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="bg mt-3 ml-5 pl-5 opacity-25"></div>
-        <div class="row pt-5 pt-lg-0">
+        <div class="row pt-5 pt-lg-0 position-relative">
             <div class="col-lg-6 mx-auto mt-5 pt-5 pt-lg-0">
                 <h1 class="mb-3">Gruppen Fertigstellung</h1>
                 <div>Hier die Gruppenübersicht: </div>
