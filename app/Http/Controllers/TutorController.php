@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
+use App\Models\Station;
 use App\Models\Tutor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -43,6 +45,15 @@ class TutorController extends Controller
         return Redirect::route('tutor.overview');
     }
 
+    public function overview(Request $request)
+    {
+        return Inertia::render('Tutor/Overview', [
+            'tutors' => Tutor::all(),
+            'stations' => Station::all(),
+            'groups' => Group::all(),
+            'tutor' => Tutor::find($request->session()->get('tutor')),
+        ]);
+    }
 
     public function station()
     {

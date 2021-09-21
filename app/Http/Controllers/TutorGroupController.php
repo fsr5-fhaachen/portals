@@ -4,14 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Models\Group;
 use App\Models\Student;
+use App\Models\Tutor;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Redirect;
 
 class TutorGroupController extends Controller
 {
-    public function index()
+    public function index($id)
     {
-        return Inertia::render('Tutor/Group/Index', []);
+        return Inertia::render('Tutor/Group/Index', [
+            'group' => Group::find($id),
+        ]);
+    }
+
+    public function join(Request $request, $id)
+    {
+        // get tutor
+        $tutor = Tutor::find($request->session()->get('tutor'));
+        $tutor->group_id = $id;
+        $tutor->save();
+
+        // redirect to group page
+        return Redirect::to('/tutor/group/' . $id);
     }
 
     public function create()

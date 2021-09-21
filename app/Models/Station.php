@@ -19,4 +19,31 @@ class Station extends Model
     protected $fillable = [
         'name'
     ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['tutors'];
+
+    /**
+     * Returns the tutors of the group.
+     *
+     * @return string
+     */
+    public function getTutorsAttribute()
+    {
+        return $this->tutors();
+    }
+
+    /**
+     * Get the tutors from the group.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function tutors()
+    {
+        return $this->hasMany(Tutor::class);
+    }
 }

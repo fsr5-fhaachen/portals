@@ -35,9 +35,16 @@ Route::group([
     'prefix' => 'tutor',
     'middleware' => ['isTutor']
 ], function () {
+    Route::get('/overview', [TutorController::class, 'overview'])->name('tutor.overview');
+
+    Route::group([
+        'prefix' => 'group',
+    ], function () {
+        Route::get('/{id}', [TutorGroupController::class, 'index']);
+        Route::post('/{id}/join', [TutorGroupController::class, 'join']);
+    });
+
     // TODO fix controller
-    Route::get('/overview', [AdminGroupController::class, 'overview'])->name('tutor.overview');
-    Route::get('/group/', [TutorGroupController::class, 'index']);
     Route::get('/station', [TutorController::class, 'station']);
 });
 Route::group([

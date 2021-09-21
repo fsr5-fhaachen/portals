@@ -29,7 +29,7 @@ class Group extends Model
      *
      * @var array
      */
-    protected $appends = ['title'];
+    protected $appends = ['title', 'tutors', 'timeslot'];
 
     /**
      * Returns the title of the group.
@@ -38,7 +38,27 @@ class Group extends Model
      */
     public function getTitleAttribute()
     {
-        return "Gruppe {$this->id}";
+        return 'Gruppe' . (!empty($this->course) ? ' ' . $this->course : '') . ' ' . $this->id;
+    }
+
+    /**
+     * Returns the tutors of the group.
+     *
+     * @return string
+     */
+    public function getTutorsAttribute()
+    {
+        return Tutor::where('group_id', $this->id)->get();
+    }
+
+    /**
+     * Returns the timeslot of the group.
+     *
+     * @return string
+     */
+    public function getTimeslotAttribute()
+    {
+        return Timeslot::find($this->timeslot_id);
     }
 
     /**

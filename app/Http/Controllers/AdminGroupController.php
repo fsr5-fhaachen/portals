@@ -40,11 +40,6 @@ class AdminGroupController extends Controller
         return Inertia::render('Admin/NewData', []);
     }
 
-    public function overview()
-    {
-        return Inertia::render('Admin/Overview', []);
-    }
-
     public function adminCreate()
     {
         return Inertia::render('Admin/Create', []);
