@@ -39,7 +39,7 @@
             if (!this.group) {
                 this.interval = setInterval(function () {
                     this.updateData();
-                }.bind(this), 1000);
+                }.bind(this), 10000);
             }
         },
         beforeDestroy() {

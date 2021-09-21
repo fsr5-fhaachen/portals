@@ -11,10 +11,13 @@ use Illuminate\Support\Facades\Redirect;
 
 class TutorGroupController extends Controller
 {
-    public function index($id)
+    public function index(Request $request, $id)
     {
+        $group = Group::find($id);
         return Inertia::render('Tutor/Group/Index', [
-            'group' => Group::find($id),
+            'group' => $group,
+            'students' => $group->students()->orderBy('firstname')->get(),
+            'isAdmin' => Tutor::find($request->session()->get('tutor'))->is_admin,
         ]);
     }
 
@@ -27,6 +30,22 @@ class TutorGroupController extends Controller
 
         // redirect to group page
         return Redirect::to('/tutor/group/' . $id);
+    }
+
+    public function studentAttended($id)
+    {
+        // update student
+        $student = Student::find($id);
+        $student->attended = True;
+        $student->save();
+    }
+
+    public function studentUnattended($id)
+    {
+        // update student
+        $student = Student::find($id);
+        $student->attended = False;
+        $student->save();
     }
 
     public function create()

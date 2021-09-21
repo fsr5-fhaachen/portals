@@ -2,9 +2,9 @@
     <div>
         <div class="container position-relative">
             <div class="bg mt-3 ml-5 pl-5 opacity-25"></div>
-            <div class="row pt-5 pt-lg-0">
+            <div class="row pt-5 pt-lg-0 position-relative">
                 <div class="col-lg-6 mx-auto mt-5 pt-5 pt-lg-0">
-                    <h1>Herzlich Willkommen bei der Erstiwoche des FB5!</h1>
+                    <h1>Tutoren-Login</h1>
                     <div class="mt-3">
                         <form @submit.prevent="submit">
                             <div class="form-group mt-2">

@@ -52,6 +52,16 @@ class Group extends Model
     }
 
     /**
+     * Returns the studentss of the group.
+     * 
+     * @return 
+     */
+    public function students()
+    {
+        return $this->hasMany(Student::class);
+    }
+
+    /**
      * Returns the timeslot of the group.
      *
      * @return string
