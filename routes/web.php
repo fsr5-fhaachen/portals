@@ -4,7 +4,7 @@ use App\Http\Controllers\AppController;
 use App\Http\Controllers\TutorController;
 use App\Http\Controllers\TutorGroupController;
 use App\Http\Controllers\TutorStationController;
-use App\Http\Controllers\AdminGroupController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DatabaseTestController;
 use Illuminate\Support\Facades\Route;
 
@@ -59,54 +59,48 @@ Route::group([
     'prefix' => 'admin',
     'middleware' => ['isTutor', 'isAdmin']
 ], function () {
-    // hv
-    Route::get('/overview', [AdminGroupController::class, 'overview']);
-    // TODO fix controller
-    Route::get('/start/', [TutorGroupController::class, 'create']);
-    // TODO fix controller
-    Route::get('/finish/', [TutorGroupController::class, 'finish']);
-
-    // maybe remove?
-    Route::get('/create', [AdminGroupController::class, 'adminCreate']);
-    Route::get('/detail', [AdminGroupController::class, 'detail']);
-    Route::get('/newData', [AdminGroupController::class, 'newData']);
+    Route::get('/', [AdminController::class, 'index']);
+    Route::get('/start', [AdminController::class, 'start']);
+    Route::post('/start', [AdminController::class, 'startGrouping']);
+    Route::get('/result', [AdminController::class, 'result'])->name('admin.result');
 });
 
-//Routes to test factories. REMOVE BEFORE DEPLOYMENT
-Route::get('/testfactorystudent', function () {
-    $student = \App\Models\Student::factory()->make();
-    return $student;
-});
-Route::get('/testfactorytutor', function () {
-    $tutor = \App\Models\Tutor::factory()->make();
-    return $tutor;
-});
-Route::get('/testfactorygroup', function () {
-    $group = \App\Models\Group::factory()->make();
-    return $group;
-});
-Route::get('/testfactorystation', function () {
-    $station = \App\Models\Station::factory()->make();
-    return $station;
-});
-Route::get('/testfactorytimeslot', function () {
-    $timeslot = \App\Models\Timeslot::factory()->make();
-    return $timeslot;
-});
+Route::group([
+    'prefix' => 'dev',
+    'middleware' => ['isTutor', 'isAdmin']
+], function () {
 
-//Routes to test database. REMOVE BEFORE DEPLOYMENT
-Route::get('/cleartable/all', [DatabaseTestController::class, 'clearAllTables']);
-Route::get('/cleartable/{tableName}', [DatabaseTestController::class, 'clearTable']);
-Route::get('/randomfill/{tableName}/{amount}', [DatabaseTestController::class, 'randomFillTable']);
-Route::get('/simulatedfill/{et}/{inf}/{mcd}/{wi}', [DatabaseTestController::class, 'simulatedFillStudents']);
+    //Routes to test factories. REMOVE BEFORE DEPLOYMENT
+    Route::get('/testfactorystudent', function () {
+        return \App\Models\Student::factory()->make();
+    });
+    Route::get('/testfactorytutor', function () {
+        return \App\Models\Tutor::factory()->make();
+    });
+    Route::get('/testfactorygroup', function () {
+        return \App\Models\Group::factory()->make();
+    });
+    Route::get('/testfactorystation', function () {
+        return \App\Models\Station::factory()->make();
+    });
+    Route::get('/testfactorytimeslot', function () {
+        return \App\Models\Timeslot::factory()->make();
+    });
 
-Route::get('/randassigntimeslots/{timeslotsAmount}', [DatabaseTestController::class, 'randomAssignTimeslots']);
-// Only works with exactly 3 timeslots and only on ET Students
-Route::get('/simassigntimeslots/{amount1}/{amount2}/{amount3}', [DatabaseTestController::class, 'simulatedAssignTimeslots']);
+    //Routes to test database. REMOVE BEFORE DEPLOYMENT
+    Route::get('/cleartable/all', [DatabaseTestController::class, 'clearAllTables']);
+    Route::get('/cleartable/{tableName}', [DatabaseTestController::class, 'clearTable']);
+    Route::get('/randomfill/{tableName}/{amount}', [DatabaseTestController::class, 'randomFillTable']);
+    Route::get('/simulatedfill/{et}/{inf}/{mcd}/{wi}', [DatabaseTestController::class, 'simulatedFillStudents']);
 
-Route::get('/students/{attr}/{val?}/{val2?}', [DatabaseTestController::class, 'getStudentsBy']);
-Route::get('/tutors/{attr}/{val?}', [DatabaseTestController::class, 'getTutorsBy']);
+    Route::get('/randassigntimeslots/{timeslotsAmount}', [DatabaseTestController::class, 'randomAssignTimeslots']);
+    // Only works with exactly 3 timeslots and only on ET Students
+    Route::get('/simassigntimeslots/{amount1}/{amount2}/{amount3}', [DatabaseTestController::class, 'simulatedAssignTimeslots']);
 
-Route::get('/resetassign', [AdminGroupController::class, 'resetGroupAssignment']);
-Route::get('/assign/{groupSize}/groupphase', [AdminGroupController::class, 'randAssignmentGroupPhase']);
-Route::get('/assign/{groupSize}/fhtour/{course}', [AdminGroupController::class, 'randAssignmentFhTour']);
+    Route::get('/students/{attr}/{val?}/{val2?}', [DatabaseTestController::class, 'getStudentsBy']);
+    Route::get('/tutors/{attr}/{val?}', [DatabaseTestController::class, 'getTutorsBy']);
+
+    Route::get('/resetassign', [AdminController::class, 'resetGroupAssignment']);
+    Route::get('/assign/{groupSize}/groupphase', [AdminController::class, 'randAssignmentGroupPhase']);
+    Route::get('/assign/{groupSize}/fhtour/{course}', [AdminController::class, 'randAssignmentFhTour']);
+});

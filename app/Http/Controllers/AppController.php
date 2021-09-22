@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\Timeslot;
+use Facade\FlareClient\Time\Time;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -22,18 +24,30 @@ class AppController extends Controller
             return Redirect::to('/tutor/overview');
         }
 
-        return Inertia::render('Index', []);
+        return Inertia::render('Index', [
+            'timeslots' => Timeslot::orderBy('time')->get(),
+        ]);
     }
 
     public function store(Request $request)
     {
         // validate student data
-        $validatedData = $request->validate([
-            'firstname' => ['bail', 'required', 'max:30'],
-            'lastname' => ['bail', 'required', 'max:30'],
-            'email' => ['bail', 'required', 'max:100', 'email', 'regex:/(^(.*)\@(ad\.|alumni\.|dialup\.|stud\.|)fh\-aachen\.de$)/u', 'unique:students'],
-            'course' => ['bail', 'required', Rule::in(['ET', 'INF', 'MCD', 'WI'])],
-        ]);
+        if (Timeslot::count() > 0) {
+            $validatedData = $request->validate([
+                'firstname' => ['bail', 'required', 'max:30'],
+                'lastname' => ['bail', 'required', 'max:30'],
+                'email' => ['bail', 'required', 'max:100', 'email', 'regex:/(^(.*)\@(ad\.|alumni\.|dialup\.|stud\.|)fh\-aachen\.de$)/u', 'unique:students'],
+                'course' => ['bail', 'required', Rule::in(['ET', 'INF', 'MCD', 'WI'])],
+                'timeslot_id' => ['bail', 'required', Rule::in(Timeslot::pluck('id'))],
+            ]);
+        } else {
+            $validatedData = $request->validate([
+                'firstname' => ['bail', 'required', 'max:30'],
+                'lastname' => ['bail', 'required', 'max:30'],
+                'email' => ['bail', 'required', 'max:100', 'email', 'regex:/(^(.*)\@(ad\.|alumni\.|dialup\.|stud\.|)fh\-aachen\.de$)/u', 'unique:students'],
+                'course' => ['bail', 'required', Rule::in(['ET', 'INF', 'MCD', 'WI'])],
+            ]);
+        }
 
         // create student
         $student = Student::create(

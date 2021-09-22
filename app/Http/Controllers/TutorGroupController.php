@@ -67,16 +67,6 @@ class TutorGroupController extends Controller
         $station->save();
     }
 
-    public function create()
-    {
-        return Inertia::render('Tutor/Group/Create', []);
-    }
-
-    public function finish()
-    {
-        return Inertia::render('Tutor/Group/Finish', []);
-    }
-
 
     public function getTutorGroupInfo($tutorId)
     {

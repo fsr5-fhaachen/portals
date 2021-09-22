@@ -52,6 +52,7 @@ class TutorController extends Controller
             'stations' => Station::all(),
             'groups' => Group::all(),
             'tutor' => Tutor::find($request->session()->get('tutor')),
+            'isAdmin' => (bool)Tutor::find($request->session()->get('tutor'))->is_admin,
         ]);
     }
 }

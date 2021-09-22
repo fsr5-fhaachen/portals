@@ -44,8 +44,7 @@
                                 </div>
                                 <div class="text-danger" v-if="form.errors.course"><strong>{{ form.errors.course}}</strong></div>
                             </div>
-                            <!-- TODO timeslot -->
-                            <div class="form-group mt-4">
+                            <div v-if="timeslots.length" class="form-group mt-4">
                                 <div class="input-group pt-1">
                                     <div class="input-group-prepend">
                                         <label class="input-group-text" for="timeslot_id">Zeitslot</label>
@@ -71,6 +70,11 @@
 <script>
     export default {
         name: 'Home',
+        props: {
+            timeslots: {
+                type: Array,
+            }
+        },
         data() {
             return {
                 form: this.$inertia.form({

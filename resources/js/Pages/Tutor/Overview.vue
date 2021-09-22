@@ -4,7 +4,7 @@
             <div class="bg mt-3 ml-5 pl-5 opacity-25"></div>
             <div class="row pt-5 pt-lg-0 pos position-relative">
                 <div class="col-lg-6 mx-auto mt-5 pt-5 pt-lg-0">
-                    <h1>Gruppen Übersicht</h1>
+                    <h1>Gruppen Übersicht <Link v-if="isAdmin" href="/admin/" class="btn btn-danger text-white">Admin-Login</Link></h1>
                     <div class="table-responsive">
                         <table class="table">
                             <thead class="thead-dark">
@@ -86,6 +86,10 @@
             Link
         },
         props: {
+            isAdmin: {
+                type: Boolean,
+                default: false
+            },
             tutors: {
                 type: Array,
                 required: true
