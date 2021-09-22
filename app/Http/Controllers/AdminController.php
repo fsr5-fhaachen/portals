@@ -45,7 +45,7 @@ class AdminController extends Controller
         ]);
     }
 
-    public function getGroupsCount()
+    public function getGroupsCount($withKeys = false)
     {
         $groupsCount = [
             'all' => Group::count(),
@@ -55,10 +55,17 @@ class AdminController extends Controller
         foreach ($this->courseNames as $courseName) {
             $count = Group::where('course', $courseName)->count();
             if ($count > 0) {
-                $groupsCount['courses'][] = [
-                    'title' => $courseName,
-                    'count' => $count,
-                ];
+                if ($withKeys) {
+                    $groupsCount['courses'][$courseName] = [
+                        'title' => $courseName,
+                        'count' => $count,
+                    ];
+                } else {
+                    $groupsCount['courses'][] = [
+                        'title' => $courseName,
+                        'count' => $count,
+                    ];
+                }
             }
         }
 
@@ -75,18 +82,32 @@ class AdminController extends Controller
 
     public function startGrouping(Request $request)
     {
-        $groupsCount = $this->getGroupsCount();
+        $groupsCount = $this->getGroupsCount(true);
 
         if ($groupsCount['all'] > 0) {
 
             if (!empty($groupsCount['courses'])) {
-                dd('TODO2');
+                foreach ($this->courseNames as $course) {
+                    if (!\key_exists($course, $groupsCount['courses'])) {
+                        dd($course, $groupsCount);
+                        continue;
+                    }
+                    $groupSize = ceil(Student::where('course', $course)->count() / $groupsCount['courses'][$course]['count']);
+                    $this->randAssignmentFhTour($groupSize, $course);
+                }
             } else {
-                $groupsCount = ceil(Student::count() / $groupsCount['all']);
-                $this->randAssignmentGroupPhase($groupsCount);
+                $groupSize = ceil(Student::count() / $groupsCount['all']);
+                $this->randAssignmentGroupPhase($groupSize);
             }
         } else {
-            dd('TODO1');
+            $request->validate([
+                'groupCount' => ['bail', 'required', 'integer', 'min:1'],
+            ]);
+            for ($i = 0; $i < $request->input('groupCount'); $i++) {
+                (new Group())->save();
+            }
+            $groupSize = ceil(Student::count() / Group::count());
+            $this->randAssignmentGroupPhase($groupSize);
         }
 
         // redirect to admin result page

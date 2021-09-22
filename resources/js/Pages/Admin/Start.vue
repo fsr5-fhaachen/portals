@@ -22,7 +22,7 @@
                     <div class="col-12 mx-auto mt-5">
                         <p class="h5">Gruppeneinteilung</p>
                         <form @submit.prevent="submit">
-                            <p v-if="groupsCount">
+                            <p v-if="groupsCount.all">
                                 Es gibt {{ groupsCount.all }} Gruppen.
                                 <ul v-if="groupsCount.courses.length">
                                     <li v-for="course in groupsCount.courses">
@@ -32,8 +32,7 @@
                             </p>
                             <div v-else class="form-group">
                                 <label for="groupCount">Wie viele Gruppen soll es geben?</label>
-                                <input type="text" class="form-control" id="groupCount"
-                                    placeholder="Gruppenanzahl" v-model="form.groupCount">
+                                <input type="text" class="form-control" id="groupCount" placeholder="Gruppenanzahl" v-model="form.groupCount">
                                 <div class="text-danger" v-if="form.errors.groupCount"><strong>{{ form.errors.groupCount }}</strong></div>
                             </div>
                             <button type="submit" class="btn btn-danger text-white mt-3">GRUPPENEINTEILUNG STARTEN (ES GIBT KEIN ZURÜCK MEHR)</button>

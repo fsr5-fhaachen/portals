@@ -51,7 +51,7 @@
                                     </div>
                                     <select class="custom-select form-control" id="timeslot_id" v-model="form.timeslot_id">
                                         <option selected value="">Wähle deinen gewünschten Zeitslot aus</option>
-                                        <option value="1">10:00 - 12:15 Uhr</option>
+                                        <option v-for="timeslot in timeslots" :key="timeslot.id" :value="timeslot.id" >{{ timeslot.name }}</option>
                                     </select>
                                     <small class="mt-2">Wir versuchen dir deinen präferierten Zeitslot anzubieten, können dir aber nicht versprechen, dass du diesen auch bekommst. Allgemein gilt hier, wie beim Kauf einer PlayStation 5, first come first serve.</small>
                                 </div>
