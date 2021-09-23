@@ -29,6 +29,39 @@ class AppController extends Controller
         ]);
     }
 
+    public function login(Request $request)
+    {
+        // check if student is logged in and redirect to group page
+        if ($request->session()->has('student')) {
+            return Redirect::to('/group');
+        }
+
+        // check if tutor is logged in and redirect to group page
+        if ($request->session()->has('tutor')) {
+            return Redirect::to('/tutor/overview');
+        }
+
+        return Inertia::render('Login', []);
+    }
+
+
+    public function loginStudent(Request $request)
+    {
+        // validate student data
+        $validatedData = $request->validate([
+            'email' => ['bail', 'required', 'max:100', 'email', 'regex:/(^(.*)\@(ad\.|alumni\.|dialup\.|stud\.|)fh\-aachen\.de$)/u', 'exists:students'],
+        ]);
+
+        // get student
+        $student = Student::where('email', $validatedData['email'])->first();
+
+        // set student session
+        $request->session()->put('student', $student->id);
+
+        // redirect to group page
+        return Redirect::route('group');
+    }
+
     public function store(Request $request)
     {
         // validate student data
