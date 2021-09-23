@@ -68,11 +68,13 @@ class RoutesSeeder extends Seeder
 
                 // create groupHasStation
                 for ($i = 3; $i < count($data); $i++) {
-                    Grouphasstation::create([
-                        'group_id' => $group->id,
-                        'station_id' => $colToStationId[$i],
-                        'step' => $data[$i],
-                    ]);
+                    if (!empty(trim($data[$i])) && isset($colToStationId[$i])) {
+                        Grouphasstation::create([
+                            'group_id' => $group->id,
+                            'station_id' => $colToStationId[$i],
+                            'step' => $data[$i],
+                        ]);
+                    }
                 }
             }
         }
