@@ -77,6 +77,7 @@
                 });
             },
             submit() {
+                clearInterval(this.interval);
                 this.form.post('/admin/start/');
             },
         },
