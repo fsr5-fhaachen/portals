@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Route;
 // student
 Route::get('/', [AppController::class, 'index']);
 Route::post('/', [AppController::class, 'store']);
+Route::get('/login/', [AppController::class, 'login']);
+Route::post('/login/', [AppController::class, 'loginStudent']);
 Route::group([
     'middleware' => ['isStudent']
 ], function () {

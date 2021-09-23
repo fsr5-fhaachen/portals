@@ -60,6 +60,9 @@
                             <button type="submit" class="btn btn-primary text-white mt-3">Anmelden</button>
                         </form>
                     </div>
+                    <div class="mt-3">
+                        <Link href="/login/">Du hast dich schon für diese Gruppenphase angemeldet? Dann logge dich hier ein.</Link>
+                    </div>
                 </div>
             </div>
         </div>
@@ -68,8 +71,12 @@
 </template>
 
 <script>
+    import { Link } from '@inertiajs/inertia-vue';
     export default {
-        name: 'Home',
+        name: 'Index',
+        components: {
+            Link
+        },
         props: {
             timeslots: {
                 type: Array,
