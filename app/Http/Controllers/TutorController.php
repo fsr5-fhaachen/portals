@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Group;
 use App\Models\Station;
+use App\Models\Timeslot;
 use App\Models\Tutor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -53,6 +54,7 @@ class TutorController extends Controller
             'groups' => Group::all(),
             'tutor' => Tutor::find($request->session()->get('tutor')),
             'isAdmin' => (bool)Tutor::find($request->session()->get('tutor'))->is_admin,
+            'showTimeslots' => (bool) Timeslot::count(),
         ]);
     }
 }

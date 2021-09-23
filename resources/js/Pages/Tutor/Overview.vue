@@ -11,7 +11,7 @@
                                 <tr>
                                     <th scope="col">Name</th>
                                     <th scope="col">Tutoren</th>
-                                    <th scope="col">Zeitslot</th>
+                                    <th v-if="showTimeslots" scope="col">Zeitslot</th>
                                     <th scope="col">Aktion</th>
                                 </tr>
                             </thead>
@@ -27,7 +27,7 @@
                                         </div>
                                         <p v-else>Keine Tutoren</p>
                                     </td>
-                                    <td>
+                                    <td v-if="showTimeslots">
                                         <p v-if="group.timeslot && group.timeslot.name">
                                             {{ group.timeslot.name }}
                                         </p>
@@ -105,7 +105,11 @@
             tutor: {
                 type: Object,
                 required: true
-            }
+            },
+            showTimeslots: {
+                type: Boolean,
+                default: false
+            },
         },
         methods: {
             updateData() {
