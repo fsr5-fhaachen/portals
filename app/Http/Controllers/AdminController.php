@@ -93,11 +93,15 @@ class AdminController extends Controller
                         continue;
                     }
                     $groupSize = ceil(Student::where('course', $course)->count() / $groupsCount['courses'][$course]['count']);
-                    $this->randAssignmentFhTour($groupSize, $course);
+                    if ($groupSize > 0) {
+                        $this->randAssignmentFhTour($groupSize, $course);
+                    }
                 }
             } else {
                 $groupSize = ceil(Student::count() / $groupsCount['all']);
-                $this->randAssignmentGroupPhase($groupSize);
+                if ($groupSize > 0) {
+                    $this->randAssignmentGroupPhase($groupSize);
+                }
             }
         } else {
             $request->validate([
@@ -107,7 +111,9 @@ class AdminController extends Controller
                 (new Group())->save();
             }
             $groupSize = ceil(Student::count() / Group::count());
-            $this->randAssignmentGroupPhase($groupSize);
+            if ($groupSize > 0) {
+                $this->randAssignmentGroupPhase($groupSize);
+            }
         }
 
         // redirect to admin result page
