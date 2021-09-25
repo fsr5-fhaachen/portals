@@ -40,6 +40,8 @@ class Group extends Model
     {
         if ($this->getGroupNameAttribute()) {
             return $this->getGroupNameAttribute()->name;
+        } elseif ($this->name) {
+            return $this->name;
         } else {
             return 'Gruppe' . (!empty($this->course) ? ' ' . $this->course : '') . ' ' . $this->id;
         }

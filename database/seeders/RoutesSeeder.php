@@ -46,6 +46,7 @@ class RoutesSeeder extends Seeder
         $csvFile = fopen(base_path('routes.csv'), 'r');
         $isFirstLine = true;
         $colToStationId = [];
+        $courseGroupNames = [];
 
         while (($data = fgetcsv($csvFile, 2000, ';')) !== FALSE) {
             if ($isFirstLine) {
@@ -59,9 +60,17 @@ class RoutesSeeder extends Seeder
                     $colToStationId[$i] = $station->id;
                 }
             } else {
+                if (!empty($data[1])) {
+                    if (key_exists($data[1], $courseGroupNames)) {
+                        $courseGroupNames[$data[1]]++;
+                    } else {
+                        $courseGroupNames[$data[1]] = 1;
+                    }
+                }
 
                 // create group
                 $group = Group::create([
+                    'name' => (isset($courseGroupNames[$data[1]]) ? 'Gruppe ' . $data[1] . ' ' . $courseGroupNames[$data[1]] : null),
                     'course' => (!empty($data[1])) ? $data[1] : null,
                     'timeslot_id' => (!empty($hhmmToTimeslotID[$data[2]]) ? $hhmmToTimeslotID[$data[2]] : null),
                 ]);
