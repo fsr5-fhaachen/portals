@@ -49,7 +49,7 @@ class AppController extends Controller
     {
         // validate student data
         $validatedData = $request->validate([
-            'email' => ['bail', 'required', 'max:100', 'email', 'regex:/(^(.*)\@(ad\.|alumni\.|dialup\.|stud\.|)fh\-aachen\.de$)/u', 'exists:students'],
+            'email' => ['bail', 'required', 'max:100', 'email', 'exists:students'],
         ]);
 
         // get student
@@ -69,7 +69,7 @@ class AppController extends Controller
             $validatedData = $request->validate([
                 'firstname' => ['bail', 'required', 'max:30'],
                 'lastname' => ['bail', 'required', 'max:30'],
-                'email' => ['bail', 'required', 'max:100', 'email', 'regex:/(^(.*)\@(ad\.|alumni\.|dialup\.|stud\.|)fh\-aachen\.de$)/u', 'unique:students'],
+                'email' => ['bail', 'required', 'max:100', 'email', 'unique:students'],
                 'course' => ['bail', 'required', Rule::in(['ET', 'INF', 'MCD', 'WI'])],
                 'timeslot_id' => ['bail', 'required', Rule::in(Timeslot::pluck('id'))],
             ]);
@@ -77,7 +77,7 @@ class AppController extends Controller
             $validatedData = $request->validate([
                 'firstname' => ['bail', 'required', 'max:30'],
                 'lastname' => ['bail', 'required', 'max:30'],
-                'email' => ['bail', 'required', 'max:100', 'email', 'regex:/(^(.*)\@(ad\.|alumni\.|dialup\.|stud\.|)fh\-aachen\.de$)/u', 'unique:students'],
+                'email' => ['bail', 'required', 'max:100', 'email', 'unique:students'],
                 'course' => ['bail', 'required', Rule::in(['ET', 'INF', 'MCD', 'WI'])],
             ]);
         }
