@@ -38,7 +38,23 @@ class Group extends Model
      */
     public function getTitleAttribute()
     {
-        return 'Gruppe' . (!empty($this->course) ? ' ' . $this->course : '') . ' ' . $this->id;
+        if ($this->getGroupNameAttribute()) {
+            return $this->getGroupNameAttribute()->name;
+        } elseif ($this->name) {
+            return $this->name;
+        } else {
+            return 'Gruppe' . (!empty($this->course) ? ' ' . $this->course : '') . ' ' . $this->id;
+        }
+    }
+
+    /**
+     * Returns the group name of the group.
+     *
+     * @return GroupName
+     */
+    public function getGroupNameAttribute()
+    {
+        return GroupName::where('id', $this->id)->get()->first();
     }
 
     /**

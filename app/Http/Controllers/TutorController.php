@@ -32,7 +32,7 @@ class TutorController extends Controller
     {
         // validate student data
         $validatedData = $request->validate([
-            'email' => ['bail', 'required', 'max:100', 'email', 'regex:/(^(.*)\@(ad\.|alumni\.|dialup\.|stud\.|)fh\-aachen\.de$)/u', 'exists:tutors'],
+            'email' => ['bail', 'required', 'max:100', 'email', 'regex:/(^(.*)\@alumni\.fh\-aachen\.de$)/u', 'exists:tutors'],
             'password' => ['bail', Rule::in([config('app.tutor_password')])],
         ]);
 
