@@ -112,7 +112,7 @@ class AdminController extends Controller
             }
             $groupSize = ceil(Student::count() / Group::count());
             if ($groupSize > 0) {
-                $this->randAssignmentGroupPhase($groupSize);
+                $this->randAssignmentGroupPhase($groupSize, $request->input('groupCount'));
             }
         }
 
