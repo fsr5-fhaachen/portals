@@ -100,7 +100,7 @@ class AdminController extends Controller
             } else {
                 $groupSize = ceil(Student::count() / $groupsCount['all']);
                 if ($groupSize > 0) {
-                    $this->randAssignmentGroupPhase($groupSize);
+                    $this->randAssignmentGroupPhase($groupSize, $groupsCount['all']);
                 }
             }
         } else {
@@ -406,11 +406,10 @@ class AdminController extends Controller
      * @see AdminController::distributedAssignCourse() Used to distribute students of each course evenly.
      * @see AdminController::handleUnassignedStudentsGroupPhase() Used to distribute the rest afterwards.
      */
-    public function randAssignmentGroupPhase($groupSize)
+    public function randAssignmentGroupPhase($groupSize, $amountGroups)
     {
         // TODO TEST the random assignment of students for regular Group Phases which uses calculated distribution of courses
         $courseDistribution = $this->calculateCourseDistribution($groupSize);
-        $amountGroups = $this->calculateMinAmountGroups($groupSize);
         if ($amountGroups > Group::all()->count()) return; //Assignment can't work if there aren't enough groups of that size to fit all students. Duh!
 
         $unassignedStudents = [];
