@@ -89,7 +89,6 @@ class AdminController extends Controller
             if (!empty($groupsCount['courses'])) {
                 foreach ($this->courseNames as $course) {
                     if (!\key_exists($course, $groupsCount['courses'])) {
-                        dd($course, $groupsCount);
                         continue;
                     }
                     $groupSize = ceil(Student::where('course', $course)->count() / $groupsCount['courses'][$course]['count']);
