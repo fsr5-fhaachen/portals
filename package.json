@@ -16,7 +16,7 @@
         "postcss": "^8.1.14",
         "sass": "^1.54.4",
         "sass-loader": "^12.1.0",
-        "vue-loader": "^15.9.8",
+        "vue-loader": "^17.0.0",
         "vue-template-compiler": "^2.6.14"
     },
     "dependencies": {
