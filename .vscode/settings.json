@@ -1,0 +1,9 @@
+{
+  "editor.tabSize": 2,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "importSorter.generalConfiguration.sortOnBeforeSave": true,
+  "todo-tree.filtering.excludeGlobs": [
+    "**/node_modules",
+    "**/node_modules/**"
+  ]
+}
