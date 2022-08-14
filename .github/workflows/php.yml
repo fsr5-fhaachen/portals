@@ -18,7 +18,7 @@ jobs:
     - name: Use PHP ${{ matrix.php-version }}
       uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
       with:
-        php-version: ${{ matrix.node-version }}
+        php-version: ${{ matrix.php-version }}
     - uses: actions/checkout@v3
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
