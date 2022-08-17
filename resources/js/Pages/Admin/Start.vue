@@ -45,7 +45,7 @@
 
 </template>
 <script>
-    import { Link } from '@inertiajs/inertia-vue';
+    import { Link } from "@inertiajs/inertia-vue3";
 
     export default {
         name: 'Start',
