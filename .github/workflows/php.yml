@@ -12,7 +12,8 @@ jobs:
 
     strategy:
       matrix:
-        php-version: ["8.0", "8.1"]
+        php-version: ["8.1"]
+        node-version: [16.x]
 
     steps:
       - name: Use PHP ${{ matrix.php-version }}
@@ -24,6 +25,15 @@ jobs:
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
       - name: Install Dependencies
         run: composer update --ignore-platform-req=php+ --no-interaction --no-progress
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3.4.1
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - name: Install Dependencies
+        run: |
+          npm ci
+      - run: npm run build --if-present
       - name: Generate key
         run: php artisan key:generate
       - name: Directory Permissions
