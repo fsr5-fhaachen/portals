@@ -8,9 +8,7 @@
 
     <title>{{ config('app.name') }}</title>
 
-    <script src="{{ asset('js/app.js') }}" defer></script>
-
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    @vite(['resources/js/app.js'])
 </head>
 
 <body>
