@@ -14,7 +14,7 @@
         "sass-loader": "^13.0.2",
         "vite": "^3.0.8",
         "vue-loader": "^17.0.0",
-        "vue-template-compiler": "^2.7.8"
+        "vue-template-compiler": "^2.7.9"
     },
     "dependencies": {
         "@inertiajs/inertia": "^0.11.0",
