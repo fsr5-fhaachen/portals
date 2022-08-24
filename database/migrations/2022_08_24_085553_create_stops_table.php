@@ -18,8 +18,8 @@ return new class extends Migration
             $table->timestamps();
             $table->foreignId('groups_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('stations_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->timestamp('arrival_at');
-            $table->timestamp('departure_at');
+            $table->timestamp('arrival_at')->nullable(True);
+            $table->timestamp('departure_at')->nullable(True);
         });
     }
 
