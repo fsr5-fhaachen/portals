@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->string('name', 255)->nullable(False);
+            $table->string('abbreviation', 16)->nullable(False);
         });
     }
 

@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->foreignId('events_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('courses_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

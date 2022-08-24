@@ -16,6 +16,9 @@ return new class extends Migration
         Schema::create('pages', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->string('title', 255);
+            $table->string('slug', 255);
+            $table->text('content');
         });
     }
 

@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('stations', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->string('name', 255)->nullable(False);
+            $table->foreignId('events_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
