@@ -84,6 +84,10 @@ class DatabaseTestController extends Controller
         return $this->randomFillPages($amount);
       case 'users':
         return $this->randomFillUsers($amount);
+      case 'slots':
+        return $this->randomFillSlots($amount);
+      case 'stations':
+        return $this->randomFillStations($amount);
       case 'groups':
         return $this->randomFillGroups($amount);
       case 'group_tutor':

@@ -18,6 +18,13 @@ class Stop extends Pivot
   protected $guarded = [];
 
   /**
+   * Name of the table the model needs to link to. Needed because pivot naming conventions expect table to be in singular.
+   *
+   * @var string
+   */
+  protected $table = 'stops';
+
+  /**
    * Get group for the stop.
    *
    * @return BelongsTo
