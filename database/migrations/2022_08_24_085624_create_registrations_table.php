@@ -16,10 +16,10 @@ return new class extends Migration
         Schema::create('registrations', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('events_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('users_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('slots_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('groups_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('event_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('slot_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('group_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->boolean('drinks_alcohol');
             $table->boolean('fulfils_requirements');
             $table->boolean('is_present')->default(False);

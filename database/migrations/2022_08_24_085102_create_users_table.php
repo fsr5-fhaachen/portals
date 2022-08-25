@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('firstname', 32)->nullable(False);
             $table->string('lastname', 32)->nullable(False);
             $table->string('email', 255)->nullable(False);
-            $table->foreignId('courses_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('course_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->boolean('is_tutor')->default(False);
             $table->boolean('is_admin')->default(False);
         });

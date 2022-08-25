@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('group_tutors', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('users_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('groups_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('group_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('station_tutors', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('users_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('stations_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('station_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
