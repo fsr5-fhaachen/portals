@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
+
 class AppController extends Controller
 {
   /**
    * Index page
    * 
-   * @return string
+   * @return \Inertia\Response
    */
   public function index()
   {
-     return "Hello World";
+     return Inertia::render('Index');
   }
 }
