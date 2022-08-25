@@ -780,7 +780,7 @@
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
-					"nn": true,
+					"nn": false,
 					"comment": "",
 					"defaultvalue": "",
 					"data": "",
@@ -892,6 +892,25 @@
 					"id": "2bff46e9-66b2-417d-a3df-8a1999a6c12c",
 					"name": "has_requirements",
 					"datatype": "BOOLEAN",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"autoinc": false,
+					"collation": null,
+					"charset": null,
+					"binary": false,
+					"zerofill": false,
+					"unsigned": false,
+					"enum": "",
+					"after": ""
+				},
+				{
+					"id": "4b5f60d1-01e5-493f-9370-90a3845734d4",
+					"name": "maximum_participants",
+					"datatype": "INT",
 					"param": "",
 					"pk": false,
 					"nn": false,
@@ -2243,7 +2262,7 @@
 			"includeSchema": "always",
 			"quotation": "if_needed"
 		},
-		"lastSaved": "Thu Aug 25 2022 18:15:33 GMT+0200 (Mitteleuropäische Sommerzeit)"
+		"lastSaved": "Thu Aug 25 2022 18:57:08 GMT+0200 (Mitteleuropäische Sommerzeit)"
 	},
 	"otherObjects": {},
 	"diagrams": {
@@ -2284,7 +2303,7 @@
 				"58be03bf-76d4-4c75-941c-9077ee55ef59": {
 					"referencedItemId": "58be03bf-76d4-4c75-941c-9077ee55ef59",
 					"x": 1586,
-					"y": 483,
+					"y": 482,
 					"gHeight": 207,
 					"gWidth": 257,
 					"color": "#ffffff",
@@ -2318,7 +2337,7 @@
 					"referencedItemId": "8274c9ee-9797-402d-9530-4f6d5b2b2b3f",
 					"x": 1637,
 					"y": 213,
-					"gHeight": 135,
+					"gHeight": 153,
 					"gWidth": 257,
 					"color": "#ffffff",
 					"background": "#03a9f4",
