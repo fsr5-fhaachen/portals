@@ -77,7 +77,7 @@
 				},
 				{
 					"id": "fd067ef4-235c-4c78-985a-5de1e3855644",
-					"name": "courses_id",
+					"name": "course_id",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -529,7 +529,7 @@
 				},
 				{
 					"id": "5d9bfb52-05f8-427d-bece-91d26d8bf074",
-					"name": "events_id",
+					"name": "event_id",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -542,7 +542,7 @@
 				},
 				{
 					"id": "095747fc-11cc-4819-b996-392271873919",
-					"name": "users_id",
+					"name": "user_id",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -568,7 +568,7 @@
 				},
 				{
 					"id": "9b950d35-db1d-4b11-a436-b931f97c1b8d",
-					"name": "groups_id",
+					"name": "group_id",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -581,7 +581,7 @@
 				},
 				{
 					"id": "d3744c3e-9b38-4a36-8f6a-bc7a77b66cae",
-					"name": "drinks_alcoholic",
+					"name": "drinks_alcohol",
 					"datatype": "BOOLEAN",
 					"param": "",
 					"pk": false,
@@ -763,7 +763,7 @@
 				},
 				{
 					"id": "d5886fd5-fd13-4b34-a5a4-4df1c20b835a",
-					"name": "events_id",
+					"name": "event_id",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -776,7 +776,7 @@
 				},
 				{
 					"id": "495bae35-15ce-4449-8dad-41b43a36d4ee",
-					"name": "courses_id",
+					"name": "course_id",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -877,7 +877,7 @@
 				},
 				{
 					"id": "b6595def-0e2b-4fb2-8be0-9b15bfa1a05a",
-					"name": "events_id",
+					"name": "event_id",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -1014,8 +1014,8 @@
 				{
 					"id": "8b0e4aac-314d-489e-b42f-f636d9fa8821",
 					"name": "name",
-					"datatype": "INT",
-					"param": "",
+					"datatype": "VARCHAR",
+					"param": "255",
 					"pk": false,
 					"nn": true,
 					"comment": "",
@@ -1032,7 +1032,7 @@
 				},
 				{
 					"id": "a273f26b-e19b-41e2-bc69-d36cbdfd25a4",
-					"name": "events_id",
+					"name": "event_id",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -1131,7 +1131,7 @@
 				},
 				{
 					"id": "7bfa3fa0-aea3-454d-b7ef-13f9f19219ed",
-					"name": "groups_id",
+					"name": "group_id",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -1144,7 +1144,7 @@
 				},
 				{
 					"id": "ac0378a2-6c23-4f15-a29b-989640740374",
-					"name": "stations_id",
+					"name": "station_id",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -1432,7 +1432,7 @@
 				},
 				{
 					"id": "e3b3d596-0b2a-4972-bc7e-3cec9a133366",
-					"name": "users_id",
+					"name": "user_id",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -1668,7 +1668,7 @@
 				},
 				{
 					"id": "f3a13118-b75f-498c-b600-82fe0c13b354",
-					"name": "users_id",
+					"name": "user_id",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -1681,7 +1681,7 @@
 				},
 				{
 					"id": "ea609f6f-6cc9-4841-bd1d-ff671fa2f313",
-					"name": "groups_id",
+					"name": "group_id",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -1741,7 +1741,7 @@
 				},
 				{
 					"id": "c06053c5-f334-4a1c-aa04-8133d4884c97",
-					"name": "users_id",
+					"name": "user_id",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -1754,7 +1754,7 @@
 				},
 				{
 					"id": "7758b86d-0470-42d5-a7ce-8d2b2ee43aa1",
-					"name": "stations_id",
+					"name": "station_id",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -2212,7 +2212,7 @@
 		"replaceSpace": "_",
 		"color": "transparent",
 		"sideSelections": true,
-		"isDirty": false,
+		"isDirty": true,
 		"storedin": {
 			"major": 4,
 			"minor": 6,
@@ -2243,7 +2243,7 @@
 			"includeSchema": "always",
 			"quotation": "if_needed"
 		},
-		"lastSaved": "Tue Aug 23 2022 15:41:00 GMT+0200 (Mitteleuropäische Sommerzeit)"
+		"lastSaved": "Tue Aug 23 2022 15:44:45 GMT+0200 (Mitteleuropäische Sommerzeit)"
 	},
 	"otherObjects": {},
 	"diagrams": {
@@ -2261,7 +2261,7 @@
 			"diagramItems": {
 				"1c9e0a7d-354c-4e2c-bddb-0d698760f3f7": {
 					"referencedItemId": "1c9e0a7d-354c-4e2c-bddb-0d698760f3f7",
-					"x": 232,
+					"x": 233,
 					"y": 197,
 					"gHeight": 189,
 					"gWidth": 229,
@@ -2352,7 +2352,7 @@
 					"x": 117,
 					"y": 981,
 					"gHeight": 243,
-					"gWidth": 263,
+					"gWidth": 288,
 					"color": "#ffffff",
 					"background": "#9c27b0",
 					"resized": false,
@@ -2374,7 +2374,7 @@
 					"x": 599,
 					"y": 288,
 					"gHeight": 81,
-					"gWidth": 177,
+					"gWidth": 171,
 					"color": "#ffffff",
 					"background": "#ff9800",
 					"resized": false,
@@ -2385,7 +2385,7 @@
 					"x": 195,
 					"y": 845,
 					"gHeight": 81,
-					"gWidth": 182,
+					"gWidth": 176,
 					"color": "#ffffff",
 					"background": "#ff9800",
 					"resized": false,

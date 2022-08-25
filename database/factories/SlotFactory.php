@@ -6,9 +6,9 @@ use App\Models\Event;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Station>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Slot>
  */
-class StationFactory extends Factory
+class SlotFactory extends Factory
 {
     /**
      * Define the model's default state. Expects that the events table is already pre-populated.
@@ -18,8 +18,9 @@ class StationFactory extends Factory
     public function definition()
     {
         return [
-          'name' =>$this->faker->word(),
-          'event_id' => Event::all(['id'])->random()
+          'event_id' => Event::all(['id'])->random(),
+          'has_requirements' => $this->faker->boolean(),
+          'form' => '{}'
         ];
     }
 }

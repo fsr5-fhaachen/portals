@@ -2,43 +2,59 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class User extends Authenticatable
+class User extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+  /**
+   * The attributes that aren't mass assignable.
+   *
+   * @var array
+   */
+  protected $guarded = []; // TODO: Maybe need to add is_tutor and is_admin here for security reasons
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+  /**
+   * Get station_tutors for the user.
+   *
+   * @return HasMany
+   */
+  public function stationTutors()
+  {
+    return $this->hasMany(StationTutor::class);
+  }
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+  /**
+   * Get group_tutors for the user.
+   *
+   * @return HasMany
+   */
+  public function groupTutors()
+  {
+    return $this->hasMany(GroupTutor::class);
+  }
+
+  /**
+   * Get registrations for the user.
+   *
+   * @return HasMany
+   */
+  public function registrations()
+  {
+    return $this->hasMany(Registration::class);
+  }
+
+  /**
+   * Get course for the user.
+   *
+   * @return BelongsTo
+   */
+  public function course()
+  {
+    return $this->belongsTo(Course::class);
+  }
 }
