@@ -76,7 +76,7 @@ class Group extends Model
    */
   public function tutors()
   {
-    return $this->belongsToMany(User::class)->using(GroupTutor::class);
+    return $this->belongsToMany(User::class, 'group_tutor')->using(GroupTutor::class);
   }
 
   /**
@@ -86,6 +86,6 @@ class Group extends Model
    */
   public function stations()
   {
-    return $this->belongsToMany(Station::class)->using(Stop::class);
+    return $this->belongsToMany(Station::class, 'stops')->using(Stop::class);
   }
 }
