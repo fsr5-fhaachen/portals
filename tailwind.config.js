@@ -1,8 +1,22 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./resources/**/*.js", "./resources/**/*.vue"],
+  content: [
+    "./resources/**/*.js",
+    "./resources/**/*.vue",
+    "./resources/**/*.blade.php",
+  ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        fhac: {
+          mint: "#00b5ad",
+          "mint-dark": "#22948C",
+        },
+      },
+    },
   },
-  plugins: [],
+  plugins: [
+    require("@tailwindcss/forms"),
+    require("@formkit/themes/tailwindcss"),
+  ],
 };

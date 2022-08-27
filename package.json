@@ -17,13 +17,18 @@
     "vue-template-compiler": "^2.7.10"
   },
   "dependencies": {
+    "@formkit/themes": "^1.0.0-beta.10",
+    "@formkit/vue": "^1.0.0-beta.10",
     "@fortawesome/fontawesome-svg-core": "^6.1.2",
     "@fortawesome/free-brands-svg-icons": "^6.1.2",
     "@fortawesome/free-regular-svg-icons": "^6.1.2",
     "@fortawesome/vue-fontawesome": "^3.0.1",
+    "@headlessui/vue": "^1.6.7",
+    "@heroicons/vue": "^1.0.6",
     "@inertiajs/inertia": "^0.11.0",
     "@inertiajs/inertia-vue3": "^0.6.0",
     "@inertiajs/progress": "^0.2.7",
+    "@tailwindcss/forms": "^0.5.2",
     "vue": "^3.2.37"
   }
 }
