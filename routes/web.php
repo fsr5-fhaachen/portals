@@ -16,8 +16,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// student
 Route::get('/', [AppController::class, 'index']);
+Route::get('/login', [AppController::class, 'login']);
+Route::get('/register', [AppController::class, 'register']);
+
+
 
 // TODO: remove devlopment routes
 Route::group([

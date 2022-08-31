@@ -12,24 +12,6 @@
       <FormContainer>
         <FormRow>
           <FormKit
-            type="text"
-            name="first_name"
-            label="Vorname"
-            :placeholder="randomPlaceholderPerson.first_name"
-            validation="required"
-          />
-        </FormRow>
-        <FormRow>
-          <FormKit
-            type="text"
-            name="last_name"
-            label="Nachname"
-            :placeholder="randomPlaceholderPerson.last_name"
-            validation="required"
-          />
-        </FormRow>
-        <FormRow>
-          <FormKit
             type="email"
             name="email"
             label="E-Mail"
@@ -38,26 +20,7 @@
           />
         </FormRow>
         <FormRow>
-          <FormKit
-            type="email"
-            name="email_confirm"
-            label="E-Mail bestätigen"
-            :placeholder="randomPlaceholderPerson.email"
-            validation="required|confirm"
-          />
-        </FormRow>
-        <FormRow>
-          <FormKit
-            type="select"
-            name="course"
-            label="Studiengang"
-            placeholder="Wähle einen Studiengang aus"
-            validation="required"
-            :options="selectFormCourseOptions"
-          />
-        </FormRow>
-        <FormRow>
-          <FormKit type="submit" label="Registrieren" />
+          <FormKit type="submit" label="Anmelden" />
         </FormRow>
       </FormContainer>
     </FormKit>
@@ -66,8 +29,8 @@
     </div>
 
     <div class="mt-6 relative flex justify-center text-sm">
-      <AppLink href="/login">
-        Du hast bereits einen Account? Dann melde dich hier an.
+      <AppLink href="/register">
+        Du hast noch keinen Account? Dann registriere dich hier.
       </AppLink>
     </div>
   </div>

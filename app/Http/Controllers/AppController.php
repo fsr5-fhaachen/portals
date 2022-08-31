@@ -14,10 +14,30 @@ class AppController extends Controller
    */
   public function index()
   {
+     return Inertia::render('Index');
+  }
+
+  /**
+   * Login page
+   * 
+   * @return \Inertia\Response
+   */
+  public function login()
+  {
+     return Inertia::render('Login');
+  }
+
+  /**
+   * Register page
+   * 
+   * @return \Inertia\Response
+   */
+  public function register()
+  {
     // get courses ordered by name
     $courses = Course::orderBy('name')->get();
 
-     return Inertia::render('Index', [
+     return Inertia::render('Register', [
       'courses' => $courses
      ]);
   }
