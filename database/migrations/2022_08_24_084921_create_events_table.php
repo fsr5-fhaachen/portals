@@ -19,7 +19,9 @@ return new class extends Migration
             $table->string('name', 255)->nullable(False);
             $table->dateTime('registration_from');
             $table->dateTime('registration_until');
-            $table->enum('type', ['group_phase', 'event_registration', 'slot_booking']);
+            //$table->enum('type', ['group_phase', 'event_registration', 'slot_booking']);
+            //TODO: Workaround for https://github.com/lepikhinb/laravel-typescript/issues/3
+            $table->string('type', 255);
             $table->boolean('has_requirements');
             $table->boolean('consider_alcohol');
             $table->json('form');
