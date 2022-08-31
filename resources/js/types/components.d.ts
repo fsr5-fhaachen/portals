@@ -7,6 +7,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AppLink: typeof import('./../components/app/Link.vue')['default']
     Card: typeof import('./../layouts/Card.vue')['default']
     CardLayout: typeof import('./../layouts/CardLayout.vue')['default']
     Default: typeof import('./../layouts/Default.vue')['default']
