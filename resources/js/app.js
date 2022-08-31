@@ -10,6 +10,7 @@ import {
   plugin as formkitPlugin,
   defaultConfig as formkitDefaultConfig,
 } from "@formkit/vue";
+import formkitConfig from "./formkit.config.ts";
 
 InertiaProgress.init();
 library.add(faHandLizard);
@@ -23,7 +24,7 @@ createInertiaApp({
   setup({ el, App, props, plugin }) {
     createApp({ render: () => h(App, props) })
       .use(plugin)
-      .use(formkitPlugin, formkitDefaultConfig)
+      .use(formkitPlugin, formkitDefaultConfig(formkitConfig))
       .component("font-awesome-icon", FontAwesomeIcon)
       .mount(el);
   },

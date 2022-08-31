@@ -1,28 +1,4 @@
-<!--
-  This example requires Tailwind CSS v2.0+ 
-  
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
--->
 <template>
-  <!--
-    This example requires updating your template:
-
-    ```
-    <html class="h-full bg-gray-50">
-    <body class="h-full">
-    ```
-  -->
   <div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <img class="mx-auto h-48 w-auto" src="/images/logo.png" alt="Workflow" />
@@ -33,68 +9,73 @@
       </h2>
     </div>
 
-    <FormKit
-      type="form"
-      id="registration-example"
-      :form-class="submitted ? 'hide' : 'show'"
-      submit-label="Register"
-      @submit="submitHandler"
-      :actions="false"
-      #default="{ value }"
-    >
-      <h1>Register!</h1>
-      <p>
-        You can put any type of element inside a form, not just FormKit inputs
-        (although only FormKit inputs are included with the submission).
-      </p>
-      <hr />
-      <FormKit
-        type="text"
-        name="name"
-        label="Your name"
-        placeholder="Jane Doe"
-        help="What do people call you?"
-        validation="required"
-      />
-      <FormKit
-        type="text"
-        name="email"
-        label="Your email"
-        placeholder="jane@example.com"
-        help="What email should we use?"
-        validation="required|email"
-      />
-      <div class="double">
-        <FormKit
-          type="password"
-          name="password"
-          label="Password"
-          validation="required|length:6|matches:/[^a-zA-Z]/"
-          :validation-messages="{
-            matches: 'Please include at least one symbol',
-          }"
-          placeholder="Your password"
-          help="Choose a password"
-        />
-        <FormKit
-          type="password"
-          name="password_confirm"
-          label="Confirm password"
-          placeholder="Confirm password"
-          validation="required|confirm"
-          help="Confirm your password"
-        />
-      </div>
-
-      <FormKit type="submit" label="Register" />
-      <pre wrap>{{ value }}</pre>
-    </FormKit>
-    <div v-if="submitted">
-      <h2>Submission successful!</h2>
-    </div>
-
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
       <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <FormKit
+          type="form"
+          id="registration-example"
+          :form-class="submitted ? 'hide' : 'show'"
+          submit-label="Register"
+          @submit="submitHandler"
+          :actions="false"
+          #default="{ value }"
+        >
+          <FormContainer>
+            <FormRow>
+              <FormKit
+                type="text"
+                name="first_name"
+                label="Vorname"
+                :placeholder="randomPlaceholderPerson.first_name"
+                validation="required"
+              />
+            </FormRow>
+            <FormRow>
+              <FormKit
+                type="text"
+                name="last_name"
+                label="Nachname"
+                :placeholder="randomPlaceholderPerson.last_name"
+                validation="required"
+              />
+            </FormRow>
+            <FormRow>
+              <FormKit
+                type="email"
+                name="email"
+                label="E-Mail"
+                :placeholder="randomPlaceholderPerson.email"
+                validation="required|email"
+              />
+            </FormRow>
+            <FormRow>
+              <FormKit
+                type="email"
+                name="email_confirm"
+                label="E-Mail bestätigen"
+                :placeholder="randomPlaceholderPerson.email"
+                validation="required|confirm"
+              />
+            </FormRow>
+            <FormRow>
+              <FormKit
+                type="select"
+                name="course"
+                label="Studiengang"
+                placeholder="Wähle einen Studiengang aus"
+                validation="required"
+                :options="selectFormCourseOptions"
+              />
+            </FormRow>
+          </FormContainer>
+          {{ courses }}
+
+          <FormKit type="submit" label="Register" />
+          <pre wrap>{{ value }}</pre>
+        </FormKit>
+        <div v-if="submitted">
+          <h2>Submission successful!</h2>
+        </div>
         <form class="space-y-6" action="#" method="POST">
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700">
@@ -244,8 +225,33 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
+
+defineProps({
+  courses: {
+    type: Array,
+    default: () => [],
+  },
+});
+
+const placeholderPersons = ref([
+  {
+    first_name: "Max",
+    last_name: "Mustermann",
+    email: "max.mustermann@beispiel.de",
+  },
+  {
+    first_name: "Erika",
+    last_name: "Mustermann",
+    email: "erika.mustermann@beispiel.de",
+  },
+]);
+const randomPlaceholderPerson =
+  placeholderPersons.value[
+    Math.floor(Math.random() * placeholderPersons.value.length)
+  ];
+
 const submitted = ref(false);
 const submitHandler = async () => {
   // Let's pretend this is an ajax request:

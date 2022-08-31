@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use Inertia\Inertia;
 
 class AppController extends Controller
@@ -13,6 +14,11 @@ class AppController extends Controller
    */
   public function index()
   {
-     return Inertia::render('Index');
+    // get courses ordered by name
+    $courses = Course::orderBy('name')->get();
+
+     return Inertia::render('Index', [
+      'courses' => $courses
+     ]);
   }
 }
