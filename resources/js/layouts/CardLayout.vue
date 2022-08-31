@@ -26,13 +26,13 @@
               <div class="w-full border-t border-gray-300" />
             </div>
             <div class="relative flex justify-center text-sm">
-              <a
+              <AppLink
                 :href="packageRepositoryUrl"
-                target="_blank"
-                class="px-2 bg-white text-gray-500 hover:underline"
+                theme="gray"
+                class="px-2 bg-white"
               >
                 Powered by {{ packageName }}
-              </a>
+              </AppLink>
             </div>
           </div>
         </div>
