@@ -11,16 +11,24 @@ import {
   defaultConfig as formkitDefaultConfig,
 } from "@formkit/vue";
 import formkitConfig from "./formkit.config.ts";
+import DefaultLayout from "./layouts/DefaultLayout.vue";
 
 InertiaProgress.init();
 library.add(faHandLizard);
 
 createInertiaApp({
-  resolve: (name) =>
-    resolvePageComponent(
+  resolve: (name) => {
+    const page = resolvePageComponent(
       `./pages/${name}.vue`,
       import.meta.glob("./pages/**/*.vue")
-    ),
+    );
+
+    page.then((module) => {
+      module.default.layout = module.default.layout || DefaultLayout;
+    });
+
+    return page;
+  },
   setup({ el, App, props, plugin }) {
     createApp({ render: () => h(App, props) })
       .use(plugin)
