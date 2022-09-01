@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DatabaseTestController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,14 @@ Route::group([
 ], function () {
     Route::get('/', [DashboardController::class, 'index']);
     Route::get('/test', [DashboardController::class, 'test']);
+
+    Route::group([
+        'prefix' => 'event/{event}',
+    ], function () {
+        Route::get('/', [DashboardEventController::class, 'index']);
+        Route::get('/register', [DashboardEventController::class, 'register']);
+        Route::get('/unregister', [DashboardEventController::class, 'unregister']);
+    });
 });
 
 

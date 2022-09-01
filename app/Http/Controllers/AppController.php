@@ -8,7 +8,7 @@ use Inertia\Inertia;
 class AppController extends Controller
 {
   /**
-   * Index page
+   * Display the index page
    * 
    * @return \Inertia\Response
    */
@@ -18,7 +18,7 @@ class AppController extends Controller
   }
 
   /**
-   * Login page
+   * Display the login page
    * 
    * @return \Inertia\Response
    */
@@ -28,7 +28,7 @@ class AppController extends Controller
   }
 
   /**
-   * Register page
+   * Display the register page
    * 
    * @return \Inertia\Response
    */

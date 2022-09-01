@@ -27,7 +27,8 @@
       <div class="-mt-px flex divide-x divide-gray-200">
         <template v-if="isRegistered">
           <div class="flex w-0 flex-1">
-            <a
+            <InertiaLink
+              :href="`/dashboard/event/${event.id}/unregister`"
               :class="{
                 'opacity-70 hover:cursor-not-allowed': isExpired,
                 'hover:cursor-pointer': !isExpired,
@@ -42,10 +43,11 @@
                 :icon="['fas', 'door-open']"
               />
               <span>Abmelden</span>
-            </a>
+            </InertiaLink>
           </div>
           <div class="-ml-px flex w-0 flex-1">
-            <a
+            <InertiaLink
+              :href="`/dashboard/event/${event.id}`"
               class="hover:cursor-pointer gap-2 group relative inline-flex w-0 flex-1 items-center justify-center rounded-br-lg border border-transparent py-4 text-sm font-medium text-gray-700"
             >
               <FontAwesomeIcon
@@ -53,12 +55,13 @@
                 :icon="['fas', 'circle-info']"
               />
               <span>Info</span>
-            </a>
+            </InertiaLink>
           </div>
         </template>
         <template v-else>
           <div class="flex w-0 flex-1">
-            <a
+            <InertiaLink
+              :href="`/dashboard/event/${event.id}/register`"
               :class="{
                 'opacity-70 hover:cursor-not-allowed': !canRegister,
                 'hover:cursor-pointer': canRegister,
@@ -73,7 +76,7 @@
                 :icon="['fas', 'play']"
               />
               <span>Anmelden</span>
-            </a>
+            </InertiaLink>
           </div>
         </template>
       </div>
@@ -84,6 +87,7 @@
 <script setup lang="ts">
 import { computed, PropType } from "vue";
 import DateTimeString from "../ui/DateTimeString.vue";
+import { Link as InertiaLink } from "@inertiajs/inertia-vue3";
 
 const { event } = defineProps({
   event: {

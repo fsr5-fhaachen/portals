@@ -8,7 +8,7 @@ use Inertia\Inertia;
 class DashboardController extends Controller
 {
     /**
-     * Display the index page of 
+     * Display the dashboard index page
      *
      * @return \Inertia\Response
      */
@@ -23,7 +23,7 @@ class DashboardController extends Controller
     }
 
     /**
-     * Display the test page of 
+     * Display the dashboard test page 
      *
      * @return \Inertia\Response
      */
