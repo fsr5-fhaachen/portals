@@ -27,7 +27,7 @@ return new class extends Migration
             $table->json('form');
         });
     }
-
+    
     /**
      * Reverse the migrations.
      *

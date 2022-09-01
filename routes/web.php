@@ -21,8 +21,12 @@ Route::get('/', [AppController::class, 'index']);
 Route::get('/login', [AppController::class, 'login']);
 Route::get('/register', [AppController::class, 'register']);
 
-Route::get('/dashboard', [DashboardController::class, 'index']);
-
+Route::group([
+    'prefix' => 'dashboard',
+], function () {
+    Route::get('/', [DashboardController::class, 'index']);
+    Route::get('/test', [DashboardController::class, 'test']);
+});
 
 
 // TODO: remove devlopment routes

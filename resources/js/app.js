@@ -5,6 +5,13 @@ import { InertiaProgress } from "@inertiajs/progress";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faHandLizard } from "@fortawesome/free-regular-svg-icons";
+import {
+  faBars,
+  faDoorOpen,
+  faCircleInfo,
+  faPlay,
+  faX,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
   plugin as formkitPlugin,
@@ -12,9 +19,12 @@ import {
 } from "@formkit/vue";
 import formkitConfig from "./formkit.config.ts";
 import DefaultLayout from "./layouts/DefaultLayout.vue";
+import DashboardLayout from "./layouts/DashboardLayout.vue";
 
-InertiaProgress.init();
-library.add(faHandLizard);
+InertiaProgress.init({
+  color: "#22948C",
+});
+library.add(faBars, faDoorOpen, faCircleInfo, faPlay, faX, faHandLizard);
 
 createInertiaApp({
   resolve: (name) => {
@@ -24,7 +34,12 @@ createInertiaApp({
     );
 
     page.then((module) => {
-      module.default.layout = module.default.layout || DefaultLayout;
+      // apply layout based on folder structure
+      if (name.startsWith("Dashboard/")) {
+        module.default.layout = module.default.layout || DashboardLayout;
+      } else {
+        module.default.layout = module.default.layout || DefaultLayout;
+      }
     });
 
     return page;
@@ -33,7 +48,7 @@ createInertiaApp({
     createApp({ render: () => h(App, props) })
       .use(plugin)
       .use(formkitPlugin, formkitDefaultConfig(formkitConfig))
-      .component("font-awesome-icon", FontAwesomeIcon)
+      .component("FontAwesomeIcon", FontAwesomeIcon)
       .mount(el);
   },
 });

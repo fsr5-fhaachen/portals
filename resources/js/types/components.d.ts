@@ -8,11 +8,24 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AppLink: typeof import('./../components/app/Link.vue')['default']
+    AppNavbar: typeof import('./../components/app/Navbar.vue')['default']
     Card: typeof import('./../layouts/Card.vue')['default']
+    CardBase: typeof import('./../components/card/Base.vue')['default']
+    CardCard: typeof import('./../components/card/Card.vue')['default']
     CardLayout: typeof import('./../layouts/CardLayout.vue')['default']
+    copy: typeof import('./../components/ui/H1 copy.vue')['default']
+    DashboardLayout: typeof import('./../layouts/DashboardLayout.vue')['default']
     Default: typeof import('./../layouts/Default.vue')['default']
     DefaultLayout: typeof import('./../layouts/DefaultLayout.vue')['default']
+    EventCard: typeof import('./../components/event/Card.vue')['default']
     FormContainer: typeof import('./../components/form/Container.vue')['default']
     FormRow: typeof import('./../components/form/Row.vue')['default']
+    GirdContainer: typeof import('./../components/gird/Container.vue')['default']
+    LayoutDashboardContent: typeof import('./../components/layout/DashboardContent.vue')['default']
+    UiDateString: typeof import('./../components/ui/DateString.vue')['default']
+    UiDateTimeString: typeof import('./../components/ui/DateTimeString.vue')['default']
+    UiH1: typeof import('./../components/ui/H1.vue')['default']
+    UiH2: typeof import('./../components/ui/H2.vue')['default']
+    UiTimeString: typeof import('./../components/ui/TimeString.vue')['default']
   }
 }
