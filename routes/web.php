@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatabaseTestController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [AppController::class, 'index']);
 Route::get('/login', [AppController::class, 'login']);
 Route::get('/register', [AppController::class, 'register']);
+
+Route::get('/dashboard', [DashboardController::class, 'index']);
 
 
 
