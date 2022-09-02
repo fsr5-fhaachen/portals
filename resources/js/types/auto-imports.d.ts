@@ -2,4 +2,5 @@
 export {}
 declare global {
   const useSelectFormCourseOptions: typeof import('../composables/useSelectFormCourseOptions')['default']
+  const useSelectFormSlotOptions: typeof import('../composables/useSelectFormSlotOptions')['default']
 }

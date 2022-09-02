@@ -10,7 +10,7 @@
         submit-label="Register"
         @submit="submitHandler"
         :actions="false"
-        #default="{ value }"
+        v-model="form"
       >
         <FormContainer>
           <FormRow>
@@ -43,10 +43,28 @@
                   />
                 </UiDd>
               </template>
+
+              <template v-if="slotData">
+                <template v-if="slotData.maximum_participants">
+                  <UiDt>Maximale Teilnehmerzahl</UiDt>
+                  <UiDd>{{ slotData.maximum_participants }}</UiDd>
+                </template>
+              </template>
             </UiDl>
           </FormRow>
 
-          <template v-if="event.consider_alcohol">
+          <FormRow v-if="selectFormSlotOptions.length">
+            <FormKit
+              type="select"
+              name="slot"
+              label="Slot"
+              placeholder="Wähle einen Slot aus"
+              validation="required"
+              :options="selectFormSlotOptions"
+            />
+          </FormRow>
+
+          <template v-if="event.consider_alcohol || dynamicFormSchema">
             <FormDivider />
 
             <FormRow>
@@ -57,9 +75,12 @@
               <FormKit
                 type="checkbox"
                 name="drinks_no_alcohol"
-                label="Ich trinke kein Alkohol"
+                label="Ich trinke keinen Alkohol"
               />
             </FormRow>
+            <FormSchema v-if="dynamicFormSchema">
+              <FormKitSchema :schema="dynamicFormSchema" />
+            </FormSchema>
           </template>
 
           <FormRow>
@@ -83,13 +104,47 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { ref, PropType } from "vue";
+import { computed, ref, PropType } from "vue";
+import { FormKitSchemaNode } from "@formkit/core";
 
-defineProps({
+const { event } = defineProps({
   event: {
     type: Object as PropType<App.Models.Event>,
     required: true,
   },
+});
+
+const selectFormSlotOptions = useSelectFormSlotOptions(
+  event.slots as App.Models.Slot[]
+);
+
+const form = ref({
+  slot: 0,
+  drinks_no_alcohol: false,
+});
+
+const slotData = computed(() => {
+  if (event.slots?.length && form.value.slot) {
+    return event.slots.find((s) => s.id === form.value.slot);
+  }
+
+  return null;
+});
+
+const dynamicFormSchema = computed(() => {
+  const result: FormKitSchemaNode[] = [];
+
+  // get event form
+  if (event.form != "{}") {
+    result.push(...(JSON.parse(event.form) as FormKitSchemaNode[]));
+  }
+
+  // get slot form
+  if (slotData.value && slotData.value.form) {
+    result.push(...(JSON.parse(slotData.value.form) as FormKitSchemaNode[]));
+  }
+
+  return result;
 });
 
 const submitted = ref(false);

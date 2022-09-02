@@ -34,8 +34,9 @@ class DashboardEventController extends Controller
      */
     public function register(Request $request)
     {
-        // get event by id
+        // get event by id with slots
         $event = Event::find($request->event);
+        $event->slots = $event->slots()->get();
 
         return Inertia::render('Dashboard/Event/Register', [
             'event' => $event

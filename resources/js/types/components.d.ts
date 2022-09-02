@@ -23,6 +23,7 @@ declare module '@vue/runtime-core' {
     FormContainer: typeof import('./../components/form/Container.vue')['default']
     FormDivider: typeof import('./../components/form/Divider.vue')['default']
     FormRow: typeof import('./../components/form/Row.vue')['default']
+    FormSchema: typeof import('./../components/form/Schema.vue')['default']
     GirdContainer: typeof import('./../components/gird/Container.vue')['default']
     LayoutDashboardContent: typeof import('./../components/layout/DashboardContent.vue')['default']
     UiDateString: typeof import('./../components/ui/DateString.vue')['default']
