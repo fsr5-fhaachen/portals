@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('slots', function (Blueprint $table) {
             $table->id();
+            $table->string('name', 255)->nullable(False);
             $table->timestamps();
             $table->foreignId('event_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->boolean('has_requirements');

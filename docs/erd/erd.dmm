@@ -889,6 +889,25 @@
 					"ref": "events"
 				},
 				{
+					"id": "31f6e73c-47c2-41b9-afb4-26bc57774860",
+					"name": "name",
+					"datatype": "VARCHAR",
+					"param": "255",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"autoinc": false,
+					"collation": null,
+					"charset": null,
+					"binary": false,
+					"zerofill": false,
+					"unsigned": false,
+					"enum": "",
+					"after": ""
+				},
+				{
 					"id": "2bff46e9-66b2-417d-a3df-8a1999a6c12c",
 					"name": "has_requirements",
 					"datatype": "BOOLEAN",
@@ -2231,7 +2250,7 @@
 		"replaceSpace": "_",
 		"color": "transparent",
 		"sideSelections": true,
-		"isDirty": true,
+		"isDirty": false,
 		"storedin": {
 			"major": 4,
 			"minor": 6,
@@ -2262,7 +2281,7 @@
 			"includeSchema": "always",
 			"quotation": "if_needed"
 		},
-		"lastSaved": "Thu Aug 25 2022 18:57:08 GMT+0200 (Mitteleuropäische Sommerzeit)"
+		"lastSaved": "Fri Sep 02 2022 23:06:37 GMT+0200 (Mitteleuropäische Sommerzeit)"
 	},
 	"otherObjects": {},
 	"diagrams": {
@@ -2335,9 +2354,9 @@
 				},
 				"8274c9ee-9797-402d-9530-4f6d5b2b2b3f": {
 					"referencedItemId": "8274c9ee-9797-402d-9530-4f6d5b2b2b3f",
-					"x": 1637,
-					"y": 213,
-					"gHeight": 153,
+					"x": 1629,
+					"y": 216,
+					"gHeight": 171,
 					"gWidth": 257,
 					"color": "#ffffff",
 					"background": "#03a9f4",
