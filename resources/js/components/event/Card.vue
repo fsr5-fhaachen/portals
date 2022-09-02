@@ -1,27 +1,27 @@
 <template>
   <CardBase>
     <UiH2>{{ event.name }}</UiH2>
-    <dl class="grid grid-cols-1 sm:grid-cols-2 mt-2">
+    <UiDl>
       <template v-if="event.registration_from">
-        <dt class="text-gray-800">Anmeldung ab:</dt>
-        <dd class="text-gray-900">
-          <DateTimeString
+        <UiDt>Anmeldung ab</UiDt>
+        <UiDd>
+          <UiDateTimeString
             :value="event.registration_from"
             :withClockSuffix="true"
           />
-        </dd>
+        </UiDd>
       </template>
 
       <template v-if="event.registration_until">
-        <dt class="text-gray-800">Anmeldung bis:</dt>
-        <dd class="text-gray-900">
-          <DateTimeString
+        <UiDt>Anmeldung bis</UiDt>
+        <UiDd>
+          <UiDateTimeString
             :value="event.registration_until"
             :withClockSuffix="true"
           />
-        </dd>
+        </UiDd>
       </template>
-    </dl>
+    </UiDl>
 
     <template #footer>
       <div class="-mt-px flex divide-x divide-gray-200">
@@ -94,7 +94,6 @@
 
 <script setup lang="ts">
 import { computed, PropType } from "vue";
-import DateTimeString from "../ui/DateTimeString.vue";
 
 const { event } = defineProps({
   event: {

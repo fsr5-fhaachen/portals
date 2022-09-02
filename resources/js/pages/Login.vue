@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import CardLayout from "../layouts/CardLayout.vue";
+import CardLayout from "@/layouts/CardLayout.vue";
 
 export default {
   layout: CardLayout,

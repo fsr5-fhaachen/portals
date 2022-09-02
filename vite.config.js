@@ -5,6 +5,11 @@ import Components from "unplugin-vue-components/vite";
 import AutoImport from "unplugin-auto-import/vite";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@": "/resources/js",
+    },
+  },
   plugins: [
     laravel({
       input: ["resources/js/app.js"],

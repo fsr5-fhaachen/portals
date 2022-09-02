@@ -8,7 +8,7 @@ const textClassification = {
 const boxClassification = {
   fieldset: "max-w-md border border-gray-400 rounded-md px-2 pb-1",
   legend: "font-bold text-sm",
-  wrapper: "relative flex items-start cursor-pointer",
+  wrapper: "relative flex items-start cursor-pointer items-center",
   help: "mb-2",
   inner: "flex items-center h-5",
   input:
@@ -20,10 +20,14 @@ const buttonClassification = {
   input:
     "w-full flex gap-2 items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-fhac-mint-dark hover:bg-fhac-mint focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-fhac-mint",
 };
+const checkboxClassification = {
+  ...boxClassification,
+  label: "ml-3 text-md text-gray-900",
+};
 
 export default {
   global: {
-    outer: "formkit-disabled:opacity-60",
+    outer: "flex-1 formkit-disabled:opacity-60",
     help: "mt-2 text-sm text-gray-500",
     messages: "list-none p-0 mt-1",
     message: "mt-2 text-sm text-red-600",
@@ -36,7 +40,7 @@ export default {
   },
   date: textClassification,
   "datetime-local": textClassification,
-  checkbox: boxClassification,
+  checkbox: checkboxClassification,
   email: textClassification,
   file: {
     label: "block mb-1 font-bold text-sm",
