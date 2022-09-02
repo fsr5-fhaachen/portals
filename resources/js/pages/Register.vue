@@ -7,25 +7,25 @@
       submit-label="Register"
       @submit="submitHandler"
       :actions="false"
-      #default="{ value }"
+      v-model="form"
     >
       <FormContainer>
         <FormRow>
           <FormKit
             type="text"
-            name="first_name"
+            name="firstname"
             label="Vorname"
-            :placeholder="randomPlaceholderPerson.first_name"
-            validation="required"
+            :placeholder="randomPlaceholderPerson.firstname"
+            validation="required|length:2,255"
           />
         </FormRow>
         <FormRow>
           <FormKit
             type="text"
-            name="last_name"
+            name="lastname"
             label="Nachname"
-            :placeholder="randomPlaceholderPerson.last_name"
-            validation="required"
+            :placeholder="randomPlaceholderPerson.lastname"
+            validation="required|length:2,255"
           />
         </FormRow>
         <FormRow>
@@ -34,7 +34,7 @@
             name="email"
             label="E-Mail"
             :placeholder="randomPlaceholderPerson.email"
-            validation="required|email"
+            validation="required|email|length:3,255"
           />
         </FormRow>
         <FormRow>
@@ -49,7 +49,7 @@
         <FormRow>
           <FormKit
             type="select"
-            name="course"
+            name="course_id"
             label="Studiengang"
             placeholder="Wähle einen Studiengang aus"
             validation="required"
@@ -75,6 +75,7 @@
 
 <script lang="ts">
 import CardLayout from "@/layouts/CardLayout.vue";
+import { Inertia } from "@inertiajs/inertia";
 
 export default {
   layout: CardLayout,
@@ -83,6 +84,8 @@ export default {
 
 <script setup lang="ts">
 import { ref } from "vue";
+
+const form = ref({});
 
 const { courses } = defineProps({
   courses: {
@@ -95,13 +98,13 @@ const selectFormCourseOptions = useSelectFormCourseOptions(courses);
 
 const placeholderPersons = ref([
   {
-    first_name: "Max",
-    last_name: "Mustermann",
+    firstname: "Max",
+    lastname: "Mustermann",
     email: "max.mustermann@beispiel.de",
   },
   {
-    first_name: "Erika",
-    last_name: "Mustermann",
+    firstname: "Erika",
+    lastname: "Mustermann",
     email: "erika.mustermann@beispiel.de",
   },
 ]);
@@ -113,8 +116,6 @@ const randomPlaceholderPerson =
 
 const submitted = ref(false);
 const submitHandler = async () => {
-  // Let's pretend this is an ajax request:
-  await new Promise((r) => setTimeout(r, 1000));
-  submitted.value = true;
+  Inertia.post("/register", form.value);
 };
 </script>

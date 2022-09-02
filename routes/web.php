@@ -5,6 +5,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DatabaseTestController;
+use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,23 +19,33 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/', [AppController::class, 'index'])->name('app.index');
 
-Route::get('/', [AppController::class, 'index']);
-Route::get('/login', [AppController::class, 'login']);
-Route::get('/register', [AppController::class, 'register']);
+Route::group([
+    'middleware' => [
+        RedirectIfAuthenticated::class
+    ],
+], function () {
+    Route::get('/login', [AppController::class, 'login'])->name('app.login');
+    Route::get('/register', [AppController::class, 'register'])->name('app.register');
+    Route::post('/register', [AppController::class, 'registerUser'])->name('app.registerUser');
+});
 
 Route::group([
     'prefix' => 'dashboard',
+    'middleware' => [
+        Authenticate::class,
+    ],
 ], function () {
-    Route::get('/', [DashboardController::class, 'index']);
-    Route::get('/test', [DashboardController::class, 'test']);
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('/test', [DashboardController::class, 'test'])->name('dashboard.test');
 
     Route::group([
         'prefix' => 'event/{event}',
     ], function () {
-        Route::get('/', [DashboardEventController::class, 'index']);
-        Route::get('/register', [DashboardEventController::class, 'register']);
-        Route::get('/unregister', [DashboardEventController::class, 'unregister']);
+        Route::get('/', [DashboardEventController::class, 'index'])->name('dashboard.event.index');
+        Route::get('/register', [DashboardEventController::class, 'register'])->name('dashboard.event.register');
+        Route::get('/unregister', [DashboardEventController::class, 'unregister'])->name('dashboard.event.unregister');
     });
 });
 

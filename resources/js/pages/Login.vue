@@ -58,13 +58,13 @@ const selectFormCourseOptions = useSelectFormCourseOptions(courses);
 
 const placeholderPersons = ref([
   {
-    first_name: "Max",
-    last_name: "Mustermann",
+    firstname: "Max",
+    lastname: "Mustermann",
     email: "max.mustermann@beispiel.de",
   },
   {
-    first_name: "Erika",
-    last_name: "Mustermann",
+    firstname: "Erika",
+    lastname: "Mustermann",
     email: "erika.mustermann@beispiel.de",
   },
 ]);
