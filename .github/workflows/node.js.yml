@@ -28,5 +28,5 @@ jobs:
           npm list -g --depth 0
       - name: Install Dependencies
         run: |
-          npm install
+          npm ci
       - run: npm run build --if-present
