@@ -95,24 +95,7 @@ const { courses } = defineProps({
 });
 
 const selectFormCourseOptions = useSelectFormCourseOptions(courses);
-
-const placeholderPersons = ref([
-  {
-    firstname: "Max",
-    lastname: "Mustermann",
-    email: "max.mustermann@beispiel.de",
-  },
-  {
-    firstname: "Erika",
-    lastname: "Mustermann",
-    email: "erika.mustermann@beispiel.de",
-  },
-]);
-
-const randomPlaceholderPerson =
-  placeholderPersons.value[
-    Math.floor(Math.random() * placeholderPersons.value.length)
-  ];
+const randomPlaceholderPerson = usePlaceholderPerson();
 
 const submitted = ref(false);
 const submitHandler = async () => {

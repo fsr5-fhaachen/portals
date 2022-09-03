@@ -7,9 +7,12 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faHandLizard } from "@fortawesome/free-regular-svg-icons";
 import {
   faBars,
-  faDoorOpen,
+  faCircleCheck,
+  faCircleXmark,
   faCircleInfo,
+  faDoorOpen,
   faPlay,
+  faTriangleExclamation,
   faX,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -24,7 +27,17 @@ import DashboardLayout from "./layouts/DashboardLayout.vue";
 InertiaProgress.init({
   color: "#22948C",
 });
-library.add(faBars, faDoorOpen, faCircleInfo, faPlay, faX, faHandLizard);
+library.add(
+  faBars,
+  faCircleCheck,
+  faCircleXmark,
+  faCircleInfo,
+  faDoorOpen,
+  faPlay,
+  faTriangleExclamation,
+  faX,
+  faHandLizard
+);
 
 createInertiaApp({
   resolve: (name) => {

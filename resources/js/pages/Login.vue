@@ -7,7 +7,7 @@
       submit-label="Register"
       @submit="submitHandler"
       :actions="false"
-      #default="{ value }"
+      v-model="form"
     >
       <FormContainer>
         <FormRow>
@@ -37,6 +37,7 @@
 </template>
 
 <script lang="ts">
+import { Inertia } from "@inertiajs/inertia";
 import CardLayout from "@/layouts/CardLayout.vue";
 
 export default {
@@ -47,37 +48,19 @@ export default {
 <script setup lang="ts">
 import { ref } from "vue";
 
-const { courses } = defineProps({
-  courses: {
-    type: Array,
-    default: () => [],
+defineProps({
+  message: {
+    type: Object,
+    default: () => ({}),
   },
 });
 
-const selectFormCourseOptions = useSelectFormCourseOptions(courses);
+const form = ref({});
 
-const placeholderPersons = ref([
-  {
-    firstname: "Max",
-    lastname: "Mustermann",
-    email: "max.mustermann@beispiel.de",
-  },
-  {
-    firstname: "Erika",
-    lastname: "Mustermann",
-    email: "erika.mustermann@beispiel.de",
-  },
-]);
-
-const randomPlaceholderPerson =
-  placeholderPersons.value[
-    Math.floor(Math.random() * placeholderPersons.value.length)
-  ];
+const randomPlaceholderPerson = usePlaceholderPerson();
 
 const submitted = ref(false);
 const submitHandler = async () => {
-  // Let's pretend this is an ajax request:
-  await new Promise((r) => setTimeout(r, 1000));
-  submitted.value = true;
+  Inertia.post("/login", form.value);
 };
 </script>

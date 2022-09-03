@@ -27,6 +27,7 @@ Route::group([
     ],
 ], function () {
     Route::get('/login', [AppController::class, 'login'])->name('app.login');
+    Route::post('/login', [AppController::class, 'loginUser'])->name('app.loginUser');
     Route::get('/register', [AppController::class, 'register'])->name('app.register');
     Route::post('/register', [AppController::class, 'registerUser'])->name('app.registerUser');
 });
@@ -47,7 +48,11 @@ Route::group([
         Route::get('/register', [DashboardEventController::class, 'register'])->name('dashboard.event.register');
         Route::get('/unregister', [DashboardEventController::class, 'unregister'])->name('dashboard.event.unregister');
     });
+
+    Route::get('{any?}', [DashboardController::class, 'cmsPage'])->where('any', '.*');
 });
+
+Route::get('{any?}', [AppController::class, 'notFound'])->where('any', '.*');
 
 
 // TODO: remove devlopment routes

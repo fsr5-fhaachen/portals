@@ -16,6 +16,8 @@
 
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
       <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <AppMessage :message="message" />
+
         <div>
           <slot />
         </div>
@@ -44,4 +46,11 @@
 <script setup lang="ts">
 const packageName = __PACKAGE_NAME__;
 const packageRepositoryUrl = __PACKAGE_REPOSITORY_URL__;
+
+defineProps({
+  message: {
+    type: Object,
+    default: () => ({}),
+  },
+});
 </script>

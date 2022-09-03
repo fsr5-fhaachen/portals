@@ -31,4 +31,14 @@ class DashboardController extends Controller
     {
         return Inertia::render('Dashboard/Test');
     }
+
+    /**
+     * Display the request cms page
+     *
+     * @return \Inertia\Response
+     */
+    public function cmsPage()
+    {
+        return Inertia::render('Dashboard/404');
+    }
 }

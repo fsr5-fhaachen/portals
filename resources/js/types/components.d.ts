@@ -9,6 +9,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     2: typeof import('./../components/ui/Dl copy 2.vue')['default']
     AppLink: typeof import('./../components/app/Link.vue')['default']
+    AppMessage: typeof import('./../components/app/Message.vue')['default']
     AppNavbar: typeof import('./../components/app/Navbar.vue')['default']
     Card: typeof import('./../layouts/Card.vue')['default']
     CardBase: typeof import('./../components/card/Base.vue')['default']
@@ -33,6 +34,7 @@ declare module '@vue/runtime-core' {
     UiDt: typeof import('./../components/ui/Dt.vue')['default']
     UiH1: typeof import('./../components/ui/H1.vue')['default']
     UiH2: typeof import('./../components/ui/H2.vue')['default']
+    UiMessage: typeof import('./../components/ui/Message.vue')['default']
     UiTimeString: typeof import('./../components/ui/TimeString.vue')['default']
   }
 }
