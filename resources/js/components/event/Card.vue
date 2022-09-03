@@ -25,7 +25,7 @@
 
     <template #footer>
       <div class="-mt-px flex divide-x divide-gray-200">
-        <template v-if="isRegistered">
+        <template v-if="userIsRegistered">
           <div class="flex w-0 flex-1">
             <AppLink
               theme="none"
@@ -100,6 +100,10 @@ const { event } = defineProps({
     type: Object as PropType<App.Models.Event>,
     required: true,
   },
+  userIsRegistered: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const isExpired = computed(() => {
@@ -112,9 +116,5 @@ const canRegister = computed(() => {
   const registrationUntil = new Date(event.registration_until);
 
   return now >= registrationFrom && now <= registrationUntil;
-});
-
-const isRegistered = computed(() => {
-  return Math.random() > 0.5;
 });
 </script>

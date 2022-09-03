@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('type', 255);
             $table->boolean('has_requirements');
             $table->boolean('consider_alcohol');
-            $table->json('form');
+            $table->json('form')->nullable();
         });
     }
     

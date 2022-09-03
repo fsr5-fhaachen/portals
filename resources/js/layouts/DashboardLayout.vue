@@ -13,15 +13,21 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
+import { PropType } from "vue";
+
+const { pages } = defineProps({
   message: {
     type: Object,
     default: () => ({}),
+  },
+  pages: {
+    type: Array as PropType<App.Models.Page[]>,
+    default: () => [],
   },
 });
 
 const navigation = [
   { title: "Veranstaltungen", href: "/dashboard" },
-  { title: "Test", href: "/dashboard/test" },
+  ...usePagesAsNavigation(pages, "/dashboard/"),
 ];
 </script>

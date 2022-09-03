@@ -18,13 +18,13 @@ return new class extends Migration
             $table->timestamps();
             $table->foreignId('event_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('user_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('slot_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('group_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->boolean('drinks_alcohol');
-            $table->boolean('fulfils_requirements');
+            $table->foreignId('slot_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('group_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->boolean('drinks_alcohol')->nullable();
+            $table->boolean('fulfils_requirements')->nullable();
             $table->boolean('is_present')->default(False);
-            $table->json('form_responses');
-            $table->integer('queue_position');
+            $table->json('form_responses')->nullable();
+            $table->integer('queue_position')->nullable();
         });
     }
 

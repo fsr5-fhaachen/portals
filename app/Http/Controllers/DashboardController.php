@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Page;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -17,28 +20,32 @@ class DashboardController extends Controller
         // get events ordered by registration_from
         $events = Event::orderBy('registration_from')->get();
 
-        return Inertia::render('Dashboard/Index', [
-            'events' => $events
-        ]);
-    }
+        // get registrations of the user
+        $registrations = Auth::user()->registrations;
 
-    /**
-     * Display the dashboard test page 
-     *
-     * @return \Inertia\Response
-     */
-    public function test()
-    {
-        return Inertia::render('Dashboard/Test');
+        return Inertia::render('Dashboard/Index', [
+            'events' => $events,
+            'registrations' => $registrations
+        ]);
     }
 
     /**
      * Display the request cms page
      *
+     * @param Request $request
+     * 
      * @return \Inertia\Response
      */
-    public function cmsPage()
+    public function cmsPage(Request $request)
     {
-        return Inertia::render('Dashboard/404');
+        $page = Page::where('slug', $request->slug)->first();
+
+        if(!$page) {
+            return Inertia::render('Dashboard/404');
+        }
+
+        return Inertia::render('Dashboard/Page', [
+            'page' => $page
+        ]);
     }
 }

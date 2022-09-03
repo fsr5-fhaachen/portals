@@ -39,20 +39,20 @@ Route::group([
     ],
 ], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
-    Route::get('/test', [DashboardController::class, 'test'])->name('dashboard.test');
 
     Route::group([
         'prefix' => 'event/{event}',
     ], function () {
         Route::get('/', [DashboardEventController::class, 'index'])->name('dashboard.event.index');
         Route::get('/register', [DashboardEventController::class, 'register'])->name('dashboard.event.register');
+        Route::post('/register', [DashboardEventController::class, 'registerUser'])->name('dashboard.event.registerUser');
         Route::get('/unregister', [DashboardEventController::class, 'unregister'])->name('dashboard.event.unregister');
+        Route::post('/unregister', [DashboardEventController::class, 'unregisterUser'])->name('dashboard.event.unregisterUser');
     });
 
-    Route::get('{any?}', [DashboardController::class, 'cmsPage'])->where('any', '.*');
+    Route::get('{slug?}', [DashboardController::class, 'cmsPage'])->where('slug', '.*');
 });
 
-Route::get('{any?}', [AppController::class, 'notFound'])->where('any', '.*');
 
 
 // TODO: remove devlopment routes
@@ -76,3 +76,5 @@ Route::group([
     Route::get('/assign/{groupSize}/groupphase', [AdminController::class, 'randAssignmentGroupPhase']);
     Route::get('/assign/{groupSize}/fhtour/{course}', [AdminController::class, 'randAssignmentFhTour']);
 });
+
+Route::get('{any?}', [AppController::class, 'notFound'])->where('any', '.*');

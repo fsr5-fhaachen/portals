@@ -3,7 +3,6 @@
     <FormKit
       type="form"
       id="registration-example"
-      :form-class="submitted ? 'hide' : 'show'"
       submit-label="Register"
       @submit="submitHandler"
       :actions="false"
@@ -24,9 +23,6 @@
         </FormRow>
       </FormContainer>
     </FormKit>
-    <div v-if="submitted">
-      <h2>Submission successful!</h2>
-    </div>
 
     <div class="mt-6 relative flex justify-center text-sm">
       <AppLink href="/register">
@@ -59,7 +55,6 @@ const form = ref({});
 
 const randomPlaceholderPerson = usePlaceholderPerson();
 
-const submitted = ref(false);
 const submitHandler = async () => {
   Inertia.post("/login", form.value);
 };

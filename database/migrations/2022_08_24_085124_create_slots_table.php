@@ -18,9 +18,9 @@ return new class extends Migration
             $table->string('name', 255)->nullable(False);
             $table->timestamps();
             $table->foreignId('event_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->boolean('has_requirements');
-            $table->integer('maximum_participants');
-            $table->json('form');
+            $table->boolean('has_requirements')->default(False);
+            $table->integer('maximum_participants')->nullable();
+            $table->json('form')->nullable();
         });
     }
 

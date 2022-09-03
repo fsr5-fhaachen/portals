@@ -6,7 +6,6 @@
       <FormKit
         type="form"
         id="registration-example"
-        :form-class="submitted ? 'hide' : 'show'"
         submit-label="Register"
         @submit="submitHandler"
         :actions="false"
@@ -64,7 +63,7 @@
             />
           </FormRow>
 
-          <template v-if="event.consider_alcohol || dynamicFormSchema">
+          <template v-if="event.consider_alcohol || dynamicFormSchema.length">
             <FormDivider />
 
             <FormRow>
@@ -88,9 +87,6 @@
           </FormRow>
         </FormContainer>
       </FormKit>
-      <div v-if="submitted">
-        <h2>Submission successful!</h2>
-      </div>
     </CardBase>
   </LayoutDashboardContent>
 </template>
@@ -106,6 +102,7 @@ export default {
 <script setup lang="ts">
 import { computed, ref, PropType } from "vue";
 import { FormKitSchemaNode } from "@formkit/core";
+import { Inertia } from "@inertiajs/inertia";
 
 const { event } = defineProps({
   event: {
@@ -147,10 +144,7 @@ const dynamicFormSchema = computed(() => {
   return result;
 });
 
-const submitted = ref(false);
 const submitHandler = async () => {
-  // Let's pretend this is an ajax request:
-  await new Promise((r) => setTimeout(r, 1000));
-  submitted.value = true;
+  Inertia.post("/dashboard/event/" + event.id + "/register", form.value);
 };
 </script>

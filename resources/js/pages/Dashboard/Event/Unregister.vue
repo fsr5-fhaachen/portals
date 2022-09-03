@@ -6,11 +6,10 @@
       <FormKit
         type="form"
         id="registration-example"
-        :form-class="submitted ? 'hide' : 'show'"
         submit-label="Register"
         @submit="submitHandler"
         :actions="false"
-        #default="{ value }"
+        v-model="form"
       >
         <FormContainer>
           <FormRow>
@@ -51,14 +50,12 @@
           </FormRow>
         </FormContainer>
       </FormKit>
-      <div v-if="submitted">
-        <h2>Submission successful!</h2>
-      </div>
     </CardBase>
   </LayoutDashboardContent>
 </template>
 
 <script lang="ts">
+import { Inertia } from "@inertiajs/inertia";
 import DashboardCardLayout from "@/layouts/DashboardCardLayout.vue";
 
 export default {
@@ -69,17 +66,16 @@ export default {
 <script setup lang="ts">
 import { ref, PropType } from "vue";
 
-defineProps({
+const { event } = defineProps({
   event: {
     type: Object as PropType<App.Models.Event>,
     required: true,
   },
 });
 
-const submitted = ref(false);
+const form = ref({});
+
 const submitHandler = async () => {
-  // Let's pretend this is an ajax request:
-  await new Promise((r) => setTimeout(r, 1000));
-  submitted.value = true;
+  Inertia.post("/dashboard/event/" + event.id + "/unregister", form.value);
 };
 </script>
