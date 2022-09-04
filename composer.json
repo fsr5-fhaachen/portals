@@ -1,7 +1,7 @@
 {
   "name": "fsr5-fhaachen/groups",
   "type": "project",
-  "description": "ToDo",
+  "description": "Group allocation tool for the first week of the Department of Electrical Engineering and Information Technology at the FH Aachen - University of Applied Sciences.",
   "keywords": [],
   "license": "MIT",
   "require": {

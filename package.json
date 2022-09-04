@@ -1,10 +1,10 @@
 {
-  "name": "groups",
-  "description": "Groups",
+  "name": "@fsr5-fhaachen/groups",
+  "description": "Group allocation tool for the first week of the Department of Electrical Engineering and Information Technology at the FH Aachen - University of Applied Sciences.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fsr5-fhaachen/groups/"
+    "url": "https://github.com/fsr5-fhaachen/groups"
   },
   "scripts": {
     "dev": "vite",
