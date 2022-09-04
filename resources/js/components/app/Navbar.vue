@@ -20,17 +20,17 @@
               :href="item.href"
               :class="{
                 'border-fhac-mint text-gray-900': $page.url == item.href,
-                'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300':
+                'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700':
                   $page.url != item.href,
               }"
-              class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+              class="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium"
             >
               {{ item.title }}
             </InertiaLink>
           </div>
         </div>
 
-        <div class="-mr-2 flex items-center sm:hidden w-10">
+        <div class="-mr-2 flex w-10 items-center sm:hidden">
           <!-- Mobile menu button -->
           <DisclosureButton
             class="inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-fhac-mint focus:ring-offset-2"
@@ -59,12 +59,12 @@
           :as="InertiaLink"
           :href="item.href"
           :class="{
-            'bg-gray-100 border-fhac-mint text-fhac-mint-dark':
+            'border-fhac-mint bg-gray-100 text-fhac-mint-dark':
               $page.url == item.href,
-            'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800':
+            'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800':
               $page.url != item.href,
           }"
-          class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+          class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
         >
           {{ item.title }}
         </DisclosureButton>
