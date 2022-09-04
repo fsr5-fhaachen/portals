@@ -51,6 +51,8 @@ php artisan migrate
 
 ## Usage
 
+### development
+
 For development, you can use the built-in PHP server:
 
 ```sh
@@ -62,6 +64,31 @@ and the vite dev server:
 ```sh
 npm run dev
 ```
+
+### linting
+
+You can lint the code with the following commands:
+
+```sh
+npm run lint
+php artisan fixer:fix --dry-run -vvv
+```
+
+and try to fix the errors with:
+
+```sh
+npm run lint:fix
+php artisan fixer:fix -vvv
+```
+
+### testing
+
+You can run the tests with:
+
+```sh
+vendor/bin/phpunit
+```
+
 
 ## Authors
 
