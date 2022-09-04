@@ -1,11 +1,12 @@
 <?php
 
 use App\Http\Controllers\AppController;
-use App\Http\Controllers\TutorController;
-use App\Http\Controllers\TutorGroupController;
-use App\Http\Controllers\TutorStationController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DatabaseTestController;
+use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,77 +19,46 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/', [AppController::class, 'index'])->name('app.index');
 
-// student
-Route::get('/', [AppController::class, 'index']);
-Route::post('/', [AppController::class, 'store']);
-Route::get('/login/', [AppController::class, 'login']);
-Route::post('/login/', [AppController::class, 'loginStudent']);
 Route::group([
-    'middleware' => ['isStudent']
+    'middleware' => [
+        RedirectIfAuthenticated::class
+    ],
 ], function () {
-    Route::get('/group/', [AppController::class, 'group'])->name('group');
+    Route::get('/login', [AppController::class, 'login'])->name('app.login');
+    Route::post('/login', [AppController::class, 'loginUser'])->name('app.loginUser');
+    Route::get('/register', [AppController::class, 'register'])->name('app.register');
+    Route::post('/register', [AppController::class, 'registerUser'])->name('app.registerUser');
 });
 
-// tutor
-Route::get('/tutor/', [TutorController::class, 'index']);
-Route::post('/tutor/', [TutorController::class, 'login']);
 Route::group([
-    'prefix' => 'tutor',
-    'middleware' => ['isTutor']
+    'prefix' => 'dashboard',
+    'middleware' => [
+        Authenticate::class,
+    ],
 ], function () {
-    Route::get('/overview', [TutorController::class, 'overview'])->name('tutor.overview');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
 
     Route::group([
-        'prefix' => 'group',
+        'prefix' => 'event/{event}',
     ], function () {
-        Route::get('/{id}', [TutorGroupController::class, 'index']);
-        Route::post('/{id}/join', [TutorGroupController::class, 'join']);
-        Route::post('/student/{id}/attended', [TutorGroupController::class, 'studentAttended']);
-        Route::post('/student/{id}/unattended', [TutorGroupController::class, 'studentUnattended']);
-        Route::post('/station/{id}/done', [TutorGroupController::class, 'stationDone']);
-        Route::post('/station/{id}/undone', [TutorGroupController::class, 'stationUndone']);
+        Route::get('/', [DashboardEventController::class, 'index'])->name('dashboard.event.index');
+        Route::get('/register', [DashboardEventController::class, 'register'])->name('dashboard.event.register');
+        Route::post('/register', [DashboardEventController::class, 'registerUser'])->name('dashboard.event.registerUser');
+        Route::get('/unregister', [DashboardEventController::class, 'unregister'])->name('dashboard.event.unregister');
+        Route::post('/unregister', [DashboardEventController::class, 'unregisterUser'])->name('dashboard.event.unregisterUser');
     });
 
-    Route::group([
-        'prefix' => 'station',
-    ], function () {
-        Route::get('/{id}', [TutorStationController::class, 'index']);
-        Route::post('/{id}/join', [TutorStationController::class, 'join']);
-    });
-});
-Route::group([
-    'prefix' => 'admin',
-    'middleware' => ['isTutor', 'isAdmin']
-], function () {
-    Route::get('/', [AdminController::class, 'index']);
-    Route::get('/start', [AdminController::class, 'start']);
-    Route::post('/start', [AdminController::class, 'startGrouping']);
-    Route::get('/result', [AdminController::class, 'result'])->name('admin.result');
+    Route::get('{slug?}', [DashboardController::class, 'cmsPage'])->where('slug', '.*');
 });
 
+
+
+// TODO: remove devlopment routes
 Route::group([
     'prefix' => 'dev',
-    'middleware' => ['isTutor', 'isAdmin']
 ], function () {
-
-    //Routes to test factories. REMOVE BEFORE DEPLOYMENT
-    Route::get('/testfactorystudent', function () {
-        return \App\Models\Student::factory()->make();
-    });
-    Route::get('/testfactorytutor', function () {
-        return \App\Models\Tutor::factory()->make();
-    });
-    Route::get('/testfactorygroup', function () {
-        return \App\Models\Group::factory()->make();
-    });
-    Route::get('/testfactorystation', function () {
-        return \App\Models\Station::factory()->make();
-    });
-    Route::get('/testfactorytimeslot', function () {
-        return \App\Models\Timeslot::factory()->make();
-    });
-
     //Routes to test database. REMOVE BEFORE DEPLOYMENT
     Route::get('/cleartable/all', [DatabaseTestController::class, 'clearAllTables']);
     Route::get('/cleartable/{tableName}', [DatabaseTestController::class, 'clearTable']);
@@ -106,3 +76,5 @@ Route::group([
     Route::get('/assign/{groupSize}/groupphase', [AdminController::class, 'randAssignmentGroupPhase']);
     Route::get('/assign/{groupSize}/fhtour/{course}', [AdminController::class, 'randAssignmentFhTour']);
 });
+
+Route::get('{any?}', [AppController::class, 'notFound'])->where('any', '.*');

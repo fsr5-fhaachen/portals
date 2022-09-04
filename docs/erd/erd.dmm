@@ -555,7 +555,7 @@
 				},
 				{
 					"id": "0a11870c-1468-4a39-acdd-404ec2775031",
-					"name": "slots_id",
+					"name": "slot_id",
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
@@ -780,7 +780,7 @@
 					"datatype": "INT",
 					"param": "",
 					"pk": false,
-					"nn": true,
+					"nn": false,
 					"comment": "",
 					"defaultvalue": "",
 					"data": "",
@@ -889,9 +889,47 @@
 					"ref": "events"
 				},
 				{
+					"id": "31f6e73c-47c2-41b9-afb4-26bc57774860",
+					"name": "name",
+					"datatype": "VARCHAR",
+					"param": "255",
+					"pk": false,
+					"nn": true,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"autoinc": false,
+					"collation": null,
+					"charset": null,
+					"binary": false,
+					"zerofill": false,
+					"unsigned": false,
+					"enum": "",
+					"after": ""
+				},
+				{
 					"id": "2bff46e9-66b2-417d-a3df-8a1999a6c12c",
 					"name": "has_requirements",
 					"datatype": "BOOLEAN",
+					"param": "",
+					"pk": false,
+					"nn": false,
+					"comment": "",
+					"defaultvalue": "",
+					"data": "",
+					"autoinc": false,
+					"collation": null,
+					"charset": null,
+					"binary": false,
+					"zerofill": false,
+					"unsigned": false,
+					"enum": "",
+					"after": ""
+				},
+				{
+					"id": "4b5f60d1-01e5-493f-9370-90a3845734d4",
+					"name": "maximum_participants",
+					"datatype": "INT",
 					"param": "",
 					"pk": false,
 					"nn": false,
@@ -2243,7 +2281,7 @@
 			"includeSchema": "always",
 			"quotation": "if_needed"
 		},
-		"lastSaved": "Thu Aug 25 2022 18:15:33 GMT+0200 (Mitteleuropäische Sommerzeit)"
+		"lastSaved": "Fri Sep 02 2022 23:06:54 GMT+0200 (Mitteleuropäische Sommerzeit)"
 	},
 	"otherObjects": {},
 	"diagrams": {
@@ -2284,7 +2322,7 @@
 				"58be03bf-76d4-4c75-941c-9077ee55ef59": {
 					"referencedItemId": "58be03bf-76d4-4c75-941c-9077ee55ef59",
 					"x": 1586,
-					"y": 483,
+					"y": 482,
 					"gHeight": 207,
 					"gWidth": 257,
 					"color": "#ffffff",
@@ -2316,9 +2354,9 @@
 				},
 				"8274c9ee-9797-402d-9530-4f6d5b2b2b3f": {
 					"referencedItemId": "8274c9ee-9797-402d-9530-4f6d5b2b2b3f",
-					"x": 1637,
-					"y": 213,
-					"gHeight": 135,
+					"x": 1629,
+					"y": 216,
+					"gHeight": 171,
 					"gWidth": 257,
 					"color": "#ffffff",
 					"background": "#03a9f4",

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreignId('course_id')->nullable(False)->constrained()->onUpdate('cascade')->onDelete('cascade');
             $table->boolean('is_tutor')->default(False);
             $table->boolean('is_admin')->default(False);
+            $table->rememberToken();
         });
     }
 

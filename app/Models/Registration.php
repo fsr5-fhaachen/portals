@@ -18,6 +18,15 @@ class Registration extends Model
   protected $guarded = [];
 
   /**
+   * The attributes that should be cast.
+   *
+   * @var array
+   */
+  protected $casts = [
+      'form_responses' => 'array',
+  ];
+
+  /**
    * Get event for the registration.
    *
    * @return BelongsTo
