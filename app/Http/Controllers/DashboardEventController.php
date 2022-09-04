@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Registration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
@@ -170,14 +171,16 @@ class DashboardEventController extends Controller
         $event = $this->getEvent($request);
 
         // check if the user is already registered
-        if (!$event->registrations()->where('user_id', auth()->user()->id)->exists()) {
+        $registration = $event->registrations()->where('user_id', auth()->user()->id)->first();
+        if (!$registration->exists()) {
             Session::flash('info', 'Du bist nicht für dieses Event angemeldet.');
 
             return Redirect::back();
         }
 
-        // unregister the user from the event
-        $event->registrations()->where('user_id', auth()->user()->id)->delete();
+        // delete the registration via the model
+        $registration = Registration::find($registration->id);
+        $registration->delete();
 
         Session::flash('success', 'Du wurdest erfolgreich vom Event abgemeldet.');
 
