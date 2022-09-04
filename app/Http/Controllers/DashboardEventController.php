@@ -41,6 +41,28 @@ class DashboardEventController extends Controller
     }
 
     /**
+     * Redirect to the event page for the given event if the registration is not possible
+     *
+     * @param Event $event
+     *
+     * @return \Illuminate\Http\RedirectResponse|void
+     */
+    protected function redirectToEventIfNoRegistrationIsPossible(Event $event)
+    {
+        // check if registration is already open
+        if ($event->registration_from && $event->registration_from->isFuture()) {
+            Session::flash('error', 'Anmeldung ist noch nicht möglich');
+            return $this->redirectToEvent($event);
+        }
+
+        // check if registration is already closed
+        if ($event->registration_to && $event->registration_to->isPast()) {
+            Session::flash('error', 'Anmeldung ist nicht mehr möglich');
+            return $this->redirectToEvent($event);
+        }
+    }
+
+    /**
      * Display the event index page
      *
      * @param Request $request
@@ -53,6 +75,7 @@ class DashboardEventController extends Controller
         if ($event instanceof \Inertia\Response) {
             return $event;
         }
+
         $event->slots = $event->slots()->get();
         $registration = $event->registrations()->where('user_id', $request->user()->id)->first();
 
@@ -75,6 +98,10 @@ class DashboardEventController extends Controller
         if ($event instanceof \Inertia\Response) {
             return $event;
         }
+        $registrationIsPossible = $this->redirectToEventIfNoRegistrationIsPossible($event);
+        if ($registrationIsPossible instanceof \Illuminate\Http\RedirectResponse) {
+            return $registrationIsPossible;
+        }
         $event->slots = $event->slots()->get();
 
         return Inertia::render('Dashboard/Event/Register', [
@@ -95,6 +122,10 @@ class DashboardEventController extends Controller
         if ($event instanceof \Inertia\Response) {
             return $event;
         }
+        $registrationIsPossible = $this->redirectToEventIfNoRegistrationIsPossible($event);
+        if ($registrationIsPossible instanceof \Illuminate\Http\RedirectResponse) {
+            return $registrationIsPossible;
+        }
 
         return Inertia::render('Dashboard/Event/Unregister', [
             'event' => $event
@@ -111,6 +142,13 @@ class DashboardEventController extends Controller
     public function registerUser(Request $request)
     {
         $event = $this->getEvent($request);
+        if ($event instanceof \Inertia\Response) {
+            return $event;
+        }
+        $registrationIsPossible = $this->redirectToEventIfNoRegistrationIsPossible($event);
+        if ($registrationIsPossible instanceof \Illuminate\Http\RedirectResponse) {
+            return $registrationIsPossible;
+        }
 
         // check if the user is already registered
         if ($event->registrations()->where('user_id', auth()->user()->id)->exists()) {
@@ -169,6 +207,13 @@ class DashboardEventController extends Controller
     public function unregisterUser(Request $request)
     {
         $event = $this->getEvent($request);
+        if ($event instanceof \Inertia\Response) {
+            return $event;
+        }
+        $registrationIsPossible = $this->redirectToEventIfNoRegistrationIsPossible($event);
+        if ($registrationIsPossible instanceof \Illuminate\Http\RedirectResponse) {
+            return $registrationIsPossible;
+        }
 
         // check if the user is already registered
         $registration = $event->registrations()->where('user_id', auth()->user()->id)->first();
