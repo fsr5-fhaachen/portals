@@ -21,7 +21,6 @@ class SlotFactory extends Factory
           'event_id' => Event::all(['id'])->random(),
           'has_requirements' => $this->faker->boolean(),
           'maximum_participants' => $this->faker->numberBetween(0, 25),
-          'form' => '{}'
         ];
     }
 }
