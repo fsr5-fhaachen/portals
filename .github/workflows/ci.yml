@@ -1,4 +1,4 @@
-name: PHP CI
+name: CI
 
 on:
   push:
@@ -17,28 +17,24 @@ jobs:
 
     steps:
       - name: Use PHP ${{ matrix.php-version }}
-        uses: shivammathur/setup-php@e04e1d97f0c0481c6e1ba40f8a538454fe5d7709
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-      - uses: actions/checkout@v3
-      - name: Copy .env
-        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-      - name: Install Dependencies
-        run: composer update --ignore-platform-req=php+ --no-interaction --no-progress
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3.4.1
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
-      - name: Install latest npm
-        run: |
-          npm install -g npm &&
-          npm --version &&
-          npm list -g --depth 0
-      - name: Install Dependencies
+      - uses: actions/checkout@v3
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      - name: Install PHP Dependencies
+        run: composer update --ignore-platform-req=php+ --no-interaction --no-progress
+      - name: Install Node.js  Dependencies
         run: |
           npm ci
-      - run: npm run build --if-present
+      - name: Execute build
+        run: npm run build --if-present
       - name: Generate key
         run: php artisan key:generate
       - name: Directory Permissions
