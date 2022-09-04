@@ -36,7 +36,7 @@ jobs:
           npm ci
       - name: Execute Node.js linting
         run: |
-           php artisan fixer:fix --dry-run
+           npm run lint
       - name: Execute PHP linting
         run: |
           php artisan fixer:fix --dry-run -vvv
