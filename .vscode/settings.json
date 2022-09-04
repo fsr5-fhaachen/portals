@@ -1,9 +1,10 @@
 {
+  "editor.formatOnSave": true,
   "editor.tabSize": 2,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "importSorter.generalConfiguration.sortOnBeforeSave": true,
-  "todo-tree.filtering.excludeGlobs": [
-    "**/node_modules",
-    "**/node_modules/**"
-  ]
+  "importSorter.importStringConfiguration.maximumNumberOfImportExpressionsPerLine.type": "newLineEachExpressionAfterCountLimitExceptIfOnlyOne",
+  "importSorter.importStringConfiguration.maximumNumberOfImportExpressionsPerLine.count": 80,
+  "importSorter.importStringConfiguration.tabSize": 2,
+  "importSorter.importStringConfiguration.quoteMark": "double"
 }
