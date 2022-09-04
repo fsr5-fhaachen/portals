@@ -95,16 +95,23 @@ vendor/bin/phpunit
 👤 **Titus Kirch (main author)**
 
 * Website: https://tkirch.dev/
-* LinkedIn; [Titus Kirch](https://www.linkedin.com/in/tituskirch/)
+* LinkedIn: [Titus Kirch](https://www.linkedin.com/in/tituskirch/)
 * Twitter: [@TitusKirch](https://twitter.com/TitusKirch)
 * Github: [@TitusKirch](https://github.com/TitusKirch)
 
 👤 **Benedikt Haas (main author)**
 
+* LinkedIn: [Benedikt Haas](https://www.linkedin.com/in/benedikt-haas-ab698924a/)
 * Github: [@BenediktHaas96](https://github.com/BenediktHaas96)
+
+👤 **Simon Ostendorf**
+
+* LinkedIn: [Titus Kirch](https://www.linkedin.com/in/simonostendorf/)
+* Github: [@simonostendorf](https://github.com/simonostendorf)
 
 👤 **Patrik Schmolke**
 
+* LinkedIn: [Patrik Schmolke](https://www.linkedin.com/in/patrik-schmolke-612962175/)
 * Github: [@Rec0gnice](https://github.com/Rec0gnice)
 
 Show here to see the full list of [contributors](https://github.com/fsr5-fhaachen/groups/graphs/contributors) who participated in this project.
