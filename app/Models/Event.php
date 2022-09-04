@@ -10,50 +10,50 @@ class Event extends Model
 {
     use HasFactory;
 
-  /**
-   * The attributes that aren't mass assignable.
-   *
-   * @var array
-   */
-  protected $guarded = [];
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
 
-  /**
-   * Get groups for the event.
-   *
-   * @return HasMany
-   */
-  public function groups()
-  {
-    return $this->hasMany(Group::class);
-  }
+    /**
+     * Get groups for the event.
+     *
+     * @return HasMany
+     */
+    public function groups()
+    {
+        return $this->hasMany(Group::class);
+    }
 
-  /**
-   * Get registrations for the event.
-   *
-   * @return HasMany
-   */
-  public function registrations()
-  {
-    return $this->hasMany(Registration::class);
-  }
+    /**
+     * Get registrations for the event.
+     *
+     * @return HasMany
+     */
+    public function registrations()
+    {
+        return $this->hasMany(Registration::class);
+    }
 
-  /**
-   * Get slots for the event.
-   *
-   * @return HasMany
-   */
-  public function slots()
-  {
-    return $this->hasMany(Slot::class);
-  }
+    /**
+     * Get slots for the event.
+     *
+     * @return HasMany
+     */
+    public function slots()
+    {
+        return $this->hasMany(Slot::class);
+    }
 
-  /**
-   * Get stations for the event.
-   *
-   * @return HasMany
-   */
-  public function stations()
-  {
-    return $this->hasMany(Station::class);
-  }
+    /**
+     * Get stations for the event.
+     *
+     * @return HasMany
+     */
+    public function stations()
+    {
+        return $this->hasMany(Station::class);
+    }
 }

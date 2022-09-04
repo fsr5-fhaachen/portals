@@ -11,30 +11,30 @@ class Slot extends Model
 {
     use HasFactory;
 
-  /**
-   * The attributes that aren't mass assignable.
-   *
-   * @var array
-   */
-  protected $guarded = [];
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
 
-  /**
-   * Get registrations for the slot.
-   *
-   * @return HasMany
-   */
-  public function registrations()
-  {
-    return $this->hasMany(Registration::class);
-  }
+    /**
+     * Get registrations for the slot.
+     *
+     * @return HasMany
+     */
+    public function registrations()
+    {
+        return $this->hasMany(Registration::class);
+    }
 
-  /**
-   * Get event for the slot.
-   *
-   * @return BelongsTo
-   */
-  public function event()
-  {
-    return $this->belongsTo(Event::class);
-  }
+    /**
+     * Get event for the slot.
+     *
+     * @return BelongsTo
+     */
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
 }

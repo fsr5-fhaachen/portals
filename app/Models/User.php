@@ -12,50 +12,50 @@ class User extends Authenticatable
 {
     use HasFactory;
 
-  /**
-   * The attributes that aren't mass assignable.
-   *
-   * @var array
-   */
-  protected $guarded = []; // TODO: Maybe need to add is_tutor and is_admin here for security reasons
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = []; // TODO: Maybe need to add is_tutor and is_admin here for security reasons
 
-  /**
-   * Get station_tutors for the user.
-   *
-   * @return HasMany
-   */
-  public function stationTutors()
-  {
-    return $this->hasMany(StationTutor::class);
-  }
+    /**
+     * Get station_tutors for the user.
+     *
+     * @return HasMany
+     */
+    public function stationTutors()
+    {
+        return $this->hasMany(StationTutor::class);
+    }
 
-  /**
-   * Get group_tutors for the user.
-   *
-   * @return HasMany
-   */
-  public function groupTutors()
-  {
-    return $this->hasMany(GroupTutor::class);
-  }
+    /**
+     * Get group_tutors for the user.
+     *
+     * @return HasMany
+     */
+    public function groupTutors()
+    {
+        return $this->hasMany(GroupTutor::class);
+    }
 
-  /**
-   * Get registrations for the user.
-   *
-   * @return HasMany
-   */
-  public function registrations()
-  {
-    return $this->hasMany(Registration::class);
-  }
+    /**
+     * Get registrations for the user.
+     *
+     * @return HasMany
+     */
+    public function registrations()
+    {
+        return $this->hasMany(Registration::class);
+    }
 
-  /**
-   * Get course for the user.
-   *
-   * @return BelongsTo
-   */
-  public function course()
-  {
-    return $this->belongsTo(Course::class);
-  }
+    /**
+     * Get course for the user.
+     *
+     * @return BelongsTo
+     */
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
 }

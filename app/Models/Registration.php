@@ -10,59 +10,59 @@ class Registration extends Model
 {
     use HasFactory;
 
-  /**
-   * The attributes that aren't mass assignable.
-   *
-   * @var array
-   */
-  protected $guarded = [];
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
 
-  /**
-   * The attributes that should be cast.
-   *
-   * @var array
-   */
-  protected $casts = [
-      'form_responses' => 'array',
-  ];
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'form_responses' => 'array',
+    ];
 
-  /**
-   * Get event for the registration.
-   *
-   * @return BelongsTo
-   */
-  public function event()
-  {
-    return $this->belongsTo(Event::class);
-  }
+    /**
+     * Get event for the registration.
+     *
+     * @return BelongsTo
+     */
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
 
-  /**
-   * Get user for the registration.
-   *
-   * @return BelongsTo
-   */
-  public function user()
-  {
-    return $this->belongsTo(User::class);
-  }
+    /**
+     * Get user for the registration.
+     *
+     * @return BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
-  /**
-   * Get slot for the registration.
-   *
-   * @return BelongsTo
-   */
-  public function slot()
-  {
-    return $this->belongsTo(Slot::class);
-  }
+    /**
+     * Get slot for the registration.
+     *
+     * @return BelongsTo
+     */
+    public function slot()
+    {
+        return $this->belongsTo(Slot::class);
+    }
 
-  /**
-   * Get group for the registration.
-   *
-   * @return BelongsTo
-   */
-  public function group()
-  {
-    return $this->belongsTo(Group::class);
-  }
+    /**
+     * Get group for the registration.
+     *
+     * @return BelongsTo
+     */
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
+    }
 }

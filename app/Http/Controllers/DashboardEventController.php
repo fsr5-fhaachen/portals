@@ -12,15 +12,15 @@ class DashboardEventController extends Controller
 {
     /**
      * Return a event by request or redirect
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @return Event | \Inertia\Response
      */
     protected function getEvent(Request $request)
     {
         $event = Event::find($request->event);
-        if(!$event) {
+        if (!$event) {
             return Inertia::render('Dashboard/404');
         }
 
@@ -29,9 +29,9 @@ class DashboardEventController extends Controller
 
     /**
      * Redirect to the event page for the given event
-     * 
+     *
      * @param Event $event
-     * 
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function redirectToEvent(Event $event)
@@ -40,16 +40,16 @@ class DashboardEventController extends Controller
     }
 
     /**
-     * Display the event index page 
+     * Display the event index page
      *
      * @param Request $request
-     * 
+     *
      * @return \Inertia\Response
      */
     public function index(Request $request)
     {
         $event = $this->getEvent($request);
-        if($event instanceof \Inertia\Response) {
+        if ($event instanceof \Inertia\Response) {
             return $event;
         }
         $event->slots = $event->slots()->get();
@@ -65,13 +65,13 @@ class DashboardEventController extends Controller
      * Display the event register page
      *
      * @param Request $request
-     * 
+     *
      * @return \Inertia\Response
      */
     public function register(Request $request)
     {
         $event = $this->getEvent($request);
-        if($event instanceof \Inertia\Response) {
+        if ($event instanceof \Inertia\Response) {
             return $event;
         }
         $event->slots = $event->slots()->get();
@@ -85,13 +85,13 @@ class DashboardEventController extends Controller
      * Display the event unregister page
      *
      * @param Request $request
-     * 
+     *
      * @return \Inertia\Response
      */
     public function unregister(Request $request)
     {
         $event = $this->getEvent($request);
-        if($event instanceof \Inertia\Response) {
+        if ($event instanceof \Inertia\Response) {
             return $event;
         }
 
@@ -102,9 +102,9 @@ class DashboardEventController extends Controller
 
     /**
      * Register the user to the event
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function registerUser(Request $request)
@@ -112,7 +112,7 @@ class DashboardEventController extends Controller
         $event = $this->getEvent($request);
 
         // check if the user is already registered
-        if($event->registrations()->where('user_id', auth()->user()->id)->exists()) {
+        if ($event->registrations()->where('user_id', auth()->user()->id)->exists()) {
             Session::flash('info', 'Du bist bereits für dieses Event angemeldet.');
 
             return $this->redirectToEvent($event);
@@ -123,14 +123,14 @@ class DashboardEventController extends Controller
         ];
 
         // check if event consider alcohol
-        if($event->consider_alcohol) {
+        if ($event->consider_alcohol) {
             $userRegistration['drinks_alcohol'] = !$request->drinks_no_alcohol;
         }
 
         // check if event has slots
-        if($event->slots()->exists()) {
+        if ($event->slots()->exists()) {
             // check if the user has selected a slot
-            if(!$request->slot) {
+            if (!$request->slot) {
                 Session::flash('error', 'Du musst einen Slot auswählen.');
 
                 return Redirect::back();
@@ -138,7 +138,7 @@ class DashboardEventController extends Controller
 
             // check if the slot exists
             $slot = $event->slots()->find($request->slot);
-            if(!$slot) {
+            if (!$slot) {
                 Session::flash('error', 'Der ausgewählte Slot existiert nicht.');
 
                 return Redirect::back();
@@ -160,9 +160,9 @@ class DashboardEventController extends Controller
 
     /**
      * Unregister the user from the event
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function unregisterUser(Request $request)
@@ -170,7 +170,7 @@ class DashboardEventController extends Controller
         $event = $this->getEvent($request);
 
         // check if the user is already registered
-        if(!$event->registrations()->where('user_id', auth()->user()->id)->exists()) {
+        if (!$event->registrations()->where('user_id', auth()->user()->id)->exists()) {
             Session::flash('info', 'Du bist nicht für dieses Event angemeldet.');
 
             return Redirect::back();

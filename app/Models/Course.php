@@ -10,30 +10,30 @@ class Course extends Model
 {
     use HasFactory;
 
-  /**
-   * The attributes that aren't mass assignable.
-   *
-   * @var array
-   */
-  protected $guarded = [];
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
 
-  /**
-   * Get users for the course.
-   *
-   * @return HasMany
-   */
-  public function users()
-  {
-    return $this->hasMany(User::class);
-  }
+    /**
+     * Get users for the course.
+     *
+     * @return HasMany
+     */
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 
-  /**
-   * Get groups for the course.
-   *
-   * @return HasMany
-   */
-  public function groups()
-  {
-    return $this->hasMany(Group::class);
-  }
+    /**
+     * Get groups for the course.
+     *
+     * @return HasMany
+     */
+    public function groups()
+    {
+        return $this->hasMany(Group::class);
+    }
 }

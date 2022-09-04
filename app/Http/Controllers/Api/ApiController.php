@@ -6,13 +6,13 @@ use App\Http\Controllers\Controller;
 
 class ApiController extends Controller
 {
-  /**
-   * Display the index page
-   * 
-   * @return \Illuminate\Http\JsonResponse
-   */
-  public function ping()
-  {
-     return response()->json(['message' => 'pong']);
-  }
+    /**
+     * Display the index page
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function ping()
+    {
+        return response()->json(['message' => 'pong']);
+    }
 }
