@@ -30,9 +30,12 @@ jobs:
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
       - name: Install PHP Dependencies
         run: composer update --ignore-platform-req=php+ --no-interaction --no-progress
-      - name: Install Node.js  Dependencies
+      - name: Install Node.js Dependencies
         run: |
           npm ci
+      - name: Execute Node.js linting
+        run: |
+          npm run lint
       - name: Execute build
         run: npm run build --if-present
       - name: Generate key
