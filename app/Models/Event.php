@@ -20,6 +20,18 @@ class Event extends Model implements Auditable
     protected $guarded = [];
 
     /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'registration_from' => 'datetime:Y-m-d H:i:s',
+        'registration_to' => 'datetime:Y-m-d H:i:s',
+    ];
+
+
+
+    /**
      * Get groups for the event.
      *
      * @return HasMany

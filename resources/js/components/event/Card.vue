@@ -12,11 +12,11 @@
         </UiDd>
       </template>
 
-      <template v-if="event.registration_until">
+      <template v-if="event.registration_to">
         <UiDt>Anmeldung bis</UiDt>
         <UiDd>
           <UiDateTimeString
-            :value="event.registration_until"
+            :value="event.registration_to"
             :withClockSuffix="true"
           />
         </UiDd>
@@ -107,13 +107,13 @@ const { event } = defineProps({
 });
 
 const isExpired = computed(() => {
-  return new Date(event.registration_until) < new Date();
+  return new Date(event.registration_to) < new Date();
 });
 
 const canRegister = computed(() => {
   const now = new Date();
   const registrationFrom = new Date(event.registration_from);
-  const registrationUntil = new Date(event.registration_until);
+  const registrationUntil = new Date(event.registration_to);
 
   return now >= registrationFrom && now <= registrationUntil;
 });

@@ -150,7 +150,7 @@ declare namespace App.Models {
     updated_at: string | null;
     name: string;
     registration_from: string;
-    registration_until: string;
+    registration_to: string;
     type: string;
     has_requirements: boolean;
     consider_alcohol: boolean;
