@@ -106,7 +106,7 @@ vendor/bin/phpunit
 
 👤 **Simon Ostendorf**
 
-* LinkedIn: [Titus Kirch](https://www.linkedin.com/in/simonostendorf/)
+* LinkedIn: [Simon Ostendorf](https://www.linkedin.com/in/simonostendorf/)
 * Github: [@simonostendorf](https://github.com/simonostendorf)
 
 👤 **Patrik Schmolke**
