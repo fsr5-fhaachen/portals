@@ -1,5 +1,5 @@
 <template>
-  <dl class="flex-1 grid grid-cols-1 sm:grid-cols-2">
+  <dl class="grid flex-1 grid-cols-1 sm:grid-cols-2">
     <slot />
   </dl>
 </template>

@@ -19,7 +19,6 @@ class IsTutor
     {
         // check if user is not logged in as tutor
         if ($request->session()->missing('tutor')) {
-
             // check if user is logged in as student
             if ($request->session()->has('student')) {
                 return Redirect::to('/group');

@@ -27,7 +27,6 @@ class RegistrationFactory extends Factory
           'group_id' => Group::all(['id'])->random(),
           'drinks_alcohol' => $this->faker->boolean(),
           'fulfils_requirements' => $this->faker->boolean(),
-          'form_responses' => '{}',
           'queue_position' => -1
         ];
     }

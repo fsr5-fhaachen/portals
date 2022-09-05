@@ -1,14 +1,16 @@
 {
-  "name": "groups",
-  "description": "Groups",
+  "name": "@fsr5-fhaachen/groups",
+  "description": "Group allocation tool for the first week of the Department of Electrical Engineering and Information Technology at the FH Aachen - University of Applied Sciences.",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fsr5-fhaachen/groups/"
+    "url": "https://github.com/fsr5-fhaachen/groups"
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "lint": "npx prettier --check \"./resources/js/**/*.{ts,vue}\"",
+    "lint:fix": "npx prettier --write \"./resources/js/**/*.{ts,vue}\""
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.7",
@@ -23,7 +25,9 @@
     "unplugin-vue-components": "^0.22.4",
     "vite": "^3.0.9",
     "vue-loader": "^17.0.0",
-    "vue-template-compiler": "^2.7.10"
+    "vue-template-compiler": "^2.7.10",
+    "prettier": "^2.7.1",
+    "prettier-plugin-tailwindcss": "^0.1.13"
   },
   "dependencies": {
     "@formkit/addons": "^1.0.0-beta.10",

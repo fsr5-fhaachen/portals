@@ -14,38 +14,37 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Controller;
-use \Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB;
 use App\Models\Group;
 use App\Models\Station;
 use phpDocumentor\Reflection\Types\String_;
 
 class DatabaseTestController extends Controller
 {
+    /**
+     * Tables that should be affected by clearAllTables.
+     *
+     * @var array
+     */
+    private array $tableNames = [
+      'courses',
+      'events',
+      'group_tutor',
+      'groups',
+      'pages',
+      'registrations',
+      'slots',
+      'station_tutor',
+      'stations',
+      'stops',
+      'users'
+    ];
 
-  /**
-   * Tables that should be affected by clearAllTables.
-   *
-   * @var array
-   */
-  private array $tableNames = [
-    'courses',
-    'events',
-    'group_tutor',
-    'groups',
-    'pages',
-    'registrations',
-    'slots',
-    'station_tutor',
-    'stations',
-    'stops',
-    'users'
-  ];
-
-  /**
-   * Removes all data from all tables found in tableNames
-   *
-   * @return void
-   */
+    /**
+     * Removes all data from all tables found in tableNames
+     *
+     * @return void
+     */
     public function clearAllTables()
     {
         foreach ($this->tableNames as $tableName) {
@@ -62,7 +61,7 @@ class DatabaseTestController extends Controller
    */
   public function clearTable($tableName)
   {
-    DB::table($tableName)->delete();
+      DB::table($tableName)->delete();
   }
 
   /**
@@ -75,32 +74,32 @@ class DatabaseTestController extends Controller
    */
   public function randomFillTable($tableName, $amount)
   {
-    switch ($tableName) {
-      case 'courses':
-        return $this->randomFillCourses($amount);
-      case 'events':
-        return $this->randomFillEvents($amount);
-      case 'pages':
-        return $this->randomFillPages($amount);
-      case 'users':
-        return $this->randomFillUsers($amount);
-      case 'slots':
-        return $this->randomFillSlots($amount);
-      case 'stations':
-        return $this->randomFillStations($amount);
-      case 'groups':
-        return $this->randomFillGroups($amount);
-      case 'group_tutor':
-        return $this->randomFillGroupTutors($amount);
-      case 'stops':
-        return $this->randomFillStops($amount);
-      case 'station_tutor':
-        return $this->randomFillStationTutors($amount);
-      case 'registrations':
-        return $this->randomFillRegistrations($amount);
-      default:
-        return 'Specified table could not be found!';
-    }
+      switch ($tableName) {
+          case 'courses':
+              return $this->randomFillCourses($amount);
+          case 'events':
+              return $this->randomFillEvents($amount);
+          case 'pages':
+              return $this->randomFillPages($amount);
+          case 'users':
+              return $this->randomFillUsers($amount);
+          case 'slots':
+              return $this->randomFillSlots($amount);
+          case 'stations':
+              return $this->randomFillStations($amount);
+          case 'groups':
+              return $this->randomFillGroups($amount);
+          case 'group_tutor':
+              return $this->randomFillGroupTutors($amount);
+          case 'stops':
+              return $this->randomFillStops($amount);
+          case 'station_tutor':
+              return $this->randomFillStationTutors($amount);
+          case 'registrations':
+              return $this->randomFillRegistrations($amount);
+          default:
+              return 'Specified table could not be found!';
+      }
   }
 
   /**
@@ -112,7 +111,7 @@ class DatabaseTestController extends Controller
    */
   public function randomFillCourses($amount)
   {
-    return Course::factory()->count($amount)->create();
+      return Course::factory()->count($amount)->create();
   }
 
   /**
@@ -124,7 +123,7 @@ class DatabaseTestController extends Controller
    */
   public function randomFillEvents($amount)
   {
-    return Event::factory()->count($amount)->create();
+      return Event::factory()->count($amount)->create();
   }
 
   /**
@@ -136,7 +135,7 @@ class DatabaseTestController extends Controller
    */
   public function randomFillPages($amount)
   {
-    return Page::factory()->count($amount)->create();
+      return Page::factory()->count($amount)->create();
   }
 
   /**
@@ -148,7 +147,7 @@ class DatabaseTestController extends Controller
    */
   public function randomFillUsers($amount)
   {
-    return User::factory()->count($amount)->create();
+      return User::factory()->count($amount)->create();
   }
 
   /**
@@ -160,7 +159,7 @@ class DatabaseTestController extends Controller
    */
   public function randomFillSlots($amount)
   {
-    return Slot::factory()->count($amount)->create();
+      return Slot::factory()->count($amount)->create();
   }
 
   /**
@@ -172,7 +171,7 @@ class DatabaseTestController extends Controller
    */
   public function randomFillStations($amount)
   {
-    return Station::factory()->count($amount)->create();
+      return Station::factory()->count($amount)->create();
   }
 
   /**
@@ -184,7 +183,7 @@ class DatabaseTestController extends Controller
    */
   public function randomFillGroups($amount)
   {
-    return Group::factory()->count($amount)->create();
+      return Group::factory()->count($amount)->create();
   }
 
   /**
@@ -196,7 +195,7 @@ class DatabaseTestController extends Controller
    */
   public function randomFillGroupTutors($amount)
   {
-    return GroupTutor::factory()->count($amount)->create();
+      return GroupTutor::factory()->count($amount)->create();
   }
 
   /**
@@ -208,7 +207,7 @@ class DatabaseTestController extends Controller
    */
   public function randomFillStops($amount)
   {
-    return Stop::factory()->count($amount)->create();
+      return Stop::factory()->count($amount)->create();
   }
 
   /**
@@ -220,7 +219,7 @@ class DatabaseTestController extends Controller
    */
   public function randomFillStationTutors($amount)
   {
-    return StationTutor::factory()->count($amount)->create();
+      return StationTutor::factory()->count($amount)->create();
   }
 
   /**
@@ -232,6 +231,6 @@ class DatabaseTestController extends Controller
    */
   public function randomFillRegistrations($amount)
   {
-    return Registration::factory()->count($amount)->create();
+      return Registration::factory()->count($amount)->create();
   }
 }

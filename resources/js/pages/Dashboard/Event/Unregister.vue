@@ -33,11 +33,11 @@
                 </UiDd>
               </template>
 
-              <template v-if="event.registration_until">
+              <template v-if="event.registration_to">
                 <UiDt>Anmeldung bis</UiDt>
                 <UiDd>
                   <UiDateTimeString
-                    :value="event.registration_until"
+                    :value="event.registration_to"
                     :withClockSuffix="true"
                   />
                 </UiDd>
