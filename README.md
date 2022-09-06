@@ -89,6 +89,13 @@ You can run the tests with:
 vendor/bin/phpunit
 ```
 
+### build
+
+You can build the application with:
+
+```sh
+npm run build
+```
 
 ## Authors
 
