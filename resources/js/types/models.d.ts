@@ -12,6 +12,7 @@ declare namespace App.Models {
     title: string;
     slug: string;
     content: string;
+    sort_order: number;
   }
 
   export interface Stop {
