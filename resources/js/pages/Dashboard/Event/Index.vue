@@ -2,44 +2,50 @@
   <LayoutDashboardContent>
     <template #title>{{ event.name }}</template>
 
-    <CardBase>
-      <UiDl>
-        <UiDt>Event</UiDt>
-        <UiDd>
-          {{ event.name }}
-        </UiDd>
-
-        <template v-if="event.registration_from">
-          <UiDt>Anmeldung ab</UiDt>
+    <CardContainer>
+      <CardBase>
+        <UiDl>
+          <UiDt>Event</UiDt>
           <UiDd>
-            <UiDateTimeString
-              :value="event.registration_from"
-              :withClockSuffix="true"
-            />
+            {{ event.name }}
           </UiDd>
-        </template>
 
-        <template v-if="event.registration_to">
-          <UiDt>Anmeldung bis</UiDt>
-          <UiDd>
-            <UiDateTimeString
-              :value="event.registration_to"
-              :withClockSuffix="true"
-            />
-          </UiDd>
-        </template>
-
-        <template v-if="slotData">
-          <UiDt>Slot</UiDt>
-          <UiDd>{{ slotData.name }}</UiDd>
-
-          <template v-if="slotData.maximum_participants">
-            <UiDt>Maximale Teilnehmerzahl</UiDt>
-            <UiDd>{{ slotData.maximum_participants }}</UiDd>
+          <template v-if="event.registration_from">
+            <UiDt>Anmeldung ab</UiDt>
+            <UiDd>
+              <UiDateTimeString
+                :value="event.registration_from"
+                :withClockSuffix="true"
+              />
+            </UiDd>
           </template>
-        </template>
-      </UiDl>
-    </CardBase>
+
+          <template v-if="event.registration_to">
+            <UiDt>Anmeldung bis</UiDt>
+            <UiDd>
+              <UiDateTimeString
+                :value="event.registration_to"
+                :withClockSuffix="true"
+              />
+            </UiDd>
+          </template>
+
+          <template v-if="slotData">
+            <UiDt>Slot</UiDt>
+            <UiDd>{{ slotData.name }}</UiDd>
+
+            <template v-if="slotData.maximum_participants">
+              <UiDt>Maximale Teilnehmerzahl</UiDt>
+              <UiDd>{{ slotData.maximum_participants }}</UiDd>
+            </template>
+          </template>
+        </UiDl>
+      </CardBase>
+
+      <CardBase v-if="event.description">
+        <div class="prose !max-w-full" v-html="event.description"></div>
+      </CardBase>
+    </CardContainer>
   </LayoutDashboardContent>
 </template>
 

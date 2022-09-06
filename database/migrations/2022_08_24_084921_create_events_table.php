@@ -16,6 +16,7 @@ return new class () extends Migration {
             $table->id();
             $table->timestamps();
             $table->string('name', 255)->nullable(false);
+            $table->text('description')->nullable();
             $table->dateTime('registration_from');
             $table->dateTime('registration_to');
             //$table->enum('type', ['group_phase', 'event_registration', 'slot_booking']);
