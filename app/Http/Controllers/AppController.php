@@ -15,11 +15,11 @@ class AppController extends Controller
     /**
      * Display the index page
      *
-     * @return \Inertia\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function index()
     {
-        return Inertia::render('Index');
+        return Redirect::route('app.register');
     }
 
     /**
