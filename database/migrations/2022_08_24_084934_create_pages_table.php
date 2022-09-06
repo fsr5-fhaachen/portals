@@ -18,6 +18,7 @@ return new class () extends Migration {
             $table->string('title', 255);
             $table->string('slug', 255);
             $table->text('content');
+            $table->integer('sort_order')->default(0);
         });
     }
 
