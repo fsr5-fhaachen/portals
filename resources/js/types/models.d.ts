@@ -12,6 +12,7 @@ declare namespace App.Models {
     title: string;
     slug: string;
     content: string;
+    sort_order: number;
   }
 
   export interface Stop {
@@ -28,12 +29,13 @@ declare namespace App.Models {
 
   export interface Slot {
     id: number;
+    name: string;
     created_at: string | null;
     updated_at: string | null;
     event_id: number;
     has_requirements: boolean;
-    maximum_participants: number;
-    form: string;
+    maximum_participants: number | null;
+    form: string | null;
     registrations?: Array<App.Models.Registration> | null;
     event?: App.Models.Event | null;
     registrations_count?: number | null;
@@ -45,13 +47,13 @@ declare namespace App.Models {
     updated_at: string | null;
     event_id: number;
     user_id: number;
-    slot_id: number;
-    group_id: number;
-    drinks_alcohol: boolean;
-    fulfils_requirements: boolean;
+    slot_id: number | null;
+    group_id: number | null;
+    drinks_alcohol: boolean | null;
+    fulfils_requirements: boolean | null;
     is_present: boolean;
-    form_responses: string;
-    queue_position: number;
+    form_responses: string | null;
+    queue_position: number | null;
     event?: App.Models.Event | null;
     user?: App.Models.User | null;
     slot?: App.Models.Slot | null;
@@ -80,6 +82,7 @@ declare namespace App.Models {
     course_id: number;
     is_tutor: boolean;
     is_admin: boolean;
+    remember_token: string | null;
     station_tutors?: Array<App.Models.StationTutor> | null;
     group_tutors?: Array<App.Models.GroupTutor> | null;
     registrations?: Array<App.Models.Registration> | null;
@@ -154,7 +157,8 @@ declare namespace App.Models {
     type: string;
     has_requirements: boolean;
     consider_alcohol: boolean;
-    form: string;
+    form: string | null;
+    description: string | null;
     groups?: Array<App.Models.Group> | null;
     registrations?: Array<App.Models.Registration> | null;
     slots?: Array<App.Models.Slot> | null;

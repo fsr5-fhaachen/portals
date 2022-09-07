@@ -14,6 +14,7 @@ declare module "@vue/runtime-core" {
     Card: typeof import("./../layouts/Card.vue")["default"];
     CardBase: typeof import("./../components/card/Base.vue")["default"];
     CardCard: typeof import("./../components/card/Card.vue")["default"];
+    CardContainer: typeof import("./../components/card/Container.vue")["default"];
     CardLayout: typeof import("./../layouts/CardLayout.vue")["default"];
     copy: typeof import("./../components/ui/Dl copy.vue")["default"];
     DashboardCardLayout: typeof import("./../layouts/DashboardCardLayout.vue")["default"];
