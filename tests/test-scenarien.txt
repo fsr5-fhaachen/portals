@@ -1,0 +1,7 @@
+Gruppenzuordnung
+	-Nach Studiengang (Alle Gruppen habe etwa gleichmäßige Anteile der Studiengänge, zb keine Gruppe mit nur INF, etc.)
+		-Mehrheit INF
+		-Mehrheit WI
+		-Mehrheit ET
+		-Mehrheit MCD
+	-Nach Aklkoholkonsum? (kein/e Nichttrinker/in alleine in einer Gruppe)
