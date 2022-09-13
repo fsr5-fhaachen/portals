@@ -1,6 +1,9 @@
 <template>
   <LayoutDashboardContent>
-    <template #title>Veranstaltungen</template>
+    <template #title>Hallo {{ user.firstname }},</template>
+    <template #subtitle>
+      hier findest du eine Übersicht über alle Veranstaltungen.
+    </template>
     <GirdContainer v-if="events.length">
       <EventCard
         v-for="event in events"
@@ -22,6 +25,10 @@ const { registrations } = defineProps({
   },
   registrations: {
     type: Array as PropType<App.Models.Registration[]>,
+    required: true,
+  },
+  user: {
+    type: Object as PropType<App.Models.User>,
     required: true,
   },
 });
