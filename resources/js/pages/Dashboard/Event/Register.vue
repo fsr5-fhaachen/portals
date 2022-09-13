@@ -132,7 +132,7 @@ const dynamicFormSchema = computed(() => {
   const result: FormKitSchemaNode[] = [];
 
   // get event form
-  if (event.form != "{}") {
+  if (event.form) {
     result.push(...(JSON.parse(event.form) as FormKitSchemaNode[]));
   }
 
