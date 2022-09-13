@@ -2,7 +2,7 @@
   <div class="min-h-full">
     <AppNavbar :navigation="navigation" />
 
-    <div class="sm:mx-auto sm:w-full sm:max-w-lg px-4 sm:px-6 lg:px-8 pt-6">
+    <div class="px-4 pt-6 sm:mx-auto sm:w-full sm:max-w-lg sm:px-6 lg:px-8">
       <AppMessage :message="message" />
     </div>
 

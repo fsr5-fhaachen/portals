@@ -3,7 +3,7 @@
     <template #title>{{ page.title }}</template>
 
     <CardBase>
-      <div class="prose" v-html="page.content"></div>
+      <div class="prose !max-w-full" v-html="page.content"></div>
     </CardBase>
   </LayoutDashboardContent>
 </template>

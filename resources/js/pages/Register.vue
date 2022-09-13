@@ -61,7 +61,7 @@
       </FormContainer>
     </FormKit>
 
-    <div class="mt-6 relative flex justify-center text-sm">
+    <div class="relative mt-6 flex justify-center text-sm">
       <AppLink href="/login">
         Du hast bereits einen Account? Dann melde dich hier an.
       </AppLink>

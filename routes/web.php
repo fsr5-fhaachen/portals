@@ -77,4 +77,4 @@ Route::group([
     Route::get('/assign/{groupSize}/fhtour/{course}', [AdminController::class, 'randAssignmentFhTour']);
 });
 
-Route::get('{any?}', [AppController::class, 'notFound'])->where('any', '.*');
+Route::get('{any?}', [AppController::class, 'notFound'])->where('any', '^((?!api).)*');

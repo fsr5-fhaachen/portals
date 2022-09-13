@@ -339,7 +339,7 @@
 				},
 				{
 					"id": "46c8c73b-2a10-48a1-a928-d5567ee9675b",
-					"name": "registration_until",
+					"name": "registration_to",
 					"datatype": "DATETIME",
 					"param": "",
 					"pk": false,

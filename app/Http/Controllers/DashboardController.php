@@ -33,14 +33,14 @@ class DashboardController extends Controller
      * Display the request cms page
      *
      * @param Request $request
-     * 
+     *
      * @return \Inertia\Response
      */
     public function cmsPage(Request $request)
     {
         $page = Page::where('slug', $request->slug)->first();
 
-        if(!$page) {
+        if (!$page) {
             return Inertia::render('Dashboard/404');
         }
 
