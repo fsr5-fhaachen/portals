@@ -24,7 +24,7 @@
       </FormContainer>
     </FormKit>
 
-    <div class="mt-6 relative flex justify-center text-sm">
+    <div class="relative mt-6 flex justify-center text-sm">
       <AppLink href="/register">
         Du hast noch keinen Account? Dann registriere dich hier.
       </AppLink>

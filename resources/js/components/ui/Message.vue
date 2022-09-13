@@ -9,7 +9,7 @@
     class="rounded-md bg-gray-50 p-4"
   >
     <div class="flex">
-      <div class="flex-shrink-0 items-center flex">
+      <div class="flex flex-shrink-0 items-center">
         <FontAwesomeIcon
           :class="{
             'text-blue-400': type === 'info',
