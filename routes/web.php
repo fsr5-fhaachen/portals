@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DatabaseTestController;
@@ -53,7 +54,12 @@ Route::group([
     Route::get('{slug?}', [DashboardController::class, 'cmsPage'])->where('slug', '.*');
 });
 
-
+// api routes with authentication
+Route::group([
+    'prefix' => 'api',
+], function () {
+    Route::get('/registrations/{registration}', [ApiController::class, 'registrationsShow'])->name('api.registrations.show');
+});
 
 // TODO: remove devlopment routes
 Route::group([

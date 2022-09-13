@@ -31,7 +31,7 @@
           }"
           class="text-sm font-medium text-gray-800"
         >
-          {{ message }}
+          <div v-html="message"></div>
         </p>
       </div>
     </div>

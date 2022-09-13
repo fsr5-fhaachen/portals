@@ -78,6 +78,8 @@ class DashboardEventController extends Controller
 
         $event->slots = $event->slots()->get();
         $registration = $event->registrations()->where('user_id', $request->user()->id)->first();
+        $registration->group = $registration->group()->first();
+
 
         return Inertia::render('Dashboard/Event/Index', [
             'event' => $event,
@@ -184,6 +186,11 @@ class DashboardEventController extends Controller
             }
 
             $userRegistration['slot_id'] = $slot->id;
+
+            // check if slot has maximum_participants
+            if ($slot->maximum_participants) {
+                $userRegistration['queue_position'] = -1;
+            }
         }
 
         // get all other inputs
