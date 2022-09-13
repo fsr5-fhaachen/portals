@@ -38,11 +38,11 @@ class UserFactory extends Factory
    */
     public function elevatedPrivileges($is_tutor, $is_admin)
     {
-      return $this->state(function (array $attributes) use ($is_tutor, $is_admin) {
-        return [
-          'is_tutor' => $is_tutor,
-          'is_admin' => $is_admin
-        ];
-      });
+        return $this->state(function (array $attributes) use ($is_tutor, $is_admin) {
+            return [
+              'is_tutor' => $is_tutor,
+              'is_admin' => $is_admin
+            ];
+        });
     }
 }

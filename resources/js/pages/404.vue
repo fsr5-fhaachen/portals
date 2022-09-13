@@ -1,6 +1,6 @@
 <template>
   <div
-    class="mt-16 mx-auto flex w-full max-w-7xl flex-grow flex-col justify-center px-4 sm:px-6 lg:px-8"
+    class="mx-auto mt-16 flex w-full max-w-7xl flex-grow flex-col justify-center px-4 sm:px-6 lg:px-8"
   >
     <div class="flex flex-shrink-0 justify-center">
       <AppLink href="/" theme="none" class="inline-flex">
