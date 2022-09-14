@@ -10,8 +10,6 @@ use Illuminate\Database\Eloquent\Collection;
 
 class GroupBalancedDivision extends GroupDivision
 {
-
-
   public function __construct(Event $event, bool $assignByAlc, int $minNonDrinkers = 3) {
     parent::__construct($event, $assignByAlc, $minNonDrinkers);
   }

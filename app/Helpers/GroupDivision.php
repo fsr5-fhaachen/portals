@@ -51,7 +51,7 @@ abstract class GroupDivision
    */
   abstract public function assignLeftover();
 
-    /**
+  /**
    * Assigns users registered for this event to groups
    *
    * @return void

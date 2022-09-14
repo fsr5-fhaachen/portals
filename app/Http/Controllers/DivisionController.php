@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Helpers\GroupBalancedDivision;
 use App\Helpers\GroupCourseDivision;
+use App\Helpers\SlotAssignment;
 use App\Models\Course;
 use App\Models\Event;
+use App\Models\Slot;
 use Illuminate\Http\Request;
 
 class DivisionController extends Controller
@@ -26,6 +28,14 @@ class DivisionController extends Controller
 
     $gbdiv = new GroupBalancedDivision($event, true);
     $gbdiv->assign();
+    return "Done!";
+  }
+
+  public function test3(int $slotId){
+    $slot = Slot::query()->find($slotId);
+
+    $sa = new SlotAssignment($slot);
+    $sa->assign();
     return "Done!";
   }
 }

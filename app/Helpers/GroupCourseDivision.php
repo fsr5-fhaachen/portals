@@ -12,7 +12,6 @@ class GroupCourseDivision extends GroupDivision
 {
   protected Course $course;
 
-
   public function __construct(Event $event, Course $course, bool $assignByAlc, int $minNonDrinkers = 3) {
     parent::__construct($event, $assignByAlc, $minNonDrinkers);
     $this->course = $course;
