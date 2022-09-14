@@ -53,17 +53,23 @@
                   >
                     Warteschlangenposition
                   </th>
+                  <th
+                    scope="col"
+                    class="border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pr-4 pl-3 backdrop-blur backdrop-filter sm:pr-6 lg:pr-8"
+                  >
+                    <span class="sr-only">Ist anwesend</span>
+                  </th>
                 </tr>
               </thead>
-              <tbody v-if="registrations" class="bg-white">
+              <tbody v-if="registrationsData" class="bg-white">
                 <template
-                  v-for="(registration, index) in registrations"
+                  v-for="(registration, index) in registrationsData"
                   :key="registration.id"
                 >
                   <tr v-if="registration.user">
                     <td
                       :class="[
-                        index !== registrations.length - 1
+                        index !== registrationsData.length - 1
                           ? 'border-b border-gray-200'
                           : '',
                         'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8',
@@ -73,7 +79,7 @@
                     </td>
                     <td
                       :class="[
-                        index !== registrations.length - 1
+                        index !== registrationsData.length - 1
                           ? 'border-b border-gray-200'
                           : '',
                         'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
@@ -83,7 +89,7 @@
                     </td>
                     <td
                       :class="[
-                        index !== registrations.length - 1
+                        index !== registrationsData.length - 1
                           ? 'border-b border-gray-200'
                           : '',
                         'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
@@ -98,7 +104,7 @@
                     <td
                       v-if="!hideSlots && event.type == 'slot_booking'"
                       :class="[
-                        index !== registrations.length - 1
+                        index !== registrationsData.length - 1
                           ? 'border-b border-gray-200'
                           : '',
                         'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
@@ -116,7 +122,7 @@
                     <td
                       v-if="!hideGroups && event.type == 'group_phase'"
                       :class="[
-                        index !== registrations.length - 1
+                        index !== registrationsData.length - 1
                           ? 'border-b border-gray-200'
                           : '',
                         'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
@@ -135,7 +141,7 @@
                     <td
                       v-if="event.consider_alcohol"
                       :class="[
-                        index !== registrations.length - 1
+                        index !== registrationsData.length - 1
                           ? 'border-b border-gray-200'
                           : '',
                         'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
@@ -146,7 +152,7 @@
                     <td
                       v-if="event.type == 'slot_booking'"
                       :class="[
-                        index !== registrations.length - 1
+                        index !== registrationsData.length - 1
                           ? 'border-b border-gray-200'
                           : '',
                         'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
@@ -162,6 +168,38 @@
                       </span>
                       <span v-else> - </span>
                     </td>
+                    <td
+                      :class="[
+                        index !== registrationsData.length - 1
+                          ? 'border-b border-gray-200'
+                          : '',
+                        'relative whitespace-nowrap py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-6 lg:pr-8',
+                      ]"
+                    >
+                      <div class="flex">
+                        <AppButton
+                          v-if="registration.is_present"
+                          @click="toggleIsPresent(registration.id)"
+                        >
+                          <span class="sr-only"
+                            >{{ registration.user.firstname }}
+                            {{ registration.user.lastname }}</span
+                          >
+                          ist anwesend
+                        </AppButton>
+                        <AppButton
+                          v-else
+                          theme="gray"
+                          @click="toggleIsPresent(registration.id)"
+                        >
+                          <span class="sr-only"
+                            >{{ registration.user.firstname }}
+                            {{ registration.user.lastname }}</span
+                          >
+                          ist nicht anwesend
+                        </AppButton>
+                      </div>
+                    </td>
                   </tr>
                 </template>
               </tbody>
@@ -174,9 +212,9 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from "vue";
+import { ref, PropType } from "vue";
 
-const { courses, event } = defineProps({
+const { courses, event, registrations } = defineProps({
   courses: {
     type: Array as PropType<App.Models.Course[]>,
     required: true,
@@ -209,5 +247,30 @@ const getSlotById = (id: number) => {
 const getGroupById = (id: number) => {
   if (!event.groups) return null;
   return event.groups.find((group) => group.id === id);
+};
+
+const registrationsData = ref(registrations);
+const toggleIsPresent = async (registrationId: number) => {
+  const response = await fetch(
+    "/api/registrations/" + registrationId + "/toggle-is-present",
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (response.ok) {
+    const data = await response.json();
+
+    registrationsData.value = registrationsData.value.map((registration) => {
+      if (registration.id === registrationId) {
+        registration.is_present = data.is_present;
+      }
+      return registration;
+    });
+  }
 };
 </script>

@@ -155,4 +155,25 @@ class ApiController extends Controller
 
         return response()->json($result);
     }
+
+    /**
+     * Toggle is_present for a given registration
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function registrationToggleIsPresent(Request $request)
+    {
+        $registration = Registration::find($request->registration);
+
+        if (!$registration) {
+            return response()->json(['message' => 'Registration not found'], 404);
+        }
+
+        $registration->is_present = !$registration->is_present;
+        $registration->save();
+
+        return response()->json($registration);
+    }
 }
