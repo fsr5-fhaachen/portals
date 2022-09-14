@@ -34,7 +34,7 @@ const isTutorPage = ref(window.location.pathname.includes("/dashboard/tutor"));
 const navigation = [
   {
     title: "Veranstaltungen",
-    href: "/dashboard" + (isTutorPage ? "/tutor" : ""),
+    href: "/dashboard" + (isTutorPage.value ? "/tutor" : ""),
   },
   ...usePagesAsNavigation(pages, "/dashboard/"),
 ];
