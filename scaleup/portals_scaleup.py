@@ -22,10 +22,14 @@ def find_next_server_id():
 def setup_server(server_id):
     print("creating server from snapshot...")
 
+    keys = []
+    for keyname in os.getenv("SSH_KEY_NAMES").split(";"):
+        keys.append(client.ssh_keys.get_by_name(keyname))
+
     response = client.servers.create(name="portals-" + str(server_id), 
                                     server_type=client.server_types.get_by_name("cpx11"),
                                     image=client.images.get_by_id(os.getenv("IMAGE_ID")),
-                                    ssh_keys=[client.ssh_keys.get_by_name("simonostendorf@SimonLaptop"), client.ssh_keys.get_by_name("titus.kirch@tkirch.dev - Workstation"), client.ssh_keys.get_by_name("titus.kirch@tkirch.dev - Laptop")],
+                                    ssh_keys=keys,
                                     volumes=[],
                                     firewalls=[],
                                     networks=[client.networks.get_by_id(os.getenv("NETWORK_ID"))],
@@ -49,8 +53,6 @@ def setup_cloudflare(id, ips):
 def add_to_local_ansible(id):
     os.system("echo portals-" + str(id) + ".fsr5.de >> $(pwd)/hosts.ini")
     print("added server to local ansible hosts file")
-    
-    #ansible-playbook --user root -i ./hosts.ini ./playbooks/update_hosts.yml
 
 def main():
     print("starting scaleup...")
