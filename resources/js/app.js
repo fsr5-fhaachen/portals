@@ -14,6 +14,13 @@ import {
   faPlay,
   faTriangleExclamation,
   faX,
+  faPlug,
+  faLaptopCode,
+  faPaintBrush,
+  faSackDollar,
+  faHouseSignal,
+  faPersonThroughWindow,
+  faBug,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
@@ -36,7 +43,14 @@ library.add(
   faPlay,
   faTriangleExclamation,
   faX,
-  faHandLizard
+  faHandLizard,
+  faPlug,
+  faLaptopCode,
+  faPaintBrush,
+  faSackDollar,
+  faHouseSignal,
+  faPersonThroughWindow,
+  faBug
 );
 
 createInertiaApp({
