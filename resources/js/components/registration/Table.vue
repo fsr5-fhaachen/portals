@@ -40,7 +40,7 @@
                     Gruppe
                   </th>
                   <th
-                    v-if="event.type == 'consider_alcohol'"
+                    v-if="event.consider_alcohol"
                     scope="col"
                     class="border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
                   >
@@ -133,7 +133,7 @@
                     </td>
 
                     <td
-                      v-if="event.type == 'consider_alcohol'"
+                      v-if="event.consider_alcohol"
                       :class="[
                         index !== registrations.length - 1
                           ? 'border-b border-gray-200'
