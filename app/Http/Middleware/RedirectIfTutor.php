@@ -2,12 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Tutor;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
 
-class IsAdmin
+class RedirectIfTutor
 {
     /**
      * Handle an incoming request.
@@ -18,10 +16,12 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        //check if user is admin
-        $tutor = Tutor::find($request->session()->get('tutor'));
-        if (!$tutor->is_admin) {
-            return Redirect::to('/tutor/overview');
+        // get auth user
+        $user = $request->user();
+
+        // check if user is tutor and is logged in as tutor
+        if ($user->is_tutor && $request->session()->has('tutor')) {
+            return redirect()->route('dashboard.tutor.index');
         }
 
         return $next($request);

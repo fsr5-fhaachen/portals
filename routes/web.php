@@ -5,9 +5,12 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
+use App\Http\Controllers\DashboardTutorController;
 use App\Http\Controllers\DatabaseTestController;
 use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\IsLoggedInTutor;
 use App\Http\Middleware\RedirectIfAuthenticated;
+use App\Http\Middleware\RedirectIfTutor;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -39,16 +42,35 @@ Route::group([
         Authenticate::class,
     ],
 ], function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
-
     Route::group([
-        'prefix' => 'event/{event}',
+        'middleware' => [
+            RedirectIfTutor::class
+        ],
     ], function () {
-        Route::get('/', [DashboardEventController::class, 'index'])->name('dashboard.event.index');
-        Route::get('/register', [DashboardEventController::class, 'register'])->name('dashboard.event.register');
-        Route::post('/register', [DashboardEventController::class, 'registerUser'])->name('dashboard.event.registerUser');
-        Route::get('/unregister', [DashboardEventController::class, 'unregister'])->name('dashboard.event.unregister');
-        Route::post('/unregister', [DashboardEventController::class, 'unregisterUser'])->name('dashboard.event.unregisterUser');
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
+
+        Route::group([
+            'prefix' => 'event/{event}',
+        ], function () {
+            Route::get('/', [DashboardEventController::class, 'index'])->name('dashboard.event.index');
+            Route::get('/register', [DashboardEventController::class, 'register'])->name('dashboard.event.register');
+            Route::post('/register', [DashboardEventController::class, 'registerUser'])->name('dashboard.event.registerUser');
+            Route::get('/unregister', [DashboardEventController::class, 'unregister'])->name('dashboard.event.unregister');
+            Route::post('/unregister', [DashboardEventController::class, 'unregisterUser'])->name('dashboard.event.unregisterUser');
+        });
+    });
+
+    Route::post('/login-tutor', [DashboardController::class, 'loginTutor'])->name('dashboard.loginTutor');
+    Route::group([
+        'middleware' => [
+            IsLoggedInTutor::class
+        ],
+    ], function () {
+        Route::get('/tutor', [DashboardTutorController::class, 'index'])->name('dashboard.tutor.index');
+        Route::get('/tutor/event/{event}', [DashboardTutorController::class, 'event'])->name('dashboard.tutor.event.index');
+        Route::get('/tutor/event/{event}/registrations', [DashboardTutorController::class, 'registrations'])->name('dashboard.tutor.event.registrations');
+        Route::get('/tutor/slot/{slot}', [DashboardTutorController::class, 'slot'])->name('dashboard.tutor.slot.index');
+        Route::get('/tutor/group/{group}', [DashboardTutorController::class, 'group'])->name('dashboard.tutor.group.index');
     });
 
     Route::get('{slug?}', [DashboardController::class, 'cmsPage'])->where('slug', '.*');
