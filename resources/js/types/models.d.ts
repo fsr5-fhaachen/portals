@@ -108,6 +108,7 @@ declare namespace App.Models {
     updated_at: string | null;
     event_id: number;
     course_id: number | null;
+    name: string | null;
     group_tutors?: Array<App.Models.GroupTutor> | null;
     registrations?: Array<App.Models.Registration> | null;
     stops?: Array<App.Models.Stop> | null;

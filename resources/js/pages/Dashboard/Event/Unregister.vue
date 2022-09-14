@@ -5,8 +5,7 @@
     <CardBase>
       <FormKit
         type="form"
-        id="registration-example"
-        submit-label="Register"
+        id="event-unregister"
         @submit="submitHandler"
         :actions="false"
         v-model="form"

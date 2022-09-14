@@ -2,8 +2,7 @@
   <div>
     <FormKit
       type="form"
-      id="registration-example"
-      submit-label="Register"
+      id="register"
       @submit="submitHandler"
       :actions="false"
       v-model="form"

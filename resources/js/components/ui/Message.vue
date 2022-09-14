@@ -22,7 +22,7 @@
         />
       </div>
       <div class="ml-3">
-        <p
+        <div
           :class="{
             'text-blue-800': type === 'info',
             'text-green-800': type == 'success',
@@ -31,8 +31,8 @@
           }"
           class="text-sm font-medium text-gray-800"
         >
-          {{ message }}
-        </p>
+          <div v-html="message"></div>
+        </div>
       </div>
     </div>
   </div>

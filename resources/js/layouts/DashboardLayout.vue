@@ -13,9 +13,9 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from "vue";
+import { ref, PropType } from "vue";
 
-const { pages } = defineProps({
+const { pages, user } = defineProps({
   message: {
     type: Object,
     default: () => ({}),
@@ -24,10 +24,18 @@ const { pages } = defineProps({
     type: Array as PropType<App.Models.Page[]>,
     default: () => [],
   },
+  user: {
+    type: Object as PropType<App.Models.User>,
+    required: true,
+  },
 });
 
+const isTutorPage = ref(window.location.pathname.includes("/dashboard/tutor"));
 const navigation = [
-  { title: "Veranstaltungen", href: "/dashboard" },
+  {
+    title: "Veranstaltungen",
+    href: "/dashboard" + (isTutorPage ? "/tutor" : ""),
+  },
   ...usePagesAsNavigation(pages, "/dashboard/"),
 ];
 </script>

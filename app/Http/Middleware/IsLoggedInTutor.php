@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
-class IsStudent
+class IsLoggedInTutor
 {
     /**
      * Handle an incoming request.
@@ -17,14 +17,12 @@ class IsStudent
      */
     public function handle(Request $request, Closure $next)
     {
-        // check if user is not logged in as student
-        if ($request->session()->missing('student')) {
-            // check if user is logged in as tutor
-            if ($request->session()->has('tutor')) {
-                return Redirect::to('/tutor/overview');
-            }
+        // get auth user
+        $user = $request->user();
 
-            return Redirect::to('/');
+        // check if user is no tutor or is not logged in as tutor
+        if (!$user->is_tutor || !$request->session()->has('tutor')) {
+            return redirect()->route('dashboard.index');
         }
 
         return $next($request);

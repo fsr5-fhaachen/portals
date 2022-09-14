@@ -7,6 +7,7 @@ use App\Models\Page;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Session;
 
 class DashboardController extends Controller
 {
@@ -27,6 +28,35 @@ class DashboardController extends Controller
             'events' => $events,
             'registrations' => $registrations
         ]);
+    }
+
+    /**
+     * Login a tutor
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function loginTutor(Request $request)
+    {
+        // check if the user is a tutor
+        if (Auth::user()->is_tutor) {
+            // check if password is tutor_password
+            if ($request->input('password') == config('app.tutor_password')) {
+                // set the session variable
+                session(['tutor' => true]);
+
+                Session::flash('success', 'Du wurdest als Tutor angemeldet.');
+
+                // redirect to dashboard
+                return redirect()->route('dashboard.tutor.index');
+            } else {
+                Session::flash('error', 'Das Passwort ist falsch.');
+
+                // redirect to dashboard
+                return redirect()->route('dashboard.index');
+            }
+        }
     }
 
     /**

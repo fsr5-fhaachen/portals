@@ -5,6 +5,9 @@
         <UiH1>
           <slot name="title" />
         </UiH1>
+        <UiH2>
+          <slot name="subtitle" />
+        </UiH2>
       </div>
     </header>
     <main class="mt-6">
