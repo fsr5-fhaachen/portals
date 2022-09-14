@@ -63,6 +63,28 @@ class DashboardEventController extends Controller
     }
 
     /**
+     * Redirect to the event page for the given event if the unregistration is not possible
+     *
+     * @param Event $event
+     *
+     * @return \Illuminate\Http\RedirectResponse|void
+     */
+    protected function redirectToEventIfNoUnregistrationIsPossible(Event $event)
+    {
+        // check if registration is already open
+        if ($event->registration_from && $event->registration_from->isFuture()) {
+            Session::flash('error', 'Abmeldung ist noch nicht möglich');
+            return $this->redirectToEvent($event);
+        }
+
+        // check if registration is already closed
+        if ($event->registration_to && $event->registration_to->isPast()) {
+            Session::flash('error', 'Abmeldung ist nicht mehr möglich');
+            return $this->redirectToEvent($event);
+        }
+    }
+
+    /**
      * Display the event index page
      *
      * @param Request $request
@@ -122,9 +144,9 @@ class DashboardEventController extends Controller
         if ($event instanceof \Inertia\Response) {
             return $event;
         }
-        $registrationIsPossible = $this->redirectToEventIfNoRegistrationIsPossible($event);
-        if ($registrationIsPossible instanceof \Illuminate\Http\RedirectResponse) {
-            return $registrationIsPossible;
+        $unregistrationIsPossible = $this->redirectToEventIfNoUnregistrationIsPossible($event);
+        if ($unregistrationIsPossible instanceof \Illuminate\Http\RedirectResponse) {
+            return $unregistrationIsPossible;
         }
 
         return Inertia::render('Dashboard/Event/Unregister', [
@@ -210,9 +232,9 @@ class DashboardEventController extends Controller
         if ($event instanceof \Inertia\Response) {
             return $event;
         }
-        $registrationIsPossible = $this->redirectToEventIfNoRegistrationIsPossible($event);
-        if ($registrationIsPossible instanceof \Illuminate\Http\RedirectResponse) {
-            return $registrationIsPossible;
+        $unregistrationIsPossible = $this->redirectToEventIfNoUnregistrationIsPossible($event);
+        if ($unregistrationIsPossible instanceof \Illuminate\Http\RedirectResponse) {
+            return $unregistrationIsPossible;
         }
 
         // check if the user is already registered
