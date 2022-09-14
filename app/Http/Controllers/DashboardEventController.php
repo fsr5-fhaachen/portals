@@ -71,13 +71,13 @@ class DashboardEventController extends Controller
      */
     protected function redirectToEventIfNoUnregistrationIsPossible(Event $event)
     {
-        // check if unregistration is already open
+        // check if registration is already open
         if ($event->registration_from && $event->registration_from->isFuture()) {
             Session::flash('error', 'Abmeldung ist noch nicht möglich');
             return $this->redirectToEvent($event);
         }
 
-        // check if unregistration is already closed
+        // check if registration is already closed
         if ($event->registration_to && $event->registration_to->isPast()) {
             Session::flash('error', 'Abmeldung ist nicht mehr möglich');
             return $this->redirectToEvent($event);
