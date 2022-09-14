@@ -93,9 +93,9 @@ Route::group([
         Route::get('/events/registrations-amount', [ApiController::class, 'eventsRegistrationsAmount'])->name('api.events.registrationsAmount');
 
         Route::get('/events/{event}/registrations', [ApiController::class, 'eventRegistrationsShow'])->name('api.event.registrations.show');
-    
+
         Route::get('/registrations/{registration}/toggle-is-present', [ApiController::class, 'registrationsToggleIsPresent'])->name('api.event.registrations.toggleIsPresent');
-    
+
         Route::group([
             'middleware' => [
                 IsLoggedInAdmin::class
@@ -106,7 +106,7 @@ Route::group([
         });
     });
 
-    
+
     Route::get('/registrations/{registration}', [ApiController::class, 'registrationsShow'])->name('api.registrations.show');
 });
 
