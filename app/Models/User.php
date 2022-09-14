@@ -19,7 +19,9 @@ class User extends Authenticatable implements Auditable
      *
      * @var array
      */
-    protected $guarded = []; // TODO: Maybe need to add is_tutor and is_admin here for security reasons
+    protected $guarded = [
+        'remember_token'
+    ];
 
     /**
      * Get station_tutors for the user.

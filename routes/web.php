@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 Route::get('/', [AppController::class, 'index'])->name('app.index');
 
 Route::group([
@@ -83,6 +84,7 @@ Route::group([
             IsLoggedInAdmin::class
         ],
     ], function () {
+        Route::get('/', [DashboardAdminController::class, 'index'])->name('dashboard.admin.index');
         Route::get('/event/{event}', [DashboardAdminController::class, 'event'])->name('dashboard.admin.event.index');
         Route::get('/event/{event}/submit', [DashboardAdminController::class, 'eventSubmit'])->name('dashboard.admin.event.submit');
     });
@@ -116,6 +118,8 @@ Route::group([
         ], function () {
             Route::get('/registrations/{registration}/toggle-fulfils-requirements', [ApiController::class, 'registrationsToggleFulfilsRequirements'])->name('api.event.registrations.toggleFulfilsRequirements');
             Route::delete('/registrations/{registration}', [ApiController::class, 'registrationsDestroy'])->name('api.event.registrations.destroy');
+
+            Route::get('/courses/user-amount', [ApiController::class, 'coursesUserAmount'])->name('api.courses.userAmount');
         });
     });
 

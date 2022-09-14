@@ -32,7 +32,6 @@ class TutorSeeder extends Seeder
 
         // loop through the tutors
         foreach ($tutors as $tutorRaw) {
-
             // get the tutor
             $tutor = explode(';', $tutorRaw[0]);
 

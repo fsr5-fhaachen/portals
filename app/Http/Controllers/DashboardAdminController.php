@@ -10,6 +10,20 @@ use Inertia\Inertia;
 class DashboardAdminController extends Controller
 {
     /**
+     * Display the dashboard admin page
+     *
+     * @return \Inertia\Response
+     */
+    public function index()
+    {
+        $courses = Course::with('users')->get();
+
+        return Inertia::render('Dashboard/Admin/Index', [
+            'courses' => $courses,
+        ]);
+    }
+
+    /**
      * Display the dashboard admin event page
      *
      * @param Request $request

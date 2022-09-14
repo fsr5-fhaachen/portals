@@ -20,46 +20,46 @@ class SlotAssignmentSeeder extends Seeder
      */
     public function run()
     {
-      Course::factory()
-        ->count(1)
-        ->create();
+        Course::factory()
+          ->count(1)
+          ->create();
 
-      Event::factory()
-        ->has(
-          Slot::factory()
-            ->state([
-              'maximum_participants' => 20
-            ])
-            ->count(2)
-        )
-        ->count(2)
-        ->create();
+        Event::factory()
+          ->has(
+              Slot::factory()
+                ->state([
+                  'maximum_participants' => 20
+                ])
+                ->count(2)
+          )
+          ->count(2)
+          ->create();
 
-      User::factory()
-        ->has(
-          Registration::factory()
-            ->state([
-              'event_id' => 1,
-              'slot_id' => 1,
-              'group_id' => null
-            ])
-            ->count(1)
-        )
-        ->state(['course_id' => 1])
-        ->count(30)
-        ->create();
+        User::factory()
+          ->has(
+              Registration::factory()
+                ->state([
+                  'event_id' => 1,
+                  'slot_id' => 1,
+                  'group_id' => null
+                ])
+                ->count(1)
+          )
+          ->state(['course_id' => 1])
+          ->count(30)
+          ->create();
 
-      User::factory()
-        ->has(
-          Registration::factory()
-            ->state([
-              'event_id' => 1,
-              'slot_id' => 2,
-              'group_id' => null
-            ])
-            ->count(1)
-        )
-        ->count(10)
-        ->create();
+        User::factory()
+          ->has(
+              Registration::factory()
+                ->state([
+                  'event_id' => 1,
+                  'slot_id' => 2,
+                  'group_id' => null
+                ])
+                ->count(1)
+          )
+          ->count(10)
+          ->create();
     }
 }

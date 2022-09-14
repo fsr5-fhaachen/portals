@@ -12,30 +12,32 @@ use Illuminate\Http\Request;
 
 class DivisionController extends Controller
 {
-  // TODO Remove test and test2 for production
-  public function test(int $eventId, int $courseId)
-  {
-    $course = Course::query()->find($courseId);
-    $event = Event::query()->find($eventId);
+    // TODO Remove test and test2 for production
+    public function test(int $eventId, int $courseId)
+    {
+        $course = Course::query()->find($courseId);
+        $event = Event::query()->find($eventId);
 
-    $gcdiv = new GroupCourseDivision($event, $course, true);
-    $gcdiv->assign();
-    return "Done!";
-  }
+        $gcdiv = new GroupCourseDivision($event, $course, true);
+        $gcdiv->assign();
+        return "Done!";
+    }
 
-  public function test2(int $eventId){
-    $event = Event::query()->find($eventId);
+    public function test2(int $eventId)
+    {
+        $event = Event::query()->find($eventId);
 
-    $gbdiv = new GroupBalancedDivision($event, true);
-    $gbdiv->assign();
-    return "Done!";
-  }
+        $gbdiv = new GroupBalancedDivision($event, true);
+        $gbdiv->assign();
+        return "Done!";
+    }
 
-  public function test3(int $slotId){
-    $slot = Slot::query()->find($slotId);
+    public function test3(int $slotId)
+    {
+        $slot = Slot::query()->find($slotId);
 
-    $sa = new SlotAssignment($slot);
-    $sa->assign();
-    return "Done!";
-  }
+        $sa = new SlotAssignment($slot);
+        $sa->assign();
+        return "Done!";
+    }
 }

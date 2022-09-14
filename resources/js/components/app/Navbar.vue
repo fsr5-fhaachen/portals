@@ -23,9 +23,24 @@
                 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700':
                   $page.url != item.href,
               }"
-              class="inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium"
+              class="inline-flex items-center border-b-[3px] px-1 pt-1 text-sm font-medium"
             >
               {{ item.title }}
+            </InertiaLink>
+          </div>
+          <div
+            class="hidden grow justify-end sm:-my-px sm:ml-6 sm:flex sm:space-x-8"
+          >
+            <InertiaLink
+              href="/dashboard/admin"
+              :class="{
+                'border-red-500 text-red-900': $page.url == '/dashboard/admin',
+                'border-transparent text-red-500 hover:border-red-300 hover:text-red-700':
+                  $page.url != '/dashboard/admin',
+              }"
+              class="inline-flex items-center border-b-[3px] px-1 pt-1 text-sm font-medium"
+            >
+              Administration
             </InertiaLink>
           </div>
         </div>
@@ -68,6 +83,19 @@
         >
           {{ item.title }}
         </DisclosureButton>
+        <DisclosureButton
+          :as="InertiaLink"
+          href="/dashboard/admin"
+          :class="{
+            'border-red-500 bg-red-100 text-red-900':
+              $page.url == '/dashboard/admin',
+            'border-transparent text-red-600 hover:border-red-300 hover:bg-red-50 hover:text-red-800':
+              $page.url != '/dashboard/admin',
+          }"
+          class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
+        >
+          Administration
+        </DisclosureButton>
       </div>
     </DisclosurePanel>
   </Disclosure>
@@ -81,6 +109,10 @@ defineProps({
   navigation: {
     type: Array as () => NavbarLink[],
     required: true,
+  },
+  showAdminLink: {
+    type: Boolean,
+    default: false,
   },
 });
 </script>

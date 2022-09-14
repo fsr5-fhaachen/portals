@@ -224,4 +224,28 @@ class ApiController extends Controller
 
         return response()->json(['message' => 'Registration deleted']);
     }
+
+
+    /**
+     * Return all courses with users amopunt
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function coursesUserAmount()
+    {
+        $courses = Course::all();
+
+        $result = [];
+
+        foreach ($courses as $course) {
+            $result[] = [
+                'id' => $course->id,
+                'amount' => $course->users()->count(),
+            ];
+        }
+
+        return response()->json($result);
+    }
 }
