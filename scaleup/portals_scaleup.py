@@ -51,7 +51,7 @@ def setup_cloudflare(id, ips):
     print("dns records finished")
 
 def add_to_local_ansible(id):
-    os.system("echo -e 'portals-" + str(id) + ".fsr5.de\n' >> $(pwd)/hosts.ini")
+    os.system("echo portals-" + str(id) + ".fsr5.de >> $(pwd)/hosts.ini")
     print("added server to local ansible hosts file")
 
 def main():
