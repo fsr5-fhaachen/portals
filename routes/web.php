@@ -79,8 +79,22 @@ Route::group([
 // api routes with authentication
 Route::group([
     'prefix' => 'api',
+    'middleware' => [
+        Authenticate::class,
+    ],
 ], function () {
     Route::get('/registrations/{registration}', [ApiController::class, 'registrationsShow'])->name('api.registrations.show');
+
+    Route::group([
+        'middleware' => [
+            IsLoggedInTutor::class
+        ],
+    ], function () {
+        Route::get('/events/{event}/registrations-amount', [ApiController::class, 'eventRegistrationsAmount'])->name('api.event.registrationsAmount');
+        Route::get('/events/registrations-amount', [ApiController::class, 'eventsRegistrationsAmount'])->name('api.events.registrationsAmount');
+
+        Route::get('/events/{event}/registrations', [ApiController::class, 'eventRegistrationsShow'])->name('api.event.registrations.show');
+    });
 });
 
 // TODO: remove devlopment routes

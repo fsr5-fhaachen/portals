@@ -64,7 +64,7 @@
                       'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
                     ]"
                   >
-                    <span>{{ slot.registrations?.length ?? 0 }}</span>
+                    <span>{{ registrations[slot.id] || 0 }}</span>
                     <span v-if="slot.maximum_participants">
                       / {{ slot.maximum_participants }}</span
                     >
@@ -93,12 +93,40 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from "vue";
+import { computed, ref, PropType, onBeforeUnmount } from "vue";
 
-defineProps({
+const { slots } = defineProps({
   slots: {
     type: Object as PropType<App.Models.Slot[]>,
     required: true,
   },
+});
+
+const registrations = ref({});
+slots.forEach((slot) => {
+  registrations.value[slot.id] = slot.registrations?.length || 0;
+});
+const fetchRegistrations = async () => {
+  const response = await fetch(
+    "/api/events/" + slots[0].event_id + "/registrations-amount",
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (response.ok) {
+    const data = await response.json();
+    slots.forEach((slot) => {
+      registrations.value[slot.id] = data.slots[slot.id];
+    });
+  }
+};
+const registrationsInterval = setInterval(fetchRegistrations, 1000);
+onBeforeUnmount(() => {
+  clearInterval(registrationsInterval);
 });
 </script>

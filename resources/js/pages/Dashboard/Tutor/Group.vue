@@ -3,19 +3,19 @@
     <template #title>{{ group.name }}</template>
 
     <RegistrationTable
-      v-if="group.event && group.registrations"
+      v-if="group.event && registrations"
       :courses="courses"
       :event="group.event"
-      :registrations="group.registrations"
+      :registrations="registrations"
       :hideGroups="true"
     />
   </LayoutDashboardContent>
 </template>
 
 <script setup lang="ts">
-import { PropType } from "vue";
+import { ref, PropType, onBeforeUnmount } from "vue";
 
-defineProps({
+const { group } = defineProps({
   courses: {
     type: Array as PropType<App.Models.Course[]>,
     required: true,
@@ -24,5 +24,28 @@ defineProps({
     type: Object as PropType<App.Models.Group>,
     required: true,
   },
+});
+
+const registrations = ref(group.registrations);
+const fetchRegistrations = async () => {
+  const response = await fetch(
+    "/api/events/" + group.event_id + "/registrations",
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (response.ok) {
+    const data = await response.json();
+    registrations.value = data.groups[group.id];
+  }
+};
+const registrationsInterval = setInterval(fetchRegistrations, 1000);
+onBeforeUnmount(() => {
+  clearInterval(registrationsInterval);
 });
 </script>

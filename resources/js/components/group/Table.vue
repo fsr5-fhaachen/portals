@@ -70,7 +70,7 @@
                       'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
                     ]"
                   >
-                    {{ group.registrations?.length ?? 0 }}
+                    {{ registrations[group.id] || 0 }}
                   </td>
                   <td
                     :class="[
@@ -96,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType } from "vue";
+import { computed, ref, PropType, onBeforeUnmount } from "vue";
 
 const { courses, groups } = defineProps({
   groups: {
@@ -116,5 +116,33 @@ const getCourseById = (id: number) => {
 const showCourses = computed(() => {
   if (!courses) return false;
   return groups.some((group) => group.course_id);
+});
+
+const registrations = ref({});
+groups.forEach((group) => {
+  registrations.value[group.id] = group.registrations?.length || 0;
+});
+const fetchRegistrations = async () => {
+  const response = await fetch(
+    "/api/events/" + groups[0].event_id + "/registrations-amount",
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (response.ok) {
+    const data = await response.json();
+    groups.forEach((group) => {
+      registrations.value[group.id] = data.groups[group.id];
+    });
+  }
+};
+const registrationsInterval = setInterval(fetchRegistrations, 1000);
+onBeforeUnmount(() => {
+  clearInterval(registrationsInterval);
 });
 </script>

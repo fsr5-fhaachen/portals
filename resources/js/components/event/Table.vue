@@ -129,7 +129,7 @@
                       'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
                     ]"
                   >
-                    {{ event.registrations?.length }}
+                    {{ registrations[event.id].amount }}
                   </td>
                   <td
                     :class="[
@@ -155,9 +155,9 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from "vue";
+import { ref, PropType, onBeforeUnmount } from "vue";
 
-defineProps({
+const { events } = defineProps({
   events: {
     type: Object as PropType<App.Models.Event[]>,
     required: true,
@@ -166,5 +166,32 @@ defineProps({
     type: Object as PropType<App.Models.User>,
     required: true,
   },
+});
+
+const registrations = ref({});
+events.forEach((event) => {
+  registrations.value[event.id] = {
+    amount: event.registrations?.length || 0,
+  };
+});
+const fetchRegistrations = async () => {
+  const response = await fetch("/api/events/registrations-amount", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    data.forEach((event) => {
+      registrations.value[event.id] = event;
+    });
+  }
+};
+const registrationsInterval = setInterval(fetchRegistrations, 1000);
+onBeforeUnmount(() => {
+  clearInterval(registrationsInterval);
 });
 </script>
