@@ -66,7 +66,14 @@
                   v-for="(registration, index) in registrationsData"
                   :key="registration.id"
                 >
-                  <tr v-if="registration.user">
+                  <tr
+                    v-if="registration.user"
+                    :class="{
+                      'bg-yellow-100':
+                        registration.queue_position &&
+                        registration.queue_position > 0,
+                    }"
+                  >
                     <td
                       :class="[
                         index !== registrationsData.length - 1
