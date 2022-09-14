@@ -176,28 +176,78 @@
                         'relative whitespace-nowrap py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-6 lg:pr-8',
                       ]"
                     >
-                      <div class="flex">
-                        <AppButton
-                          v-if="registration.is_present"
-                          @click="toggleIsPresent(registration.id)"
-                        >
-                          <span class="sr-only"
-                            >{{ registration.user.firstname }}
-                            {{ registration.user.lastname }}</span
+                      <div class="flex gap-4">
+                        <div>
+                          <AppButton
+                            v-if="registration.is_present"
+                            @click="toggleIsPresent(registration.id)"
                           >
-                          ist anwesend
-                        </AppButton>
-                        <AppButton
-                          v-else
-                          theme="gray"
-                          @click="toggleIsPresent(registration.id)"
-                        >
-                          <span class="sr-only"
-                            >{{ registration.user.firstname }}
-                            {{ registration.user.lastname }}</span
+                            <span class="sr-only"
+                              >{{ registration.user.firstname }}
+                              {{ registration.user.lastname }}</span
+                            >
+                            ist anwesend
+                          </AppButton>
+                          <AppButton
+                            v-else
+                            theme="gray"
+                            @click="toggleIsPresent(registration.id)"
                           >
-                          ist nicht anwesend
-                        </AppButton>
+                            <span class="sr-only"
+                              >{{ registration.user.firstname }}
+                              {{ registration.user.lastname }}</span
+                            >
+                            ist nicht anwesend
+                          </AppButton>
+                        </div>
+                        <div>
+                          <AppButton
+                            v-if="registration.fulfils_requirements"
+                            @click="toggleFulfilsRequirements(registration.id)"
+                          >
+                            <span class="sr-only"
+                              >{{ registration.user.firstname }}
+                              {{ registration.user.lastname }}</span
+                            >
+                            erfüllt die Anforderungen
+                          </AppButton>
+                          <AppButton
+                            v-else
+                            theme="gray"
+                            @click="toggleFulfilsRequirements(registration.id)"
+                          >
+                            <span class="sr-only"
+                              >{{ registration.user.firstname }}
+                              {{ registration.user.lastname }}</span
+                            >
+                            erfüllt nicht die Anforderungen
+                          </AppButton>
+                        </div>
+                        <div v-if="user && user.is_admin">
+                          <AppButton
+                            v-if="!registration.fulfils_requirements"
+                            theme="danger"
+                            @click="destory(registration.id)"
+                          >
+                            <span class="sr-only"
+                              >{{ registration.user.firstname }}
+                              {{ registration.user.lastname }}</span
+                            >
+                            löschen
+                          </AppButton>
+                          <AppButton
+                            v-else
+                            theme="gray"
+                            :disabled="true"
+                            @click="destory(registration.id)"
+                          >
+                            <span class="sr-only"
+                              >{{ registration.user.firstname }}
+                              {{ registration.user.lastname }}</span
+                            >
+                            löschen
+                          </AppButton>
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -212,9 +262,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, PropType } from "vue";
+import { ref, PropType, watch } from "vue";
 
-const { courses, event, registrations } = defineProps({
+const props = defineProps({
   courses: {
     type: Array as PropType<App.Models.Course[]>,
     required: true,
@@ -235,21 +285,29 @@ const { courses, event, registrations } = defineProps({
     type: Boolean,
     default: false,
   },
+  user: {
+    type: Object as PropType<App.Models.User>,
+    default: null,
+  },
 });
 
 const getCourseById = (id: number) => {
-  return courses.find((course) => course.id === id);
+  return props.courses.find((course) => course.id === id);
 };
 const getSlotById = (id: number) => {
-  if (!event.slots) return null;
-  return event.slots.find((slot) => slot.id === id);
+  if (!props.event.slots) return null;
+  return props.event.slots.find((slot) => slot.id === id);
 };
 const getGroupById = (id: number) => {
-  if (!event.groups) return null;
-  return event.groups.find((group) => group.id === id);
+  if (!props.event.groups) return null;
+  return props.event.groups.find((group) => group.id === id);
 };
 
-const registrationsData = ref(registrations);
+const registrationsData = ref(props.registrations);
+watch(props, (props) => {
+  registrationsData.value = props.registrations;
+});
+
 const toggleIsPresent = async (registrationId: number) => {
   const response = await fetch(
     "/api/registrations/" + registrationId + "/toggle-is-present",
@@ -271,6 +329,49 @@ const toggleIsPresent = async (registrationId: number) => {
       }
       return registration;
     });
+  }
+};
+const toggleFulfilsRequirements = async (registrationId: number) => {
+  const response = await fetch(
+    "/api/registrations/" + registrationId + "/toggle-fulfils-requirements",
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (response.ok) {
+    const data = await response.json();
+
+    registrationsData.value = registrationsData.value.map((registration) => {
+      if (registration.id === registrationId) {
+        registration.fulfils_requirements = data.fulfils_requirements;
+      }
+      return registration;
+    });
+  }
+};
+
+const destory = async (registrationId: number) => {
+  const response = await fetch("/api/registrations/" + registrationId, {
+    method: "DELETE",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRF-TOKEN":
+        document
+          .querySelector("meta[name='csrf-token']")
+          ?.getAttribute("content") || "",
+    },
+  });
+
+  if (response.ok) {
+    registrationsData.value = registrationsData.value.filter(
+      (registration) => registration.id !== registrationId
+    );
   }
 };
 </script>

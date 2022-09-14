@@ -163,7 +163,7 @@ class ApiController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function registrationToggleIsPresent(Request $request)
+    public function registrationsToggleIsPresent(Request $request)
     {
         $registration = Registration::find($request->registration);
 
@@ -175,5 +175,53 @@ class ApiController extends Controller
         $registration->save();
 
         return response()->json($registration);
+    }
+
+    /**
+     * Toggle fulfils_requirements for a given registration
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function registrationsToggleFulfilsRequirements(Request $request)
+    {
+        $registration = Registration::find($request->registration);
+
+        if (!$registration) {
+            return response()->json(['message' => 'Registration not found'], 404);
+        }
+
+        $registration->fulfils_requirements = !$registration->fulfils_requirements;
+        $registration->save();
+
+        return response()->json($registration);
+    }
+
+    /**
+     * Delete a given registration
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function registrationsDestroy(Request $request)
+    {
+        $registration = Registration::find($request->registration);
+
+        if (!$registration) {
+            return response()->json(['message' => 'Registration not found'], 404);
+        }
+
+        // check if registration fullfills requirements
+        if ($registration->fulfils_requirements) {
+            return response()->json(['message' => 'Registration fullfills requirements'], 403);
+        }
+
+        $registration->delete();
+
+        // TODO: Update queue positions
+
+        return response()->json(['message' => 'Registration deleted']);
     }
 }

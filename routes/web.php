@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
 use App\Http\Controllers\DatabaseTestController;
 use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\IsLoggedInAdmin;
 use App\Http\Middleware\IsLoggedInTutor;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RedirectIfTutor;
@@ -93,7 +94,16 @@ Route::group([
 
         Route::get('/events/{event}/registrations', [ApiController::class, 'eventRegistrationsShow'])->name('api.event.registrations.show');
     
-        Route::get('/registrations/{registration}/toggle-is-present', [ApiController::class, 'registrationToggleIsPresent'])->name('api.event.registration.toggleIsPresent');
+        Route::get('/registrations/{registration}/toggle-is-present', [ApiController::class, 'registrationsToggleIsPresent'])->name('api.event.registrations.toggleIsPresent');
+    
+        Route::group([
+            'middleware' => [
+                IsLoggedInAdmin::class
+            ],
+        ], function () {
+            Route::get('/registrations/{registration}/toggle-fulfils-requirements', [ApiController::class, 'registrationsToggleFulfilsRequirements'])->name('api.event.registrations.toggleFulfilsRequirements');
+            Route::delete('/registrations/{registration}', [ApiController::class, 'registrationsDestroy'])->name('api.event.registrations.destroy');
+        });
     });
 
     

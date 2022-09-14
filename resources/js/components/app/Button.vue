@@ -8,7 +8,11 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-const { theme } = defineProps({
+const { disabled, theme } = defineProps({
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
   theme: {
     type: String,
     default: "default",
@@ -20,16 +24,32 @@ const rootClasses = computed(() => {
   const classes: string[] = [];
 
   if (theme === "default") {
-    classes.push("bg-fhac-mint-dark hover:bg-fhac-mint");
+    classes.push("bg-fhac-mint-dark");
+
+    if (!disabled) {
+      classes.push("hover:bg-fhac-mint");
+    }
   } else if (theme === "gray") {
-    classes.push("bg-gray-500 hover:bg-gray-700");
+    classes.push("bg-gray-500");
+
+    if (!disabled) {
+      classes.push("hover:bg-gray-700");
+    }
   } else if (theme === "danger") {
-    classes.push("bg-red-500 hover:bg-red-700");
+    classes.push("bg-red-500");
+
+    if (!disabled) {
+      classes.push("hover:bg-red-700");
+    }
   }
 
-  classes.push(
-    "text-white px-4 py-2 hover:cursor-pointer rounded-md select-none"
-  );
+  if (disabled) {
+    classes.push("opacity-50 hover:cursor-not-allowed");
+  } else {
+    classes.push("hover:cursor-pointer");
+  }
+
+  classes.push("text-white px-4 py-2 rounded-md select-none");
 
   return classes.join(" ");
 });

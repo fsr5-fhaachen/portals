@@ -7,6 +7,7 @@
       :event="slot.event"
       :registrations="registrations"
       :hideSlots="true"
+      :user="user"
     />
   </LayoutDashboardContent>
 </template>
@@ -21,6 +22,10 @@ const { slot } = defineProps({
   },
   slot: {
     type: Object as PropType<App.Models.Slot>,
+    required: true,
+  },
+  user: {
+    type: Object as PropType<App.Models.User>,
     required: true,
   },
 });

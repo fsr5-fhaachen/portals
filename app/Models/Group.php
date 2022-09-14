@@ -38,7 +38,7 @@ class Group extends Model implements Auditable
      */
     public function registrations()
     {
-        return $this->hasMany(Registration::class);
+        return $this->hasMany(Registration::class)->orderBy('queue_position');
     }
 
     /**

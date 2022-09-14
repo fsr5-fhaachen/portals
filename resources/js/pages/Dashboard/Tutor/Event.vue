@@ -17,6 +17,7 @@
       :courses="courses"
       :event="event"
       :registrations="registrations"
+      :user="user"
     />
   </LayoutDashboardContent>
 </template>
@@ -31,6 +32,10 @@ const { event } = defineProps({
   },
   event: {
     type: Object as PropType<App.Models.Event>,
+    required: true,
+  },
+  user: {
+    type: Object as PropType<App.Models.User>,
     required: true,
   },
 });
