@@ -66,6 +66,8 @@ declare namespace App.Models {
     updated_at: string | null;
     name: string;
     abbreviation: string;
+    icon: string | null;
+    color: string | null;
     users?: Array<App.Models.User> | null;
     groups?: Array<App.Models.Group> | null;
     users_count?: number | null;

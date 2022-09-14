@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
@@ -63,15 +64,27 @@ Route::group([
 
     Route::post('/login-tutor', [DashboardController::class, 'loginTutor'])->name('dashboard.loginTutor');
     Route::group([
+        'prefix' => 'tutor',
         'middleware' => [
             IsLoggedInTutor::class
         ],
     ], function () {
-        Route::get('/tutor', [DashboardTutorController::class, 'index'])->name('dashboard.tutor.index');
-        Route::get('/tutor/event/{event}', [DashboardTutorController::class, 'event'])->name('dashboard.tutor.event.index');
-        Route::get('/tutor/event/{event}/registrations', [DashboardTutorController::class, 'registrations'])->name('dashboard.tutor.event.registrations');
-        Route::get('/tutor/slot/{slot}', [DashboardTutorController::class, 'slot'])->name('dashboard.tutor.slot.index');
-        Route::get('/tutor/group/{group}', [DashboardTutorController::class, 'group'])->name('dashboard.tutor.group.index');
+        Route::get('/', [DashboardTutorController::class, 'index'])->name('dashboard.tutor.index');
+        Route::get('/event/{event}', [DashboardTutorController::class, 'event'])->name('dashboard.tutor.event.index');
+        Route::get('/event/{event}/registrations', [DashboardTutorController::class, 'registrations'])->name('dashboard.tutor.event.registrations');
+        Route::get('/slot/{slot}', [DashboardTutorController::class, 'slot'])->name('dashboard.tutor.slot.index');
+        Route::get('/group/{group}', [DashboardTutorController::class, 'group'])->name('dashboard.tutor.group.index');
+    });
+
+    Route::group([
+        'prefix' => 'admin',
+        'middleware' => [
+            IsLoggedInTutor::class,
+            IsLoggedInAdmin::class
+        ],
+    ], function () {
+        Route::get('/event/{event}', [DashboardAdminController::class, 'event'])->name('dashboard.admin.event.index');
+        Route::get('/event/{event}/submit', [DashboardAdminController::class, 'eventSubmit'])->name('dashboard.admin.event.submit');
     });
 
     Route::get('{slug?}', [DashboardController::class, 'cmsPage'])->where('slug', '.*');
