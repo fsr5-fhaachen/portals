@@ -22,7 +22,7 @@ class ApiController extends Controller
      * Return a requested registration if it exists and the user is allowed to see it
      *
      * @param Request $request
-     * 
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function registrationsShow(Request $request)

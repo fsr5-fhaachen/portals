@@ -34,17 +34,15 @@ class DashboardController extends Controller
      * Login a tutor
      *
      * @param Request $request
-     * 
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function loginTutor(Request $request)
     {
         // check if the user is a tutor
         if (Auth::user()->is_tutor) {
-            
             // check if password is tutor_password
             if ($request->input('password') == config('app.tutor_password')) {
-
                 // set the session variable
                 session(['tutor' => true]);
 
@@ -52,7 +50,6 @@ class DashboardController extends Controller
 
                 // redirect to dashboard
                 return redirect()->route('dashboard.tutor.index');
-
             } else {
                 Session::flash('error', 'Das Passwort ist falsch.');
 

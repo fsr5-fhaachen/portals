@@ -25,12 +25,12 @@ class DashboardTutorController extends Controller
             'events' => $events,
         ]);
     }
-    
+
     /**
      * Display the dashboard tutor event page
      *
      * @param Request $request
-     * 
+     *
      * @return \Inertia\Response
      */
     public function event(Request $request)
@@ -50,12 +50,12 @@ class DashboardTutorController extends Controller
             'courses' => $courses,
         ]);
     }
-    
+
     /**
      * Display the dashboard tutor slot page
      *
      * @param Request $request
-     * 
+     *
      * @return \Inertia\Response
      */
     public function slot(Request $request)
@@ -73,12 +73,12 @@ class DashboardTutorController extends Controller
             'courses' => $courses,
         ]);
     }
-    
+
     /**
      * Display the dashboard tutor group page
      *
      * @param Request $request
-     * 
+     *
      * @return \Inertia\Response
      */
     public function group(Request $request)
@@ -96,12 +96,12 @@ class DashboardTutorController extends Controller
             'courses' => $courses,
         ]);
     }
-    
+
     /**
      * Display the dashboard tutor registrations page
      *
      * @param Request $request
-     * 
+     *
      * @return \Inertia\Response
      */
     public function registrations(Request $request)
