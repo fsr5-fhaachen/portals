@@ -41,7 +41,6 @@ class DashboardController extends Controller
     {
         // check if the user is a tutor
         if (Auth::user()->is_tutor) {
-
             $neededPassword = config('app.tutor_password');
 
             // check if user is admin

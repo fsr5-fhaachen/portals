@@ -252,8 +252,17 @@ class DashboardEventController extends Controller
             return Redirect::back();
         }
 
-        // delete the registration via the model
+        // get registration
         $registration = Registration::find($registration->id);
+
+        // check if user fulfils_requirements
+        if ($registration->fulfils_requirements) {
+            Session::flash('error', 'Du kannst dich nicht abmelden, da du bereits fest angemeldet bist.');
+
+            return Redirect::back();
+        }
+
+        // delete the registration
         $registration->delete();
 
         Session::flash('success', 'Du wurdest erfolgreich vom Event abgemeldet.');
