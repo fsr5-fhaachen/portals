@@ -37,7 +37,7 @@ class EventsSeeder extends Seeder
         // create a new event
         $event = new Event();
         $event->name = 'Gruppenphase';
-        $event->description = '';
+        $event->description = 'Während der Gruppenphase erhältst du von deinen Tutoren und Tutorinnen wichtige Informationen rund um das Studium. Außerdem ist die Gruppenphase dazu da, um direkt die anderen Erstis kennenzulernen und erste Freundschaften zu schließen.';
         $event->type = 'group_phase';
         $event->registration_from = new DateTime('2022-09-19 8:00:00');
         $event->registration_to = new DateTime('2022-09-19 12:30:00');
