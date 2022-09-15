@@ -17,8 +17,8 @@ return new class () extends Migration {
             $table->timestamps();
             $table->string('name', 255)->nullable(false);
             $table->text('description')->nullable();
-            $table->dateTime('registration_from');
-            $table->dateTime('registration_to');
+            $table->dateTime('registration_from')->nullable();
+            $table->dateTime('registration_to')->nullable();
             //$table->enum('type', ['group_phase', 'event_registration', 'slot_booking']);
             //TODO: Workaround for https://github.com/lepikhinb/laravel-typescript/issues/3
             $table->string('type', 255);
