@@ -43,7 +43,7 @@
           v-for="event in events"
           :key="event.id"
           :event="event"
-          :userIsRegistered="userIsRegisteredForEvent(event)"
+          :registration="getUserRegistrationForEvent(event)"
         />
       </GirdContainer>
     </template>
@@ -77,8 +77,8 @@ const submitTutorPasswordFormHandler = async () => {
   Inertia.post("/dashboard/login-tutor", tutorPasswordForm.value);
 };
 
-const userIsRegisteredForEvent = (event: App.Models.Event) => {
-  return registrations.some(
+const getUserRegistrationForEvent = (event: App.Models.Event) => {
+  return registrations.find(
     (registration) => registration.event_id === event.id
   );
 };

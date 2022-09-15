@@ -87,6 +87,7 @@ Route::group([
         Route::get('/', [DashboardAdminController::class, 'index'])->name('dashboard.admin.index');
         Route::get('/event/{event}', [DashboardAdminController::class, 'event'])->name('dashboard.admin.event.index');
         Route::get('/event/{event}/submit', [DashboardAdminController::class, 'eventSubmit'])->name('dashboard.admin.event.submit');
+        Route::post('/event/{event}/submit', [DashboardAdminController::class, 'eventExecuteSubmit'])->name('dashboard.admin.event.executeSubmit');
     });
 
     Route::get('{slug?}', [DashboardController::class, 'cmsPage'])->where('slug', '.*');

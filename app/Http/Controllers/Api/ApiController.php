@@ -30,7 +30,7 @@ class ApiController extends Controller
     public function registrationsShow(Request $request)
     {
         // get registration
-        $registration = Registration::find($request->registration);
+        $registration = Registration::find($request->registration)->with('group', 'slot')->first();
         if (!$registration) {
             return response()->json(['message' => 'Registration not found'], 404);
         }

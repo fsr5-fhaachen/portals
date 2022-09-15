@@ -18,6 +18,7 @@ class EventsSeeder extends Seeder
     public function run()
     {
         $this->runGruppenphase();
+        $this->runKaterbrunch();
         $this->runSportKultur();
     }
 
@@ -79,6 +80,50 @@ class EventsSeeder extends Seeder
     }
 
     /**
+     * Run the "Katerbrunch" event seeds.
+     *
+     * @return void
+     */
+    public function runKaterbrunch()
+    {
+        // check if event with name "Katerbrunch" exists
+        $event = Event::where('name', 'Katerbrunch')->first();
+        if ($event) {
+            return;
+        }
+
+        // create a new event
+        $event = new Event();
+        $event->name = 'Katerbrunch';
+        $event->description = '<p>Nachdem wir alle nach der Kneipentour am Mittwoch Abend etwas verkatert sind, gibt es doch nichts besseres als zusammen bei einem guten Fr&uuml;hst&uuml;ck auszukatern 😊 <br />Hierf&uuml;r bitte wir euch die 2&euro; Anmeldegeb&uuml;hr am Montag oder Mittwoch bis 12:00 Uhr im FSR zu bezahlen, sonst k&ouml;nnt ihr leider nicht teilnehmen. </p>
+        <p><strong>Wann:</strong> 22.09 ab 12:30 Uhr <br /><strong>Wo:</strong> FH, am D Geb&auml;ude <br /><strong>Was mitbringen:</strong> Tasse/ Becher und Teller ggf, Picknickdecke bei gutem Wetter.</p>
+        <p>Im Anschluss k&ouml;nnen wir noch gemeinsam in den Park gehen und den Tag bei ein paar runden Flunkyball ausklingen lassen 😊</p>
+        <p>Wir freuen uns auf euch</p>';
+        $event->type = 'event_registration';
+        $event->registration_from = new DateTime('2022-09-19 8:00:00');
+        $event->registration_to = new DateTime('2022-09-21 12:00:00');
+        $event->has_requirements = false;
+        $event->consider_alcohol = false;
+        $event->form = '[
+            {
+                "$formkit": "select",
+                "name": "eating_habit",
+                "label": "Essgewohnheit",
+                "options": {
+                    "vegetarian": "Ich esse vegetarisch",
+                    "vegan": "Ich esse vegan",
+                    "all": "Ich esse alles"
+                },
+                "placeholder": "Bitte auswählen",
+                "validation": "required"
+            }
+        ]';
+
+        // save the event
+        $event->save();
+    }
+
+    /**
      * Run the "Sport & Kultur" event seeds.
      *
      * @return void
@@ -107,7 +152,7 @@ class EventsSeeder extends Seeder
         // create event slots
         $slots = [
             [
-                'name' => 'Fußball, Volleyball, Basketbal',
+                'name' => 'Fußball, Volleyball, Basketball',
                 'has_requirements' => true,
                 'maximum_participants' => 50.
             ],

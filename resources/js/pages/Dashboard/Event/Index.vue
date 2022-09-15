@@ -42,14 +42,10 @@
         </UiDl>
       </CardBase>
 
-      <CardBase v-if="event.description">
-        <div class="prose !max-w-full" v-html="event.description"></div>
-      </CardBase>
-
       <template v-if="userRegistration">
         <template v-if="event.type == 'group_phase'">
           <UiMessage
-            v-if="userRegistration.group"
+            v-if="userRegistration.group_id && userRegistration.group"
             type="success"
             :message="
               'Die Einteilung ist erfolgt. Du bist in ' +
@@ -96,6 +92,10 @@
           "
         />
       </template>
+
+      <CardBase v-if="event.description">
+        <div class="prose !max-w-full" v-html="event.description"></div>
+      </CardBase>
     </CardContainer>
   </LayoutDashboardContent>
 </template>

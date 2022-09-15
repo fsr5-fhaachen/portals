@@ -26,7 +26,10 @@
     <template #footer>
       <div class="-mt-px flex divide-x divide-gray-200">
         <template v-if="userIsRegistered">
-          <div class="flex w-0 flex-1">
+          <div
+            v-if="registration && !registration.fulfils_requirements"
+            class="flex w-0 flex-1"
+          >
             <AppLink
               theme="none"
               :disabled="isExpired"
@@ -95,25 +98,29 @@
 <script setup lang="ts">
 import { computed, PropType } from "vue";
 
-const { event } = defineProps({
+const { event, registration } = defineProps({
   event: {
     type: Object as PropType<App.Models.Event>,
     required: true,
   },
-  userIsRegistered: {
-    type: Boolean,
-    default: false,
+  registration: {
+    type: Object as PropType<App.Models.Registration>,
+    required: false,
   },
 });
 
+const userIsRegistered = computed(() => {
+  return registration !== undefined;
+});
+
 const isExpired = computed(() => {
-  return new Date(event.registration_to) < new Date();
+  return new Date(event.registration_to as string) < new Date();
 });
 
 const canRegister = computed(() => {
   const now = new Date();
-  const registrationFrom = new Date(event.registration_from);
-  const registrationUntil = new Date(event.registration_to);
+  const registrationFrom = new Date(event.registration_from as string);
+  const registrationUntil = new Date(event.registration_to as string);
 
   return now >= registrationFrom && now <= registrationUntil;
 });
