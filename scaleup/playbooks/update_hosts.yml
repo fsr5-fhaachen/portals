@@ -6,6 +6,10 @@
       shell: git reset --hard
       args:
         chdir: /var/www
+    - name: checkout git
+      shell: git checkout dev
+      args:
+        chdir: /var/www
     - name: pull git
       shell: git pull origin dev
       args:
@@ -16,5 +20,16 @@
         chdir: /var/www
     - name: build frontend
       shell: npm run build
+      args:
+        chdir: /var/www
+- name: setup db
+  hosts: "portals-1.fsr5.de"
+  tasks:
+    - name: migrate db
+      shell: php artisan migrate
+      args:
+        chdir: /var/www
+    - name: seed db
+      shell: php artisan db:seed
       args:
         chdir: /var/www
