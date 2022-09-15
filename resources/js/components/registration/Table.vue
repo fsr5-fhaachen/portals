@@ -89,7 +89,7 @@
                         index !== registrationsData.length - 1
                           ? 'border-b border-gray-200'
                           : '',
-                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
+                        'whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900',
                       ]"
                     >
                       {{ registration.user.lastname }}
