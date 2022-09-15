@@ -104,6 +104,20 @@ class EventsSeeder extends Seeder
         $event->registration_to = new DateTime('2022-09-21 12:00:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
+        $event->form = '[
+            {
+                "$formkit": "select",
+                "name": "eating_habit",
+                "label": "Essgewohnheit",
+                "options": {
+                    "vegetarian": "Ich esse vegetarisch",
+                    "vegan": "Ich esse vegan",
+                    "all": "Ich esse alles"
+                },
+                "placeholder": "Bitte auswählen",
+                "validation": "required"
+            }
+        ]';
 
         // save the event
         $event->save();
