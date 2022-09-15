@@ -45,7 +45,7 @@
       <template v-if="userRegistration">
         <template v-if="event.type == 'group_phase'">
           <UiMessage
-            v-if="userRegistration.group"
+            v-if="userRegistration.group_id && userRegistration.group"
             type="success"
             :message="
               'Die Einteilung ist erfolgt. Du bist in ' +
