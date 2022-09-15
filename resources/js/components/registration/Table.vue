@@ -72,6 +72,9 @@
                       'bg-yellow-100':
                         registration.queue_position &&
                         registration.queue_position > 0,
+                      'bg-red-100':
+                        registration.queue_position &&
+                        registration.queue_position == -1,
                     }"
                   >
                     <td
@@ -173,7 +176,15 @@
                       >
                         {{ registration.queue_position }}
                       </span>
-                      <span v-else> - </span>
+                      <span
+                        v-else-if="
+                          registration.queue_position &&
+                          registration.queue_position == -1
+                        "
+                      >
+                        Wartet auf Zuteilung
+                      </span>
+                      <span v-else>Angemeldet</span>
                     </td>
                     <td
                       :class="[
