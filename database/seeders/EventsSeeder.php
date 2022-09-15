@@ -152,7 +152,7 @@ class EventsSeeder extends Seeder
         // create event slots
         $slots = [
             [
-                'name' => 'Fußball, Volleyball, Basketbal',
+                'name' => 'Fußball, Volleyball, Basketball',
                 'has_requirements' => true,
                 'maximum_participants' => 50.
             ],
