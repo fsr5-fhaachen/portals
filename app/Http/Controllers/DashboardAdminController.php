@@ -90,7 +90,6 @@ class DashboardAdminController extends Controller
 
         // check event type
         if ($event->type == 'group_phase') {
-
             // check if any groups has a course
             $hasCourse = false;
             foreach ($event->groups as $group) {
@@ -111,15 +110,13 @@ class DashboardAdminController extends Controller
 
                 Session::flash('success', 'Die Gruppen wurden erfolgreich nach Studiengängen aufgeteilt');
             } else {
-
                 $groupBalancedDivision = new GroupBalancedDivision($event, $event->consider_alcohol);
                 $groupBalancedDivision->assign();
 
                 Session::flash('success', 'Die Gruppen wurden erfolgreich aufgeteilt');
             }
             return Redirect::route('dashboard.admin.event.index', ['event' => $event->id]);
-        } else if ($event->type == 'slot_booking') {
-
+        } elseif ($event->type == 'slot_booking') {
             // foreach event slots
             foreach ($event->slots as $slot) {
                 $slotAssignment = new SlotAssignment($slot);
