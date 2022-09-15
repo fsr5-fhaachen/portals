@@ -29,6 +29,7 @@
             </InertiaLink>
           </div>
           <div
+            v-if="showAdminLink"
             class="hidden grow justify-end sm:-my-px sm:ml-6 sm:flex sm:space-x-8"
           >
             <InertiaLink
@@ -84,6 +85,7 @@
           {{ item.title }}
         </DisclosureButton>
         <DisclosureButton
+          v-if="showAdminLink"
           :as="InertiaLink"
           href="/dashboard/admin"
           :class="{
