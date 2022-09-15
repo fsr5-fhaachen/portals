@@ -10,7 +10,7 @@ use Illuminate\Database\Seeder;
 class TutorSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Run the tutor seeds.
      *
      * @return void
      */
