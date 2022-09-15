@@ -17,6 +17,8 @@ return new class () extends Migration {
             $table->timestamps();
             $table->string('name', 255)->nullable(false);
             $table->string('abbreviation', 16)->nullable(false);
+            $table->string('color', 64)->nullable(false);
+            $table->string('icon', 64)->nullable(false);
         });
     }
 

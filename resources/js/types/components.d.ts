@@ -8,9 +8,11 @@ export {};
 declare module "@vue/runtime-core" {
   export interface GlobalComponents {
     2: typeof import("./../components/ui/Dl copy 2.vue")["default"];
+    AppButton: typeof import("./../components/app/Button.vue")["default"];
     AppLink: typeof import("./../components/app/Link.vue")["default"];
     AppMessage: typeof import("./../components/app/Message.vue")["default"];
     AppNavbar: typeof import("./../components/app/Navbar.vue")["default"];
+    BoxContainer: typeof import("./../components/box/Container.vue")["default"];
     Card: typeof import("./../layouts/Card.vue")["default"];
     CardBase: typeof import("./../components/card/Base.vue")["default"];
     CardCard: typeof import("./../components/card/Card.vue")["default"];
@@ -18,6 +20,7 @@ declare module "@vue/runtime-core" {
     CardLayout: typeof import("./../layouts/CardLayout.vue")["default"];
     copy: typeof import("./../components/ui/Dl copy.vue")["default"];
     copyTable: typeof import("./../components/slot copy/Table.vue")["default"];
+    CourseBox: typeof import("./../components/course/Box.vue")["default"];
     DashboardCardLayout: typeof import("./../layouts/DashboardCardLayout.vue")["default"];
     DashboardLayout: typeof import("./../layouts/DashboardLayout.vue")["default"];
     Default: typeof import("./../layouts/Default.vue")["default"];

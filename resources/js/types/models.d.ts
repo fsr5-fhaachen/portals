@@ -66,6 +66,8 @@ declare namespace App.Models {
     updated_at: string | null;
     name: string;
     abbreviation: string;
+    color: string;
+    icon: string;
     users?: Array<App.Models.User> | null;
     groups?: Array<App.Models.Group> | null;
     users_count?: number | null;
@@ -104,11 +106,11 @@ declare namespace App.Models {
 
   export interface Group {
     id: number;
+    name: string;
     created_at: string | null;
     updated_at: string | null;
     event_id: number;
     course_id: number | null;
-    name: string | null;
     group_tutors?: Array<App.Models.GroupTutor> | null;
     registrations?: Array<App.Models.Registration> | null;
     stops?: Array<App.Models.Stop> | null;
@@ -153,13 +155,13 @@ declare namespace App.Models {
     created_at: string | null;
     updated_at: string | null;
     name: string;
-    registration_from: string;
-    registration_to: string;
+    description: string | null;
+    registration_from: string | null;
+    registration_to: string | null;
     type: string;
     has_requirements: boolean;
     consider_alcohol: boolean;
     form: string | null;
-    description: string | null;
     groups?: Array<App.Models.Group> | null;
     registrations?: Array<App.Models.Registration> | null;
     slots?: Array<App.Models.Slot> | null;

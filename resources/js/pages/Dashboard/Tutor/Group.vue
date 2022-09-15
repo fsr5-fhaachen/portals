@@ -8,6 +8,7 @@
       :event="group.event"
       :registrations="registrations"
       :hideGroups="true"
+      :user="user"
     />
   </LayoutDashboardContent>
 </template>
@@ -22,6 +23,10 @@ const { group } = defineProps({
   },
   group: {
     type: Object as PropType<App.Models.Group>,
+    required: true,
+  },
+  user: {
+    type: Object as PropType<App.Models.User>,
     required: true,
   },
 });

@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-full">
-    <AppNavbar :navigation="navigation" />
+    <AppNavbar :navigation="navigation" :showAdminLink="user.is_admin" />
 
     <div class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
       <AppMessage :message="message" />
@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, PropType } from "vue";
+import { computed, ref, PropType } from "vue";
 
 const { pages, user } = defineProps({
   message: {
@@ -30,11 +30,13 @@ const { pages, user } = defineProps({
   },
 });
 
-const isTutorPage = ref(window.location.pathname.includes("/dashboard/tutor"));
+const isTutorPage = computed(() => {
+  return window.location.pathname.includes("/dashboard/tutor");
+});
 const navigation = [
   {
     title: "Veranstaltungen",
-    href: "/dashboard" + (isTutorPage ? "/tutor" : ""),
+    href: "/dashboard" + (isTutorPage.value ? "/tutor" : ""),
   },
   ...usePagesAsNavigation(pages, "/dashboard/"),
 ];

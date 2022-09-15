@@ -3,11 +3,13 @@
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
 use App\Http\Controllers\DatabaseTestController;
 use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\IsLoggedInAdmin;
 use App\Http\Middleware\IsLoggedInTutor;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RedirectIfTutor;
@@ -23,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 Route::get('/', [AppController::class, 'index'])->name('app.index');
 
 Route::group([
@@ -62,15 +65,28 @@ Route::group([
 
     Route::post('/login-tutor', [DashboardController::class, 'loginTutor'])->name('dashboard.loginTutor');
     Route::group([
+        'prefix' => 'tutor',
         'middleware' => [
             IsLoggedInTutor::class
         ],
     ], function () {
-        Route::get('/tutor', [DashboardTutorController::class, 'index'])->name('dashboard.tutor.index');
-        Route::get('/tutor/event/{event}', [DashboardTutorController::class, 'event'])->name('dashboard.tutor.event.index');
-        Route::get('/tutor/event/{event}/registrations', [DashboardTutorController::class, 'registrations'])->name('dashboard.tutor.event.registrations');
-        Route::get('/tutor/slot/{slot}', [DashboardTutorController::class, 'slot'])->name('dashboard.tutor.slot.index');
-        Route::get('/tutor/group/{group}', [DashboardTutorController::class, 'group'])->name('dashboard.tutor.group.index');
+        Route::get('/', [DashboardTutorController::class, 'index'])->name('dashboard.tutor.index');
+        Route::get('/event/{event}', [DashboardTutorController::class, 'event'])->name('dashboard.tutor.event.index');
+        Route::get('/event/{event}/registrations', [DashboardTutorController::class, 'registrations'])->name('dashboard.tutor.event.registrations');
+        Route::get('/slot/{slot}', [DashboardTutorController::class, 'slot'])->name('dashboard.tutor.slot.index');
+        Route::get('/group/{group}', [DashboardTutorController::class, 'group'])->name('dashboard.tutor.group.index');
+    });
+
+    Route::group([
+        'prefix' => 'admin',
+        'middleware' => [
+            IsLoggedInTutor::class,
+            IsLoggedInAdmin::class
+        ],
+    ], function () {
+        Route::get('/', [DashboardAdminController::class, 'index'])->name('dashboard.admin.index');
+        Route::get('/event/{event}', [DashboardAdminController::class, 'event'])->name('dashboard.admin.event.index');
+        Route::get('/event/{event}/submit', [DashboardAdminController::class, 'eventSubmit'])->name('dashboard.admin.event.submit');
     });
 
     Route::get('{slug?}', [DashboardController::class, 'cmsPage'])->where('slug', '.*');
@@ -83,8 +99,6 @@ Route::group([
         Authenticate::class,
     ],
 ], function () {
-    Route::get('/registrations/{registration}', [ApiController::class, 'registrationsShow'])->name('api.registrations.show');
-
     Route::group([
         'middleware' => [
             IsLoggedInTutor::class
@@ -94,7 +108,23 @@ Route::group([
         Route::get('/events/registrations-amount', [ApiController::class, 'eventsRegistrationsAmount'])->name('api.events.registrationsAmount');
 
         Route::get('/events/{event}/registrations', [ApiController::class, 'eventRegistrationsShow'])->name('api.event.registrations.show');
+
+        Route::get('/registrations/{registration}/toggle-is-present', [ApiController::class, 'registrationsToggleIsPresent'])->name('api.event.registrations.toggleIsPresent');
+
+        Route::group([
+            'middleware' => [
+                IsLoggedInAdmin::class
+            ],
+        ], function () {
+            Route::get('/registrations/{registration}/toggle-fulfils-requirements', [ApiController::class, 'registrationsToggleFulfilsRequirements'])->name('api.event.registrations.toggleFulfilsRequirements');
+            Route::delete('/registrations/{registration}', [ApiController::class, 'registrationsDestroy'])->name('api.event.registrations.destroy');
+
+            Route::get('/courses/user-amount', [ApiController::class, 'coursesUserAmount'])->name('api.courses.userAmount');
+        });
     });
+
+
+    Route::get('/registrations/{registration}', [ApiController::class, 'registrationsShow'])->name('api.registrations.show');
 });
 
 // TODO: remove devlopment routes

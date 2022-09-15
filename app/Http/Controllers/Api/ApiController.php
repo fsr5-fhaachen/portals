@@ -155,4 +155,97 @@ class ApiController extends Controller
 
         return response()->json($result);
     }
+
+    /**
+     * Toggle is_present for a given registration
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function registrationsToggleIsPresent(Request $request)
+    {
+        $registration = Registration::find($request->registration);
+
+        if (!$registration) {
+            return response()->json(['message' => 'Registration not found'], 404);
+        }
+
+        $registration->is_present = !$registration->is_present;
+        $registration->save();
+
+        return response()->json($registration);
+    }
+
+    /**
+     * Toggle fulfils_requirements for a given registration
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function registrationsToggleFulfilsRequirements(Request $request)
+    {
+        $registration = Registration::find($request->registration);
+
+        if (!$registration) {
+            return response()->json(['message' => 'Registration not found'], 404);
+        }
+
+        $registration->fulfils_requirements = !$registration->fulfils_requirements;
+        $registration->save();
+
+        return response()->json($registration);
+    }
+
+    /**
+     * Delete a given registration
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function registrationsDestroy(Request $request)
+    {
+        $registration = Registration::find($request->registration);
+
+        if (!$registration) {
+            return response()->json(['message' => 'Registration not found'], 404);
+        }
+
+        // check if registration fullfills requirements
+        if ($registration->fulfils_requirements) {
+            return response()->json(['message' => 'Registration fullfills requirements'], 403);
+        }
+
+        $registration->delete();
+
+        // TODO: Update queue positions
+
+        return response()->json(['message' => 'Registration deleted']);
+    }
+
+
+    /**
+     * Return all courses with users amopunt
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function coursesUserAmount()
+    {
+        $courses = Course::all();
+
+        $result = [];
+
+        foreach ($courses as $course) {
+            $result[] = [
+                'id' => $course->id,
+                'amount' => $course->users()->count(),
+            ];
+        }
+
+        return response()->json($result);
+    }
 }

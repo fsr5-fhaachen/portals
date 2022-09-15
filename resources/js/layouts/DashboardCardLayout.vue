@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-full">
-    <AppNavbar :navigation="navigation" />
+    <AppNavbar :navigation="navigation" :showAdminLink="user.is_admin" />
 
     <div class="px-4 pt-6 sm:mx-auto sm:w-full sm:max-w-lg sm:px-6 lg:px-8">
       <AppMessage :message="message" />
@@ -23,6 +23,10 @@ const { pages } = defineProps({
   pages: {
     type: Array as PropType<App.Models.Page[]>,
     default: () => [],
+  },
+  user: {
+    type: Object as PropType<App.Models.User>,
+    required: true,
   },
 });
 

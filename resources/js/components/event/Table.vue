@@ -1,6 +1,6 @@
 <template>
   <div class="px-4 sm:px-6 lg:px-8">
-    <div class="mt-8 flex flex-col">
+    <div class="flex flex-col">
       <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle">
           <div class="shadow-sm ring-1 ring-black ring-opacity-5">
@@ -139,10 +139,20 @@
                       'relative whitespace-nowrap py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-6 lg:pr-8',
                     ]"
                   >
-                    <AppLink :href="'/dashboard/tutor/event/' + event.id">
-                      Anzeigen
-                      <span class="sr-only">, {{ event.name }}</span>
-                    </AppLink>
+                    <div class="flex gap-4">
+                      <AppLink :href="'/dashboard/tutor/event/' + event.id">
+                        Anzeigen
+                        <span class="sr-only">, {{ event.name }}</span>
+                      </AppLink>
+                      <AppLink
+                        v-if="user.is_admin"
+                        theme="danger"
+                        :href="'/dashboard/admin/event/' + event.id"
+                      >
+                        Admin
+                        <span class="sr-only">, {{ event.name }}</span>
+                      </AppLink>
+                    </div>
                   </td>
                 </tr>
               </tbody>

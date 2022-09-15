@@ -1,6 +1,6 @@
 <template>
   <div class="px-4 sm:px-6 lg:px-8">
-    <div class="mt-8 flex flex-col">
+    <div class="flex flex-col">
       <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle">
           <div class="shadow-sm ring-1 ring-black ring-opacity-5">
@@ -40,7 +40,7 @@
                     Gruppe
                   </th>
                   <th
-                    v-if="event.type == 'consider_alcohol'"
+                    v-if="event.consider_alcohol"
                     scope="col"
                     class="border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
                   >
@@ -53,17 +53,30 @@
                   >
                     Warteschlangenposition
                   </th>
+                  <th
+                    scope="col"
+                    class="border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pr-4 pl-3 backdrop-blur backdrop-filter sm:pr-6 lg:pr-8"
+                  >
+                    <span class="sr-only">Ist anwesend</span>
+                  </th>
                 </tr>
               </thead>
-              <tbody v-if="registrations" class="bg-white">
+              <tbody v-if="registrationsData" class="bg-white">
                 <template
-                  v-for="(registration, index) in registrations"
+                  v-for="(registration, index) in registrationsData"
                   :key="registration.id"
                 >
-                  <tr v-if="registration.user">
+                  <tr
+                    v-if="registration.user"
+                    :class="{
+                      'bg-yellow-100':
+                        registration.queue_position &&
+                        registration.queue_position > 0,
+                    }"
+                  >
                     <td
                       :class="[
-                        index !== registrations.length - 1
+                        index !== registrationsData.length - 1
                           ? 'border-b border-gray-200'
                           : '',
                         'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8',
@@ -73,17 +86,17 @@
                     </td>
                     <td
                       :class="[
-                        index !== registrations.length - 1
+                        index !== registrationsData.length - 1
                           ? 'border-b border-gray-200'
                           : '',
-                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
+                        'whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900',
                       ]"
                     >
                       {{ registration.user.lastname }}
                     </td>
                     <td
                       :class="[
-                        index !== registrations.length - 1
+                        index !== registrationsData.length - 1
                           ? 'border-b border-gray-200'
                           : '',
                         'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
@@ -98,7 +111,7 @@
                     <td
                       v-if="!hideSlots && event.type == 'slot_booking'"
                       :class="[
-                        index !== registrations.length - 1
+                        index !== registrationsData.length - 1
                           ? 'border-b border-gray-200'
                           : '',
                         'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
@@ -116,7 +129,7 @@
                     <td
                       v-if="!hideGroups && event.type == 'group_phase'"
                       :class="[
-                        index !== registrations.length - 1
+                        index !== registrationsData.length - 1
                           ? 'border-b border-gray-200'
                           : '',
                         'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
@@ -133,9 +146,9 @@
                     </td>
 
                     <td
-                      v-if="event.type == 'consider_alcohol'"
+                      v-if="event.consider_alcohol"
                       :class="[
-                        index !== registrations.length - 1
+                        index !== registrationsData.length - 1
                           ? 'border-b border-gray-200'
                           : '',
                         'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
@@ -146,7 +159,7 @@
                     <td
                       v-if="event.type == 'slot_booking'"
                       :class="[
-                        index !== registrations.length - 1
+                        index !== registrationsData.length - 1
                           ? 'border-b border-gray-200'
                           : '',
                         'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
@@ -162,6 +175,88 @@
                       </span>
                       <span v-else> - </span>
                     </td>
+                    <td
+                      :class="[
+                        index !== registrationsData.length - 1
+                          ? 'border-b border-gray-200'
+                          : '',
+                        'relative whitespace-nowrap py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-6 lg:pr-8',
+                      ]"
+                    >
+                      <div class="flex gap-4">
+                        <div>
+                          <AppButton
+                            v-if="registration.is_present"
+                            @click="toggleIsPresent(registration.id)"
+                          >
+                            <span class="sr-only"
+                              >{{ registration.user.firstname }}
+                              {{ registration.user.lastname }}</span
+                            >
+                            ist anwesend
+                          </AppButton>
+                          <AppButton
+                            v-else
+                            theme="gray"
+                            @click="toggleIsPresent(registration.id)"
+                          >
+                            <span class="sr-only"
+                              >{{ registration.user.firstname }}
+                              {{ registration.user.lastname }}</span
+                            >
+                            ist nicht anwesend
+                          </AppButton>
+                        </div>
+                        <div>
+                          <AppButton
+                            v-if="registration.fulfils_requirements"
+                            @click="toggleFulfilsRequirements(registration.id)"
+                          >
+                            <span class="sr-only"
+                              >{{ registration.user.firstname }}
+                              {{ registration.user.lastname }}</span
+                            >
+                            erfüllt die Anforderungen
+                          </AppButton>
+                          <AppButton
+                            v-else
+                            theme="gray"
+                            @click="toggleFulfilsRequirements(registration.id)"
+                          >
+                            <span class="sr-only"
+                              >{{ registration.user.firstname }}
+                              {{ registration.user.lastname }}</span
+                            >
+                            erfüllt nicht die Anforderungen
+                          </AppButton>
+                        </div>
+                        <div v-if="user && user.is_admin">
+                          <AppButton
+                            v-if="!registration.fulfils_requirements"
+                            theme="danger"
+                            @click="destory(registration.id)"
+                          >
+                            <span class="sr-only"
+                              >{{ registration.user.firstname }}
+                              {{ registration.user.lastname }}</span
+                            >
+                            löschen
+                          </AppButton>
+                          <AppButton
+                            v-else
+                            theme="gray"
+                            :disabled="true"
+                            @click="destory(registration.id)"
+                          >
+                            <span class="sr-only"
+                              >{{ registration.user.firstname }}
+                              {{ registration.user.lastname }}</span
+                            >
+                            löschen
+                          </AppButton>
+                        </div>
+                      </div>
+                    </td>
                   </tr>
                 </template>
               </tbody>
@@ -174,9 +269,9 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from "vue";
+import { ref, PropType, watch } from "vue";
 
-const { courses, event } = defineProps({
+const props = defineProps({
   courses: {
     type: Array as PropType<App.Models.Course[]>,
     required: true,
@@ -197,17 +292,93 @@ const { courses, event } = defineProps({
     type: Boolean,
     default: false,
   },
+  user: {
+    type: Object as PropType<App.Models.User>,
+    default: null,
+  },
 });
 
 const getCourseById = (id: number) => {
-  return courses.find((course) => course.id === id);
+  return props.courses.find((course) => course.id === id);
 };
 const getSlotById = (id: number) => {
-  if (!event.slots) return null;
-  return event.slots.find((slot) => slot.id === id);
+  if (!props.event.slots) return null;
+  return props.event.slots.find((slot) => slot.id === id);
 };
 const getGroupById = (id: number) => {
-  if (!event.groups) return null;
-  return event.groups.find((group) => group.id === id);
+  if (!props.event.groups) return null;
+  return props.event.groups.find((group) => group.id === id);
+};
+
+const registrationsData = ref(props.registrations);
+watch(props, (props) => {
+  registrationsData.value = props.registrations;
+});
+
+const toggleIsPresent = async (registrationId: number) => {
+  const response = await fetch(
+    "/api/registrations/" + registrationId + "/toggle-is-present",
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (response.ok) {
+    const data = await response.json();
+
+    registrationsData.value = registrationsData.value.map((registration) => {
+      if (registration.id === registrationId) {
+        registration.is_present = data.is_present;
+      }
+      return registration;
+    });
+  }
+};
+const toggleFulfilsRequirements = async (registrationId: number) => {
+  const response = await fetch(
+    "/api/registrations/" + registrationId + "/toggle-fulfils-requirements",
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (response.ok) {
+    const data = await response.json();
+
+    registrationsData.value = registrationsData.value.map((registration) => {
+      if (registration.id === registrationId) {
+        registration.fulfils_requirements = data.fulfils_requirements;
+      }
+      return registration;
+    });
+  }
+};
+
+const destory = async (registrationId: number) => {
+  const response = await fetch("/api/registrations/" + registrationId, {
+    method: "DELETE",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRF-TOKEN":
+        document
+          .querySelector("meta[name='csrf-token']")
+          ?.getAttribute("content") || "",
+    },
+  });
+
+  if (response.ok) {
+    registrationsData.value = registrationsData.value.filter(
+      (registration) => registration.id !== registrationId
+    );
+  }
 };
 </script>

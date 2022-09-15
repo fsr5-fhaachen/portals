@@ -36,7 +36,8 @@ const { href, rootClass, theme } = defineProps({
   theme: {
     type: String,
     default: "default",
-    validator: (value: string) => ["default", "gray", "none"].includes(value),
+    validator: (value: string) =>
+      ["default", "gray", "danger", "none"].includes(value),
   },
 });
 
@@ -51,6 +52,8 @@ const rootClasses = computed(() => {
     classes.push("text-fhac-mint-dark");
   } else if (theme === "gray") {
     classes.push("text-gray-500");
+  } else if (theme === "danger") {
+    classes.push("text-red-500");
   }
 
   if (theme !== "none") {
