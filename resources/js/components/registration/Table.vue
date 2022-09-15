@@ -54,6 +54,13 @@
                     Warteschlangenposition
                   </th>
                   <th
+                    v-if="showFormColomn"
+                    scope="col"
+                    class="border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                  >
+                    Rückmeldung
+                  </th>
+                  <th
                     scope="col"
                     class="border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pr-4 pl-3 backdrop-blur backdrop-filter sm:pr-6 lg:pr-8"
                   >
@@ -187,6 +194,19 @@
                       <span v-else>Angemeldet</span>
                     </td>
                     <td
+                      v-if="showFormColomn"
+                      :class="[
+                        index !== registrationsData.length - 1
+                          ? 'border-b border-gray-200'
+                          : '',
+                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
+                      ]"
+                    >
+                      <code v-if="registration.form_responses">
+                        {{ registration.form_responses }}
+                      </code>
+                    </td>
+                    <td
                       :class="[
                         index !== registrationsData.length - 1
                           ? 'border-b border-gray-200'
@@ -280,7 +300,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, PropType, watch } from "vue";
+import { computed, ref, PropType, watch } from "vue";
 
 const props = defineProps({
   courses: {
@@ -324,6 +344,13 @@ const getGroupById = (id: number) => {
 const registrationsData = ref(props.registrations);
 watch(props, (props) => {
   registrationsData.value = props.registrations;
+});
+
+const showFormColomn = computed(() => {
+  // check if any registrationsData has the attribute "form_responses"
+  return registrationsData.value.some((registration) => {
+    return registration.form_responses;
+  });
 });
 
 const toggleIsPresent = async (registrationId: number) => {

@@ -2,7 +2,7 @@
   <LayoutDashboardContent>
     <template #title>{{ event.name }}</template>
 
-    <BoxContainer>
+    <BoxContainer class="mb-16">
       <CourseBox v-for="course in courses" :course="course">
         <p class="text-2xl font-semibold text-gray-900">
           {{ getRegistrationsAmountByCourse(course) }}
@@ -10,7 +10,10 @@
       </CourseBox>
     </BoxContainer>
 
-    <div class="my-16">
+    <div
+      v-if="['group_phase', 'slot_booking'].includes(event.type)"
+      class="mb-16"
+    >
       <AppButton
         theme="danger"
         @click="submit()"
