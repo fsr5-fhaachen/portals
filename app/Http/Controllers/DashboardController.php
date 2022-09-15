@@ -41,8 +41,16 @@ class DashboardController extends Controller
     {
         // check if the user is a tutor
         if (Auth::user()->is_tutor) {
+
+            $neededPassword = config('app.tutor_password');
+
+            // check if user is admin
+            if (Auth::user()->is_admin) {
+                $neededPassword = config('app.admin_password');
+            }
+
             // check if password is tutor_password
-            if ($request->input('password') == config('app.tutor_password')) {
+            if ($request->input('password') == $neededPassword) {
                 // set the session variable
                 session(['tutor' => true]);
 
