@@ -18,7 +18,7 @@ class DivisionController extends Controller
         $course = Course::query()->find($courseId);
         $event = Event::query()->find($eventId);
 
-        $gcdiv = new GroupCourseDivision($event, $course, true);
+        $gcdiv = new GroupCourseDivision($event, $course, true, 3, 18);
         $gcdiv->assign();
         return "Done!";
     }

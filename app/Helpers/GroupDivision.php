@@ -11,14 +11,18 @@ abstract class GroupDivision
     protected Collection $groups;
     protected Collection $registrations;
     protected bool $assignByAlc;
+    protected int $maxGroups;
+    protected int $maxGroupSize;
     protected int $minNonDrinkers;
 
-    public function __construct(Event $event, bool $assignByAlc, int $minNonDrinkers = 3)
+    public function __construct(Event $event, bool $assignByAlc, int $maxGroups = 0, int $maxGroupSize = 0, int $minNonDrinkers = 3)
     {
         $this->event = $event;
         $this->groups = $event->groups()->get();
         $this->registrations = $event->registrations()->get();
         $this->assignByAlc = $assignByAlc;
+        $this->maxGroups = $maxGroups;
+        $this->maxGroupSize = $maxGroupSize;
         $this->minNonDrinkers = $minNonDrinkers;
     }
 
@@ -28,6 +32,22 @@ abstract class GroupDivision
      * @return Collection
      */
     abstract public function getUnassignedRegs();
+
+    /**
+     * Updates the queue positions of the provided registrations
+     *
+     * @param Collection $registrations
+     *
+     * @return void
+     */
+    abstract protected function updateQueuePos(Collection $registrations);
+
+    /**
+     * First initial assignment of users that are registered for this event
+     *
+     * @return void
+     */
+    abstract protected function assignInitial();
 
     /**
      * Assigns non-drinkers registered for this event to groups
