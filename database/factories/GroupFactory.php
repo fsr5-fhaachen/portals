@@ -19,6 +19,7 @@ class GroupFactory extends Factory
     public function definition()
     {
         return [
+          'name' => $this->faker->word(),
           'event_id' => Event::all(['id'])->random(),
           'course_id' => Course::all(['id'])->random()
         ];
