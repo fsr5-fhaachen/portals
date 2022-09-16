@@ -33,7 +33,13 @@ class GroupCourseDivision extends GroupDivision
         });
     }
 
-    // TODO getOpenGroupSpots doc
+  /**
+   * Returns amount of open slots of provided group
+   *
+   * @param Group $group
+   *
+   * @return Collection
+   */
     public function getOpenGroupSpots(Group $group)
     {
       $takenSpots = $group->registrations()->count();
