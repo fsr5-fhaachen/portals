@@ -261,7 +261,7 @@ class DashboardAdminController extends Controller
         }
 
         // get event
-        $event = Event::find(Request::input('event'));
+        $event = Event::find(Request::input('event_id'));
         if (!$event) {
             Session::flash('error', 'Das Event existiert nicht.');
 
