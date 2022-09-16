@@ -20,7 +20,9 @@ class GroupCourseDivision extends GroupDivision
           ->where('users.course_id', '=', $course->id)
           ->get();
         $this->groups = $this->groups->where('course_id', '=', $course->id);
-        if ($maxGroups) $this->groups = $this->groups->take($maxGroups);
+        if ($maxGroups) {
+            $this->groups = $this->groups->take($maxGroups);
+        }
     }
 
     /**
@@ -29,15 +31,15 @@ class GroupCourseDivision extends GroupDivision
     public function getUnassignedRegs()
     {
         return $this->registrations->filter(function ($val, $key) {
-           return $val->group_id == null;
+            return $val->group_id == null;
         });
     }
 
     // TODO getOpenGroupSpots doc
     public function getOpenGroupSpots(Group $group)
     {
-      $takenSpots = $group->registrations()->count();
-      return $this->maxGroupSize ? ($this->maxGroupSize - $takenSpots) : PHP_INT_MAX;
+        $takenSpots = $group->registrations()->count();
+        return $this->maxGroupSize ? ($this->maxGroupSize - $takenSpots) : PHP_INT_MAX;
     }
 
     /**
@@ -47,16 +49,16 @@ class GroupCourseDivision extends GroupDivision
      */
     public function getGroupsWithOpenSpots()
     {
-      $groupsWithOpenSpots = $this->groups;
+        $groupsWithOpenSpots = $this->groups;
 
-      // If there is a maxGroupSize, only assign to groups that have not yet hit it
-      if ($this->maxGroupSize > 0) {
-        $groupsWithOpenSpots = $groupsWithOpenSpots->filter(function ($val, $key) {
-          return $val->registrations()->count() < $this->maxGroupSize;
-        });
-      }
+        // If there is a maxGroupSize, only assign to groups that have not yet hit it
+        if ($this->maxGroupSize > 0) {
+            $groupsWithOpenSpots = $groupsWithOpenSpots->filter(function ($val, $key) {
+                return $val->registrations()->count() < $this->maxGroupSize;
+            });
+        }
 
-      return $groupsWithOpenSpots;
+        return $groupsWithOpenSpots;
     }
 
     /**
@@ -64,12 +66,12 @@ class GroupCourseDivision extends GroupDivision
      */
     protected function updateQueuePos(Collection $registrations)
     {
-      $i = 1;
-      foreach ($registrations as $registration) {
-        $registration->queue_position = $i;
-        $registration->save();
-        $i++;
-      }
+        $i = 1;
+        foreach ($registrations as $registration) {
+            $registration->queue_position = $i;
+            $registration->save();
+            $i++;
+        }
     }
 
     /**
@@ -133,50 +135,54 @@ class GroupCourseDivision extends GroupDivision
     public function assignLeftover()
     {
         $unassignedRegs = $this->getUnassignedRegs();
-        if ($this->maxGroupSize > 0) $unassignedRegs = $unassignedRegs->sortBy('queue_position');
+        if ($this->maxGroupSize > 0) {
+            $unassignedRegs = $unassignedRegs->sortBy('queue_position');
+        }
 
         // Sort groupsWithOpenSpots by how many people are assigned to it, so the one with the least people is in first place
         $groupsWithOpenSpots = $this->getGroupsWithOpenSpots()
           ->sortBy(function ($group) {
-            return $group->registrations()->count();
+              return $group->registrations()->count();
           });
-        if ($groupsWithOpenSpots->isEmpty()) return;
+        if ($groupsWithOpenSpots->isEmpty()) {
+            return;
+        }
 
         $cycleAssignByAlc = $this->assignByAlc;  // Determines if this assign cycle should consider alcohol consumption at any given time
 
         foreach ($unassignedRegs as $registration) {
+            $group = $groupsWithOpenSpots->first();
 
-          $group = $groupsWithOpenSpots->first();
+            if ($cycleAssignByAlc) {
+                $group = $groupsWithOpenSpots->filter(function ($val, $key) {
+                    return $val->registrations()
+                        ->where('drinks_alcohol', '=', false)
+                        ->count() > 0;
+                })
+                  ->first();
 
-          if ($cycleAssignByAlc) {
-
-            $group = $groupsWithOpenSpots->filter(function ($val, $key) {
-              return $val->registrations()
-                  ->where('drinks_alcohol', '=', false)
-                  ->count() > 0;
-            })
-              ->first();
-
-            // If there is no more group with non-drinkers that has open spots left, remove all non-drinkers from this assign cycle and continue without doing this check anymore
-            if ($group == null) {
-              $unassignedRegs = $unassignedRegs->where('drinks_alcohol', '=', true);
-              $cycleAssignByAlc = false;
-              continue;
+                // If there is no more group with non-drinkers that has open spots left, remove all non-drinkers from this assign cycle and continue without doing this check anymore
+                if ($group == null) {
+                    $unassignedRegs = $unassignedRegs->where('drinks_alcohol', '=', true);
+                    $cycleAssignByAlc = false;
+                    continue;
+                }
             }
-          }
 
-          // If the first group has no more spots left it implies the same for all other groups, so this assignment cycle is finished
-          if ($this->getOpenGroupSpots($group) <= 0) return;
+            // If the first group has no more spots left it implies the same for all other groups, so this assignment cycle is finished
+            if ($this->getOpenGroupSpots($group) <= 0) {
+                return;
+            }
 
-          // Otherwise this registration can safely be assigned to the group
-          $registration->group_id = $group->id;
-          $registration->queue_position = null;
-          $registration->save();
+            // Otherwise this registration can safely be assigned to the group
+            $registration->group_id = $group->id;
+            $registration->queue_position = null;
+            $registration->save();
 
-          // Sort the groups to have the group with least people in front again
-          $groupsWithOpenSpots->sortBy(function ($group) {
-            return $group->registrations()->count();
-          });
+            // Sort the groups to have the group with least people in front again
+            $groupsWithOpenSpots->sortBy(function ($group) {
+                return $group->registrations()->count();
+            });
         }
     }
 
@@ -185,9 +191,13 @@ class GroupCourseDivision extends GroupDivision
      */
     protected function assignInitial()
     {
-      if ($this->assignByAlc) $this->assignNonDrinkers();
-      $this->assignUntilSatisfies();
-      if ($this->maxGroupSize > 0) $this->updateQueuePos($this->getUnassignedRegs());
+        if ($this->assignByAlc) {
+            $this->assignNonDrinkers();
+        }
+        $this->assignUntilSatisfies();
+        if ($this->maxGroupSize > 0) {
+            $this->updateQueuePos($this->getUnassignedRegs());
+        }
     }
 
     /**
@@ -195,13 +205,17 @@ class GroupCourseDivision extends GroupDivision
      */
     public function assign()
     {
-      // Checks if registrations have no group_id set, which indicates that course needs initial assignment
-      $courseNotAssigned = $this->registrations->every(function ($val, $key) {
-          return $val->group_id == null;
+        // Checks if registrations have no group_id set, which indicates that course needs initial assignment
+        $courseNotAssigned = $this->registrations->every(function ($val, $key) {
+            return $val->group_id == null;
         });
 
-      if ($courseNotAssigned) $this->assignInitial();
-      $this->assignLeftover();
-      if ($this->maxGroupSize > 0) $this->updateQueuePos($this->getUnassignedRegs()->sortBy('queue_position'));
+        if ($courseNotAssigned) {
+            $this->assignInitial();
+        }
+        $this->assignLeftover();
+        if ($this->maxGroupSize > 0) {
+            $this->updateQueuePos($this->getUnassignedRegs()->sortBy('queue_position'));
+        }
     }
 }

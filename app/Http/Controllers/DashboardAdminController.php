@@ -67,8 +67,21 @@ class DashboardAdminController extends Controller
             return Inertia::render('Dashboard/404');
         }
 
+        $courses = Course::all();
+
+        // check if any groups has a course
+        $hasCourse = false;
+        foreach ($event->groups as $group) {
+            if ($group->course_id) {
+                $hasCourse = true;
+                break;
+            }
+        }
+
         return Inertia::render('Dashboard/Admin/Submit', [
             'event' => $event,
+            'courses' => $courses,
+            'hasCourse' => $hasCourse,
         ]);
     }
 
@@ -104,12 +117,26 @@ class DashboardAdminController extends Controller
                 $courses = Course::all();
 
                 foreach ($courses as $course) {
-                    $groupCourseDivision = new GroupCourseDivision($event, $course, $event->consider_alcohol);
-                    $groupCourseDivision->assign();
+                    // check if groups is
+                    $groups = $event->groups()->where('course_id', $course->id)->get();
+
+                    if (count($groups) > 0) {
+                        // get max_groups and max_participants for course by request
+                        $maxGroups = $request->input('max_groups_' . $course->id);
+                        $maxParticipants = $request->input('max_participants_' . $course->id);
+
+
+                        $groupCourseDivision = new GroupCourseDivision($event, $course, $event->consider_alcohol, (int)$maxGroups, (int)$maxParticipants);
+                        $groupCourseDivision->assign();
+                    }
                 }
 
                 Session::flash('success', 'Die Gruppen wurden erfolgreich nach Studiengängen aufgeteilt');
             } else {
+                // TODO: get max_groups and max_participants
+                // $maxGroups = $request->max_groups;
+                // $maxParticipants = $request->max_participants;
+
                 $groupBalancedDivision = new GroupBalancedDivision($event, $event->consider_alcohol);
                 $groupBalancedDivision->assign();
 
