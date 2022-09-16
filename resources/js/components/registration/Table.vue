@@ -349,7 +349,7 @@ watch(props, (props) => {
 const showFormColomn = computed(() => {
   // check if any registrationsData has the attribute "form_responses"
   return registrationsData.value.some((registration) => {
-    return registration.form_responses && registration.form_responses?.length;
+    return registration.form_responses;
   });
 });
 
