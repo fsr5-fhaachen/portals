@@ -25,7 +25,8 @@ class EventsSeeder extends Seeder
 
 
         $this->runKaterbrunch();
-        $this->runSportKultur();
+        $this->runKultur();
+        $this->runSport();
     }
 
     /**
@@ -230,21 +231,21 @@ class EventsSeeder extends Seeder
     }
 
     /**
-     * Run the "Sport & Kultur" event seeds.
+     * Run the "Sport" event seeds.
      *
      * @return void
      */
-    public function runSportKultur()
+    public function runSport()
     {
-        // check if event with name "Sport & Kultur" exists
-        $event = Event::where('name', 'Sport & Kultur')->first();
+        // check if event with name "Sport" exists
+        $event = Event::where('name', 'Sport')->first();
         if ($event) {
             return;
         }
 
         // create a new event
         $event = new Event();
-        $event->name = 'Sport & Kultur';
+        $event->name = 'Sport';
         $event->description = '';
         $event->type = 'slot_booking';
         $event->registration_from = new DateTime('2022-09-19 13:00:00');
@@ -277,6 +278,47 @@ class EventsSeeder extends Seeder
                 'has_requirements' => true,
                 'maximum_participants' => 60,
             ],
+        ];
+
+        foreach ($slots as $slotData) {
+            $slot = new Slot();
+            $slot->name = $slotData['name'];
+            $slot->event_id = $event->id;
+            $slot->has_requirements = $slotData['has_requirements'];
+            $slot->maximum_participants = $slotData['maximum_participants'];
+
+            $slot->save();
+        }
+    }
+
+    /**
+     * Run the "Kultur" event seeds.
+     *
+     * @return void
+     */
+    public function runKultur()
+    {
+        // check if event with name "Kultur" exists
+        $event = Event::where('name', 'Kultur')->first();
+        if ($event) {
+            return;
+        }
+
+        // create a new event
+        $event = new Event();
+        $event->name = 'Kultur';
+        $event->description = '';
+        $event->type = 'slot_booking';
+        $event->registration_from = new DateTime('2022-09-19 13:00:00');
+        $event->registration_to = new DateTime('2022-09-20 23:59:00');
+        $event->has_requirements = false;
+        $event->consider_alcohol = false;
+
+        // save the event
+        $event->save();
+
+        // create event slots
+        $slots = [
             [
                 'name' => 'Kebabtour',
                 'has_requirements' => false,
