@@ -296,7 +296,7 @@ class DashboardAdminController extends Controller
             $queuePosition = Registration::where('event_id', $event->id)->max('queue_position');
         }
 
-        if ($queuePosition) {
+        if ($queuePosition >= 0) {
             $userRegistration['queue_position'] = $queuePosition + 1;
         } else {
             // check if slot is set
