@@ -30,7 +30,7 @@ class ApiController extends Controller
     public function registrationsShow(Request $request)
     {
         // get registration
-        $registration = Registration::find($request->registration)->with('group', 'slot')->first();
+        $registration = Registration::with('group', 'slot')->get()->find($request->registration);
         if (!$registration) {
             return response()->json(['message' => 'Registration not found'], 404);
         }
@@ -219,8 +219,6 @@ class ApiController extends Controller
         }
 
         $registration->delete();
-
-        // TODO: Update queue positions
 
         return response()->json(['message' => 'Registration deleted']);
     }

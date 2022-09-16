@@ -99,8 +99,13 @@ class DashboardEventController extends Controller
         }
 
         $event->slots = $event->slots()->get();
-        $registration = $event->registrations()->where('user_id', $request->user()->id)->first();
-        $registration->group = $registration->group()->first();
+
+        // get registration from user
+        $registration = Registration::where('event_id', $event->id)->where('user_id', $request->user()->id)->first();
+
+        if ($registration) {
+            $registration->group = $registration->group()->first();
+        }
 
 
         return Inertia::render('Dashboard/Event/Index', [

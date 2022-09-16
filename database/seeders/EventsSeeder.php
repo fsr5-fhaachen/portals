@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Course;
 use App\Models\Event;
 use App\Models\Group;
 use App\Models\Slot;
@@ -18,8 +19,14 @@ class EventsSeeder extends Seeder
     public function run()
     {
         $this->runGruppenphase();
+
+        $this->runHausfuehrungOffline();
+        $this->runHausfuehrungOnline();
+
+
         $this->runKaterbrunch();
-        $this->runSportKultur();
+        $this->runKultur();
+        $this->runSport();
     }
 
     /**
@@ -80,6 +87,106 @@ class EventsSeeder extends Seeder
     }
 
     /**
+     * Run the "Hausführung Offline" event seeds.
+     *
+     * @return void
+     */
+    public function runHausfuehrungOffline()
+    {
+        // check if event with name "Hausführung (Präsenz)" exists
+        $event = Event::where('name', 'Hausführung (Präsenz)')->first();
+        if ($event) {
+            return;
+        }
+
+        // create a new event
+        $event = new Event();
+        $event->name = 'Hausführung (Präsenz)';
+        $event->description = null;
+        $event->type = 'group_phase';
+        $event->registration_from = new DateTime('2022-09-19 8:00:00');
+        $event->registration_to = new DateTime('2022-09-21 9:15:00');
+        $event->has_requirements = false;
+        $event->consider_alcohol = false;
+
+        // save the event
+        $event->save();
+
+        // get all courses
+        $courses = Course::all();
+
+        // map courses by abbreviation
+        $coursesByAbbreviation = [];
+        foreach ($courses as $course) {
+            $coursesByAbbreviation[$course->abbreviation] = $course;
+        }
+
+        // create event groups
+        $groups = [];
+
+        for ($i = 1; $i <= 10; $i++) {
+            $groups[] = [
+                "name" => "INF Hausführung $i",
+                "course_id" => $coursesByAbbreviation['INF']->id,
+            ];
+        }
+        for ($i = 1; $i <= 5; $i++) {
+            $groups[] = [
+                "name" => "ET Hausführung $i",
+                "course_id" => $coursesByAbbreviation['ET']->id,
+            ];
+        }
+        for ($i = 1; $i <= 3; $i++) {
+            $groups[] = [
+                "name" => "MCD Hausführung $i",
+                "course_id" => $coursesByAbbreviation['MCD']->id,
+            ];
+        }
+        for ($i = 1; $i <= 3; $i++) {
+            $groups[] = [
+                "name" => "WI Hausführung $i",
+                "course_id" => $coursesByAbbreviation['WI']->id,
+            ];
+        }
+
+        // save groups
+        foreach ($groups as $groupData) {
+            $group = new Group();
+            $group->name = $groupData['name'];
+            $group->event_id = $event->id;
+            $group->course_id = $groupData['course_id'];
+            $group->save();
+        }
+    }
+
+    /**
+     * Run the "Hausführung Online" event seeds.
+     *
+     * @return void
+     */
+    public function runHausfuehrungOnline()
+    {
+        // check if event with name "Hausführung (Online)" exists
+        $event = Event::where('name', 'Hausführung (Online)')->first();
+        if ($event) {
+            return;
+        }
+
+        // create a new event
+        $event = new Event();
+        $event->name = 'Hausführung (Online)';
+        $event->description = null;
+        $event->type = 'event_registration';
+        $event->registration_from = new DateTime('2022-09-19 8:00:00');
+        $event->registration_to = new DateTime('2022-09-21 9:15:00');
+        $event->has_requirements = false;
+        $event->consider_alcohol = false;
+
+        // save the event
+        $event->save();
+    }
+
+    /**
      * Run the "Katerbrunch" event seeds.
      *
      * @return void
@@ -124,21 +231,21 @@ class EventsSeeder extends Seeder
     }
 
     /**
-     * Run the "Sport & Kultur" event seeds.
+     * Run the "Sport" event seeds.
      *
      * @return void
      */
-    public function runSportKultur()
+    public function runSport()
     {
-        // check if event with name "Sport & Kultur" exists
-        $event = Event::where('name', 'Sport & Kultur')->first();
+        // check if event with name "Sport" exists
+        $event = Event::where('name', 'Sport')->first();
         if ($event) {
             return;
         }
 
         // create a new event
         $event = new Event();
-        $event->name = 'Sport & Kultur';
+        $event->name = 'Sport';
         $event->description = '';
         $event->type = 'slot_booking';
         $event->registration_from = new DateTime('2022-09-19 13:00:00');
@@ -171,6 +278,47 @@ class EventsSeeder extends Seeder
                 'has_requirements' => true,
                 'maximum_participants' => 60,
             ],
+        ];
+
+        foreach ($slots as $slotData) {
+            $slot = new Slot();
+            $slot->name = $slotData['name'];
+            $slot->event_id = $event->id;
+            $slot->has_requirements = $slotData['has_requirements'];
+            $slot->maximum_participants = $slotData['maximum_participants'];
+
+            $slot->save();
+        }
+    }
+
+    /**
+     * Run the "Kultur" event seeds.
+     *
+     * @return void
+     */
+    public function runKultur()
+    {
+        // check if event with name "Kultur" exists
+        $event = Event::where('name', 'Kultur')->first();
+        if ($event) {
+            return;
+        }
+
+        // create a new event
+        $event = new Event();
+        $event->name = 'Kultur';
+        $event->description = '';
+        $event->type = 'slot_booking';
+        $event->registration_from = new DateTime('2022-09-19 13:00:00');
+        $event->registration_to = new DateTime('2022-09-20 23:59:00');
+        $event->has_requirements = false;
+        $event->consider_alcohol = false;
+
+        // save the event
+        $event->save();
+
+        // create event slots
+        $slots = [
             [
                 'name' => 'Kebabtour',
                 'has_requirements' => false,
