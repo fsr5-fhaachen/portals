@@ -11,44 +11,46 @@
         v-model="form"
       >
         <FormContainer>
-          <template v-if="hasCourse">
-            <template v-for="(course, index) in courses" :key="course.id">
-              <FormRow>
-                <UiH2>{{ course.name }}</UiH2>
-              </FormRow>
-              <FormRow>
-                <FormKit
-                  type="number"
-                  :name="'max_groups[' + course.id + ']'"
-                  label="Maximale Gruppenanzahl"
-                  placeholder="Leer lassen für die voreingestellte Anzahl"
-                />
-                <FormKit
-                  type="number"
-                  :name="'max_participants[' + course.id + ']'"
-                  label="Maximale Teilnehmeranzahl pro Gruppe"
-                  placeholder="Leer lassen für keine Begrenzung"
-                />
-              </FormRow>
+          <template v-if="event.type == 'group_phase'">
+            <template v-if="hasCourse">
+              <template v-for="(course, index) in courses" :key="course.id">
+                <FormRow>
+                  <UiH2>{{ course.name }}</UiH2>
+                </FormRow>
+                <FormRow>
+                  <FormKit
+                    type="number"
+                    :name="'max_groups[' + course.id + ']'"
+                    label="Maximale Gruppenanzahl"
+                    placeholder="Leer lassen für die voreingestellte Anzahl"
+                  />
+                  <FormKit
+                    type="number"
+                    :name="'max_participants[' + course.id + ']'"
+                    label="Maximale Teilnehmeranzahl pro Gruppe"
+                    placeholder="Leer lassen für keine Begrenzung"
+                  />
+                </FormRow>
 
-              <FormDivider v-if="index < courses.length - 1" />
+                <FormDivider v-if="index < courses.length - 1" />
+              </template>
             </template>
-          </template>
 
-          <FormRow v-else>
-            <FormKit
-              type="number"
-              name="max_groups"
-              label="Maximale Gruppenanzahl"
-              placeholder="Leer lassen für die voreingestellte Anzahl"
-            />
-            <FormKit
-              type="number"
-              name="max_participants"
-              label="Maximale Teilnehmeranzahl pro Gruppe"
-              placeholder="Leer lassen für keine Begrenzung"
-            />
-          </FormRow>
+            <FormRow v-else>
+              <FormKit
+                type="number"
+                name="max_groups"
+                label="Maximale Gruppenanzahl"
+                placeholder="Leer lassen für die voreingestellte Anzahl"
+              />
+              <FormKit
+                type="number"
+                name="max_participants"
+                label="Maximale Teilnehmeranzahl pro Gruppe"
+                placeholder="Leer lassen für keine Begrenzung"
+              />
+            </FormRow>
+          </template>
 
           <FormRow>
             <FormKit type="submit" label="Ich bin mir sicher" />
