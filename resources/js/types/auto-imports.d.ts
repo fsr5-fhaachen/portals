@@ -4,5 +4,6 @@ declare global {
   const usePagesAsNavigation: typeof import("../composables/usePagesAsNavigation")["default"];
   const usePlaceholderPerson: typeof import("../composables/usePlaceholderPerson")["default"];
   const useSelectFormCourseOptions: typeof import("../composables/useSelectFormCourseOptions")["default"];
+  const useSelectFormEventOptions: typeof import("../composables/useSelectFormEventOptions")["default"];
   const useSelectFormSlotOptions: typeof import("../composables/useSelectFormSlotOptions")["default"];
 }

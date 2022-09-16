@@ -96,27 +96,4 @@ class DashboardTutorController extends Controller
             'courses' => $courses,
         ]);
     }
-
-    /**
-     * Display the dashboard tutor registrations page
-     *
-     * @param Request $request
-     *
-     * @return \Inertia\Response
-     */
-    public function registrations(Request $request)
-    {
-        $event = Event::with('groups')->with('slots')->find($request->event);
-        if (!$event) {
-            return Inertia::render('Dashboard/404');
-        }
-        $event->registrations = $event->registrations()->with('user')->get();
-
-        $courses = Course::all();
-
-        return Inertia::render('Dashboard/Tutor/Registrations', [
-            'event' => $event,
-            'courses' => $courses,
-        ]);
-    }
 }
