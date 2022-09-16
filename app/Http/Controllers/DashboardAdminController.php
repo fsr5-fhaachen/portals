@@ -288,33 +288,37 @@ class DashboardAdminController extends Controller
             $userRegistration['drinks_alcohol'] = Request::input('drinks_no_alcohol');
         }
 
-        // calulate queue_position
-        $queuePosition = null;
+        // check if slot is set
         if (array_key_exists('slot_id', $userRegistration)) {
-            $queuePosition = Registration::where('event_id', $event->id)->where('slot_id', $userRegistration['slot_id'])->max('queue_position');
+            // get slot
+            $slot = Slot::find($userRegistration['slot_id']);
+
+            // check if slot exists
+            if (!$slot) {
+                Session::flash('error', 'Das Slot existiert nicht.');
+
+                return Redirect::back();
+            }
+
+            // check if slot has maximum_participants
+            if ($slot->maximum_participants) {
+                $queuePosition = Registration::where('event_id', $event->id)->where('slot_id', $userRegistration['slot_id'])->max('queue_position');
+
+                if (!$queuePosition || $queuePosition == -1) {
+                    $queuePosition = -1;
+                } else {
+                    $queuePosition++;
+                }
+
+                $userRegistration['queue_position'] = $queuePosition;
+            }
         } else {
             $queuePosition = Registration::where('event_id', $event->id)->max('queue_position');
-        }
 
-        if ($queuePosition > 0) {
-            $userRegistration['queue_position'] = $queuePosition + 1;
-        } else {
-            // check if slot is set
-            if (array_key_exists('slot_id', $userRegistration)) {
-                // get slot
-                $slot = Slot::find($userRegistration['slot_id']);
-
-                // check if slot exists
-                if (!$slot) {
-                    Session::flash('error', 'Das Slot existiert nicht.');
-
-                    return Redirect::back();
-                }
-
-                // check if slot has maximum_participants
-                if ($slot->maximum_participants) {
-                    $userRegistration['queue_position'] = -1;
-                }
+            if ($queuePosition == -1) {
+                $queuePosition = -1;
+            } elseif ($queuePosition > 0) {
+                $queuePosition++;
             }
         }
 
