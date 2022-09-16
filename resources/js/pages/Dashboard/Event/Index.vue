@@ -44,19 +44,42 @@
 
       <template v-if="userRegistration">
         <template v-if="event.type == 'group_phase'">
-          <UiMessage
-            v-if="userRegistration.group_id && userRegistration.group"
-            type="success"
-            :message="
-              'Die Einteilung ist erfolgt. Du bist in ' +
-              (userRegistration.group.name
-                ? 'der Gruppe <strong>' +
-                  userRegistration.group.name +
-                  '</strong>'
-                : '<strong>Gruppe ' + userRegistration.group.id + '</strong>') +
-              '.'
-            "
-          />
+          <template v-if="userRegistration.group_id && userRegistration.group">
+            <UiMessage
+              v-if="
+                !event.has_requirements ||
+                (event.has_requirements &&
+                  userRegistration.fulfils_requirements)
+              "
+              type="success"
+              :message="
+                'Die Einteilung ist erfolgt. Du bist in ' +
+                (userRegistration.group.name
+                  ? 'der Gruppe <strong>' +
+                    userRegistration.group.name +
+                    '</strong>'
+                  : '<strong>Gruppe ' +
+                    userRegistration.group.id +
+                    '</strong>') +
+                '.'
+              "
+            />
+            <UiMessage
+              v-else
+              type="warning"
+              :message="
+                'Die Einteilung ist erfolgt. Du bist für ' +
+                (userRegistration.group.name
+                  ? 'der Gruppe <strong>' +
+                    userRegistration.group.name +
+                    '</strong>'
+                  : '<strong>Gruppe ' +
+                    userRegistration.group.id +
+                    '</strong>') +
+                ' <strong>vorgemerkt</strong>. Folge den mitgeteilten Anweisungen, um die Anmeldung abzuschließen.'
+              "
+            />
+          </template>
           <UiMessage
             v-else
             message="Die Zuteilung in deine Gruppe folgt bald."
@@ -68,15 +91,30 @@
             v-if="userRegistration.queue_position == -1"
             message="Die Zuteilung in deinen Slot folgt bald."
           />
-          <UiMessage
-            v-else-if="!userRegistration.queue_position && slotData"
-            type="success"
-            :message="
-              'Die Einteilung ist erfolgt. Du bist im Slot <strong>' +
-              slotData.name +
-              '</strong>.'
-            "
-          />
+          <template v-else-if="!userRegistration.queue_position && slotData">
+            <UiMessage
+              v-if="
+                (!event.has_requirements && !slotData.has_requirements) ||
+                ((event.has_requirements || slotData.has_requirements) &&
+                  userRegistration.fulfils_requirements)
+              "
+              type="success"
+              :message="
+                'Die Einteilung ist erfolgt. Du bist im Slot <strong>' +
+                slotData.name +
+                '</strong>.'
+              "
+            />
+            <UiMessage
+              v-else
+              type="warning"
+              :message="
+                'Die Einteilung ist erfolgt. Du bist für den Slot <strong>' +
+                slotData.name +
+                ' vorgemerkt</strong>. Folge den mitgeteilten Anweisungen, um die Anmeldung abzuschließen.'
+              "
+            />
+          </template>
         </template>
 
         <UiMessage
