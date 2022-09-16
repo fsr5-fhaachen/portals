@@ -240,7 +240,7 @@ class ApiController extends Controller
         foreach ($courses as $course) {
             $result[] = [
                 'id' => $course->id,
-                'amount' => $course->users()->count(),
+                'amount' => $course->users()->where('is_tutor', false)->count(),
             ];
         }
 
