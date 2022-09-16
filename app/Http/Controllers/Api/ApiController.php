@@ -220,8 +220,6 @@ class ApiController extends Controller
 
         $registration->delete();
 
-        // TODO: Update queue positions
-
         return response()->json(['message' => 'Registration deleted']);
     }
 
