@@ -221,7 +221,10 @@ class DashboardEventController extends Controller
         }
 
         // get all other inputs
-        $userRegistration['form_responses'] = $request->except(['_token', 'drinks_no_alcohol', 'slot']);
+        $form_responses = $request->except(['_token', 'drinks_no_alcohol', 'slot']);
+        if ($form_responses) {
+            $userRegistration['form_responses'] = $form_responses;
+        }
 
         // register the user to the event
         $event->registrations()->create($userRegistration);

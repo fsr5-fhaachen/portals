@@ -13,7 +13,7 @@ class SlotAssignment
     public function __construct(Slot $slot)
     {
         $this->slot = $slot;
-        $this->maxParticipants = $slot->maximum_participants;
+        $this->maxParticipants = $slot->maximum_participants ? $slot->maximum_participants : PHP_INT_MAX; // If maxParticipants is null assign without limit
     }
 
     /**
@@ -95,8 +95,7 @@ class SlotAssignment
         // Assign remaining spots to registrations with lowest queue position
         $this->assignAmount($openRegistrations, $openSpots);
 
-        $openRegistrations = $this->slot->registrations()->get()
-          ->where('queue_position', '>', 0);
+        $openRegistrations = $openRegistrations->sortBy('queue_position');
 
         // Update queue positions for the remaining registrations
         $this->updateQueuePos($openRegistrations);

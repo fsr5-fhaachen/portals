@@ -41,7 +41,19 @@
               }"
               class="inline-flex items-center border-b-[3px] px-1 pt-1 text-sm font-medium"
             >
-              Administration
+              Statistik
+            </InertiaLink>
+            <InertiaLink
+              href="/dashboard/admin/register"
+              :class="{
+                'border-red-500 text-red-900':
+                  $page.url == '/dashboard/admin/register',
+                'border-transparent text-red-500 hover:border-red-300 hover:text-red-700':
+                  $page.url != '/dashboard/admin/register',
+              }"
+              class="inline-flex items-center border-b-[3px] px-1 pt-1 text-sm font-medium"
+            >
+              User registeren/zuweisen
             </InertiaLink>
           </div>
         </div>
@@ -96,7 +108,21 @@
           }"
           class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
         >
-          Administration
+          Statistik
+        </DisclosureButton>
+        <DisclosureButton
+          v-if="showAdminLink"
+          :as="InertiaLink"
+          href="/dashboard/admin/register"
+          :class="{
+            'border-red-500 bg-red-100 text-red-900':
+              $page.url == '/dashboard/admin/register',
+            'border-transparent text-red-600 hover:border-red-300 hover:bg-red-50 hover:text-red-800':
+              $page.url != '/dashboard/admin/register',
+          }"
+          class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
+        >
+          User registeren/zuweisen
         </DisclosureButton>
       </div>
     </DisclosurePanel>
