@@ -275,6 +275,14 @@ class DashboardAdminController extends Controller
             'slot_id' => ['integer', 'exists:slots,id'],
         ]);
 
+        // check for existing registration for this event and user
+        $existingRegistration = Registration::where('user_id', $user->id)->where('event_id', $event->id)->first();
+        if ($existingRegistration) {
+            Session::flash('error', 'Der Account ist bereits für dieses Event registriert.');
+
+            return Redirect::back();
+        }
+
         // check if event consider alcohol
         if ($event->consider_alcohol) {
             $userRegistration['drinks_alcohol'] = Request::input('drinks_no_alcohol');
@@ -282,7 +290,7 @@ class DashboardAdminController extends Controller
 
         // calulate queue_position
         $queuePosition = null;
-        if ($userRegistration['slot_id']) {
+        if (array_key_exists('slot_id', $userRegistration)) {
             $queuePosition = Registration::where('event_id', $event->id)->where('slot_id', $userRegistration['slot_id'])->max('queue_position');
         } else {
             $queuePosition = Registration::where('event_id', $event->id)->max('queue_position');
@@ -292,7 +300,7 @@ class DashboardAdminController extends Controller
             $userRegistration['queue_position'] = $queuePosition + 1;
         } else {
             // check if slot is set
-            if ($userRegistration['slot_id']) {
+            if (array_key_exists('slot_id', $userRegistration)) {
                 // get slot
                 $slot = Slot::find($userRegistration['slot_id']);
 
@@ -314,12 +322,12 @@ class DashboardAdminController extends Controller
         Registration::create([
             'user_id' => $user->id,
             'event_id' => $userRegistration['event_id'],
-            'slot_id' => $userRegistration['slot_id'],
-            'drinks_alcohol' => $userRegistration['drinks_alcohol'],
+            'slot_id' => (array_key_exists('slot_id', $userRegistration) ? $userRegistration['slot_id'] : null),
+            'drinks_alcohol' => (array_key_exists('drinks_alcohol', $userRegistration) ? $userRegistration['drinks_alcohol'] : null),
             'queue_position' => $queuePosition,
         ]);
 
-        Session::flash('success', 'Der Account <strong>' . $user->email . '</strong> wurde erfolgreich zugewiesen.');
+        Session::flash('success', 'Der Account <strong>' . $user->email . '</strong> wurde erfolgreich für das Event <strong>' . $event->name . '</strong>' . (array_key_exists('slot_id', $userRegistration) ? ' zu dem Slot <strong>' . $slot->name . '</strong>' : '') . ' zugewiesen.');
 
         return Redirect::back();
     }
