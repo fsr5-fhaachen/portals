@@ -134,8 +134,13 @@ Route::group([
 });
 
 // TODO: remove devlopment routes
+// TODO: do it next year
 Route::group([
     'prefix' => 'dev',
+    'middleware' => [
+        IsLoggedInTutor::class,
+        IsLoggedInAdmin::class
+    ],
 ], function () {
     //Routes to test database. REMOVE BEFORE DEPLOYMENT
     Route::get('/cleartable/all', [DatabaseTestController::class, 'clearAllTables']);
