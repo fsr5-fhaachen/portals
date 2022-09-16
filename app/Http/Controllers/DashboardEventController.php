@@ -216,7 +216,9 @@ class DashboardEventController extends Controller
 
             // check if slot has maximum_participants
             if ($slot->maximum_participants) {
-                $userRegistration['queue_position'] = -1;
+                $queuePosition = Registration::where('event_id', $event->id)->where('slot_id', $userRegistration['slot_id'])->max('queue_position');
+
+                $userRegistration['queue_position'] = ($queuePosition >= 0 ? $queuePosition + 1 : -1);
             }
         }
 
