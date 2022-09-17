@@ -25,7 +25,7 @@
 
     <div class="mb-16">
       <AppButton @click="view()" class="text-center text-2xl uppercase">
-        Regestrierungen anzeigen
+        Registrierungen anzeigen
       </AppButton>
     </div>
 

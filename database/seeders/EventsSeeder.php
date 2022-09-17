@@ -72,7 +72,7 @@ class EventsSeeder extends Seeder
             "Die berühmten Bonobos",
             "Die tapferen Tucans",
             "Die klugen Krokodile",
-            "Die wundervollen Walibys",
+            "Die wundervollen Wallabys",
             "Die kantigen Kaninchen",
             "Die allwissenden Aale",
             "Die erfahrenen Enten",
@@ -289,7 +289,7 @@ class EventsSeeder extends Seeder
         // create a new event
         $event = new Event();
         $event->name = 'Katerbrunch';
-        $event->description = '<p>Nachdem wir alle nach der Kneipentour am Mittwoch Abend etwas verkatert sind, gibt es doch nichts besseres als zusammen bei einem guten Fr&uuml;hst&uuml;ck auszukatern 😊 <br />Hierf&uuml;r bitte wir euch die 2&euro; Anmeldegeb&uuml;hr am Montag oder Mittwoch bis 12:00 Uhr im FSR zu bezahlen, sonst k&ouml;nnt ihr leider nicht teilnehmen. </p>
+        $event->description = '<p>Nachdem wir alle nach der Kneipentour am Mittwoch Abend etwas verkatert sind, gibt es doch nichts besseres als zusammen bei einem guten Fr&uuml;hst&uuml;ck auszukatern 😊 <br />Hierf&uuml;r bitte wir euch die 2&euro; Anmeldegeb&uuml;hr am Montag zwischen 13:00 und 14:30 Uhr oder Mittwoch zwischen 08:30 und 13:00 Uhr im FSR zu bezahlen, sonst k&ouml;nnt ihr leider nicht teilnehmen. </p>
         <p><strong>Wann:</strong> 22.09 ab 12:30 Uhr <br /><strong>Wo:</strong> FH, am D Geb&auml;ude <br /><strong>Was mitbringen:</strong> Tasse/ Becher und Teller ggf, Picknickdecke bei gutem Wetter.</p>
         <p>Im Anschluss k&ouml;nnen wir noch gemeinsam in den Park gehen und den Tag bei ein paar runden Flunkyball ausklingen lassen 😊</p>
         <p>Wir freuen uns auf euch</p>';
@@ -348,7 +348,7 @@ class EventsSeeder extends Seeder
             [
                 'name' => 'Fußball, Volleyball, Basketball',
                 'has_requirements' => true,
-                'maximum_participants' => 50.
+                'maximum_participants' => 50,
             ],
             [
                 'name' => 'Yoga',
