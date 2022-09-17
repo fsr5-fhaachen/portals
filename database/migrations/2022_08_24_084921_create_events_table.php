@@ -25,7 +25,6 @@ return new class () extends Migration {
             $table->boolean('has_requirements');
             $table->boolean('consider_alcohol');
             $table->json('form')->nullable();
-            $table->integer('sort_order')->default(0);
         });
     }
 
