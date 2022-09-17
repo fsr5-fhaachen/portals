@@ -73,7 +73,7 @@ class EventsSeeder extends Seeder
             "Die berühmten Bonobos",
             "Die tapferen Tucans",
             "Die klugen Krokodile",
-            "Die wundervollen Walibys",
+            "Die wundervollen Wallabys",
             "Die kantigen Kaninchen",
             "Die allwissenden Aale",
             "Die erfahrenen Enten",
