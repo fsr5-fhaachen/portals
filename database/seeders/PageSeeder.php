@@ -44,7 +44,7 @@ class PageSeeder extends Seeder
         <hr />
         <h2>🗺️ Lageplan</h2>
         <p>Einmal der Lageplan des Campus. Im D-Geb&auml;ude (markiert) startet am Montag die Erstiwoche.</p>
-        <p><img src="https://akwi2019.fh-aachen.de/wp-content/uploads/Campusplan_PNG-1-1280x749.png" alt="" width="900" height="527" /></p>
+        <p><img src="https://fh-aachen.sciebo.de/index.php/apps/files_sharing/ajax/publicpreview.php?x=1920&y=605&a=true&file=lageplan.png&t=W4iSPZ9Umec0OQg&scalingup=0" alt="" width="900" height="527" /></p>
         <hr />
         <h2>🌐 W-LAN Anleitung</h2>
         <p>Eduroam ist eine internationale Initiative der Hochschulen, die es uns Studierenden erm&ouml;glicht, weltweit an allen teilnehmenden Hochschulen einfach und kostenlos WLAN zu nutzen. Hei&szlig;t auch an Geb&auml;uden der RWTH oder an anderen Hochschulen weltweit.<br />Die Anleitung, wie ihr Eduroam einrichtet, findet ihr <a href="https://www.fh-aachen.de/hochschule/datenverarbeitungszentrale/netzanbindung/wlan">hier</a>.</p>
