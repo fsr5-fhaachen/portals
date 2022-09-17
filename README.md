@@ -1,7 +1,7 @@
-<h1 align="center">Welcome to groups 👋</h1>
+<h1 align="center">Welcome to portals 👋</h1>
 <p>
-  <a href="https://github.com/fsr5-fhaachen/groups/blob/main/LICENSE" target="_blank">
-    <img alt="License: MIT" src="https://img.shields.io/github/license/fsr5-fhaachen/groups" />
+  <a href="https://github.com/fsr5-fhaachen/portals/blob/main/LICENSE" target="_blank">
+    <img alt="License: MIT" src="https://img.shields.io/github/license/fsr5-fhaachen/portals" />
   </a>
   <a href="https://twitter.com/fsr5_fhaachen" target="_blank">
     <img alt="Twitter: fsr5_fhaachen" src="https://img.shields.io/twitter/follow/fsr5_fhaachen.svg?style=social" />
@@ -11,13 +11,15 @@
 > Group allocation tool for the first week of the Department of Electrical Engineering and Information Technology at the FH Aachen - University of Applied Sciences.
 
 ## main
-<a href="https://github.com/fsr5-fhaachen/groups/actions/workflows/ci.yml" target="_blank">
-  <img alt="CI" src="https://github.com/fsr5-fhaachen/groups/actions/workflows/ci.yml/badge.svg" />
+
+<a href="https://github.com/fsr5-fhaachen/portals/actions/workflows/ci.yml" target="_blank">
+  <img alt="CI" src="https://github.com/fsr5-fhaachen/portals/actions/workflows/ci.yml/badge.svg" />
 </a>
 
 ## dev
-<a href="https://github.com/fsr5-fhaachen/groups/actions/workflows/ci.yml" target="_blank">
-  <img alt="CI dev" src="https://github.com/fsr5-fhaachen/groups/actions/workflows/ci.yml/badge.svg?branch=dev" />
+
+<a href="https://github.com/fsr5-fhaachen/portals/actions/workflows/ci.yml" target="_blank">
+  <img alt="CI dev" src="https://github.com/fsr5-fhaachen/portals/actions/workflows/ci.yml/badge.svg?branch=dev" />
 </a>
 
 ## Install
@@ -25,8 +27,8 @@
 Clone the repository and install the dependencies:
 
 ```sh
-git clone git@github.com:fsr5-fhaachen/groups.git
-cd groups
+git clone git@github.com:fsr5-fhaachen/portals.git
+cd portals
 npm install
 composer install
 ```
@@ -65,6 +67,14 @@ and the vite dev server:
 npm run dev
 ```
 
+### type generation
+
+To generate the typescript types for the frontend, run:
+
+```sh
+php artisan typescript:generate
+```
+
 ### linting
 
 You can lint the code with the following commands:
@@ -101,31 +111,31 @@ npm run build
 
 👤 **Titus Kirch (main author)**
 
-* Website: https://tkirch.dev/
-* LinkedIn: [Titus Kirch](https://www.linkedin.com/in/tituskirch/)
-* Twitter: [@TitusKirch](https://twitter.com/TitusKirch)
-* Github: [@TitusKirch](https://github.com/TitusKirch)
+- Website: https://tkirch.dev/
+- LinkedIn: [Titus Kirch](https://www.linkedin.com/in/tituskirch/)
+- Twitter: [@TitusKirch](https://twitter.com/TitusKirch)
+- Github: [@TitusKirch](https://github.com/TitusKirch)
 
 👤 **Benedikt Haas (main author)**
 
-* LinkedIn: [Benedikt Haas](https://www.linkedin.com/in/benedikt-haas-ab698924a/)
-* Github: [@BenediktHaas96](https://github.com/BenediktHaas96)
+- LinkedIn: [Benedikt Haas](https://www.linkedin.com/in/benedikt-haas-ab698924a/)
+- Github: [@BenediktHaas96](https://github.com/BenediktHaas96)
 
 👤 **Simon Ostendorf**
 
-* LinkedIn: [Simon Ostendorf](https://www.linkedin.com/in/simonostendorf/)
-* Github: [@simonostendorf](https://github.com/simonostendorf)
+- LinkedIn: [Simon Ostendorf](https://www.linkedin.com/in/simonostendorf/)
+- Github: [@simonostendorf](https://github.com/simonostendorf)
 
 👤 **Patrik Schmolke**
 
-* LinkedIn: [Patrik Schmolke](https://www.linkedin.com/in/patrik-schmolke-612962175/)
-* Github: [@Rec0gnice](https://github.com/Rec0gnice)
+- LinkedIn: [Patrik Schmolke](https://www.linkedin.com/in/patrik-schmolke-612962175/)
+- Github: [@Rec0gnice](https://github.com/Rec0gnice)
 
-Show here to see the full list of [contributors](https://github.com/fsr5-fhaachen/groups/graphs/contributors) who participated in this project.
+Show here to see the full list of [contributors](https://github.com/fsr5-fhaachen/portals/graphs/contributors) who participated in this project.
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/fsr5-fhaachen/groups/issues). 
+Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/fsr5-fhaachen/portals/issues).
 
 ## Show your support
 
@@ -134,4 +144,4 @@ Give a ⭐️ if this project helped you!
 ## 📝 License
 
 Copyright © 2022 [fsr5-fhaachen](https://github.com/fsr5-fhaachen).<br />
-This project is [MIT](https://github.com/fsr5-fhaachen/groups/blob/main/LICENSE) licensed.
+This project is [MIT](https://github.com/fsr5-fhaachen/portals/blob/main/LICENSE) licensed.
