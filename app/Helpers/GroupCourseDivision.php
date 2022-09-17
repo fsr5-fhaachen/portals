@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Models\Course;
 use App\Models\Event;
 use App\Models\Group;
+use App\Models\Registration;
 use Illuminate\Database\Eloquent\Collection;
 
 class GroupCourseDivision extends GroupDivision
@@ -15,10 +16,7 @@ class GroupCourseDivision extends GroupDivision
     {
         parent::__construct($event, $assignByAlc, $maxGroups, $maxGroupSize, $minNonDrinkers);
         $this->course = $course;
-        $this->registrations = $this->registrations->toQuery()
-          ->join('users', 'registrations.user_id', '=', 'users.id')
-          ->where('users.course_id', '=', $course->id)
-          ->get();
+        $this->registrations = $event->registrations()->with('user')->whereRelation('user', 'course_id', '=', $course->id)->get();
         $this->groups = $this->groups->where('course_id', '=', $course->id);
         if ($maxGroups) $this->groups = $this->groups->take($maxGroups);
     }
@@ -38,7 +36,7 @@ class GroupCourseDivision extends GroupDivision
    *
    * @param Group $group
    *
-   * @return Collection
+   * @return int
    */
     public function getOpenGroupSpots(Group $group)
     {
@@ -114,14 +112,17 @@ class GroupCourseDivision extends GroupDivision
     protected function assignUntilSatisfies()
     {
         $groupMinSize = floor($this->registrations->count() / $this->groups->count());
+        if ($groupMinSize < 1) return;
 
         // Get only registrations that have yet to be assigned a group
         $unassignedRegs = $this->getUnassignedRegs()
           ->shuffle();
 
+        if ($this->maxGroupSize > 0) $assignLimit = ($groupMinSize < $this->maxGroupSize) ? $groupMinSize : $this->maxGroupSize;
+        else $assignLimit = $groupMinSize;
+
         // Assign registrations until lower value of groupMinSize and maxGroupSize is reached for every group
         foreach ($this->groups as $group) {
-            $assignLimit = ($groupMinSize <= $this->maxGroupSize) ? $groupMinSize : $this->maxGroupSize;
             $assignAmount = $assignLimit - $group->registrations()->count();
 
             for ($i = 0; $i < $assignAmount; $i++) {
@@ -180,7 +181,7 @@ class GroupCourseDivision extends GroupDivision
           $registration->save();
 
           // Sort the groups to have the group with least people in front again
-          $groupsWithOpenSpots->sortBy(function ($group) {
+          $groupsWithOpenSpots = $groupsWithOpenSpots->sortBy(function ($group) {
             return $group->registrations()->count();
           });
         }
@@ -201,6 +202,8 @@ class GroupCourseDivision extends GroupDivision
      */
     public function assign()
     {
+      if ($this->groups->count() <= 0) return;
+
       // Checks if registrations have no group_id set, which indicates that course needs initial assignment
       $courseNotAssigned = $this->registrations->every(function ($val, $key) {
           return $val->group_id == null;
