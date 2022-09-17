@@ -19,11 +19,10 @@ class EventsSeeder extends Seeder
     public function run()
     {
         $this->runGruppenphase();
-
+        $this->runStadtrallye();
         $this->runHausfuehrungOffline();
         $this->runHausfuehrungOnline();
-
-
+        $this->runKneipentour();
         $this->runKaterbrunch();
         $this->runKultur();
         $this->runSport();
@@ -81,6 +80,50 @@ class EventsSeeder extends Seeder
         foreach ($groupNames as $groupName) {
             $group = new Group();
             $group->name = $groupName;
+            $group->event_id = $event->id;
+            $group->save();
+        }
+    }
+
+    /**
+     * Run the "Stadtrallye" event seeds.
+     *
+     * @return void
+     */
+    public function runStadtrallye()
+    {
+        // check if event with name "Stadtrallye" exists
+        $event = Event::where('name', 'Stadtrallye')->first();
+        if ($event) {
+            return;
+        }
+
+        // create a new event
+        $event = new Event();
+        $event->name = 'Stadtrallye';
+        $event->description = 'Die Stadtrallye ist ein Event, bei dem du in Gruppen die Stadt erkundest. Dabei gibt es verschiedene Aufgaben, die ihr lösen müsst. Dabei könnt ihr euch gegenseitig unterstützen und euch so besser kennenlernen.';
+        $event->type = 'group_phase';
+        $event->registration_from = new DateTime('2022-09-19 8:00:00');
+        $event->registration_to = new DateTime('2022-09-20 9:15:00');
+        $event->has_requirements = false;
+        $event->consider_alcohol = true;
+
+        // save the event
+        $event->save();
+
+        // create event groups
+        $groups = [];
+
+        for ($i = 1; $i <= 14; $i++) {
+            $groups[] = [
+                "name" => "Gruppe $i",
+            ];
+        }
+
+        // save groups
+        foreach ($groups as $groupData) {
+            $group = new Group();
+            $group->name = $groupData['name'];
             $group->event_id = $event->id;
             $group->save();
         }
@@ -184,6 +227,50 @@ class EventsSeeder extends Seeder
 
         // save the event
         $event->save();
+    }
+
+    /**
+     * Run the "Kneipentour" event seeds.
+     *
+     * @return void
+     */
+    public function runKneipentour()
+    {
+        // check if event with name "Kneipentour" exists
+        $event = Event::where('name', 'Kneipentour')->first();
+        if ($event) {
+            return;
+        }
+
+        // create a new event
+        $event = new Event();
+        $event->name = 'Kneipentour';
+        $event->description = null;
+        $event->type = 'group_phase';
+        $event->registration_from = new DateTime('2022-09-20 8:00:00');
+        $event->registration_to = new DateTime('2022-09-21 17:50:00');
+        $event->has_requirements = false;
+        $event->consider_alcohol = true;
+
+        // save the event
+        $event->save();
+
+        // create event groups
+        $groups = [];
+
+        for ($i = 1; $i <= 30; $i++) {
+            $groups[] = [
+                "name" => "Gruppe $i",
+            ];
+        }
+
+        // save groups
+        foreach ($groups as $groupData) {
+            $group = new Group();
+            $group->name = $groupData['name'];
+            $group->event_id = $event->id;
+            $group->save();
+        }
     }
 
     /**
