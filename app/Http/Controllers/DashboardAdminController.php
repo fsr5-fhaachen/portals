@@ -288,6 +288,9 @@ class DashboardAdminController extends Controller
             $userRegistration['drinks_alcohol'] = Request::input('drinks_no_alcohol');
         }
 
+        // set default queue position
+        $queuePosition = null;
+
         // check if slot is set
         if (array_key_exists('slot_id', $userRegistration)) {
             // get slot
