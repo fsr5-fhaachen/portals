@@ -24,7 +24,7 @@ class PageSeeder extends Seeder
         ];
 
         foreach ($pages as $pageData) {
-            // check if page with name exists
+            // check if page with slug exists
             $page = Page::where('slug', $pageData['slug'])->first();
             if ($page) {
                 return;
