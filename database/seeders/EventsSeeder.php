@@ -261,7 +261,7 @@ class EventsSeeder extends Seeder
             [
                 'name' => 'Fußball, Volleyball, Basketball',
                 'has_requirements' => true,
-                'maximum_participants' => 50.
+                'maximum_participants' => 50,
             ],
             [
                 'name' => 'Yoga',
