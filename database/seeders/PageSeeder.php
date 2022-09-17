@@ -33,9 +33,9 @@ class PageSeeder extends Seeder
             // create a new page
             $page = new Page();
             $page->title = $pageData['title'];
-            $page->slug = $papageDatage['slug'];
+            $page->slug = $pageData['slug'];
             $page->sort_order = $pageData['sort_order'];
-            $page->content = implode('\n', file(__DIR__ . '/pages/'.$pageData['slug'].'.html'));
+            $page->content = implode(PHP_EOL, file(__DIR__ . '/pages/'.$pageData['slug'].'.html'));
 
             // save the page
             $page->save();
