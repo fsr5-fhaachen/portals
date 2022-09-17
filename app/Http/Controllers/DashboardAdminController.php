@@ -317,7 +317,7 @@ class DashboardAdminController extends Controller
 
             if ($queuePosition == -1) {
                 $queuePosition = -1;
-            } else if ($queuePosition > 0) {
+            } elseif ($queuePosition > 0) {
                 $queuePosition++;
             }
         }
