@@ -115,7 +115,7 @@ class GroupBalancedDivision extends GroupDivision
         $nonDrinkerFillRates = $this->calcFillRate($nonDrinkerRegs);
 
         // If you can satisfy minNonDrinkers requirement with a balanced fill, do it first
-        if (array_sum($nonDrinkerFillRates[1]) > $this->minNonDrinkers) {
+        if (array_sum($nonDrinkerFillRates[min(array_keys($nonDrinkerFillRates))]) > $this->minNonDrinkers) {
             $this->assignBalanced($nonDrinkerRegs, $nonDrinkerRegs);
         }
 
