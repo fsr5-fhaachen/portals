@@ -221,7 +221,7 @@ class EventsSeeder extends Seeder
         // create a new event
         $event = new Event();
         $event->name = 'Hausführung (Online)';
-        $event->description = null;
+        $event->description = 'Nachdem ihr nun die Stadt erkundet habt, ist es Zeit auch mal eure Hochschule von innen zu sehen. In der Online-Hausführung erwarten euch sowohl Informationen über wichtige Stationen am Campus, die ihr während eurer Studienzeit sicherlich das ein oder andere Mal aufsuchen werdet, als auch die Möglichkeit, einige eurer Professoren und ein paar ihrer Projekte kennenzulernen. Im Onlineformat werden jedoch nur Videos gezeigt und ggf. Fragen beantwortet.';
         $event->type = 'event_registration';
         $event->registration_from = new DateTime('2022-09-19 8:00:00');
         $event->registration_to = new DateTime('2022-09-21 9:15:00');
