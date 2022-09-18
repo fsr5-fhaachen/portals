@@ -10,11 +10,11 @@
       args:
         chdir: /var/www
     - name: checkout git
-      shell: 'git checkout {{ branch }}'
+      shell: "git checkout {{ branch }}"
       args:
         chdir: /var/www
     - name: pull git
-      shell: 'git pull origin {{ branch }}'
+      shell: "git pull origin {{ branch }}"
       args:
         chdir: /var/www
     - name: install dependencies
