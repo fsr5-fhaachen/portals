@@ -17,9 +17,14 @@ class PageSeeder extends Seeder
     {
         $pages = [
             [
+                'title' => 'Übersicht',
+                'slug' => 'overview',
+                'sort_order' => 100,
+            ],
+            [
                 'title' => 'FAQ',
                 'slug' => 'faq',
-                'sort_order' => 100,
+                'sort_order' => 200,
             ],
         ];
 
