@@ -162,6 +162,7 @@ declare namespace App.Models {
     has_requirements: boolean;
     consider_alcohol: boolean;
     form: string | null;
+    sort_order: number;
     groups?: Array<App.Models.Group> | null;
     registrations?: Array<App.Models.Registration> | null;
     slots?: Array<App.Models.Slot> | null;
