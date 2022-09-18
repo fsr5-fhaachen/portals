@@ -6,11 +6,11 @@
       args:
         chdir: /var/www
     - name: checkout git
-      shell: git checkout main
+      shell: 'git checkout {{ branch }}'
       args:
         chdir: /var/www
     - name: pull git
-      shell: git pull origin main
+      shell: 'git pull origin {{ branch }}'
       args:
         chdir: /var/www
     - name: install dependencies
