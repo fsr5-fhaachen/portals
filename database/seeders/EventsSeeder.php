@@ -50,6 +50,7 @@ class EventsSeeder extends Seeder
         $event->registration_to = new DateTime('2022-09-19 12:30:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
+        $event->sort_order = 100;
 
         // save the event
         $event->save();
@@ -107,6 +108,7 @@ class EventsSeeder extends Seeder
         $event->registration_to = new DateTime('2022-09-20 9:15:00');
         $event->has_requirements = false;
         $event->consider_alcohol = true;
+        $event->sort_order = 110;
 
         // save the event
         $event->save();
@@ -151,6 +153,7 @@ class EventsSeeder extends Seeder
         $event->registration_to = new DateTime('2022-09-21 9:15:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
+        $event->sort_order = 120;
 
         // save the event
         $event->save();
@@ -224,6 +227,7 @@ class EventsSeeder extends Seeder
         $event->registration_to = new DateTime('2022-09-21 9:15:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
+        $event->sort_order = 121;
 
         // save the event
         $event->save();
@@ -251,6 +255,7 @@ class EventsSeeder extends Seeder
         $event->registration_to = new DateTime('2022-09-21 17:50:00');
         $event->has_requirements = false;
         $event->consider_alcohol = true;
+        $event->sort_order = 130;
 
         // save the event
         $event->save();
@@ -298,6 +303,7 @@ class EventsSeeder extends Seeder
         $event->registration_to = new DateTime('2022-09-21 12:00:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
+        $event->sort_order = 140;
         $event->form = '[
             {
                 "$formkit": "select",
@@ -339,6 +345,7 @@ class EventsSeeder extends Seeder
         $event->registration_to = new DateTime('2022-09-20 23:59:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
+        $event->sort_order = 150;
 
         // save the event
         $event->save();
@@ -400,6 +407,7 @@ class EventsSeeder extends Seeder
         $event->registration_to = new DateTime('2022-09-20 23:59:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
+        $event->sort_order = 151;
 
         // save the event
         $event->save();
