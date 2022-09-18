@@ -341,7 +341,7 @@ class EventsSeeder extends Seeder
         $event->name = 'Sport';
         $event->description = '';
         $event->type = 'slot_booking';
-        $event->registration_from = new DateTime('2022-09-19 13:00:00');
+        $event->registration_from = new DateTime('2022-09-19 08:00:00');
         $event->registration_to = new DateTime('2022-09-20 23:59:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
@@ -403,7 +403,7 @@ class EventsSeeder extends Seeder
         $event->name = 'Kultur';
         $event->description = '';
         $event->type = 'slot_booking';
-        $event->registration_from = new DateTime('2022-09-19 13:00:00');
+        $event->registration_from = new DateTime('2022-09-19 08:00:00');
         $event->registration_to = new DateTime('2022-09-20 23:59:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
