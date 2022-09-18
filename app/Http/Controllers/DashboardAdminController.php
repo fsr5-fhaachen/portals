@@ -163,9 +163,9 @@ class DashboardAdminController extends Controller
 
                 Session::flash('success', 'Die Gruppen wurden erfolgreich nach Studiengängen aufgeteilt');
             } else {
-                // TODO: get max_groups and max_participants
-                // $maxGroups = $request->max_groups;
-                // $maxParticipants = $request->max_participants;
+                // get max_groups and max_participants
+                $maxGroups = $request->max_groups;
+                $maxParticipants = $request->max_participants;
 
                 $groupBalancedDivision = new GroupBalancedDivision($event, $event->consider_alcohol);
                 $groupBalancedDivision->assign();
