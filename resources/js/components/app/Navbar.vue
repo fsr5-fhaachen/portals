@@ -53,7 +53,7 @@
               }"
               class="inline-flex items-center border-b-[3px] px-1 pt-1 text-sm font-medium"
             >
-              User registeren/zuweisen
+              User registrieren/zuweisen
             </InertiaLink>
           </div>
         </div>
@@ -122,7 +122,7 @@
           }"
           class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
         >
-          User registeren/zuweisen
+          User registrieren/zuweisen
         </DisclosureButton>
       </div>
     </DisclosurePanel>
