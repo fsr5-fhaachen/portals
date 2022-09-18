@@ -421,7 +421,7 @@ class EventsSeeder extends Seeder
             ],
             [
                 'name' => 'Stadtführung',
-                'has_requirements' => true,
+                'has_requirements' => false,
                 'maximum_participants' => null,
             ],
             [
