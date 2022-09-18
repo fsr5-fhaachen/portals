@@ -195,6 +195,9 @@ class DashboardEventController extends Controller
             $userRegistration['drinks_alcohol'] = !$request->drinks_no_alcohol;
         }
 
+        // set default queue position
+        $queuePosition = null;
+
         // check if event has slots
         if ($event->slots()->exists()) {
             // check if the user has selected a slot
@@ -225,6 +228,14 @@ class DashboardEventController extends Controller
                 }
 
                 $userRegistration['queue_position'] = $queuePosition;
+            }
+        } else {
+            $queuePosition = Registration::where('event_id', $event->id)->max('queue_position');
+
+            if ($queuePosition == -1) {
+                $queuePosition = -1;
+            } elseif ($queuePosition > 0) {
+                $queuePosition++;
             }
         }
 
