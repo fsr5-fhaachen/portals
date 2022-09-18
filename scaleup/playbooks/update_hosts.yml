@@ -1,17 +1,16 @@
 - name: update hosts
   hosts: "*"
-  #become: yes
   tasks:
     - name: reset git
       shell: git reset --hard
       args:
         chdir: /var/www
     - name: checkout git
-      shell: git checkout dev
+      shell: git checkout main
       args:
         chdir: /var/www
     - name: pull git
-      shell: git pull origin dev
+      shell: git pull origin main
       args:
         chdir: /var/www
     - name: install dependencies
