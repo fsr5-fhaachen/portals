@@ -4,15 +4,18 @@ namespace App\Helpers;
 
 use App\Models\Course;
 use App\Models\Event;
+use App\Models\Registration;
 use Illuminate\Database\Eloquent\Collection;
 
 class GroupBalancedDivision extends GroupDivision
 {
-    public function __construct(Event $event, bool $assignByAlc, int $minNonDrinkers = 3)
+    public function __construct(Event $event, bool $assignByAlc, int $maxGroups = 0, int $maxGroupSize = 0, int $minNonDrinkers = 3)
     {
-        parent::__construct($event, $assignByAlc, $minNonDrinkers);
+        parent::__construct($event, $assignByAlc, $maxGroups, $maxGroupSize, $minNonDrinkers);
+        if ($maxGroups) $this->groups = $this->groups->take($maxGroups);
     }
 
+    // TODO calcOptFill doc
     protected function calcOptFill(Collection $registrations)
     {
         $optFill = array();
@@ -23,12 +26,18 @@ class GroupBalancedDivision extends GroupDivision
               ->where('users.course_id', '=', $course->id)
               ->get();
 
-            $optFill[$course->id] = floor($registrationsOfCourse->count() / $this->groups->count());
+            if ($this->maxGroupSize > 0) {
+              $courseFillPercentage = $registrationsOfCourse->count() / $this->registrations->count();
+              $optFill[$course->id] = floor($this->maxGroupSize * $courseFillPercentage);
+            } else {
+              $optFill[$course->id] = floor($registrationsOfCourse->count() / $this->groups->count());
+            }
         }
 
         return $optFill;
     }
 
+    // TODO calcCurrFill doc
     protected function calcCurrFill()
     {
         $currFill = array();
@@ -49,6 +58,7 @@ class GroupBalancedDivision extends GroupDivision
         return $currFill;
     }
 
+    // TODO calcFillRate doc
     protected function calcFillRate(Collection $registrations)
     {
         $fillRate = array();
@@ -65,41 +75,33 @@ class GroupBalancedDivision extends GroupDivision
         return $fillRate;
     }
 
+    // TODO assignBalanced doc
     protected function assignBalanced(Collection $toBeAssignedRegs, Collection $totalRegs)
     {
         $fillRate = $this->calcFillRate($totalRegs);
 
         foreach (Course::all() as $course) {
-            $regsOfCourse = $toBeAssignedRegs->toQuery()
-              ->join('users', 'registrations.user_id', '=', 'users.id')
-              ->where('users.course_id', '=', $course->id)
-              ->get()
-              ->shuffle();
 
-            foreach ($this->groups as $group) {
-                // Assign registrations of given course to a group until fill rate of course for that group is hit
-                for ($i = 0; $i < $fillRate[$group->id][$course->id]; $i++) {
-                    // Stop if no more registrations of given course are unassigned
-                    if ($regsOfCourse->count() <= 0) {
-                        break;
-                    }
+          $regsOfCourse = $toBeAssignedRegs->filter(function (Registration $reg) use ($course) {
+            return $reg->user()->first()->course_id == $course->id;
+          })
+            ->shuffle();
 
-                    $registration = $regsOfCourse->pop();
-                    $registration->group_id = $group->id;
-                    $registration->save();
-                }
+          foreach ($this->groups as $group) {
+            // Assign registrations of given course to a group until fill rate of course for that group is hit
+            for ($i = 0; $i < $fillRate[$group->id][$course->id]; $i++) {
+              // Stop if no more registrations of given course are unassigned
+              if ($regsOfCourse->count() <= 0) {
+                break;
+              }
+
+              $registration = $regsOfCourse->pop();
+              $registration->group_id = $group->id;
+              $registration->queue_position = null;
+              $registration->save();
             }
+          }
         }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getUnassignedRegs()
-    {
-        return $this->registrations->toQuery()
-          ->where('group_id', '=', null)
-          ->get();
     }
 
     /**
@@ -107,9 +109,7 @@ class GroupBalancedDivision extends GroupDivision
      */
     protected function assignNonDrinkers()
     {
-        $nonDrinkerRegs = $this->registrations->toQuery()
-          ->where('registrations.drinks_alcohol', '=', false)
-          ->get();
+        $nonDrinkerRegs = $this->registrations->where('drinks_alcohol', '=', false);
 
         $nonDrinkerFillRates = $this->calcFillRate($nonDrinkerRegs);
 
@@ -119,9 +119,7 @@ class GroupBalancedDivision extends GroupDivision
         }
 
         // Assign yet unassigned non-drinkers
-        $nonDrinkerRegs = $nonDrinkerRegs->toQuery()
-          ->where('group_id', '=', null)
-          ->get()
+        $nonDrinkerRegs = $nonDrinkerRegs->where('group_id', '=', null)
           ->shuffle();
 
         // If chunking by minNonDrinkers would give more chunks than groups, increase chunk size by 1 until it fits
@@ -140,6 +138,7 @@ class GroupBalancedDivision extends GroupDivision
 
             foreach ($chunk as $registration) {
                 $registration->group_id = $group->id;
+                $registration->queue_position = null;
                 $registration->save();
             }
         }
@@ -156,7 +155,7 @@ class GroupBalancedDivision extends GroupDivision
         $this->assignBalanced($unassignedRegs, $this->registrations);
     }
 
-    // TODO Handle duplicate code fragment and add phpdoc
+    // TODO If confident that this is not necessary anymore, just delete
     protected function assignLeftoverTo(Collection $leftoverRegs, Collection $groups)
     {
         // Sort groups by how many registrations are assigned to it
@@ -178,11 +177,8 @@ class GroupBalancedDivision extends GroupDivision
         }
     }
 
-    // TODO Handle duplicate code fragment
-    /**
-     * @inheritDoc
-     */
-    public function assignLeftover()
+    // TODO If confident that this is not necessary anymore, just delete
+    public function assignLeftoverAlt()
     {
         // Get only registrations that have yet to be assigned a group
         $unassignedRegs = $this->getUnassignedRegs();
@@ -209,10 +205,13 @@ class GroupBalancedDivision extends GroupDivision
      */
     public function assign()
     {
-        if ($this->assignByAlc) {
-            $this->assignNonDrinkers();
-        }
-        $this->assignUntilSatisfies();
-        $this->assignLeftover();
+      // Checks if registrations have no group_id set, which indicates that course needs initial assignment
+      $groupsNotAssigned = $this->registrations->every(function ($reg) {
+        return $reg->group_id == null;
+      });
+
+      if ($groupsNotAssigned) $this->assignInitial();
+      $this->assignLeftover();
+      if ($this->maxGroupSize > 0) $this->updateQueuePos($this->getUnassignedRegs()->sortBy('queue_position'));
     }
 }

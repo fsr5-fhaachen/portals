@@ -4,9 +4,6 @@ namespace App\Helpers;
 
 use App\Models\Course;
 use App\Models\Event;
-use App\Models\Group;
-use App\Models\Registration;
-use Illuminate\Database\Eloquent\Collection;
 
 class GroupCourseDivision extends GroupDivision
 {
@@ -19,61 +16,6 @@ class GroupCourseDivision extends GroupDivision
         $this->registrations = $event->registrations()->with('user')->whereRelation('user', 'course_id', '=', $course->id)->get();
         $this->groups = $this->groups->where('course_id', '=', $course->id);
         if ($maxGroups) $this->groups = $this->groups->take($maxGroups);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getUnassignedRegs()
-    {
-        return $this->registrations->filter(function ($val, $key) {
-           return $val->group_id == null;
-        });
-    }
-
-  /**
-   * Returns amount of open slots of provided group
-   *
-   * @param Group $group
-   *
-   * @return int
-   */
-    public function getOpenGroupSpots(Group $group)
-    {
-      $takenSpots = $group->registrations()->count();
-      return $this->maxGroupSize ? ($this->maxGroupSize - $takenSpots) : PHP_INT_MAX;
-    }
-
-    /**
-     * Returns collection of groups that still have spots open
-     *
-     * @return Collection
-     */
-    public function getGroupsWithOpenSpots()
-    {
-      $groupsWithOpenSpots = $this->groups;
-
-      // If there is a maxGroupSize, only assign to groups that have not yet hit it
-      if ($this->maxGroupSize > 0) {
-        $groupsWithOpenSpots = $groupsWithOpenSpots->filter(function ($val, $key) {
-          return $val->registrations()->count() < $this->maxGroupSize;
-        });
-      }
-
-      return $groupsWithOpenSpots;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function updateQueuePos(Collection $registrations)
-    {
-      $i = 1;
-      foreach ($registrations as $registration) {
-        $registration->queue_position = $i;
-        $registration->save();
-        $i++;
-      }
     }
 
     /**
@@ -132,69 +74,6 @@ class GroupCourseDivision extends GroupDivision
                 $registration->save();
             }
         }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function assignLeftover()
-    {
-        $unassignedRegs = $this->getUnassignedRegs();
-        if ($this->maxGroupSize > 0) $unassignedRegs = $unassignedRegs->sortBy('queue_position');
-
-        // Sort groupsWithOpenSpots by how many people are assigned to it, so the one with the least people is in first place
-        $groupsWithOpenSpots = $this->getGroupsWithOpenSpots()
-          ->sortBy(function ($group) {
-            return $group->registrations()->count();
-          });
-        if ($groupsWithOpenSpots->isEmpty()) return;
-
-        $cycleAssignByAlc = $this->assignByAlc;  // Determines if this assign cycle should consider alcohol consumption at any given time
-
-        foreach ($unassignedRegs as $registration) {
-
-          $group = $groupsWithOpenSpots->first();
-
-          if ($cycleAssignByAlc) {
-
-            $group = $groupsWithOpenSpots->filter(function ($val, $key) {
-              return $val->registrations()
-                  ->where('drinks_alcohol', '=', false)
-                  ->count() > 0;
-            })
-              ->first();
-
-            // If there is no more group with non-drinkers that has open spots left, remove all non-drinkers from this assign cycle and continue without doing this check anymore
-            if ($group == null) {
-              $unassignedRegs = $unassignedRegs->where('drinks_alcohol', '=', true);
-              $cycleAssignByAlc = false;
-              continue;
-            }
-          }
-
-          // If the first group has no more spots left it implies the same for all other groups, so this assignment cycle is finished
-          if ($this->getOpenGroupSpots($group) <= 0) return;
-
-          // Otherwise this registration can safely be assigned to the group
-          $registration->group_id = $group->id;
-          $registration->queue_position = null;
-          $registration->save();
-
-          // Sort the groups to have the group with least people in front again
-          $groupsWithOpenSpots = $groupsWithOpenSpots->sortBy(function ($group) {
-            return $group->registrations()->count();
-          });
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function assignInitial()
-    {
-      if ($this->assignByAlc) $this->assignNonDrinkers();
-      $this->assignUntilSatisfies();
-      if ($this->maxGroupSize > 0) $this->updateQueuePos($this->getUnassignedRegs());
     }
 
     /**
