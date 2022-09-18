@@ -21,7 +21,7 @@ class StresstestSeeder extends Seeder
         $event_id = env('SEEDER_EVENT_ID', 1);
         $slot_id = env('SEEDER_SLOT_ID', null);
         $amount = env('SEEDER_AMOUNT', 1);
-        $nondrinker_percentage = env('SEEDER_ND_PERCENTAGE');
+        $nondrinker_percentage = env('SEEDER_ND_PERCENTAGE', 50);
 
         $faker = Factory::create();
 
