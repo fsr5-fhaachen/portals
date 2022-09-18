@@ -1,6 +1,6 @@
 <template>
   <LayoutDashboardContent>
-    <template #title>User registeren/zuweisen</template>
+    <template #title>User registrieren/zuweisen</template>
 
     <CardContainer>
       <CardBase>
@@ -13,7 +13,7 @@
         >
           <FormContainer>
             <FormRow>
-              <UiH2>User registeren</UiH2>
+              <UiH2>User registrieren</UiH2>
             </FormRow>
             <FormRow>
               <FormKit
