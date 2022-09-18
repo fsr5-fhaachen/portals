@@ -167,7 +167,7 @@ class DashboardAdminController extends Controller
                 $maxGroups = $request->max_groups;
                 $maxParticipants = $request->max_participants;
 
-                $groupBalancedDivision = new GroupBalancedDivision($event, $event->consider_alcohol);
+                $groupBalancedDivision = new GroupBalancedDivision($event, $event->consider_alcohol, (int)$maxGroups, (int)$maxParticipants);
                 $groupBalancedDivision->assign();
 
                 Session::flash('success', 'Die Gruppen wurden erfolgreich aufgeteilt');
