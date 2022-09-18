@@ -25,6 +25,7 @@ class EventFactory extends Factory
           'type' => $this->faker->randomElement(['group_phase', 'event_registration', 'slot_booking']),
           'has_requirements' => $this->faker->boolean(),
           'consider_alcohol' => $this->faker->boolean(),
+          'sort_order' => $this->faker->random_int(0, 255),
         ];
     }
 }
