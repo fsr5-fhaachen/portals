@@ -131,27 +131,29 @@ class ApiController extends Controller
             return response()->json(['message' => 'Event not found'], 404);
         }
 
-        $result = [
-            'registrations' => $event->registrations()->with('user')->get(),
-        ];
+        $result = [];
 
-        // add slot amounts
-        foreach ($event->slots as $slot) {
-            $result['slots'][$slot->id] = $slot->registrations()->with('user')->get();
-        }
+        // TODO: optimize this
+        // add registrations
+        // $result['registrations'] = $event->registrations()->with('user')->get();
 
-        // add group amounts
-        foreach ($event->groups as $group) {
-            $result['groups'][$group->id] = $group->registrations()->with('user')->get();
-        }
+        // // add slot amounts
+        // foreach ($event->slots as $slot) {
+        //     $result['slots'][$slot->id] = $slot->registrations()->with('user')->get();
+        // }
 
-        // add course amounts of registrations for this event by user course
-        foreach (Course::all() as $course) {
-            $result['courses'][$course->id] = [];
-        }
-        foreach ($event->registrations()->with('user')->get() as $registration) {
-            $result['courses'][$registration->user->course_id][] = $registration;
-        }
+        // // add group amounts
+        // foreach ($event->groups as $group) {
+        //     $result['groups'][$group->id] = $group->registrations()->with('user')->get();
+        // }
+
+        // // add course amounts of registrations for this event by user course
+        // foreach (Course::all() as $course) {
+        //     $result['courses'][$course->id] = [];
+        // }
+        // foreach ($event->registrations()->with('user')->get() as $registration) {
+        //     $result['courses'][$registration->user->course_id][] = $registration;
+        // }
 
         return response()->json($result);
     }
@@ -241,6 +243,42 @@ class ApiController extends Controller
             $result[] = [
                 'id' => $course->id,
                 'amount' => $course->users()->where('is_tutor', false)->count(),
+            ];
+        }
+
+        return response()->json($result);
+    }
+
+
+    /**
+     * Return all courses with users amount of event
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function coursesUserAmountPerEvent(Request $request)
+    {
+        $event = Event::find($request->event);
+
+        if (!$event) {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+
+        $courses = Course::all();
+
+        // get all user ids of this event
+        $userIds = [];
+        foreach ($event->registrations as $registration) {
+            $userIds[] = $registration->user_id;
+        }
+
+        $result = [];
+
+        foreach ($courses as $course) {
+            $result[] = [
+                'id' => $course->id,
+                'amount' => $course->users()->where('is_tutor', false)->whereIn('id', $userIds)->count(),
             ];
         }
 

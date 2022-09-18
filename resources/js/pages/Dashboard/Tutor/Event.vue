@@ -40,24 +40,26 @@ const { event } = defineProps({
   },
 });
 const registrations = ref(event.registrations);
-const fetchRegistrations = async () => {
-  const response = await fetch("/api/events/" + event.id + "/registrations", {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
 
-  if (response.ok) {
-    const data = await response.json();
-    registrations.value = data.registrations;
-  }
-};
-if (event.type == "event_registration") {
-  const registrationsInterval = setInterval(fetchRegistrations, 1000);
-  onBeforeUnmount(() => {
-    clearInterval(registrationsInterval);
-  });
-}
+// TODO: Optimize this
+// const fetchRegistrations = async () => {
+//   const response = await fetch("/api/events/" + event.id + "/registrations", {
+//     method: "GET",
+//     credentials: "include",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//   });
+
+//   if (response.ok) {
+//     const data = await response.json();
+//     registrations.value = data.registrations;
+//   }
+// };
+// if (event.type == "event_registration") {
+//   const registrationsInterval = setInterval(fetchRegistrations, 1000);
+//   onBeforeUnmount(() => {
+//     clearInterval(registrationsInterval);
+//   });
+// }
 </script>
