@@ -72,7 +72,6 @@ Route::group([
     ], function () {
         Route::get('/', [DashboardTutorController::class, 'index'])->name('dashboard.tutor.index');
         Route::get('/event/{event}', [DashboardTutorController::class, 'event'])->name('dashboard.tutor.event.index');
-        Route::get('/event/{event}/registrations', [DashboardTutorController::class, 'registrations'])->name('dashboard.tutor.event.registrations');
         Route::get('/slot/{slot}', [DashboardTutorController::class, 'slot'])->name('dashboard.tutor.slot.index');
         Route::get('/group/{group}', [DashboardTutorController::class, 'group'])->name('dashboard.tutor.group.index');
     });
@@ -85,7 +84,13 @@ Route::group([
         ],
     ], function () {
         Route::get('/', [DashboardAdminController::class, 'index'])->name('dashboard.admin.index');
+
+        Route::get('/register', [DashboardAdminController::class, 'register'])->name('dashboard.admin.register');
+        Route::post('/register', [DashboardAdminController::class, 'registerUser'])->name('dashboard.admin.registerUser');
+        Route::post('/assign', [DashboardAdminController::class, 'assignUser'])->name('dashboard.admin.assignUser');
+
         Route::get('/event/{event}', [DashboardAdminController::class, 'event'])->name('dashboard.admin.event.index');
+        Route::get('/event/{event}/registrations', [DashboardAdminController::class, 'registrations'])->name('dashboard.admin.event.registrations');
         Route::get('/event/{event}/submit', [DashboardAdminController::class, 'eventSubmit'])->name('dashboard.admin.event.submit');
         Route::post('/event/{event}/submit', [DashboardAdminController::class, 'eventExecuteSubmit'])->name('dashboard.admin.event.executeSubmit');
     });
@@ -129,8 +134,13 @@ Route::group([
 });
 
 // TODO: remove devlopment routes
+// TODO: do it next year
 Route::group([
     'prefix' => 'dev',
+    'middleware' => [
+        IsLoggedInTutor::class,
+        IsLoggedInAdmin::class
+    ],
 ], function () {
     //Routes to test database. REMOVE BEFORE DEPLOYMENT
     Route::get('/cleartable/all', [DatabaseTestController::class, 'clearAllTables']);

@@ -26,10 +26,10 @@
   hosts: "portals-1.fsr5.de"
   tasks:
     - name: migrate db
-      shell: php artisan migrate
+      shell: php artisan migrate --force
       args:
         chdir: /var/www
     - name: seed db
-      shell: php artisan db:seed
+      shell: php artisan db:seed --force
       args:
         chdir: /var/www

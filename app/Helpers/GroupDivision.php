@@ -99,6 +99,22 @@ abstract class GroupDivision
     }
 
     /**
+     * Updates the queue positions of the provided registrations
+     *
+     * @param Collection $registrations
+     *
+     * @return void
+     */
+    abstract protected function updateQueuePos(Collection $registrations);
+
+    /**
+     * First initial assignment of users that are registered for this event
+     *
+     * @return void
+     */
+    abstract protected function assignInitial();
+
+    /**
      * Assigns non-drinkers registered for this event to groups
      *
      * @return void

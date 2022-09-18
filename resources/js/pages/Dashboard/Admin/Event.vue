@@ -23,6 +23,12 @@
       </AppButton>
     </div>
 
+    <div class="mb-16">
+      <AppButton @click="view()" class="text-center text-2xl uppercase">
+        Registrierungen anzeigen
+      </AppButton>
+    </div>
+
     <GroupTable
       v-if="event.type == 'group_phase' && event.groups"
       :courses="courses"
@@ -91,5 +97,8 @@ const getRegistrationsAmountByCourse = (course: App.Models.Course) => {
 
 const submit = () => {
   Inertia.visit("/dashboard/admin/event/" + event.id + "/submit");
+};
+const view = () => {
+  Inertia.visit("/dashboard/admin/event/" + event.id + "/registrations");
 };
 </script>

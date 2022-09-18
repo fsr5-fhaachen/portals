@@ -99,8 +99,13 @@ class DashboardEventController extends Controller
         }
 
         $event->slots = $event->slots()->get();
-        $registration = $event->registrations()->where('user_id', $request->user()->id)->first();
-        $registration->group = $registration->group()->first();
+
+        // get registration from user
+        $registration = Registration::where('event_id', $event->id)->where('user_id', $request->user()->id)->first();
+
+        if ($registration) {
+            $registration->group = $registration->group()->first();
+        }
 
 
         return Inertia::render('Dashboard/Event/Index', [
@@ -211,12 +216,23 @@ class DashboardEventController extends Controller
 
             // check if slot has maximum_participants
             if ($slot->maximum_participants) {
-                $userRegistration['queue_position'] = -1;
+                $queuePosition = Registration::where('event_id', $event->id)->where('slot_id', $userRegistration['slot_id'])->max('queue_position');
+
+                if (!$queuePosition || $queuePosition == -1) {
+                    $queuePosition = -1;
+                } else {
+                    $queuePosition++;
+                }
+
+                $userRegistration['queue_position'] = $queuePosition;
             }
         }
 
         // get all other inputs
-        $userRegistration['form_responses'] = $request->except(['_token', 'drinks_no_alcohol', 'slot']);
+        $form_responses = $request->except(['_token', 'drinks_no_alcohol', 'slot']);
+        if ($form_responses) {
+            $userRegistration['form_responses'] = $form_responses;
+        }
 
         // register the user to the event
         $event->registrations()->create($userRegistration);

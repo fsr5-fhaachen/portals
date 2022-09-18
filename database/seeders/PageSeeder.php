@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Page;
 use Illuminate\Database\Seeder;
 
 class PageSeeder extends Seeder
@@ -14,6 +15,30 @@ class PageSeeder extends Seeder
      */
     public function run()
     {
-        //
+        $pages = [
+            [
+                'title' => 'FAQ',
+                'slug' => 'faq',
+                'sort_order' => 100,
+            ],
+        ];
+
+        foreach ($pages as $pageData) {
+            // check if page with slug exists
+            $page = Page::where('slug', $pageData['slug'])->first();
+            if ($page) {
+                return;
+            }
+
+            // create a new page
+            $page = new Page();
+            $page->title = $pageData['title'];
+            $page->slug = $pageData['slug'];
+            $page->sort_order = $pageData['sort_order'];
+            $page->content = implode(PHP_EOL, file(__DIR__ . '/pages/'.$pageData['slug'].'.html'));
+
+            // save the page
+            $page->save();
+        }
     }
 }
