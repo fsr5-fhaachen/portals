@@ -125,6 +125,8 @@ Route::group([
             Route::get('/registrations/{registration}/toggle-fulfils-requirements', [ApiController::class, 'registrationsToggleFulfilsRequirements'])->name('api.event.registrations.toggleFulfilsRequirements');
             Route::delete('/registrations/{registration}', [ApiController::class, 'registrationsDestroy'])->name('api.event.registrations.destroy');
 
+            Route::get('/events/{event}/user-amount', [ApiController::class, 'coursesUserAmountPerEvent'])->name('api.event.coursesUserAmountPerEvent');
+
             Route::get('/courses/user-amount', [ApiController::class, 'coursesUserAmount'])->name('api.courses.userAmount');
         });
     });

@@ -74,22 +74,23 @@ const filteredRegistrations = computed(() => {
   });
 });
 
-const fetchRegistrations = async () => {
-  const response = await fetch("/api/events/" + event.id + "/registrations", {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+// TODO: Optimize this
+// const fetchRegistrations = async () => {
+//   const response = await fetch("/api/events/" + event.id + "/registrations", {
+//     method: "GET",
+//     credentials: "include",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//   });
 
-  if (response.ok) {
-    const data = await response.json();
-    registrations.value = data.registrations;
-  }
-};
-const registrationsInterval = setInterval(fetchRegistrations, 1000);
-onBeforeUnmount(() => {
-  clearInterval(registrationsInterval);
-});
+//   if (response.ok) {
+//     const data = await response.json();
+//     registrations.value = data.registrations;
+//   }
+// };
+// const registrationsInterval = setInterval(fetchRegistrations, 1000);
+// onBeforeUnmount(() => {
+//   clearInterval(registrationsInterval);
+// });
 </script>
