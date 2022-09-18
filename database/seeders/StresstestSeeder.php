@@ -30,7 +30,7 @@ class StresstestSeeder extends Seeder
               Registration::factory()
                 ->state([
                   'event_id' => (int)$event_id,
-                  'slot_id' => (int)$slot_id,
+                  'slot_id' => $slot_id ? (int)$slot_id : null,
                   'group_id' => null,
                   'drinks_alcohol' => $faker->boolean((int)$nondrinker_percentage),
                   'fulfils_requirements' => false,
