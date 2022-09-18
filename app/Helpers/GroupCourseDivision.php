@@ -15,7 +15,9 @@ class GroupCourseDivision extends GroupDivision
         $this->course = $course;
         $this->registrations = $event->registrations()->with('user')->whereRelation('user', 'course_id', '=', $course->id)->get();
         $this->groups = $this->groups->where('course_id', '=', $course->id);
-        if ($maxGroups) $this->groups = $this->groups->take($maxGroups);
+        if ($maxGroups) {
+            $this->groups = $this->groups->take($maxGroups);
+        }
     }
 
     /**
@@ -54,14 +56,19 @@ class GroupCourseDivision extends GroupDivision
     protected function assignUntilSatisfies()
     {
         $groupMinSize = floor($this->registrations->count() / $this->groups->count());
-        if ($groupMinSize < 1) return;
+        if ($groupMinSize < 1) {
+            return;
+        }
 
         // Get only registrations that have yet to be assigned a group
         $unassignedRegs = $this->getUnassignedRegs()
           ->shuffle();
 
-        if ($this->maxGroupSize > 0) $assignLimit = ($groupMinSize < $this->maxGroupSize) ? $groupMinSize : $this->maxGroupSize;
-        else $assignLimit = $groupMinSize;
+        if ($this->maxGroupSize > 0) {
+            $assignLimit = ($groupMinSize < $this->maxGroupSize) ? $groupMinSize : $this->maxGroupSize;
+        } else {
+            $assignLimit = $groupMinSize;
+        }
 
         // Assign registrations until lower value of groupMinSize and maxGroupSize is reached for every group
         foreach ($this->groups as $group) {
@@ -81,15 +88,21 @@ class GroupCourseDivision extends GroupDivision
      */
     public function assign()
     {
-      if ($this->groups->count() <= 0) return;
+        if ($this->groups->count() <= 0) {
+            return;
+        }
 
-      // Checks if registrations have no group_id set, which indicates that course needs initial assignment
-      $courseNotAssigned = $this->registrations->every(function ($val, $key) {
-          return $val->group_id == null;
+        // Checks if registrations have no group_id set, which indicates that course needs initial assignment
+        $courseNotAssigned = $this->registrations->every(function ($val, $key) {
+            return $val->group_id == null;
         });
 
-      if ($courseNotAssigned) $this->assignInitial();
-      $this->assignLeftover();
-      if ($this->maxGroupSize > 0) $this->updateQueuePos($this->getUnassignedRegs()->sortBy('queue_position'));
+        if ($courseNotAssigned) {
+            $this->assignInitial();
+        }
+        $this->assignLeftover();
+        if ($this->maxGroupSize > 0) {
+            $this->updateQueuePos($this->getUnassignedRegs()->sortBy('queue_position'));
+        }
     }
 }

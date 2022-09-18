@@ -12,7 +12,9 @@ class GroupBalancedDivision extends GroupDivision
     public function __construct(Event $event, bool $assignByAlc, int $maxGroups = 0, int $maxGroupSize = 0, int $minNonDrinkers = 3)
     {
         parent::__construct($event, $assignByAlc, $maxGroups, $maxGroupSize, $minNonDrinkers);
-        if ($maxGroups) $this->groups = $this->groups->take($maxGroups);
+        if ($maxGroups) {
+            $this->groups = $this->groups->take($maxGroups);
+        }
     }
 
     // TODO calcOptFill doc
@@ -27,10 +29,10 @@ class GroupBalancedDivision extends GroupDivision
               ->get();
 
             if ($this->maxGroupSize > 0) {
-              $courseFillPercentage = $registrationsOfCourse->count() / $this->registrations->count();
-              $optFill[$course->id] = floor($this->maxGroupSize * $courseFillPercentage);
+                $courseFillPercentage = $registrationsOfCourse->count() / $this->registrations->count();
+                $optFill[$course->id] = floor($this->maxGroupSize * $courseFillPercentage);
             } else {
-              $optFill[$course->id] = floor($registrationsOfCourse->count() / $this->groups->count());
+                $optFill[$course->id] = floor($registrationsOfCourse->count() / $this->groups->count());
             }
         }
 
@@ -81,26 +83,25 @@ class GroupBalancedDivision extends GroupDivision
         $fillRate = $this->calcFillRate($totalRegs);
 
         foreach (Course::all() as $course) {
+            $regsOfCourse = $toBeAssignedRegs->filter(function (Registration $reg) use ($course) {
+                return $reg->user()->first()->course_id == $course->id;
+            })
+              ->shuffle();
 
-          $regsOfCourse = $toBeAssignedRegs->filter(function (Registration $reg) use ($course) {
-            return $reg->user()->first()->course_id == $course->id;
-          })
-            ->shuffle();
+            foreach ($this->groups as $group) {
+                // Assign registrations of given course to a group until fill rate of course for that group is hit
+                for ($i = 0; $i < $fillRate[$group->id][$course->id]; $i++) {
+                    // Stop if no more registrations of given course are unassigned
+                    if ($regsOfCourse->count() <= 0) {
+                        break;
+                    }
 
-          foreach ($this->groups as $group) {
-            // Assign registrations of given course to a group until fill rate of course for that group is hit
-            for ($i = 0; $i < $fillRate[$group->id][$course->id]; $i++) {
-              // Stop if no more registrations of given course are unassigned
-              if ($regsOfCourse->count() <= 0) {
-                break;
-              }
-
-              $registration = $regsOfCourse->pop();
-              $registration->group_id = $group->id;
-              $registration->queue_position = null;
-              $registration->save();
+                    $registration = $regsOfCourse->pop();
+                    $registration->group_id = $group->id;
+                    $registration->queue_position = null;
+                    $registration->save();
+                }
             }
-          }
         }
     }
 
@@ -205,13 +206,17 @@ class GroupBalancedDivision extends GroupDivision
      */
     public function assign()
     {
-      // Checks if registrations have no group_id set, which indicates that course needs initial assignment
-      $groupsNotAssigned = $this->registrations->every(function ($reg) {
-        return $reg->group_id == null;
-      });
+        // Checks if registrations have no group_id set, which indicates that course needs initial assignment
+        $groupsNotAssigned = $this->registrations->every(function ($reg) {
+            return $reg->group_id == null;
+        });
 
-      if ($groupsNotAssigned) $this->assignInitial();
-      $this->assignLeftover();
-      if ($this->maxGroupSize > 0) $this->updateQueuePos($this->getUnassignedRegs()->sortBy('queue_position'));
+        if ($groupsNotAssigned) {
+            $this->assignInitial();
+        }
+        $this->assignLeftover();
+        if ($this->maxGroupSize > 0) {
+            $this->updateQueuePos($this->getUnassignedRegs()->sortBy('queue_position'));
+        }
     }
 }
