@@ -48,6 +48,7 @@ class SlotAssignment
     {
         $i = 1;
         foreach ($registrations as $registration) {
+            if ($registration->queue_position == null) continue;
             $registration->queue_position = $i;
             $registration->save();
             $i++;
@@ -63,8 +64,10 @@ class SlotAssignment
     {
         $openRegistrations = $this->slot->registrations()->get()->shuffle();
 
+        $assignAmount = $this->maxParticipants - $openRegistrations->where('queue_position', '=', null)->count();
+
         // Assign until participant limit is hit
-        $this->assignAmount($openRegistrations, $this->maxParticipants);
+        $this->assignAmount($openRegistrations, $assignAmount);
 
         // Assign remaining registrations ascending queue positions
         $this->updateQueuePos($openRegistrations);
