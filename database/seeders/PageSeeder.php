@@ -34,14 +34,12 @@ class PageSeeder extends Seeder
 
 
             if ($page) {
-
                 // update content
                 $page->content = implode(PHP_EOL, file(__DIR__ . '/pages/' . $pageData['slug'] . '.html'));
 
                 // save the page
                 $page->save();
             } else {
-
                 // create a new page
                 $page = new Page();
                 $page->title = $pageData['title'];
