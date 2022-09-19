@@ -374,7 +374,7 @@ class EventsSeeder extends Seeder
             [
                 'name' => 'Bouldern',
                 'has_requirements' => true,
-                'maximum_participants' => 30,
+                'maximum_participants' => 50,
             ],
             [
                 'name' => 'Lasertag',
@@ -437,7 +437,7 @@ class EventsSeeder extends Seeder
             [
                 'name' => 'Stadtführung',
                 'has_requirements' => false,
-                'maximum_participants' => null,
+                'maximum_participants' => 15,
             ],
             [
                 'name' => 'Zoo',
