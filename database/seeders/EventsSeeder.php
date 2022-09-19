@@ -147,7 +147,7 @@ class EventsSeeder extends Seeder
         // create a new event
         $event = new Event();
         $event->name = 'Hausführung (Präsenz)';
-        $event->description = null;
+        $event->description = 'Nachdem ihr nun die Stadt erkundet habt, ist es Zeit auch mal eure Hochschule von innen zu sehen. In der Hausführung erwarten euch sowohl Informationen über wichtige Stationen am Campus, die ihr während eurer Studienzeit sicherlich das ein oder andere Mal aufsuchen werdet, als auch die Möglichkeit, einige eurer Professoren und ein paar ihrer Projekte kennenzulernen. Durch die Aufteilung nach Studiengang ist es auch eine gute Möglichkeit, schonmal Bekanntschaft mit euren Sitznachbarn in den Vorlesungen zu machen.';
         $event->type = 'group_phase';
         $event->registration_from = new DateTime('2022-09-19 8:00:00');
         $event->registration_to = new DateTime('2022-09-21 9:15:00');
@@ -221,7 +221,7 @@ class EventsSeeder extends Seeder
         // create a new event
         $event = new Event();
         $event->name = 'Hausführung (Online)';
-        $event->description = null;
+        $event->description = 'Nachdem ihr nun die Stadt erkundet habt, ist es Zeit auch mal eure Hochschule von innen zu sehen. In der Online-Hausführung erwarten euch sowohl Informationen über wichtige Stationen am Campus, die ihr während eurer Studienzeit sicherlich das ein oder andere Mal aufsuchen werdet, als auch die Möglichkeit, einige eurer Professoren und ein paar ihrer Projekte kennenzulernen. Im Onlineformat werden jedoch nur Videos gezeigt und ggf. Fragen beantwortet.';
         $event->type = 'event_registration';
         $event->registration_from = new DateTime('2022-09-19 8:00:00');
         $event->registration_to = new DateTime('2022-09-21 9:15:00');
@@ -339,7 +339,16 @@ class EventsSeeder extends Seeder
         // create a new event
         $event = new Event();
         $event->name = 'Sport';
-        $event->description = '';
+        $event->description = '<p>Auch sportliche Aktivitäten kommen bei uns nicht zu kurz. Für eine Anmeldegebühr von <strong>5€</strong> könnt ihr euch am Freitag auspowern.</p>
+        <p>Bitte bezahlt die Anmeldegebühr am Montag oder Mittwoch im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben.</p>
+        <p>Bitte beachtet auch die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
+        <p><strong>Fußball, Volleyball, Basketball:</strong> Die Anmeldegebühr dient als Pfand und wird euch zurückerstattet, wenn ihr Freitag erscheint.</p>
+        <p>Anschließende Teilnahme am Kulturprogramm Punkt “Zoo” ist leider Zeitlich nicht möglich.</p>
+        <p><strong>Yoga:</strong> Bitte bringt eine eigene Yogamatte mit.
+        <p>Bouldern: Anschließende Teilnahme am Kulturprogramm Punkt “Zoo” ist leider Zeitlich nicht möglich.</p>
+        <p><strong>Lasertag:</strong> Anschließende Teilnahme an den Kulturprogramm Punkten “Zoo” und “Stadtführung” ist leider Zeitlich nicht möglich.</p>
+        <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
+        <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
         $event->registration_from = new DateTime('2022-09-19 08:00:00');
         $event->registration_to = new DateTime('2022-09-20 23:59:00');
@@ -401,7 +410,13 @@ class EventsSeeder extends Seeder
         // create a new event
         $event = new Event();
         $event->name = 'Kultur';
-        $event->description = '';
+        $event->description = '<p>Die Stadt Aachen von einer etwas anderen Seite besser kennenlernen, Ziegen streicheln oder sich einfach den Bauch richtig voll schlagen? Auch das ist am Freitag in der Erstiwoche möglich.</p>
+        <p>Bitte beachtet die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
+        <p><strong>Stadtführung:</strong> Die Stadtführung ist für euch kostenlos. Wenn ihr für Lasertag angemeldet seid, ist eine Teilnahme bei der Stadtführung leider <strong>nicht</strong> möglich.</p>
+        <p><strong>Zoo:</strong> Den Eintrittspreis von <strong>4,10€</strong> müsst ihr vor Ort selber Zahlen Wenn ihr für Fußball, Volleyball, Basketball, Lasertag oder Bouldern angemeldet seid, ist eine Teilnahme bei der Stadtführung leider <strong>nicht</strong> möglich.</p>
+        <p><strong>Kebaptour:</strong> Ihr müsst eure Döner/ Falafel-Taschen selber zahlen.</p>
+        <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
+        <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
         $event->registration_from = new DateTime('2022-09-19 08:00:00');
         $event->registration_to = new DateTime('2022-09-20 23:59:00');
@@ -421,7 +436,7 @@ class EventsSeeder extends Seeder
             ],
             [
                 'name' => 'Stadtführung',
-                'has_requirements' => true,
+                'has_requirements' => false,
                 'maximum_participants' => null,
             ],
             [
