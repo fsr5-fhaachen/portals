@@ -61,12 +61,10 @@ class SlotAssignment
      */
     private function assignInitial()
     {
-        $openRegistrations = $this->slot->registrations()->get()->reverse();
+        $openRegistrations = $this->slot->registrations()->get()->shuffle();
 
         // Assign until participant limit is hit
         $this->assignAmount($openRegistrations, $this->maxParticipants);
-
-        $openRegistrations = $openRegistrations->reverse();
 
         // Assign remaining registrations ascending queue positions
         $this->updateQueuePos($openRegistrations);
