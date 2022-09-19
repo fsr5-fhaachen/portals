@@ -48,7 +48,9 @@ class SlotAssignment
     {
         $i = 1;
         foreach ($registrations as $registration) {
-            if ($registration->queue_position == null) continue;
+            if ($registration->queue_position == null) {
+                continue;
+            }
             $registration->queue_position = $i;
             $registration->save();
             $i++;
