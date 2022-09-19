@@ -102,7 +102,7 @@ class EventsSeeder extends Seeder
         // create a new event
         $event = new Event();
         $event->name = 'Stadtrallye';
-        $event->description = 'Die Stadtrallye ist ein Event, bei dem du in Gruppen die Stadt erkundest. Dabei gibt es verschiedene Aufgaben, die ihr lösen müsst. Dabei könnt ihr euch gegenseitig unterstützen und euch so besser kennenlernen.';
+        $event->description = '<p>Die Stadtrallye ist ein Event, bei dem du in Gruppen die Stadt erkundest. Dabei gibt es verschiedene Aufgaben, die ihr lösen müsst. Dabei könnt ihr euch gegenseitig unterstützen und euch so besser kennenlernen.</p><p><strong>Treffpunkt: </strong> 9:00 Uhr Campus Eupener Straße</p>';
         $event->type = 'group_phase';
         $event->registration_from = new DateTime('2022-09-19 8:00:00');
         $event->registration_to = new DateTime('2022-09-20 9:15:00');
