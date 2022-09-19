@@ -25,8 +25,8 @@ class Event extends Model implements Auditable
      * @var array
      */
     protected $casts = [
-        'registration_from' => 'datetime:Y-m-d H:i:s',
-        'registration_to' => 'datetime:Y-m-d H:i:s',
+        'registration_from' => 'datetime',
+        'registration_to' => 'datetime',
     ];
 
 
