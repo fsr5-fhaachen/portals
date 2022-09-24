@@ -2,45 +2,46 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
+use App\Models\Course;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
+use phpDocumentor\Reflection\Types\Boolean;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ */
 class UserFactory extends Factory
 {
     /**
-     * The name of the factory's corresponding model.
+     * Define the model's default state. Expects that the courses table is already pre-populated.
      *
-     * @var string
-     */
-    protected $model = User::class;
-
-    /**
-     * Define the model's default state.
-     *
-     * @return array
+     * @return array<string, mixed>
      */
     public function definition()
     {
         return [
-            'name' => $this->faker->name(),
-            'email' => $this->faker->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-            'remember_token' => Str::random(10),
+          'firstname' => $this->faker->firstName(),
+          'lastname' => $this->faker->lastName(),
+          'email' => $this->faker->email(),
+          'course_id' => Course::all(['id'])->random(),
+          'is_tutor' => $this->faker->boolean(10),
+          'is_admin' => $this->faker->boolean(2)
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
-     */
-    public function unverified()
+  /**
+   * Create users with tutor and/or admin privileges
+   *
+   * @param Boolean $is_tutor
+   * @param Boolean $is_admin
+   *
+   * @return Factory
+   */
+    public function elevatedPrivileges($is_tutor, $is_admin)
     {
-        return $this->state(function (array $attributes) {
+        return $this->state(function (array $attributes) use ($is_tutor, $is_admin) {
             return [
-                'email_verified_at' => null,
+              'is_tutor' => $is_tutor,
+              'is_admin' => $is_admin
             ];
         });
     }

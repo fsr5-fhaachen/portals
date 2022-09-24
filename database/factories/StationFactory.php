@@ -2,29 +2,24 @@
 
 namespace Database\Factories;
 
-use App\Models\Station;
+use App\Models\Event;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Station>
+ */
 class StationFactory extends Factory
 {
     /**
-     * The name of the factory's corresponding model.
+     * Define the model's default state. Expects that the events table is already pre-populated.
      *
-     * @var string
-     */
-    protected $model = Station::class;
-
-    /**
-     * Define the model's default state.
-     *
-     * @return array
+     * @return array<string, mixed>
      */
     public function definition()
     {
         return [
-            // created_at
-            // updated_at
-            'name' => $this->faker->unique()->word()
+          'name' =>$this->faker->word(),
+          'event_id' => Event::all(['id'])->random()
         ];
     }
 }

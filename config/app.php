@@ -28,6 +28,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Admin password
+    |--------------------------------------------------------------------------
+    |
+    | This value is the password for the admin login.
+    |
+    */
+
+    'admin_password' => env('ADMIN_PASSWORD', 'admin'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
@@ -78,7 +89,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Europe/Berlin',
 
     /*
     |--------------------------------------------------------------------------
@@ -176,6 +187,7 @@ return [
         /*
          * Package Service Providers...
          */
+        OwenIt\Auditing\AuditingServiceProvider::class,
 
         /*
          * Application Service Providers...
