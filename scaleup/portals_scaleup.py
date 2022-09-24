@@ -1,3 +1,4 @@
+from operator import mod
 import os
 import requests
 from dotenv import load_dotenv
@@ -26,8 +27,14 @@ def setup_server(server_id):
     for keyname in os.getenv("SSH_KEY_NAMES").split(";"):
         keys.append(client.ssh_keys.get_by_name(keyname))
 
+    dc = ""
+    if (server_id % 2) == 0:
+        dc = client.datacenters.get_by_id(4)
+    else:
+        dc = client.datacenters.get_by_id(2)
+
     response = client.servers.create(name="portals-" + str(server_id), 
-                                    server_type=client.server_types.get_by_name("cpx11"),
+                                    server_type=client.server_types.get_by_name("cpx31"),
                                     image=client.images.get_by_id(os.getenv("IMAGE_ID")),
                                     ssh_keys=keys,
                                     volumes=[],
@@ -35,7 +42,7 @@ def setup_server(server_id):
                                     networks=[client.networks.get_by_id(os.getenv("NETWORK_ID"))],
                                     user_data="",
                                     labels={"portals-role": "webhost"},
-                                    datacenter=client.datacenters.get_by_id(4),
+                                    datacenter=dc,
                                     start_after_create=True,
                                     automount=None,
                                     placement_group=client.placement_groups.get_by_id(os.getenv("PLACEMENTGROUP_ID")))
