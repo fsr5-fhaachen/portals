@@ -2,49 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Course;
-use App\Models\Event;
-use App\Models\GroupTutor;
-use App\Models\Page;
-use App\Models\Registration;
-use App\Models\Slot;
-use App\Models\StationTutor;
-use App\Models\Stop;
-use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+use \Illuminate\Support\Facades\DB;
+use App\Models\Student;
+use App\Models\Tutor;
 use App\Models\Group;
+use App\Models\Timeslot;
 use App\Models\Station;
-use phpDocumentor\Reflection\Types\String_;
 
 class DatabaseTestController extends Controller
 {
-    /**
-     * Tables that should be affected by clearAllTables.
-     *
-     * @var array
-     */
-    private array $tableNames = [
-      'courses',
-      'events',
-      'group_tutor',
-      'groups',
-      'pages',
-      'registrations',
-      'slots',
-      'station_tutor',
-      'stations',
-      'stops',
-      'users'
+
+    // needs to be changed if database changes!
+    private $tableNames = [
+        'grouphasstation',
+        'groups',
+        'stations',
+        'students',
+        'timeslots',
+        'tutors'
     ];
 
-    /**
-     * Removes all data from all tables found in tableNames
-     *
-     * @return void
-     */
     public function clearAllTables()
     {
         foreach ($this->tableNames as $tableName) {
@@ -52,185 +30,128 @@ class DatabaseTestController extends Controller
         }
     }
 
-  /**
-   * Removes all data from specified table
-   *
-   * @param string $tableName
-   *
-   * @return void
-   */
-  public function clearTable($tableName)
-  {
-      DB::table($tableName)->delete();
-  }
+    public function clearTable($tableName)
+    {
+        DB::table($tableName)->delete();
+    }
 
-  /**
-   * Create a random collection of models for given table name and persist them to the database.
-   *
-   * @param String_ $tableName
-   * @param int $amount
-   *
-   * @return Collection<int, Model>|Model|string
-   */
-  public function randomFillTable($tableName, $amount)
-  {
-      switch ($tableName) {
-          case 'courses':
-              return $this->randomFillCourses($amount);
-          case 'events':
-              return $this->randomFillEvents($amount);
-          case 'pages':
-              return $this->randomFillPages($amount);
-          case 'users':
-              return $this->randomFillUsers($amount);
-          case 'slots':
-              return $this->randomFillSlots($amount);
-          case 'stations':
-              return $this->randomFillStations($amount);
-          case 'groups':
-              return $this->randomFillGroups($amount);
-          case 'group_tutor':
-              return $this->randomFillGroupTutors($amount);
-          case 'stops':
-              return $this->randomFillStops($amount);
-          case 'station_tutor':
-              return $this->randomFillStationTutors($amount);
-          case 'registrations':
-              return $this->randomFillRegistrations($amount);
-          default:
-              return 'Specified table could not be found!';
-      }
-  }
+    // Randomly fills specified table by given amount by using the factories
+    public function randomFillTable($tableName, $amount)
+    {
+        if ($tableName === 'students') return $this->randomFillStudents($amount);
+        elseif ($tableName === 'tutors') return $this->randomFillTutors($amount);
+        elseif ($tableName === 'groups') return $this->randomFillGroups($amount);
+        elseif ($tableName === 'timeslots') return $this->randomFillTimeslots($amount);
+        elseif ($tableName === 'stations') return $this->randomFillStations($amount);
+        else return 'Table not found!';
+    }
 
-  /**
-   * Create a random collection of courses and persist them to the database.
-   *
-   * @param int $amount
-   *
-   * @return Collection<int, Model>|Model
-   */
-  public function randomFillCourses($amount)
-  {
-      return Course::factory()->count($amount)->create();
-  }
+    public function randomFillStudents($amount)
+    {
+        $student = Student::factory()->count($amount)->create();
+        return $student;
+    }
+    public function randomFillTutors($amount)
+    {
+        $tutor = Tutor::factory()->count($amount)->create();
+        return $tutor;
+    }
+    public function randomFillGroups($amount)
+    {
+        $group = Group::factory()->count($amount)->create();
+        return $group;
+    }
+    public function randomFillTimeslots($amount)
+    {
+        $timeslot = Timeslot::factory()->count($amount)->create();
+        return $timeslot;
+    }
+    public function randomFillStations($amount)
+    {
+        $station = Station::factory()->count($amount)->create();
+        return $station;
+    }
 
-  /**
-   * Create a random collection of events and persist them to the database.
-   *
-   * @param int $amount
-   *
-   * @return Collection<int, Model>|Model
-   */
-  public function randomFillEvents($amount)
-  {
-      return Event::factory()->count($amount)->create();
-  }
+    public function simulatedFillStudents($et, $inf, $mcd, $wi)
+    {
+        Student::factory()->state(['course' => 'ET'])->count($et)->create();
+        Student::factory()->state(['course' => 'INF'])->count($inf)->create();
+        Student::factory()->state(['course' => 'MCD'])->count($mcd)->create();
+        Student::factory()->state(['course' => 'WI'])->count($wi)->create();
+        return Student::all();
+    }
 
-  /**
-   * Create a random collection of pages and persist them to the database.
-   *
-   * @param int $amount
-   *
-   * @return Collection<int, Model>|Model
-   */
-  public function randomFillPages($amount)
-  {
-      return Page::factory()->count($amount)->create();
-  }
+    public function randomAssignTimeslots($timeslotsAmount)
+    {
+        $students = Student::all();
+        foreach ($students as $student) {
+            $student->timeslot_id = random_int(1, $timeslotsAmount);
+            $student->save();
+        }
+        return $students;
+    }
 
-  /**
-   * Create a random collection of users and persist them to the database. Requires the courses table to be pre-populated.
-   *
-   * @param int $amount
-   *
-   * @return Collection<int, Model>|Model
-   */
-  public function randomFillUsers($amount)
-  {
-      return User::factory()->count($amount)->create();
-  }
+    // Way too specific, but wtver
+    public function simulatedAssignTimeslots($amount1, $amount2, $amount3)
+    {
+        $i = $amount1;
+        $swapped = false;
+        $timeslotId = 1;
+        $students = Student::getByCourse('ET');
+        foreach ($students as $student) {
+            $student->timeslot_id = $timeslotId;
+            $student->save();
+            $i--;
+            if (!$swapped && $i == 0) {
+                $i = $amount2;
+                $timeslotId++;
+                $swapped = true;
+            } elseif ($swapped && $i == 0) {
+                $i = $amount3;
+                $timeslotId++;
+            }
+        }
+    }
 
-  /**
-   * Create a random collection of slots and persist them to the database. Requires the events table to be pre-populated.
-   *
-   * @param int $amount
-   *
-   * @return Collection<int, Model>|Model
-   */
-  public function randomFillSlots($amount)
-  {
-      return Slot::factory()->count($amount)->create();
-  }
+    // Returns all students where specified attribute matches provided value
+    public function getStudentsBy($attr, $val = '', $val2 = '')
+    {
+        if ($attr === 'course') return $this->getStudentsByCourse($val);
+        elseif ($attr === 'attended') return $this->getStudentsByAttendance($val);
+        elseif ($attr === 'timeslotcourse') return $this->getStudentsByTimeslotAndCourse($val, $val2);
+        else return $attr + ' is not a supported attribute';
+    }
+    public function getStudentsByCourse($course = '')
+    {
+        $student = Student::getByCourse($course);
+        return $student;
+    }
+    public function getStudentsByAttendance($attendance = '')
+    {
+        $student = Student::getByAttendance($attendance);
+        return $student;
+    }
+    public function getStudentsByTimeslotAndCourse($timeslotId, $course)
+    {
+        $student = Student::getByTimeslotAndCourse($timeslotId, $course);
+        return $student;
+    }
 
-  /**
-   * Create a random collection of stations and persist them to the database. Requires the events table to be pre-populated.
-   *
-   * @param int $amount
-   *
-   * @return Collection<int, Model>|Model
-   */
-  public function randomFillStations($amount)
-  {
-      return Station::factory()->count($amount)->create();
-  }
-
-  /**
-   * Create a random collection of groups and persist them to the database. Requires the events and courses tables to be pre-populated.
-   *
-   * @param int $amount
-   *
-   * @return Collection<int, Model>|Model
-   */
-  public function randomFillGroups($amount)
-  {
-      return Group::factory()->count($amount)->create();
-  }
-
-  /**
-   * Create a random collection of group_tutors and persist them to the database. Requires the users and groups tables to be pre-populated.
-   *
-   * @param int $amount
-   *
-   * @return Collection<int, Model>|Model
-   */
-  public function randomFillGroupTutors($amount)
-  {
-      return GroupTutor::factory()->count($amount)->create();
-  }
-
-  /**
-   * Create a random collection of stops and persist them to the database. Requires the groups and stations tables to be pre-populated.
-   *
-   * @param int $amount
-   *
-   * @return Collection<int, Model>|Model
-   */
-  public function randomFillStops($amount)
-  {
-      return Stop::factory()->count($amount)->create();
-  }
-
-  /**
-   * Create a random collection of station_tutors and persist them to the database. Requires the users and stations tables to be pre-populated.
-   *
-   * @param int $amount
-   *
-   * @return Collection<int, Model>|Model
-   */
-  public function randomFillStationTutors($amount)
-  {
-      return StationTutor::factory()->count($amount)->create();
-  }
-
-  /**
-   * Create a random collection of registrations and persist them to the database. Requires the events, users, slots and groups tables to be pre-populated.
-   *
-   * @param int $amount
-   *
-   * @return Collection<int, Model>|Model
-   */
-  public function randomFillRegistrations($amount)
-  {
-      return Registration::factory()->count($amount)->create();
-  }
+    // Returns all tutors where specified attribute matches provided value
+    public function getTutorsBy($attr, $val = '')
+    {
+        if ($attr === 'course') return $this->getTutorsByCourse($val);
+        elseif ($attr === 'available') return $this->getTutorsByAvailability($val);
+        else return $attr + ' is not a supported attribute';
+    }
+    public function getTutorsByCourse($course = '')
+    {
+        $tutor = Tutor::getByCourse($course);
+        return $tutor;
+    }
+    public function getTutorsByAvailability($availability = '')
+    {
+        $tutor = Tutor::getByAvailability($availability);
+        return $tutor;
+    }
 }

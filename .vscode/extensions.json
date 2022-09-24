@@ -1,10 +1,3 @@
 {
-  "recommendations": [
-    "vue.volar",
-    "esbenp.prettier-vscode",
-    "mike-co.import-sorter",
-    "bradlc.vscode-tailwindcss",
-    "gruntfuggly.todo-tree",
-    "junstyle.php-cs-fixer"
-  ]
+  "recommendations": ["vue.volar"]
 }

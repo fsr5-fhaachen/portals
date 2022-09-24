@@ -2,64 +2,43 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use OwenIt\Auditing\Contracts\Auditable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable implements Auditable
+class User extends Authenticatable
 {
-    use \OwenIt\Auditing\Auditable;
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * The attributes that aren't mass assignable.
+     * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $guarded = [
-        'remember_token'
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
     ];
 
     /**
-     * Get station_tutors for the user.
+     * The attributes that should be hidden for arrays.
      *
-     * @return HasMany
+     * @var array
      */
-    public function stationTutors()
-    {
-        return $this->hasMany(StationTutor::class);
-    }
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
     /**
-     * Get group_tutors for the user.
+     * The attributes that should be cast to native types.
      *
-     * @return HasMany
+     * @var array
      */
-    public function groupTutors()
-    {
-        return $this->hasMany(GroupTutor::class);
-    }
-
-    /**
-     * Get registrations for the user.
-     *
-     * @return HasMany
-     */
-    public function registrations()
-    {
-        return $this->hasMany(Registration::class)->orderBy('queue_position');
-    }
-
-    /**
-     * Get course for the user.
-     *
-     * @return BelongsTo
-     */
-    public function course()
-    {
-        return $this->belongsTo(Course::class);
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
 }

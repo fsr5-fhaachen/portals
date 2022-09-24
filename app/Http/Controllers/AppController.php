@@ -2,129 +2,117 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Course;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Student;
+use App\Models\Timeslot;
+use Facade\FlareClient\Time\Time;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
+use Illuminate\Validation\Rule;
 
 class AppController extends Controller
 {
-    /**
-     * Display the index page
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function index()
+    public function index(Request $request)
     {
-        return Redirect::route('app.register');
-    }
-
-    /**
-     * Display the login page
-     *
-     * @return \Inertia\Response
-     */
-    public function login()
-    {
-        return Inertia::render('Login');
-    }
-
-    /**
-     * Display the register page
-     *
-     * @return \Inertia\Response
-     */
-    public function register()
-    {
-        // get courses ordered by name
-        $courses = Course::orderBy('name')->get();
-
-        return Inertia::render('Register', [
-            'courses' => $courses
-        ]);
-    }
-
-    /**
-     * Display the 404 page
-     *
-     * @return \Inertia\Response
-     */
-    public function notFound()
-    {
-        return Inertia::render('404');
-    }
-
-    /**
-     * Register a new user
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function registerUser()
-    {
-        // check if user with email already exists and login
-        $user = User::where('email', Request::input('email'))->first();
-        if ($user) {
-            Session::flash('info', 'Wir haben dich bereits in unserer Datenbank gefunden und haben dich automatisch eingeloggt.');
-
-            return $this->authenticate($user);
+        // check if student is logged in and redirect to group page
+        if ($request->session()->has('student')) {
+            return Redirect::to('/group');
         }
 
-        // validate the request
-        $validated = Request::validate([
-            'firstname' => ['required', 'string', 'min:2', 'max:255'],
-            'lastname' => ['required', 'string', 'min:2', 'max:255'],
-            'email' => ['required', 'string', 'email', 'min:3', 'max:255', 'unique:users'],
-            'email_confirm' => ['required', 'string', 'email', 'min:3', 'max:255', 'same:email'],
-            'course_id' => ['required', 'integer', 'exists:courses,id'],
-        ]);
-
-        // remove email_confirm from array
-        unset($validated['email_confirm']);
-
-        // create the user
-        $user = User::create($validated);
-
-        return $this->authenticate($user);
-    }
-
-    /**
-     * Login an existing user
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function loginUser()
-    {
-        // validate the request
-        $validated = Request::validate([
-            'email' => ['required', 'string', 'email', 'min:3', 'max:255'],
-        ]);
-
-        // check if user exists
-        $user = User::where('email', $validated['email'])->first();
-        if (!$user) {
-            Session::flash('error', 'Es konnte kein Benutzer mit dieser E-Mail-Adresse gefunden werden.');
-
-            return Redirect::back();
+        // check if tutor is logged in and redirect to group page
+        if ($request->session()->has('tutor')) {
+            return Redirect::to('/tutor/overview');
         }
 
-        return $this->authenticate($user);
+        return Inertia::render('Index', [
+            'timeslots' => Timeslot::orderBy('time')->get(),
+        ]);
     }
 
-    /**
-     * Authenticate a user
-     *
-     * @param User $user
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    protected function authenticate(User $user)
+    public function login(Request $request)
     {
-        // login the user
-        Auth::login($user, true);
+        // check if student is logged in and redirect to group page
+        if ($request->session()->has('student')) {
+            return Redirect::to('/group');
+        }
 
-        return Redirect::route('dashboard.index');
+        // check if tutor is logged in and redirect to group page
+        if ($request->session()->has('tutor')) {
+            return Redirect::to('/tutor/overview');
+        }
+
+        return Inertia::render('Login', []);
+    }
+
+
+    public function loginStudent(Request $request)
+    {
+        // validate student data
+        $validatedData = $request->validate([
+            'email' => ['bail', 'required', 'max:100', 'email', 'exists:students'],
+        ]);
+
+        // get student
+        $student = Student::where('email', $validatedData['email'])->first();
+
+        // set student session
+        $request->session()->put('student', $student->id);
+
+        // redirect to group page
+        return Redirect::route('group');
+    }
+
+    public function store(Request $request)
+    {
+        // validate student data
+        if (Timeslot::count() > 0) {
+            $validatedData = $request->validate([
+                'firstname' => ['bail', 'required', 'max:30'],
+                'lastname' => ['bail', 'required', 'max:30'],
+                'email' => ['bail', 'required', 'max:100', 'email', 'unique:students'],
+                'course' => ['bail', 'required', Rule::in(['ET', 'INF', 'MCD', 'WI'])],
+                'timeslot_id' => ['bail', 'required', Rule::in(Timeslot::pluck('id'))],
+            ]);
+        } else {
+            $validatedData = $request->validate([
+                'firstname' => ['bail', 'required', 'max:30'],
+                'lastname' => ['bail', 'required', 'max:30'],
+                'email' => ['bail', 'required', 'max:100', 'email', 'unique:students'],
+                'course' => ['bail', 'required', Rule::in(['ET', 'INF', 'MCD', 'WI'])],
+            ]);
+        }
+
+        // create student
+        $student = Student::create(
+            $validatedData
+        );
+
+        // set student session
+        $request->session()->put('student', $student->id);
+
+        // redirect to group page
+        return Redirect::route('group');
+    }
+
+    public function group(Request $request)
+    {
+        // check if student is not logged in and redirect to index page
+        if ($request->session()->missing('student')) {
+            return Redirect::to('/');
+        }
+
+        // get student
+        $student = Student::find($request->session()->get('student'));
+
+        // check if student was not found and forget session and redirect to index page
+        if (is_null($student)) {
+            $request->session()->forget('student');
+            return Redirect::to('/');
+        }
+
+        return Inertia::render('Group', [
+            'student' => $student,
+            'group' => $student->group,
+        ]);
     }
 }

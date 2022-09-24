@@ -1,81 +1,30 @@
 import { createApp, h } from "vue";
-import "../css/app.css";
+// import IconsPlugin from "bootstrap-vue";
+// import App from "./App.vue";
+import BootstrapVue from "bootstrap-vue";
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
+import "../scss/app.scss";
 import { createInertiaApp } from "@inertiajs/inertia-vue3";
 import { InertiaProgress } from "@inertiajs/progress";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faHandLizard } from "@fortawesome/free-regular-svg-icons";
-import {
-  faBars,
-  faCircleCheck,
-  faCircleXmark,
-  faCircleInfo,
-  faDoorOpen,
-  faPlay,
-  faTriangleExclamation,
-  faX,
-  faPlug,
-  faLaptopCode,
-  faPaintBrush,
-  faSackDollar,
-  faHouseSignal,
-  faPersonThroughWindow,
-  faBug,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import {
-  plugin as formkitPlugin,
-  defaultConfig as formkitDefaultConfig,
-} from "@formkit/vue";
-import formkitConfig from "./formkit.config.ts";
-import DefaultLayout from "./layouts/DefaultLayout.vue";
-import DashboardLayout from "./layouts/DashboardLayout.vue";
 
-InertiaProgress.init({
-  color: "#22948C",
-});
-library.add(
-  faBars,
-  faCircleCheck,
-  faCircleXmark,
-  faCircleInfo,
-  faDoorOpen,
-  faPlay,
-  faTriangleExclamation,
-  faX,
-  faHandLizard,
-  faPlug,
-  faLaptopCode,
-  faPaintBrush,
-  faSackDollar,
-  faHouseSignal,
-  faPersonThroughWindow,
-  faBug
-);
+//Vue.use(BootstrapVue);
+
+// Optionally install the BootstrapVue icon components plugin
+//Vue.use(IconsPlugin);
+
+InertiaProgress.init();
 
 createInertiaApp({
-  resolve: (name) => {
-    const page = resolvePageComponent(
-      `./pages/${name}.vue`,
-      import.meta.glob("./pages/**/*.vue")
-    );
-
-    page.then((module) => {
-      // apply layout based on folder structure
-      if (name.startsWith("Dashboard/")) {
-        module.default.layout = module.default.layout || DashboardLayout;
-      } else {
-        module.default.layout = module.default.layout || DefaultLayout;
-      }
-    });
-
-    return page;
-  },
+  resolve: (name) =>
+    resolvePageComponent(
+      `./Pages/${name}.vue`,
+      import.meta.glob("./Pages/**/*.vue")
+    ),
   setup({ el, App, props, plugin }) {
     createApp({ render: () => h(App, props) })
       .use(plugin)
-      .use(formkitPlugin, formkitDefaultConfig(formkitConfig))
-      .component("FontAwesomeIcon", FontAwesomeIcon)
       .mount(el);
   },
 });

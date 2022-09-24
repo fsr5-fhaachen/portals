@@ -2,92 +2,155 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use OwenIt\Auditing\Contracts\Auditable;
 
-class Group extends Model implements Auditable
+class Group extends Model
 {
-    use \OwenIt\Auditing\Auditable;
     use HasFactory;
 
+    protected $table = 'groups';
+
     /**
-     * The attributes that aren't mass assignable.
+     * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $guarded = [];
+    protected $fillable = [
+        'name',
+        'course',
+        'station_id',
+        'timeslot_id'
+    ];
 
     /**
-     * Get group_tutors for the group.
+     * The accessors to append to the model's array form.
      *
-     * @return HasMany
+     * @var array
      */
-    public function groupTutors()
+    protected $appends = ['title', 'tutors', 'timeslot'];
+
+    /**
+     * Returns the title of the group.
+     *
+     * @return string
+     */
+    public function getTitleAttribute()
     {
-        return $this->hasMany(GroupTutor::class);
+        if ($this->getGroupNameAttribute()) {
+            return $this->getGroupNameAttribute()->name;
+        } elseif ($this->name) {
+            return $this->name;
+        } else {
+            return 'Gruppe' . (!empty($this->course) ? ' ' . $this->course : '') . ' ' . $this->id;
+        }
     }
 
     /**
-     * Get registrations for the group.
+     * Returns the group name of the group.
      *
-     * @return HasMany
+     * @return GroupName
      */
-    public function registrations()
+    public function getGroupNameAttribute()
     {
-        return $this->hasMany(Registration::class)->orderBy('queue_position');
+        return GroupName::where('id', $this->id)->get()->first();
     }
 
     /**
-     * Get stops for the group.
+     * Returns the tutors of the group.
      *
-     * @return HasMany
+     * @return string
      */
-    public function stops()
+    public function getTutorsAttribute()
     {
-        return $this->hasMany(Stop::class);
+        return Tutor::where('group_id', $this->id)->get();
     }
 
     /**
-     * Get course for the group.
-     *
-     * @return BelongsTo
+     * Returns the students of the group.
+     * 
+     * @return 
      */
-    public function course()
+    public function students()
     {
-        return $this->belongsTo(Course::class);
+        return $this->hasMany(Student::class);
     }
 
     /**
-     * Get event for the group.
-     *
-     * @return BelongsTo
-     */
-    public function event()
-    {
-        return $this->belongsTo(Event::class);
-    }
-
-    /**
-     * Get tutors for the group.
-     *
-     * @return BelongsToMany
-     */
-    public function tutors()
-    {
-        return $this->belongsToMany(User::class, 'group_tutor')->using(GroupTutor::class);
-    }
-
-    /**
-     * Get stations for the group.
-     *
-     * @return BelongsToMany
+     * Returns the stations of the group.
+     * 
+     * @return 
      */
     public function stations()
     {
-        return $this->belongsToMany(Station::class, 'stops')->using(Stop::class);
+        return $this->belongsToMany(Station::class, 'groupHasStation')->withPivot('id', 'step', 'done');
+    }
+
+    /**
+     * Returns the timeslot of the group.
+     *
+     * @return string
+     */
+    public function getTimeslotAttribute()
+    {
+        return Timeslot::find($this->timeslot_id);
+    }
+
+    /**
+     * Returns Collection containing all groups of specified course or all if none provided.
+     *
+     * @param string $course Course to select groups by. Selects all if none provided
+     *
+     * @return Collection
+     */
+    static function getByCourse($course = '')
+    {
+        if (empty($course)) return self::all();
+        return self::where('course', 'LIKE', $course)->get();
+    }
+
+    /**
+     * Returns Collection containing all groups of specified timeslot or all if none provided.
+     *
+     * @param string $timeslotId Timeslot to select groups by. Selects all if none provided
+     *
+     * @return Collection
+     */
+    static function getByTimeslot($timeslotId = '')
+    {
+        if (empty($timeslotId)) return self::all();
+        return self::where('timeslot_id', 'LIKE', $timeslotId)->get();
+    }
+
+    /**
+     * Returns Collection containing all groups of specified station or all if none provided.
+     *
+     * @param string $stationId Station to select groups by. Selects all if none provided
+     *
+     * @return Collection
+     */
+    static function getByStation($stationId = '')
+    {
+        if (empty($stationId)) return self::all();
+        return self::where('station_id', 'LIKE', $stationId)->get();
+    }
+
+    /**
+     * Returns Collection containing all groups of specified timeslot and course by first
+     * selecting for timeslot and then selecting that result for the course.
+     *
+     * @param string $timeslotId Timeslot to select groups by. Selects all if none provided
+     * @param string $course Course to select groups by. Selects all of previous result if none provided
+     *
+     * @return Collection
+     */
+    static function getByTimeslotAndCourse($timeslotId = '', $course = '')
+    {
+        $res = null;
+        if (empty($timeslotId)) $res = self::all();
+        else $res = self::where('timeslot_id', 'LIKE', $timeslotId);
+        if (empty($course))  return $res->get();
+        return $res->where('course', 'LIKE', $course)->get();
     }
 }

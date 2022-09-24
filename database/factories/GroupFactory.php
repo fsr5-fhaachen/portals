@@ -2,26 +2,32 @@
 
 namespace Database\Factories;
 
-use App\Models\Course;
-use App\Models\Event;
+use App\Models\Group;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Group>
- */
 class GroupFactory extends Factory
 {
     /**
-     * Define the model's default state. Expects that the events and courses tables are already pre-populated.
+     * The name of the factory's corresponding model.
      *
-     * @return array<string, mixed>
+     * @var string
+     */
+    protected $model = Group::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
      */
     public function definition()
     {
         return [
-          'name' => $this->faker->word(),
-          'event_id' => Event::all(['id'])->random(),
-          'course_id' => Course::all(['id'])->random()
+            // created_at
+            // updated_at
+            'name' => $this->faker->unique()->word(),
+            'course' => null,
+            'station_id' => null,
+            'timeslot_id' => null
         ];
     }
 }
