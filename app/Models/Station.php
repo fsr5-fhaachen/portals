@@ -4,36 +4,60 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class Station extends Model
+class Station extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
     use HasFactory;
 
-    protected $table = 'stations';
-
     /**
-     * The attributes that are mass assignable.
+     * The attributes that aren't mass assignable.
      *
      * @var array
      */
-    protected $fillable = [
-        'name'
-    ];
+    protected $guarded = [];
 
     /**
-     * The accessors to append to the model's array form.
+     * Get stops for the station.
      *
-     * @var array
+     * @return HasMany
      */
-    protected $appends = ['tutors'];
-
-    /**
-     * Returns the tutors of the group.
-     *
-     * @return string
-     */
-    public function getTutorsAttribute()
+    public function stops()
     {
-        return Tutor::where('station_id', $this->id)->get();
+        return $this->hasMany(Stop::class);
+    }
+
+    /**
+     * Get event for the station.
+     *
+     * @return BelongsTo
+     */
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
+
+    /**
+     * Get tutors for the station.
+     *
+     * @return BelongsToMany
+     */
+    public function tutors()
+    {
+        return $this->belongsToMany(User::class, 'station_tutor')->using(StationTutor::class);
+    }
+
+    /**
+     * Get groups for the station.
+     *
+     * @return BelongsToMany
+     */
+    public function groups()
+    {
+        return $this->belongsToMany(Group::class, 'stops')->using(Stop::class);
     }
 }

@@ -1,0 +1,45 @@
+- name: update hosts
+  hosts: "*"
+  tasks:
+    - name: maintenance laravel on
+      shell: php artisan down
+      args:
+        chdir: /var/www
+    - name: reset git
+      shell: git reset --hard
+      args:
+        chdir: /var/www
+    - name: checkout git
+      shell: "git checkout {{ branch }}"
+      args:
+        chdir: /var/www
+    - name: pull git
+      shell: "git pull origin {{ branch }}"
+      args:
+        chdir: /var/www
+    - name: install dependencies
+      shell: npm install
+      args:
+        chdir: /var/www
+    - name: build frontend
+      shell: npm run build
+      args:
+        chdir: /var/www
+- name: setup db
+  hosts: "portals-1.fsr5.de"
+  tasks:
+    - name: migrate db
+      shell: php artisan migrate --force
+      args:
+        chdir: /var/www
+    - name: seed db
+      shell: php artisan db:seed --force
+      args:
+        chdir: /var/www
+- name: activate application
+  hosts: "*"
+  tasks:
+    - name: maintenance laravel off
+      shell: php artisan up
+      args:
+        chdir: /var/www

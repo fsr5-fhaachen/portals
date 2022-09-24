@@ -1,17 +1,19 @@
 {
-  "name": "fsr5-fhaachen/groups",
+  "name": "fsr5-fhaachen/portals",
   "type": "project",
-  "description": "ToDo",
+  "description": "Group allocation tool for the first week of the Department of Electrical Engineering and Information Technology at the FH Aachen - University of Applied Sciences.",
   "keywords": [],
   "license": "MIT",
   "require": {
     "php": "^8.1",
+    "based/laravel-typescript": "^0.0.3",
     "fruitcake/laravel-cors": "^3.0",
     "guzzlehttp/guzzle": "^7.0.1",
     "inertiajs/inertia-laravel": "^0.6.3",
     "laravel/framework": "^9.19.0",
-    "laravel/sanctum": "^3.0",
-    "laravel/tinker": "^2.5"
+    "laravel/tinker": "^2.5",
+    "owen-it/laravel-auditing": "^13.0",
+    "stechstudio/laravel-php-cs-fixer": "^3.1"
   },
   "require-dev": {
     "spatie/laravel-ignition": "^1.0",
