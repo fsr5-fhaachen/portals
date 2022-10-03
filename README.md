@@ -107,6 +107,23 @@ You can build the application with:
 npm run build
 ```
 
+### production
+
+This project uses laravel octane with roadrunner as production server. You can install the server with:
+
+This step will also ask you to download the roadrunner binary. 
+
+```sh
+php artisan octane:install
+```
+
+You can run the production server with:
+_Define the worker-count and max-requests to fit your needs._
+
+```sh
+php artisan octane:start --max-requests=512 --workers=4
+```
+
 ## Authors
 
 👤 **Titus Kirch (main author)**

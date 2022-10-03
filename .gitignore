@@ -387,4 +387,5 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/node,phpunit,laravel,visualstudiocode,jetbrains+all,windows,macos,linux,git
+# End of https://www.toptal.com/developers/gitignore/api/node,phpunit,laravel,visualstudiocode,jetbrains+all,windows,macos,linux,gitrr
+.rr.yaml
