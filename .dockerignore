@@ -1,0 +1,17 @@
+.github
+.vscode
+node_modules/
+vendor
+.env
+.env.example
+.gitignore
+.gitattributes
+.php-cs-fixer.cache
+.prettierignore
+.prettierrc.json
+.rr.yaml
+.styleci.yml
+LICENSE
+rr
+database/seeders/tutors.csv
+scaleup
