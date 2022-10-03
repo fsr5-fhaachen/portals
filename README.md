@@ -124,6 +124,17 @@ _Define the worker-count and max-requests to fit your needs._
 php artisan octane:start --max-requests=512 --workers=4
 ```
 
+### docker
+
+If you want to use docker, use the following commands:
+
+```sh
+docker build -t ghcr.io/fsr5-fhaachen/portals:latest .
+docker-compose up -d
+docker exec -it portals-web touch database/seeders/tutors.csv
+docker exec -it portals-web php artisan migrate:fresh --seed
+```
+
 ## Authors
 
 👤 **Titus Kirch (main author)**

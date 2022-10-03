@@ -1,0 +1,67 @@
+version: '3'
+services:
+  web:
+    image: ghcr.io/fsr5-fhaachen/portals:latest
+    container_name: portals-web
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - mariadb
+    environment:
+      APP_NAME: "Erstiwoche FB5"
+      APP_ENV: production # set to local if you want to test without https
+      APP_KEY: USE_SECRET_STRING_HERE_OR_GENERATE_WITH_PHP_ARTISAN_KEY_GENERATE
+      APP_DEBUG: false
+      APP_URL: https://127.0.0.1:8000/
+      OCTANE_HTTPS: true # set to false if you want to test without https
+      OCTANE_WORKERS: 4
+      OCTANE_MAX_REQUESTS: 512
+      LOG_CHANNEL: stack
+      LOG_LEVEL: debug
+      DB_CONNECTION: mysql
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      DB_DATABASE: laravel
+      DB_USERNAME: laravel
+      DB_PASSWORD: USE_SECRET_STRING_HERE
+      BROADCAST_DRIVER: log
+      CACHE_DRIVER: file
+      FILESYSTEM_DRIVER: local
+      QUEUE_CONNECTION: sync
+      SESSION_DRIVER: file
+      SESSION_LIFETIME: 120
+      REDIS_HOST: redis
+      REDIS_PASSWORD: USE_SECRET_STRING_HERE
+      REDIS_PORT: 6379
+    ports:
+      - "8000:8000"
+    networks:
+      - portals
+  redis:
+    image: redis
+    container_name: portals-redis
+    restart: unless-stopped
+    command: redis-server --requirepass USE_SECRET_STRING_HERE
+#    ports:
+#      - "6379:6379"
+    networks:
+      - portals
+  mariadb:
+    image: mariadb
+    container_name: portals-mariadb
+    restart: unless-stopped
+#    ports:
+#      - "3306:3306"
+    environment:
+      MARIADB_DATABASE: laravel
+      MARIADB_ROOT_PASSWORD: USE_SECRET_STRING_HERE
+      MARIADB_USER: laravel
+      MARIADB_PASSWORD: USE_SECRET_STRING_HERE
+    volumes:
+      - portals_mariadb:/var/lib/mysql/
+    networks:
+      - portals
+networks:
+  portals:
+volumes:
+  portals_mariadb:
