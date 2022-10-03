@@ -111,7 +111,7 @@ npm run build
 
 This project uses laravel octane with roadrunner as production server. You can install the server with:
 
-This step will also ask you to download the roadrunner binary. 
+This step will also ask you to download the roadrunner binary.
 
 ```sh
 php artisan octane:install
