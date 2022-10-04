@@ -8,31 +8,31 @@ services:
       - redis
       - mariadb
     environment:
-      APP_NAME: "Erstiwoche FB5"
-      APP_ENV: production # set to local if you want to test without https
-      APP_KEY: USE_SECRET_STRING_HERE_OR_GENERATE_WITH_PHP_ARTISAN_KEY_GENERATE
-      APP_DEBUG: false
-      APP_URL: https://127.0.0.1:8000/
-      OCTANE_HTTPS: true # set to false if you want to test without https
-      OCTANE_WORKERS: 4
-      OCTANE_MAX_REQUESTS: 512
-      LOG_CHANNEL: stack
-      LOG_LEVEL: debug
-      DB_CONNECTION: mysql
-      DB_HOST: mariadb
-      DB_PORT: 3306
-      DB_DATABASE: laravel
-      DB_USERNAME: laravel
-      DB_PASSWORD: USE_SECRET_STRING_HERE
-      BROADCAST_DRIVER: log
-      CACHE_DRIVER: file
-      FILESYSTEM_DRIVER: local
-      QUEUE_CONNECTION: sync
-      SESSION_DRIVER: file
-      SESSION_LIFETIME: 120
-      REDIS_HOST: redis
-      REDIS_PASSWORD: USE_SECRET_STRING_HERE
-      REDIS_PORT: 6379
+      APP_NAME: '${APP_NAME}'
+      APP_ENV: '${APP_ENV}' # set to local if you want to test without https
+      APP_KEY: '${APP_KEY}'
+      APP_DEBUG: '${APP_DEBUG}'
+      APP_URL: '${APP_URL}'
+      OCTANE_HTTPS: '${OCTANE_HTTPS}' # set to false if you want to test without https
+      OCTANE_WORKERS: '${OCTANE_WORKERS}'
+      OCTANE_MAX_REQUESTS: '${OCTANE_MAX_REQUESTS}'
+      LOG_CHANNEL: '${LOG_CHANNEL}'
+      LOG_LEVEL: '${LOG_LEVEL}'
+      DB_CONNECTION: '${DB_CONNECTION}'
+      DB_HOST: '${DB_HOST}'
+      DB_PORT: '${DB_PORT}'
+      DB_DATABASE: '${DB_DATABASE}'
+      DB_USERNAME: '${DB_USERNAME}'
+      DB_PASSWORD: '${DB_PASSWORD}'
+      BROADCAST_DRIVER: '${BROADCAST_DRIVER}'
+      CACHE_DRIVER: '${CACHE_DRIVER}'
+      FILESYSTEM_DRIVER: '${FILESYSTEM_DRIVER}'
+      QUEUE_CONNECTION: '${QUEUE_CONNECTION}'
+      SESSION_DRIVER: '${SESSION_DRIVER}'
+      SESSION_LIFETIME: '${SESSION_LIFETIME}'
+      REDIS_HOST: '${REDIS_HOST}'
+      REDIS_PASSWORD: '${REDIS_PASSWORD}'
+      REDIS_PORT: '${REDIS_PORT}'
     ports:
       - "8000:8000"
     networks:
@@ -41,7 +41,7 @@ services:
     image: redis
     container_name: portals-redis
     restart: unless-stopped
-    command: redis-server --requirepass USE_SECRET_STRING_HERE
+    command: redis-server --requirepass '${REDIS_PASSWORD}'
 #    ports:
 #      - "6379:6379"
     networks:
@@ -53,10 +53,10 @@ services:
 #    ports:
 #      - "3306:3306"
     environment:
-      MARIADB_DATABASE: laravel
+      MARIADB_DATABASE: '${DB_DATABASE}'
       MARIADB_ROOT_PASSWORD: USE_SECRET_STRING_HERE
-      MARIADB_USER: laravel
-      MARIADB_PASSWORD: USE_SECRET_STRING_HERE
+      MARIADB_USER: '${DB_USERNAME}'
+      MARIADB_PASSWORD: '${DB_PASSWORD}'
     volumes:
       - portals_mariadb:/var/lib/mysql/
     networks:
