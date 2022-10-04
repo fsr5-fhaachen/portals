@@ -23,6 +23,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push docker
         run: |
-          docker build -f ./Dockerfile . --tag ${{ env.REGISTRY }}/portals:${{ env.RELEASE_VERSION }} --tag ${{ env.REGISTRY }}/portals:latest
-          docker push ${{ env.REGISTRY }}/portals:${{ env.RELEASE_VERSION }}
-          docker push ${{ env.REGISTRY }}/portals:latest
+          docker build -f ./Dockerfile . --tag ${{ env.REGISTRY }}/fsr5-fhaachen/portals:${{ env.RELEASE_VERSION }} --tag ${{ env.REGISTRY }}/fsr5-fhaachen/portals:latest
+          docker push ${{ env.REGISTRY }}/fsr5-fhaachen/portals:${{ env.RELEASE_VERSION }}
+          docker push ${{ env.REGISTRY }}/fsr5-fhaachen/portals:latest
