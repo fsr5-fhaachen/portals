@@ -3,9 +3,13 @@
     <template #title>{{ event.name }}</template>
 
     <BoxContainer class="mb-16">
-      <CourseBox v-for="course in courses" :course="course">
+      <CourseBox v-for="course in coursesData" :course="course">
         <p class="text-2xl font-semibold text-gray-900">
-          {{ getRegistrationsAmountByCourse(course) }}
+          {{
+            typeof course.users == "number"
+              ? course.users
+              : course.users?.length
+          }}
         </p>
       </CourseBox>
     </BoxContainer>
@@ -53,7 +57,7 @@
 import { ref, PropType, onBeforeUnmount } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 
-const { event } = defineProps({
+const { courses, event } = defineProps({
   courses: {
     type: Array as PropType<App.Models.Course[]>,
     required: true,
@@ -82,18 +86,42 @@ const fetchRegistrations = async () => {
     registrations.value = data.registrations;
   }
 };
-const registrationsInterval = setInterval(fetchRegistrations, 1000);
-onBeforeUnmount(() => {
-  clearInterval(registrationsInterval);
-});
+// TODO: Optimize this
+//const registrationsInterval = setInterval(fetchRegistrations, 1000);
+// onBeforeUnmount(() => {
+//   clearInterval(registrationsInterval);
+// });
 
-const getRegistrationsAmountByCourse = (course: App.Models.Course) => {
-  if (!registrations.value) return 0;
+const coursesData = ref(courses);
+const fetchCourses = async () => {
+  const response = await fetch("/api/events/" + event.id + "/user-amount", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-  return registrations.value.filter(
-    (registration) => registration.user?.course_id == course.id
-  ).length;
+  if (response.ok) {
+    const data = await response.json();
+
+    // map the data to the courses
+    coursesData.value = courses.map((course) => {
+      const courseData = data.find(
+        (courseData: any) => courseData.id == course.id
+      );
+
+      return {
+        ...course,
+        users: courseData.amount,
+      };
+    });
+  }
 };
+const coursesInterval = setInterval(fetchCourses, 1000);
+onBeforeUnmount(() => {
+  clearInterval(coursesInterval);
+});
 
 const submit = () => {
   Inertia.visit("/dashboard/admin/event/" + event.id + "/submit");

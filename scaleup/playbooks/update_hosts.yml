@@ -1,6 +1,5 @@
 - name: update hosts
   hosts: "*"
-  #become: yes
   tasks:
     - name: maintenance laravel on
       shell: php artisan down
@@ -11,11 +10,11 @@
       args:
         chdir: /var/www
     - name: checkout git
-      shell: git checkout dev
+      shell: "git checkout {{ branch }}"
       args:
         chdir: /var/www
     - name: pull git
-      shell: git pull origin dev
+      shell: "git pull origin {{ branch }}"
       args:
         chdir: /var/www
     - name: install dependencies

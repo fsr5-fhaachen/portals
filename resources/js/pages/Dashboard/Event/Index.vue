@@ -117,6 +117,25 @@
           </template>
         </template>
 
+        <template v-else-if="event.type == 'event_registration'">
+          <UiMessage
+            v-if="
+              (event.has_requirements &&
+                userRegistration.fulfils_requirements) ||
+              !event.has_requirements
+            "
+            type="success"
+            :message="'Die Einteilung ist erfolgt. Du nimmst erfolgreich teil.'"
+          />
+          <UiMessage
+            v-else-if="
+              event.has_requirements && !userRegistration.fulfils_requirements
+            "
+            type="warning"
+            :message="'Die Einteilung ist erfolgt. Du bist für das Event vorgemerkt. Folge den mitgeteilten Anweisungen, um die Anmeldung abzuschließen.'"
+          />
+        </template>
+
         <UiMessage
           v-if="
             userRegistration.queue_position &&

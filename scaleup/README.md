@@ -16,4 +16,4 @@ Add all hosts to `hosts.ini`.
 Nodes added by the scaleup process are added automaticly. 
 
 ## run
-Run the ansible playbook with `ansible-playbook --user root -i ./hosts.ini ./playbooks/update_hosts.yml`
+Run the ansible playbook with `ansible-playbook --user root -i ./hosts.ini ./playbooks/update_hosts.yml --extra-vars "branch=main"`
