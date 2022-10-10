@@ -2117,21 +2117,21 @@
         },
         {
             "name": "laravel/octane",
-            "version": "v1.3.1",
+            "version": "v1.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/octane.git",
-                "reference": "b271ea907b2171167b3733509cf750a53006e625"
+                "reference": "c05488866a04877a8f6b20c22ba4c8ccfdabb932"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/octane/zipball/b271ea907b2171167b3733509cf750a53006e625",
-                "reference": "b271ea907b2171167b3733509cf750a53006e625",
+                "url": "https://api.github.com/repos/laravel/octane/zipball/c05488866a04877a8f6b20c22ba4c8ccfdabb932",
+                "reference": "c05488866a04877a8f6b20c22ba4c8ccfdabb932",
                 "shasum": ""
             },
             "require": {
                 "laminas/laminas-diactoros": "^2.5",
-                "laravel/framework": "^8.81|^9.0",
+                "laravel/framework": "^8.83.25|^9.33",
                 "laravel/serializable-closure": "^1.0",
                 "nesbot/carbon": "^2.60",
                 "php": "^8.0",
@@ -2189,7 +2189,7 @@
                 "issues": "https://github.com/laravel/octane/issues",
                 "source": "https://github.com/laravel/octane"
             },
-            "time": "2022-09-05T14:32:30+00:00"
+            "time": "2022-10-03T15:14:43+00:00"
         },
         {
             "name": "laravel/serializable-closure",
