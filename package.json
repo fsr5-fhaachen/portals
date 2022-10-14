@@ -26,7 +26,7 @@
     "unplugin-vue-components": "^0.22.8",
     "vite": "^3.1.8",
     "vue-loader": "^17.0.0",
-    "vue-template-compiler": "^2.7.12",
+    "vue-template-compiler": "^2.7.13",
     "prettier": "^2.7.1",
     "prettier-plugin-tailwindcss": "^0.1.13"
   },
@@ -47,6 +47,6 @@
     "@tailwindcss/forms": "^0.5.3",
     "bootstrap": "^5.2.2",
     "bootstrap-vue": "^2.22.0",
-    "vue": "^3.2.40"
+    "vue": "^3.2.41"
   }
 }
