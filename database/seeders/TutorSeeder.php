@@ -14,7 +14,7 @@ class TutorSeeder extends Seeder
      *
      * @var string
      */
-    const TUTORS_CSV_PATH = __DIR__ . '/tutors.csv';
+    public const TUTORS_CSV_PATH = __DIR__ . '/tutors.csv';
 
     /**
      * Run the tutor seeds.
