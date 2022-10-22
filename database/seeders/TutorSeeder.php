@@ -10,12 +10,24 @@ use Illuminate\Database\Seeder;
 class TutorSeeder extends Seeder
 {
     /**
+     * Set path to the file with tutors data.
+     *
+     * @var string
+     */
+    private const TUTORS_CSV_PATH = __DIR__ . '/tutors.csv';
+
+    /**
      * Run the tutor seeds.
      *
      * @return void
      */
     public function run()
     {
+        // check if the file exists
+        if (!file_exists(self::TUTORS_CSV_PATH)) {
+            return;
+        }
+
         // get course
         $course = Course::all();
 
@@ -25,7 +37,7 @@ class TutorSeeder extends Seeder
         });
 
         // read the tutors.csv file
-        $tutors = array_map('str_getcsv', file(__DIR__ . '/tutors.csv'));
+        $tutors = array_map('str_getcsv', file(self::TUTORS_CSV_PATH));
 
         // remove the header row
         array_shift($tutors);
