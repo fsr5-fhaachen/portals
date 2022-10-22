@@ -19,6 +19,8 @@ RUN docker-php-ext-install bcmath sockets pdo_mysql
 #    tokenizer \
 #    xml
 
+RUN apk add --no-cache pcre-dev $PHPIZE_DEPS && pecl install redis && docker-php-ext-enable redis.so
+
 # install composer
 RUN EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
