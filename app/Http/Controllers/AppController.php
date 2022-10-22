@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Module;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -19,7 +20,12 @@ class AppController extends Controller
      */
     public function index()
     {
-        return Redirect::route('app.register');
+        // check if registration module is active
+        if (Module::where('key', 'registration')->first()->active) {
+            return Redirect::route('app.register');
+        }
+
+        return Redirect::route('app.login');
     }
 
     /**

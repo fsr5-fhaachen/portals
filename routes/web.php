@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
 use App\Http\Controllers\DatabaseTestController;
+use App\Http\Middleware\ActiveModule;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\IsLoggedInAdmin;
 use App\Http\Middleware\IsLoggedInTutor;
@@ -35,8 +36,15 @@ Route::group([
 ], function () {
     Route::get('/login', [AppController::class, 'login'])->name('app.login');
     Route::post('/login', [AppController::class, 'loginUser'])->name('app.loginUser');
-    Route::get('/register', [AppController::class, 'register'])->name('app.register');
-    Route::post('/register', [AppController::class, 'registerUser'])->name('app.registerUser');
+
+    Route::group([
+        'middleware' => [
+            ActiveModule::class . ':registration'
+        ],
+    ], function () {
+        Route::get('/register', [AppController::class, 'register'])->name('app.register');
+        Route::post('/register', [AppController::class, 'registerUser'])->name('app.registerUser');
+    });
 });
 
 Route::group([

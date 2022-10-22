@@ -10,7 +10,7 @@
       <h2
         class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900"
       >
-        Herzlich Willkommen bei der Erstiwoche des FB5!
+        Herzlich Willkommen in Gerolstein!
       </h2>
     </div>
 
