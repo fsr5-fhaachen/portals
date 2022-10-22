@@ -19,8 +19,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CourseSeeder::class,
             TutorSeeder::class,
-            EventsErstiwocheSeeder::class,
-            //PageSeeder::class,
+            //EventsErstiwocheSeeder::class,
+            //PageErstiwocheSeeder::class,
+            EventsGerolsteinSeeder::class,
+            EventsGerolsteinSeeder::class,
         ]);
     }
 }

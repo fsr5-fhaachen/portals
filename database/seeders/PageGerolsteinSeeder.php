@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Page;
 use Illuminate\Database\Seeder;
 
-class PageSeeder extends Seeder
+class PageGerolsteinSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -16,16 +15,16 @@ class PageSeeder extends Seeder
     public function run()
     {
         $pages = [
-            [
-                'title' => 'Übersicht',
-                'slug' => 'overview',
-                'sort_order' => 100,
-            ],
-            [
-                'title' => 'FAQ',
-                'slug' => 'faq',
-                'sort_order' => 200,
-            ],
+            // [
+            //     'title' => 'Übersicht',
+            //     'slug' => 'overview',
+            //     'sort_order' => 100,
+            // ],
+            // [
+            //     'title' => 'FAQ',
+            //     'slug' => 'faq',
+            //     'sort_order' => 200,
+            // ],
         ];
 
         foreach ($pages as $pageData) {
@@ -35,7 +34,7 @@ class PageSeeder extends Seeder
 
             if ($page) {
                 // update content
-                $page->content = implode(PHP_EOL, file(__DIR__ . '/pages/' . $pageData['slug'] . '.html'));
+                $page->content = implode(PHP_EOL, file(__DIR__ . '/pages/gerolstein/' . $pageData['slug'] . '.html'));
 
                 // save the page
                 $page->save();
@@ -45,7 +44,7 @@ class PageSeeder extends Seeder
                 $page->title = $pageData['title'];
                 $page->slug = $pageData['slug'];
                 $page->sort_order = $pageData['sort_order'];
-                $page->content = implode(PHP_EOL, file(__DIR__ . '/pages/' . $pageData['slug'] . '.html'));
+                $page->content = implode(PHP_EOL, file(__DIR__ . '/pages/gerolstein/' . $pageData['slug'] . '.html'));
 
                 // save the page
                 $page->save();
