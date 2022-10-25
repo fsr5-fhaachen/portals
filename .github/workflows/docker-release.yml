@@ -1,0 +1,28 @@
+name: Docker CI (release)
+
+on:
+  release:
+    types: [published]
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push docker
+        run: |
+          docker build -f ./Dockerfile . --tag ${{ env.REGISTRY }}/fsr5-fhaachen/portals:${{ env.RELEASE_VERSION }} --tag ${{ env.REGISTRY }}/fsr5-fhaachen/portals:latest
+          docker push ${{ env.REGISTRY }}/fsr5-fhaachen/portals:${{ env.RELEASE_VERSION }}
+          docker push ${{ env.REGISTRY }}/fsr5-fhaachen/portals:latest

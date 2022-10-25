@@ -9,7 +9,7 @@ use App\Models\Slot;
 use DateTime;
 use Illuminate\Database\Seeder;
 
-class EventsSeeder extends Seeder
+class EventsErstiwocheSeeder extends Seeder
 {
     /**
      * Run the events seeds.

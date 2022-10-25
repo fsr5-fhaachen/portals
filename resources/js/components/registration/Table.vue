@@ -82,6 +82,7 @@
                       'bg-red-100':
                         registration.queue_position &&
                         registration.queue_position == -1,
+                      'bg-green-100': registration.fulfils_requirements,
                     }"
                   >
                     <td
@@ -238,54 +239,60 @@
                             ist nicht anwesend
                           </AppButton>
                         </div>
-                        <div>
-                          <AppButton
-                            v-if="registration.fulfils_requirements"
-                            @click="toggleFulfilsRequirements(registration.id)"
-                          >
-                            <span class="sr-only"
-                              >{{ registration.user.firstname }}
-                              {{ registration.user.lastname }}</span
+                        <template v-if="user && user.is_admin">
+                          <div>
+                            <AppButton
+                              v-if="registration.fulfils_requirements"
+                              @click="
+                                toggleFulfilsRequirements(registration.id)
+                              "
                             >
-                            erfüllt die Anforderungen
-                          </AppButton>
-                          <AppButton
-                            v-else
-                            theme="gray"
-                            @click="toggleFulfilsRequirements(registration.id)"
-                          >
-                            <span class="sr-only"
-                              >{{ registration.user.firstname }}
-                              {{ registration.user.lastname }}</span
+                              <span class="sr-only"
+                                >{{ registration.user.firstname }}
+                                {{ registration.user.lastname }}</span
+                              >
+                              erfüllt die Anforderungen
+                            </AppButton>
+                            <AppButton
+                              v-else
+                              theme="gray"
+                              @click="
+                                toggleFulfilsRequirements(registration.id)
+                              "
                             >
-                            erfüllt nicht die Anforderungen
-                          </AppButton>
-                        </div>
-                        <div v-if="user && user.is_admin">
-                          <AppButton
-                            v-if="!registration.fulfils_requirements"
-                            theme="danger"
-                            @click="destory(registration.id)"
-                          >
-                            <span class="sr-only"
-                              >{{ registration.user.firstname }}
-                              {{ registration.user.lastname }}</span
+                              <span class="sr-only"
+                                >{{ registration.user.firstname }}
+                                {{ registration.user.lastname }}</span
+                              >
+                              erfüllt nicht die Anforderungen
+                            </AppButton>
+                          </div>
+                          <div>
+                            <AppButton
+                              v-if="!registration.fulfils_requirements"
+                              theme="danger"
+                              @click="destory(registration.id)"
                             >
-                            löschen
-                          </AppButton>
-                          <AppButton
-                            v-else
-                            theme="gray"
-                            :disabled="true"
-                            @click="destory(registration.id)"
-                          >
-                            <span class="sr-only"
-                              >{{ registration.user.firstname }}
-                              {{ registration.user.lastname }}</span
+                              <span class="sr-only"
+                                >{{ registration.user.firstname }}
+                                {{ registration.user.lastname }}</span
+                              >
+                              löschen
+                            </AppButton>
+                            <AppButton
+                              v-else
+                              theme="gray"
+                              :disabled="true"
+                              @click="destory(registration.id)"
                             >
-                            löschen
-                          </AppButton>
-                        </div>
+                              <span class="sr-only"
+                                >{{ registration.user.firstname }}
+                                {{ registration.user.lastname }}</span
+                              >
+                              löschen
+                            </AppButton>
+                          </div>
+                        </template>
                       </div>
                     </td>
                   </tr>

@@ -23,7 +23,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3.4.1
+        uses: actions/setup-node@v3.5.1
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
@@ -56,6 +56,12 @@ jobs:
           DB_DATABASE: database/database.sqlite
         run: |
           php artisan migrate
+      - name: Execute seeders
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+        run: |
+          php artisan db:seed
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         env:
           DB_CONNECTION: sqlite
