@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
             //PageErstiwocheSeeder::class,
             ModuleGerolsteinSeeder::class,
             EventsGerolsteinSeeder::class,
-            EventsGerolsteinSeeder::class,
+            PageGerolsteinSeeder::class,
         ]);
     }
 }

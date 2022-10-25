@@ -1,5 +1,6 @@
 # app files
 tutors.csv
+students.csv
 
 # dev files
 laravel.sql
