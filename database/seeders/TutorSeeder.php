@@ -54,6 +54,7 @@ class TutorSeeder extends Seeder
             }
 
             // create a new user
+            echo 'Creating tutor ' . $tutor[0] . ' ' . $tutor[1] . ' (' . $tutor[3] . ')' . PHP_EOL;
             $user = new User();
             $user->lastname = $tutor[0];
             $user->firstname = $tutor[1];
@@ -62,7 +63,7 @@ class TutorSeeder extends Seeder
             $user->is_tutor = true;
 
             // check if the user is an admin
-            if ($tutor[4] == '1') {
+            if (array_key_exists(4, $tutor) && $tutor[4] == '1') {
                 $user->is_admin = true;
             }
 

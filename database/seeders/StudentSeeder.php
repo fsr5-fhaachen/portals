@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Course;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class StudentSeeder extends Seeder
@@ -49,7 +48,7 @@ class StudentSeeder extends Seeder
 
             // check if student exists
             $user = User::where('email', $student[3])->first();
-            if ($user) {
+            if ($user && !$courseByKey[$student[2]]) {
                 continue;
             }
 

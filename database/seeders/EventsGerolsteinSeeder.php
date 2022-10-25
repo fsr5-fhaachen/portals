@@ -5,7 +5,9 @@ namespace Database\Seeders;
 use App\Models\Course;
 use App\Models\Event;
 use App\Models\Group;
+use App\Models\Registration;
 use App\Models\Slot;
+use App\Models\User;
 use DateTime;
 use Illuminate\Database\Seeder;
 
@@ -21,6 +23,27 @@ class EventsGerolsteinSeeder extends Seeder
         $this->runSpieleolympiade();
         $this->runSamstagabendGruppenphase();
         $this->runSamstagabendTanzenSketchGesang();
+    }
+
+    /**
+     * Register all students for the given event.
+     *
+     * @param Event $event
+     *
+     * @return void
+     */
+    private function registerStudents(Event $event)
+    {
+        // get all students
+        $students = User::where('is_tutor', false)->get();
+
+        // create registration
+        foreach ($students as $student) {
+            $registration = new Registration();
+            $registration->user_id = $student->id;
+            $registration->event_id = $event->id;
+            $registration->save();
+        }
     }
 
     /**
@@ -65,6 +88,9 @@ class EventsGerolsteinSeeder extends Seeder
             $group->event_id = $event->id;
             $group->save();
         }
+
+        // register all students for the event
+        $this->registerStudents($event);
     }
 
     /**
@@ -109,6 +135,9 @@ class EventsGerolsteinSeeder extends Seeder
             $group->event_id = $event->id;
             $group->save();
         }
+
+        // register all students for the event
+        $this->registerStudents($event);
     }
 
     /**
