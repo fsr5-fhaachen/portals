@@ -17,8 +17,6 @@ class AppController extends Controller
 {
     /**
      * Display the index page
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function index(): RedirectResponse
     {
@@ -32,8 +30,6 @@ class AppController extends Controller
 
     /**
      * Display the login page
-     *
-     * @return \Inertia\Response
      */
     public function login(): Response
     {
@@ -42,8 +38,6 @@ class AppController extends Controller
 
     /**
      * Display the register page
-     *
-     * @return \Inertia\Response
      */
     public function register(): Response
     {
@@ -57,8 +51,6 @@ class AppController extends Controller
 
     /**
      * Display the 404 page
-     *
-     * @return \Inertia\Response
      */
     public function notFound(): Response
     {
@@ -67,8 +59,6 @@ class AppController extends Controller
 
     /**
      * Register a new user
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function registerUser(): RedirectResponse
     {
@@ -100,8 +90,6 @@ class AppController extends Controller
 
     /**
      * Login an existing user
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function loginUser(): RedirectResponse
     {
@@ -123,9 +111,6 @@ class AppController extends Controller
 
     /**
      * Authenticate a user
-     *
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     protected function authenticate(User $user): RedirectResponse
     {

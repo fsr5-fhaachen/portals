@@ -21,8 +21,6 @@ class DashboardAdminController extends Controller
 {
     /**
      * Display the dashboard admin page
-     *
-     * @return \Inertia\Response
      */
     public function index(): Response
     {
@@ -39,9 +37,6 @@ class DashboardAdminController extends Controller
 
     /**
      * Display the dashboard admin registrations page
-     *
-     *
-     * @return \Inertia\Response
      */
     public function registrations(\Illuminate\Http\Request $request): Response
     {
@@ -61,9 +56,6 @@ class DashboardAdminController extends Controller
 
     /**
      * Display the dashboard admin event page
-     *
-     *
-     * @return \Inertia\Response
      */
     public function event(\Illuminate\Http\Request $request): Response
     {
@@ -85,9 +77,6 @@ class DashboardAdminController extends Controller
 
     /**
      * Display the dashboard admin event submit page
-     *
-     *
-     * @return \Inertia\Response
      */
     public function eventSubmit(\Illuminate\Http\Request $request): Response
     {
@@ -116,9 +105,6 @@ class DashboardAdminController extends Controller
 
     /**
      * Execute the dashboard admin event submit action
-     *
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function eventExecuteSubmit(\Illuminate\Http\Request $request): RedirectResponse
     {
@@ -190,8 +176,6 @@ class DashboardAdminController extends Controller
 
     /**
      * Display the register page
-     *
-     * @return \Inertia\Response
      */
     public function register(): Response
     {
@@ -209,8 +193,6 @@ class DashboardAdminController extends Controller
 
     /**
      * Register a new user
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function registerUser(): RedirectResponse
     {
@@ -245,8 +227,6 @@ class DashboardAdminController extends Controller
     // TODO: Refactor this (╯°□°)╯︵ ┻━┻
     /**
      * Assign a new user
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function assignUser(): RedirectResponse
     {

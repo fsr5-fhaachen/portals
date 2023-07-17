@@ -21,8 +21,6 @@ class StationTutor extends Pivot implements Auditable
 
     /**
      * Get user for the station_tutor.
-     *
-     * @return BelongsTo
      */
     public function user(): BelongsTo
     {
@@ -31,8 +29,6 @@ class StationTutor extends Pivot implements Auditable
 
     /**
      * Get station for the station_tutor.
-     *
-     * @return BelongsTo
      */
     public function station(): BelongsTo
     {

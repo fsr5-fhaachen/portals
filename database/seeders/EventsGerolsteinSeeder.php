@@ -14,8 +14,6 @@ class EventsGerolsteinSeeder extends Seeder
 {
     /**
      * Run the events seeds.
-     *
-     * @return void
      */
     public function run(): void
     {
@@ -26,9 +24,6 @@ class EventsGerolsteinSeeder extends Seeder
 
     /**
      * Register all students for the given event.
-     *
-     *
-     * @return void
      */
     private function registerStudents(Event $event): void
     {
@@ -46,8 +41,6 @@ class EventsGerolsteinSeeder extends Seeder
 
     /**
      * Run the "Spieleolympiade" event seeds.
-     *
-     * @return void
      */
     public function runSpieleolympiade(): void
     {
@@ -93,8 +86,6 @@ class EventsGerolsteinSeeder extends Seeder
 
     /**
      * Run the "Gruppenphase" event seeds.
-     *
-     * @return void
      */
     public function runSamstagabendGruppenphase(): void
     {
@@ -140,8 +131,6 @@ class EventsGerolsteinSeeder extends Seeder
 
     /**
      * Run the "Tanzen, Sketch & Gesang" event seeds.
-     *
-     * @return void
      */
     public function runSamstagabendTanzenSketchGesang(): void
     {

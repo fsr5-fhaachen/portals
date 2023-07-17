@@ -30,8 +30,6 @@ class Registration extends Model implements Auditable
 
     /**
      * Get event for the registration.
-     *
-     * @return BelongsTo
      */
     public function event(): BelongsTo
     {
@@ -40,8 +38,6 @@ class Registration extends Model implements Auditable
 
     /**
      * Get user for the registration.
-     *
-     * @return BelongsTo
      */
     public function user(): BelongsTo
     {
@@ -50,8 +46,6 @@ class Registration extends Model implements Auditable
 
     /**
      * Get slot for the registration.
-     *
-     * @return BelongsTo
      */
     public function slot(): BelongsTo
     {
@@ -60,8 +54,6 @@ class Registration extends Model implements Auditable
 
     /**
      * Get group for the registration.
-     *
-     * @return BelongsTo
      */
     public function group(): BelongsTo
     {

@@ -31,8 +31,6 @@ class Event extends Model implements Auditable
 
     /**
      * Get groups for the event.
-     *
-     * @return HasMany
      */
     public function groups(): HasMany
     {
@@ -41,8 +39,6 @@ class Event extends Model implements Auditable
 
     /**
      * Get registrations for the event.
-     *
-     * @return HasMany
      */
     public function registrations(): HasMany
     {
@@ -51,8 +47,6 @@ class Event extends Model implements Auditable
 
     /**
      * Get slots for the event.
-     *
-     * @return HasMany
      */
     public function slots(): HasMany
     {
@@ -61,8 +55,6 @@ class Event extends Model implements Auditable
 
     /**
      * Get stations for the event.
-     *
-     * @return HasMany
      */
     public function stations(): HasMany
     {

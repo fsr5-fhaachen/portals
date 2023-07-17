@@ -28,8 +28,6 @@ class Stop extends Pivot implements Auditable
 
     /**
      * Get group for the stop.
-     *
-     * @return BelongsTo
      */
     public function group(): BelongsTo
     {
@@ -38,8 +36,6 @@ class Stop extends Pivot implements Auditable
 
     /**
      * Get station for the stop.
-     *
-     * @return BelongsTo
      */
     public function station(): BelongsTo
     {

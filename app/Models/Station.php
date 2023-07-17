@@ -23,8 +23,6 @@ class Station extends Model implements Auditable
 
     /**
      * Get stops for the station.
-     *
-     * @return HasMany
      */
     public function stops(): HasMany
     {
@@ -33,8 +31,6 @@ class Station extends Model implements Auditable
 
     /**
      * Get event for the station.
-     *
-     * @return BelongsTo
      */
     public function event(): BelongsTo
     {
@@ -43,8 +39,6 @@ class Station extends Model implements Auditable
 
     /**
      * Get tutors for the station.
-     *
-     * @return BelongsToMany
      */
     public function tutors(): BelongsToMany
     {
@@ -53,8 +47,6 @@ class Station extends Model implements Auditable
 
     /**
      * Get groups for the station.
-     *
-     * @return BelongsToMany
      */
     public function groups(): BelongsToMany
     {

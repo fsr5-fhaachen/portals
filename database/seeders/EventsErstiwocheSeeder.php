@@ -13,8 +13,6 @@ class EventsErstiwocheSeeder extends Seeder
 {
     /**
      * Run the events seeds.
-     *
-     * @return void
      */
     public function run(): void
     {
@@ -30,8 +28,6 @@ class EventsErstiwocheSeeder extends Seeder
 
     /**
      * Run the "Gruppenphase" event seeds.
-     *
-     * @return void
      */
     public function runGruppenphase(): void
     {
@@ -88,8 +84,6 @@ class EventsErstiwocheSeeder extends Seeder
 
     /**
      * Run the "Stadtrallye" event seeds.
-     *
-     * @return void
      */
     public function runStadtrallye(): void
     {
@@ -133,8 +127,6 @@ class EventsErstiwocheSeeder extends Seeder
 
     /**
      * Run the "Hausführung Offline" event seeds.
-     *
-     * @return void
      */
     public function runHausfuehrungOffline(): void
     {
@@ -207,8 +199,6 @@ class EventsErstiwocheSeeder extends Seeder
 
     /**
      * Run the "Hausführung Online" event seeds.
-     *
-     * @return void
      */
     public function runHausfuehrungOnline(): void
     {
@@ -235,8 +225,6 @@ class EventsErstiwocheSeeder extends Seeder
 
     /**
      * Run the "Kneipentour" event seeds.
-     *
-     * @return void
      */
     public function runKneipentour(): void
     {
@@ -280,8 +268,6 @@ class EventsErstiwocheSeeder extends Seeder
 
     /**
      * Run the "Katerbrunch" event seeds.
-     *
-     * @return void
      */
     public function runKaterbrunch(): void
     {
@@ -325,8 +311,6 @@ class EventsErstiwocheSeeder extends Seeder
 
     /**
      * Run the "Sport" event seeds.
-     *
-     * @return void
      */
     public function runSport(): void
     {
@@ -396,8 +380,6 @@ class EventsErstiwocheSeeder extends Seeder
 
     /**
      * Run the "Kultur" event seeds.
-     *
-     * @return void
      */
     public function runKultur(): void
     {

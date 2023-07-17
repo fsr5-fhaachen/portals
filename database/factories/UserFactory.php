@@ -29,10 +29,6 @@ class UserFactory extends Factory
 
     /**
      * Create users with tutor and/or admin privileges
-     *
-     * @param  bool  $is_tutor
-     * @param  bool  $is_admin
-     * @return Factory
      */
     public function elevatedPrivileges(bool $is_tutor, bool $is_admin): Factory
     {

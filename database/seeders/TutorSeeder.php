@@ -17,8 +17,6 @@ class TutorSeeder extends Seeder
 
     /**
      * Run the tutor seeds.
-     *
-     * @return void
      */
     public function run(): void
     {

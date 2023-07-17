@@ -31,9 +31,6 @@ class DashboardEventController extends Controller
 
     /**
      * Redirect to the event page for the given event
-     *
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     protected function redirectToEvent(Event $event): RedirectResponse
     {
@@ -88,9 +85,6 @@ class DashboardEventController extends Controller
 
     /**
      * Display the event index page
-     *
-     *
-     * @return \Inertia\Response
      */
     public function index(Request $request): Response
     {
@@ -116,9 +110,6 @@ class DashboardEventController extends Controller
 
     /**
      * Display the event register page
-     *
-     *
-     * @return \Inertia\Response
      */
     public function register(Request $request): Response
     {
@@ -139,9 +130,6 @@ class DashboardEventController extends Controller
 
     /**
      * Display the event unregister page
-     *
-     *
-     * @return \Inertia\Response
      */
     public function unregister(Request $request): Response
     {
@@ -161,9 +149,6 @@ class DashboardEventController extends Controller
 
     /**
      * Register the user to the event
-     *
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function registerUser(Request $request): RedirectResponse
     {
@@ -252,9 +237,6 @@ class DashboardEventController extends Controller
 
     /**
      * Unregister the user from the event
-     *
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function unregisterUser(Request $request): RedirectResponse
     {

@@ -15,8 +15,6 @@ class DashboardController extends Controller
 {
     /**
      * Display the dashboard index page
-     *
-     * @return \Inertia\Response
      */
     public function index(): Response
     {
@@ -34,9 +32,6 @@ class DashboardController extends Controller
 
     /**
      * Login a tutor
-     *
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function loginTutor(Request $request): RedirectResponse
     {
@@ -69,9 +64,6 @@ class DashboardController extends Controller
 
     /**
      * Display the request cms page
-     *
-     *
-     * @return \Inertia\Response
      */
     public function cmsPage(Request $request): Response
     {

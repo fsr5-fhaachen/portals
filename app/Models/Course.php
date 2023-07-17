@@ -21,8 +21,6 @@ class Course extends Model implements Auditable
 
     /**
      * Get users for the course.
-     *
-     * @return HasMany
      */
     public function users(): HasMany
     {
@@ -31,8 +29,6 @@ class Course extends Model implements Auditable
 
     /**
      * Get groups for the course.
-     *
-     * @return HasMany
      */
     public function groups(): HasMany
     {

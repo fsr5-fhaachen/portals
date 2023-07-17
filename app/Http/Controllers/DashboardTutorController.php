@@ -14,8 +14,6 @@ class DashboardTutorController extends Controller
 {
     /**
      * Display the dashboard tutor index page
-     *
-     * @return \Inertia\Response
      */
     public function index(): Response
     {
@@ -29,9 +27,6 @@ class DashboardTutorController extends Controller
 
     /**
      * Display the dashboard tutor event page
-     *
-     *
-     * @return \Inertia\Response
      */
     public function event(Request $request): Response
     {
@@ -53,9 +48,6 @@ class DashboardTutorController extends Controller
 
     /**
      * Display the dashboard tutor slot page
-     *
-     *
-     * @return \Inertia\Response
      */
     public function slot(Request $request): Response
     {
@@ -75,9 +67,6 @@ class DashboardTutorController extends Controller
 
     /**
      * Display the dashboard tutor group page
-     *
-     *
-     * @return \Inertia\Response
      */
     public function group(Request $request): Response
     {

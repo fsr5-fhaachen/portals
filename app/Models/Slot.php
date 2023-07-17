@@ -22,8 +22,6 @@ class Slot extends Model implements Auditable
 
     /**
      * Get registrations for the slot.
-     *
-     * @return HasMany
      */
     public function registrations(): HasMany
     {
@@ -32,8 +30,6 @@ class Slot extends Model implements Auditable
 
     /**
      * Get event for the slot.
-     *
-     * @return BelongsTo
      */
     public function event(): BelongsTo
     {

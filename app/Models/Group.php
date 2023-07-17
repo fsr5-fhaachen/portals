@@ -23,8 +23,6 @@ class Group extends Model implements Auditable
 
     /**
      * Get group_tutors for the group.
-     *
-     * @return HasMany
      */
     public function groupTutors(): HasMany
     {
@@ -33,8 +31,6 @@ class Group extends Model implements Auditable
 
     /**
      * Get registrations for the group.
-     *
-     * @return HasMany
      */
     public function registrations(): HasMany
     {
@@ -43,8 +39,6 @@ class Group extends Model implements Auditable
 
     /**
      * Get stops for the group.
-     *
-     * @return HasMany
      */
     public function stops(): HasMany
     {
@@ -53,8 +47,6 @@ class Group extends Model implements Auditable
 
     /**
      * Get course for the group.
-     *
-     * @return BelongsTo
      */
     public function course(): BelongsTo
     {
@@ -63,8 +55,6 @@ class Group extends Model implements Auditable
 
     /**
      * Get event for the group.
-     *
-     * @return BelongsTo
      */
     public function event(): BelongsTo
     {
@@ -73,8 +63,6 @@ class Group extends Model implements Auditable
 
     /**
      * Get tutors for the group.
-     *
-     * @return BelongsToMany
      */
     public function tutors(): BelongsToMany
     {
@@ -83,8 +71,6 @@ class Group extends Model implements Auditable
 
     /**
      * Get stations for the group.
-     *
-     * @return BelongsToMany
      */
     public function stations(): BelongsToMany
     {

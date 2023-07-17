@@ -53,7 +53,6 @@ class DatabaseTestController extends Controller
   /**
    * Removes all data from specified table
    *
-   * @param  string  $tableName
    * @return void
    */
   public function clearTable(string $tableName)
@@ -64,8 +63,6 @@ class DatabaseTestController extends Controller
   /**
    * Create a random collection of models for given table name and persist them to the database.
    *
-   * @param  String_  $tableName
-   * @param  int  $amount
    * @return Collection<int, Model>|Model|string
    */
   public function randomFillTable(String_ $tableName, int $amount)
@@ -101,7 +98,6 @@ class DatabaseTestController extends Controller
   /**
    * Create a random collection of courses and persist them to the database.
    *
-   * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
   public function randomFillCourses(int $amount)
@@ -112,7 +108,6 @@ class DatabaseTestController extends Controller
   /**
    * Create a random collection of events and persist them to the database.
    *
-   * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
   public function randomFillEvents(int $amount)
@@ -123,7 +118,6 @@ class DatabaseTestController extends Controller
   /**
    * Create a random collection of pages and persist them to the database.
    *
-   * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
   public function randomFillPages(int $amount)
@@ -134,7 +128,6 @@ class DatabaseTestController extends Controller
   /**
    * Create a random collection of users and persist them to the database. Requires the courses table to be pre-populated.
    *
-   * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
   public function randomFillUsers(int $amount)
@@ -145,7 +138,6 @@ class DatabaseTestController extends Controller
   /**
    * Create a random collection of slots and persist them to the database. Requires the events table to be pre-populated.
    *
-   * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
   public function randomFillSlots(int $amount)
@@ -156,7 +148,6 @@ class DatabaseTestController extends Controller
   /**
    * Create a random collection of stations and persist them to the database. Requires the events table to be pre-populated.
    *
-   * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
   public function randomFillStations(int $amount)
@@ -167,7 +158,6 @@ class DatabaseTestController extends Controller
   /**
    * Create a random collection of groups and persist them to the database. Requires the events and courses tables to be pre-populated.
    *
-   * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
   public function randomFillGroups(int $amount)
@@ -178,7 +168,6 @@ class DatabaseTestController extends Controller
   /**
    * Create a random collection of group_tutors and persist them to the database. Requires the users and groups tables to be pre-populated.
    *
-   * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
   public function randomFillGroupTutors(int $amount)
@@ -189,7 +178,6 @@ class DatabaseTestController extends Controller
   /**
    * Create a random collection of stops and persist them to the database. Requires the groups and stations tables to be pre-populated.
    *
-   * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
   public function randomFillStops(int $amount)
@@ -200,7 +188,6 @@ class DatabaseTestController extends Controller
   /**
    * Create a random collection of station_tutors and persist them to the database. Requires the users and stations tables to be pre-populated.
    *
-   * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
   public function randomFillStationTutors(int $amount)
@@ -211,7 +198,6 @@ class DatabaseTestController extends Controller
   /**
    * Create a random collection of registrations and persist them to the database. Requires the events, users, slots and groups tables to be pre-populated.
    *
-   * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
   public function randomFillRegistrations(int $amount)

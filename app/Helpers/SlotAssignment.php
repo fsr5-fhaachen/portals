@@ -19,9 +19,6 @@ class SlotAssignment
 
     /**
      * Assigns registrations of provided collection up to the specified amount
-     *
-     *
-     * @return void
      */
     private function assignAmount(Collection &$registrations, int $amount): void
     {
@@ -38,9 +35,6 @@ class SlotAssignment
 
     /**
      * Updates the queue positions of the provided registrations
-     *
-     *
-     * @return void
      */
     private function updateQueuePos(Collection $registrations): void
     {
@@ -57,8 +51,6 @@ class SlotAssignment
 
     /**
      * First initial assignment of users that are registered for this slot. Operates on first-come-first-serve basis
-     *
-     * @return void
      */
     private function assignInitial(): void
     {
@@ -75,8 +67,6 @@ class SlotAssignment
 
     /**
      * Assigns users registered for this slot that are in the queue
-     *
-     * @return void
      */
     private function assignQueue(): void
     {
@@ -104,8 +94,6 @@ class SlotAssignment
 
     /**
      * Assigns users registered for this slot
-     *
-     * @return void
      */
     public function assign(): void
     {

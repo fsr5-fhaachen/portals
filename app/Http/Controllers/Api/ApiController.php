@@ -13,8 +13,6 @@ class ApiController extends Controller
 {
     /**
      * Display the index page
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function ping(): JsonResponse
     {
@@ -23,9 +21,6 @@ class ApiController extends Controller
 
     /**
      * Return a requested registration if it exists and the user is allowed to see it
-     *
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function registrationsShow(Request $request): JsonResponse
     {
@@ -45,9 +40,6 @@ class ApiController extends Controller
 
     /**
      * Return the amount of registrations for a given event
-     *
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function eventRegistrationsAmount(Request $request): JsonResponse
     {
@@ -86,7 +78,6 @@ class ApiController extends Controller
      * Return the amount of registrations for all events
      *
      * @param  Request  $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function eventsRegistrationsAmount(): JsonResponse
     {
@@ -115,9 +106,6 @@ class ApiController extends Controller
 
     /**
      * Return the registrations for a given event
-     *
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function eventRegistrationsShow(Request $request): JsonResponse
     {
@@ -156,9 +144,6 @@ class ApiController extends Controller
 
     /**
      * Toggle is_present for a given registration
-     *
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function registrationsToggleIsPresent(Request $request): JsonResponse
     {
@@ -176,9 +161,6 @@ class ApiController extends Controller
 
     /**
      * Toggle fulfils_requirements for a given registration
-     *
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function registrationsToggleFulfilsRequirements(Request $request): JsonResponse
     {
@@ -196,9 +178,6 @@ class ApiController extends Controller
 
     /**
      * Delete a given registration
-     *
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function registrationsDestroy(Request $request): JsonResponse
     {
@@ -222,7 +201,6 @@ class ApiController extends Controller
      * Return all courses with users amopunt
      *
      * @param  Request  $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function coursesUserAmount(): JsonResponse
     {
@@ -242,9 +220,6 @@ class ApiController extends Controller
 
     /**
      * Return all courses with users amount of event
-     *
-     *
-     * @return \Illuminate\Http\JsonResponse
      */
     public function coursesUserAmountPerEvent(Request $request): JsonResponse
     {

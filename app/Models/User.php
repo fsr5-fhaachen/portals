@@ -24,8 +24,6 @@ class User extends Authenticatable implements Auditable
 
     /**
      * Get station_tutors for the user.
-     *
-     * @return HasMany
      */
     public function stationTutors(): HasMany
     {
@@ -34,8 +32,6 @@ class User extends Authenticatable implements Auditable
 
     /**
      * Get group_tutors for the user.
-     *
-     * @return HasMany
      */
     public function groupTutors(): HasMany
     {
@@ -44,8 +40,6 @@ class User extends Authenticatable implements Auditable
 
     /**
      * Get registrations for the user.
-     *
-     * @return HasMany
      */
     public function registrations(): HasMany
     {
@@ -54,8 +48,6 @@ class User extends Authenticatable implements Auditable
 
     /**
      * Get course for the user.
-     *
-     * @return BelongsTo
      */
     public function course(): BelongsTo
     {
