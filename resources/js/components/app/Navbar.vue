@@ -80,7 +80,7 @@
     </div>
 
     <DisclosurePanel class="sm:hidden">
-      <div class="space-y-1 pt-2 pb-3">
+      <div class="space-y-1 pb-3 pt-2">
         <DisclosureButton
           v-for="item in navigation"
           :key="item.title"

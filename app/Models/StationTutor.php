@@ -21,20 +21,16 @@ class StationTutor extends Pivot implements Auditable
 
     /**
      * Get user for the station_tutor.
-     *
-     * @return BelongsTo
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
     /**
      * Get station for the station_tutor.
-     *
-     * @return BelongsTo
      */
-    public function station()
+    public function station(): BelongsTo
     {
         return $this->belongsTo(Station::class);
     }

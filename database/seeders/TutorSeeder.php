@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Course;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class TutorSeeder extends Seeder
@@ -14,17 +13,15 @@ class TutorSeeder extends Seeder
      *
      * @var string
      */
-    private const TUTORS_CSV_PATH = __DIR__ . '/tutors.csv';
+    private const TUTORS_CSV_PATH = __DIR__.'/tutors.csv';
 
     /**
      * Run the tutor seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         // check if the file exists
-        if (!file_exists(self::TUTORS_CSV_PATH)) {
+        if (! file_exists(self::TUTORS_CSV_PATH)) {
             return;
         }
 
@@ -54,7 +51,7 @@ class TutorSeeder extends Seeder
             }
 
             // create a new user
-            echo 'Creating tutor ' . $tutor[0] . ' ' . $tutor[1] . ' (' . $tutor[3] . ')' . PHP_EOL;
+            echo 'Creating tutor '.$tutor[0].' '.$tutor[1].' ('.$tutor[3].')'.PHP_EOL;
             $user = new User();
             $user->lastname = $tutor[0];
             $user->firstname = $tutor[1];

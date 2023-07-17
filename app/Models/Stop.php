@@ -28,20 +28,16 @@ class Stop extends Pivot implements Auditable
 
     /**
      * Get group for the stop.
-     *
-     * @return BelongsTo
      */
-    public function group()
+    public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
     }
 
     /**
      * Get station for the stop.
-     *
-     * @return BelongsTo
      */
-    public function station()
+    public function station(): BelongsTo
     {
         return $this->belongsTo(Station::class);
     }

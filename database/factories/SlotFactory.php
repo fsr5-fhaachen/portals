@@ -15,13 +15,13 @@ class SlotFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
-          'name' => $this->faker->word(),
-          'event_id' => Event::all(['id'])->random(),
-          'has_requirements' => $this->faker->boolean(),
-          'maximum_participants' => $this->faker->numberBetween(0, 25),
+            'name' => $this->faker->word(),
+            'event_id' => Event::all(['id'])->random(),
+            'has_requirements' => $this->faker->boolean(),
+            'maximum_participants' => $this->faker->numberBetween(0, 25),
         ];
     }
 }

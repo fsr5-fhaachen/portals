@@ -21,20 +21,16 @@ class GroupTutor extends Pivot implements Auditable
 
     /**
      * Get user for the group_tutor.
-     *
-     * @return BelongsTo
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
     /**
      * Get group for the group_tutor.
-     *
-     * @return BelongsTo
      */
-    public function group()
+    public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
     }

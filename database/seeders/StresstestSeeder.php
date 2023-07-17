@@ -5,17 +5,14 @@ namespace Database\Seeders;
 use App\Models\Registration;
 use App\Models\User;
 use Faker\Factory;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class StresstestSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         $course_id = env('SEEDER_COURSE_ID', 1);
         $event_id = env('SEEDER_EVENT_ID', 1);
@@ -26,21 +23,21 @@ class StresstestSeeder extends Seeder
         $faker = Factory::create();
 
         User::factory()
-          ->has(
-              Registration::factory()
-                ->state([
-                  'event_id' => (int)$event_id,
-                  'slot_id' => $slot_id ? (int)$slot_id : null,
-                  'group_id' => null,
-                  'drinks_alcohol' => $faker->boolean((int)$nondrinker_percentage),
-                  'fulfils_requirements' => false,
-                  'is_present' => false,
-                  'queue_position' => -1
-                ])
-                ->count(1)
-          )
-          ->state(['course_id' => (int)$course_id])
-          ->count((int)$amount)
-          ->create();
+            ->has(
+                Registration::factory()
+                    ->state([
+                        'event_id' => (int) $event_id,
+                        'slot_id' => $slot_id ? (int) $slot_id : null,
+                        'group_id' => null,
+                        'drinks_alcohol' => $faker->boolean((int) $nondrinker_percentage),
+                        'fulfils_requirements' => false,
+                        'is_present' => false,
+                        'queue_position' => -1,
+                    ])
+                    ->count(1)
+            )
+            ->state(['course_id' => (int) $course_id])
+            ->count((int) $amount)
+            ->create();
     }
 }

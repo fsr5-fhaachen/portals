@@ -13,10 +13,8 @@ class EventsErstiwocheSeeder extends Seeder
 {
     /**
      * Run the events seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         $this->runGruppenphase();
         $this->runStadtrallye();
@@ -30,10 +28,8 @@ class EventsErstiwocheSeeder extends Seeder
 
     /**
      * Run the "Gruppenphase" event seeds.
-     *
-     * @return void
      */
-    public function runGruppenphase()
+    public function runGruppenphase(): void
     {
         // check if event with name "Gruppenphase" exists
         $event = Event::where('name', 'Gruppenphase')->first();
@@ -57,26 +53,26 @@ class EventsErstiwocheSeeder extends Seeder
 
         // create event groups
         $groupNames = [
-            "Die waghalsigen Waschbären",
-            "Die kuscheligen Koalas",
-            "Die originellen Opossums",
-            "Die peppigen Pinguine",
-            "Die risikofreudigen Rentiere",
-            "Die fluffigen Flamingos",
-            "Die kreisförmigen Karpfen",
-            "Die dramatischen Dackel",
-            "Die oszillierten Ozelots",
-            "Die zappelnden Zitterale",
-            "Die schnellen Schildkröten",
-            "Die schicken Spinnen",
-            "Die netten Nasenbären",
-            "Die berühmten Bonobos",
-            "Die tapferen Tucans",
-            "Die klugen Krokodile",
-            "Die wundervollen Wallabys",
-            "Die kantigen Kaninchen",
-            "Die allwissenden Aale",
-            "Die erfahrenen Enten",
+            'Die waghalsigen Waschbären',
+            'Die kuscheligen Koalas',
+            'Die originellen Opossums',
+            'Die peppigen Pinguine',
+            'Die risikofreudigen Rentiere',
+            'Die fluffigen Flamingos',
+            'Die kreisförmigen Karpfen',
+            'Die dramatischen Dackel',
+            'Die oszillierten Ozelots',
+            'Die zappelnden Zitterale',
+            'Die schnellen Schildkröten',
+            'Die schicken Spinnen',
+            'Die netten Nasenbären',
+            'Die berühmten Bonobos',
+            'Die tapferen Tucans',
+            'Die klugen Krokodile',
+            'Die wundervollen Wallabys',
+            'Die kantigen Kaninchen',
+            'Die allwissenden Aale',
+            'Die erfahrenen Enten',
         ];
         foreach ($groupNames as $groupName) {
             $group = new Group();
@@ -88,10 +84,8 @@ class EventsErstiwocheSeeder extends Seeder
 
     /**
      * Run the "Stadtrallye" event seeds.
-     *
-     * @return void
      */
-    public function runStadtrallye()
+    public function runStadtrallye(): void
     {
         // check if event with name "Stadtrallye" exists
         $event = Event::where('name', 'Stadtrallye')->first();
@@ -118,7 +112,7 @@ class EventsErstiwocheSeeder extends Seeder
 
         for ($i = 1; $i <= 14; $i++) {
             $groups[] = [
-                "name" => "Gruppe $i",
+                'name' => "Gruppe $i",
             ];
         }
 
@@ -133,10 +127,8 @@ class EventsErstiwocheSeeder extends Seeder
 
     /**
      * Run the "Hausführung Offline" event seeds.
-     *
-     * @return void
      */
-    public function runHausfuehrungOffline()
+    public function runHausfuehrungOffline(): void
     {
         // check if event with name "Hausführung (Präsenz)" exists
         $event = Event::where('name', 'Hausführung (Präsenz)')->first();
@@ -172,26 +164,26 @@ class EventsErstiwocheSeeder extends Seeder
 
         for ($i = 1; $i <= 10; $i++) {
             $groups[] = [
-                "name" => "INF Hausführung $i",
-                "course_id" => $coursesByAbbreviation['INF']->id,
+                'name' => "INF Hausführung $i",
+                'course_id' => $coursesByAbbreviation['INF']->id,
             ];
         }
         for ($i = 1; $i <= 5; $i++) {
             $groups[] = [
-                "name" => "ET Hausführung $i",
-                "course_id" => $coursesByAbbreviation['ET']->id,
+                'name' => "ET Hausführung $i",
+                'course_id' => $coursesByAbbreviation['ET']->id,
             ];
         }
         for ($i = 1; $i <= 3; $i++) {
             $groups[] = [
-                "name" => "MCD Hausführung $i",
-                "course_id" => $coursesByAbbreviation['MCD']->id,
+                'name' => "MCD Hausführung $i",
+                'course_id' => $coursesByAbbreviation['MCD']->id,
             ];
         }
         for ($i = 1; $i <= 3; $i++) {
             $groups[] = [
-                "name" => "WI Hausführung $i",
-                "course_id" => $coursesByAbbreviation['WI']->id,
+                'name' => "WI Hausführung $i",
+                'course_id' => $coursesByAbbreviation['WI']->id,
             ];
         }
 
@@ -207,10 +199,8 @@ class EventsErstiwocheSeeder extends Seeder
 
     /**
      * Run the "Hausführung Online" event seeds.
-     *
-     * @return void
      */
-    public function runHausfuehrungOnline()
+    public function runHausfuehrungOnline(): void
     {
         // check if event with name "Hausführung (Online)" exists
         $event = Event::where('name', 'Hausführung (Online)')->first();
@@ -235,10 +225,8 @@ class EventsErstiwocheSeeder extends Seeder
 
     /**
      * Run the "Kneipentour" event seeds.
-     *
-     * @return void
      */
-    public function runKneipentour()
+    public function runKneipentour(): void
     {
         // check if event with name "Kneipentour" exists
         $event = Event::where('name', 'Kneipentour')->first();
@@ -265,7 +253,7 @@ class EventsErstiwocheSeeder extends Seeder
 
         for ($i = 1; $i <= 30; $i++) {
             $groups[] = [
-                "name" => "Gruppe $i",
+                'name' => "Gruppe $i",
             ];
         }
 
@@ -280,10 +268,8 @@ class EventsErstiwocheSeeder extends Seeder
 
     /**
      * Run the "Katerbrunch" event seeds.
-     *
-     * @return void
      */
-    public function runKaterbrunch()
+    public function runKaterbrunch(): void
     {
         // check if event with name "Katerbrunch" exists
         $event = Event::where('name', 'Katerbrunch')->first();
@@ -325,10 +311,8 @@ class EventsErstiwocheSeeder extends Seeder
 
     /**
      * Run the "Sport" event seeds.
-     *
-     * @return void
      */
-    public function runSport()
+    public function runSport(): void
     {
         // check if event with name "Sport" exists
         $event = Event::where('name', 'Sport')->first();
@@ -396,10 +380,8 @@ class EventsErstiwocheSeeder extends Seeder
 
     /**
      * Run the "Kultur" event seeds.
-     *
-     * @return void
      */
-    public function runKultur()
+    public function runKultur(): void
     {
         // check if event with name "Kultur" exists
         $event = Event::where('name', 'Kultur')->first();
@@ -443,7 +425,7 @@ class EventsErstiwocheSeeder extends Seeder
                 'name' => 'Zoo',
                 'has_requirements' => false,
                 'maximum_participants' => null,
-            ]
+            ],
         ];
 
         foreach ($slots as $slotData) {

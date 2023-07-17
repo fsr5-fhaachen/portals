@@ -4,19 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Page;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Session;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class DashboardController extends Controller
 {
     /**
      * Display the dashboard index page
-     *
-     * @return \Inertia\Response
      */
-    public function index()
+    public function index(): Response
     {
         // get events ordered by sort_order
         $events = Event::orderBy('sort_order')->get();
@@ -26,18 +26,14 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard/Index', [
             'events' => $events,
-            'registrations' => $registrations
+            'registrations' => $registrations,
         ]);
     }
 
     /**
      * Login a tutor
-     *
-     * @param Request $request
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function loginTutor(Request $request)
+    public function loginTutor(Request $request): RedirectResponse
     {
         // check if the user is a tutor
         if (Auth::user()->is_tutor) {
@@ -68,21 +64,17 @@ class DashboardController extends Controller
 
     /**
      * Display the request cms page
-     *
-     * @param Request $request
-     *
-     * @return \Inertia\Response
      */
-    public function cmsPage(Request $request)
+    public function cmsPage(Request $request): Response
     {
         $page = Page::where('slug', $request->slug)->first();
 
-        if (!$page) {
+        if (! $page) {
             return Inertia::render('Dashboard/404');
         }
 
         return Inertia::render('Dashboard/Page', [
-            'page' => $page
+            'page' => $page,
         ]);
     }
 }

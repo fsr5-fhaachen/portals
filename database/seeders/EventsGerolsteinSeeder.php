@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Course;
 use App\Models\Event;
 use App\Models\Group;
 use App\Models\Registration;
@@ -15,10 +14,8 @@ class EventsGerolsteinSeeder extends Seeder
 {
     /**
      * Run the events seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         $this->runSpieleolympiade();
         $this->runSamstagabendGruppenphase();
@@ -27,12 +24,8 @@ class EventsGerolsteinSeeder extends Seeder
 
     /**
      * Register all students for the given event.
-     *
-     * @param Event $event
-     *
-     * @return void
      */
-    private function registerStudents(Event $event)
+    private function registerStudents(Event $event): void
     {
         // get all students
         $students = User::where('is_tutor', false)->get();
@@ -48,10 +41,8 @@ class EventsGerolsteinSeeder extends Seeder
 
     /**
      * Run the "Spieleolympiade" event seeds.
-     *
-     * @return void
      */
-    public function runSpieleolympiade()
+    public function runSpieleolympiade(): void
     {
         // check if event with name "Spieleolympiade" exists
         $event = Event::where('name', 'Spieleolympiade')->first();
@@ -77,7 +68,7 @@ class EventsGerolsteinSeeder extends Seeder
 
         for ($i = 1; $i <= 14; $i++) {
             $groups[] = [
-                "name" => "Gruppe $i",
+                'name' => "Gruppe $i",
             ];
         }
 
@@ -95,10 +86,8 @@ class EventsGerolsteinSeeder extends Seeder
 
     /**
      * Run the "Gruppenphase" event seeds.
-     *
-     * @return void
      */
-    public function runSamstagabendGruppenphase()
+    public function runSamstagabendGruppenphase(): void
     {
         // check if event with name "Gruppenphase" exists
         $event = Event::where('name', 'Gruppenphase')->first();
@@ -124,7 +113,7 @@ class EventsGerolsteinSeeder extends Seeder
 
         for ($i = 1; $i <= 6; $i++) {
             $groups[] = [
-                "name" => "Gruppe $i",
+                'name' => "Gruppe $i",
             ];
         }
 
@@ -142,10 +131,8 @@ class EventsGerolsteinSeeder extends Seeder
 
     /**
      * Run the "Tanzen, Sketch & Gesang" event seeds.
-     *
-     * @return void
      */
-    public function runSamstagabendTanzenSketchGesang()
+    public function runSamstagabendTanzenSketchGesang(): void
     {
         // check if event with name "Tanzen, Sketch & Gesang" exists
         $event = Event::where('name', 'Tanzen, Sketch & Gesang')->first();

@@ -81,14 +81,14 @@ You can lint the code with the following commands:
 
 ```sh
 npm run lint
-php artisan fixer:fix --dry-run -vvv
+./vendor/bin/pint
 ```
 
 and try to fix the errors with:
 
 ```sh
 npm run lint:fix
-php artisan fixer:fix -vvv
+./vendor/bin/pint
 ```
 
 ### testing

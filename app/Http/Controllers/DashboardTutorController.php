@@ -8,15 +8,14 @@ use App\Models\Group;
 use App\Models\Slot;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class DashboardTutorController extends Controller
 {
     /**
      * Display the dashboard tutor index page
-     *
-     * @return \Inertia\Response
      */
-    public function index()
+    public function index(): Response
     {
         // get events ordered by sort_order
         $events = Event::orderBy('sort_order')->with('registrations')->get();
@@ -28,15 +27,11 @@ class DashboardTutorController extends Controller
 
     /**
      * Display the dashboard tutor event page
-     *
-     * @param Request $request
-     *
-     * @return \Inertia\Response
      */
-    public function event(Request $request)
+    public function event(Request $request): Response
     {
         $event = Event::find($request->event);
-        if (!$event) {
+        if (! $event) {
             return Inertia::render('Dashboard/404');
         }
         $event->slots = $event->slots()->with('registrations')->get();
@@ -53,15 +48,11 @@ class DashboardTutorController extends Controller
 
     /**
      * Display the dashboard tutor slot page
-     *
-     * @param Request $request
-     *
-     * @return \Inertia\Response
      */
-    public function slot(Request $request)
+    public function slot(Request $request): Response
     {
         $slot = Slot::with('event')->find($request->slot);
-        if (!$slot) {
+        if (! $slot) {
             return Inertia::render('Dashboard/404');
         }
         $slot->registrations = $slot->registrations()->with('user')->get();
@@ -76,15 +67,11 @@ class DashboardTutorController extends Controller
 
     /**
      * Display the dashboard tutor group page
-     *
-     * @param Request $request
-     *
-     * @return \Inertia\Response
      */
-    public function group(Request $request)
+    public function group(Request $request): Response
     {
         $group = Group::with('event')->find($request->group);
-        if (!$group) {
+        if (! $group) {
             return Inertia::render('Dashboard/404');
         }
         $group->registrations = $group->registrations()->with('user')->get();

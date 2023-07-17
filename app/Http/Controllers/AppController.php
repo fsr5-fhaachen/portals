@@ -5,20 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\Module;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class AppController extends Controller
 {
     /**
      * Display the index page
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function index()
+    public function index(): RedirectResponse
     {
         // check if registration module is active
         if (Module::where('key', 'registration')->first()->active) {
@@ -30,45 +30,37 @@ class AppController extends Controller
 
     /**
      * Display the login page
-     *
-     * @return \Inertia\Response
      */
-    public function login()
+    public function login(): Response
     {
         return Inertia::render('Login');
     }
 
     /**
      * Display the register page
-     *
-     * @return \Inertia\Response
      */
-    public function register()
+    public function register(): Response
     {
         // get courses ordered by name
         $courses = Course::orderBy('name')->get();
 
         return Inertia::render('Register', [
-            'courses' => $courses
+            'courses' => $courses,
         ]);
     }
 
     /**
      * Display the 404 page
-     *
-     * @return \Inertia\Response
      */
-    public function notFound()
+    public function notFound(): Response
     {
         return Inertia::render('404');
     }
 
     /**
      * Register a new user
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function registerUser()
+    public function registerUser(): RedirectResponse
     {
         // check if user with email already exists and login
         $user = User::where('email', Request::input('email'))->first();
@@ -98,10 +90,8 @@ class AppController extends Controller
 
     /**
      * Login an existing user
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function loginUser()
+    public function loginUser(): RedirectResponse
     {
         // validate the request
         $validated = Request::validate([
@@ -110,7 +100,7 @@ class AppController extends Controller
 
         // check if user exists
         $user = User::where('email', $validated['email'])->first();
-        if (!$user) {
+        if (! $user) {
             Session::flash('error', 'Es konnte kein Benutzer mit dieser E-Mail-Adresse gefunden werden.');
 
             return Redirect::back();
@@ -121,12 +111,8 @@ class AppController extends Controller
 
     /**
      * Authenticate a user
-     *
-     * @param User $user
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    protected function authenticate(User $user)
+    protected function authenticate(User $user): RedirectResponse
     {
         // login the user
         Auth::login($user, true);

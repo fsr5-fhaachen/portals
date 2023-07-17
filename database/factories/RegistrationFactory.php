@@ -18,16 +18,16 @@ class RegistrationFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
-          'event_id' => Event::all(['id'])->random(),
-          'user_id' => User::all(['id'])->random(),
-          //'slot_id' => Slot::all(['id'])->random(),
-          //'group_id' => Group::all(['id'])->random(),
-          'drinks_alcohol' => $this->faker->boolean(),
-          'fulfils_requirements' => $this->faker->boolean(),
-          'queue_position' => -1
+            'event_id' => Event::all(['id'])->random(),
+            'user_id' => User::all(['id'])->random(),
+            //'slot_id' => Slot::all(['id'])->random(),
+            //'group_id' => Group::all(['id'])->random(),
+            'drinks_alcohol' => $this->faker->boolean(),
+            'fulfils_requirements' => $this->faker->boolean(),
+            'queue_position' => -1,
         ];
     }
 }
