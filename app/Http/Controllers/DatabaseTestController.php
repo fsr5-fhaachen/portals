@@ -56,7 +56,7 @@ class DatabaseTestController extends Controller
    * @param  string  $tableName
    * @return void
    */
-  public function clearTable($tableName)
+  public function clearTable(string $tableName)
   {
       DB::table($tableName)->delete();
   }
@@ -68,7 +68,7 @@ class DatabaseTestController extends Controller
    * @param  int  $amount
    * @return Collection<int, Model>|Model|string
    */
-  public function randomFillTable($tableName, $amount)
+  public function randomFillTable(String_ $tableName, int $amount)
   {
       switch ($tableName) {
           case 'courses':
@@ -104,7 +104,7 @@ class DatabaseTestController extends Controller
    * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
-  public function randomFillCourses($amount)
+  public function randomFillCourses(int $amount)
   {
       return Course::factory()->count($amount)->create();
   }
@@ -115,7 +115,7 @@ class DatabaseTestController extends Controller
    * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
-  public function randomFillEvents($amount)
+  public function randomFillEvents(int $amount)
   {
       return Event::factory()->count($amount)->create();
   }
@@ -126,7 +126,7 @@ class DatabaseTestController extends Controller
    * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
-  public function randomFillPages($amount)
+  public function randomFillPages(int $amount)
   {
       return Page::factory()->count($amount)->create();
   }
@@ -137,7 +137,7 @@ class DatabaseTestController extends Controller
    * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
-  public function randomFillUsers($amount)
+  public function randomFillUsers(int $amount)
   {
       return User::factory()->count($amount)->create();
   }
@@ -148,7 +148,7 @@ class DatabaseTestController extends Controller
    * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
-  public function randomFillSlots($amount)
+  public function randomFillSlots(int $amount)
   {
       return Slot::factory()->count($amount)->create();
   }
@@ -159,7 +159,7 @@ class DatabaseTestController extends Controller
    * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
-  public function randomFillStations($amount)
+  public function randomFillStations(int $amount)
   {
       return Station::factory()->count($amount)->create();
   }
@@ -170,7 +170,7 @@ class DatabaseTestController extends Controller
    * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
-  public function randomFillGroups($amount)
+  public function randomFillGroups(int $amount)
   {
       return Group::factory()->count($amount)->create();
   }
@@ -181,7 +181,7 @@ class DatabaseTestController extends Controller
    * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
-  public function randomFillGroupTutors($amount)
+  public function randomFillGroupTutors(int $amount)
   {
       return GroupTutor::factory()->count($amount)->create();
   }
@@ -192,7 +192,7 @@ class DatabaseTestController extends Controller
    * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
-  public function randomFillStops($amount)
+  public function randomFillStops(int $amount)
   {
       return Stop::factory()->count($amount)->create();
   }
@@ -203,7 +203,7 @@ class DatabaseTestController extends Controller
    * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
-  public function randomFillStationTutors($amount)
+  public function randomFillStationTutors(int $amount)
   {
       return StationTutor::factory()->count($amount)->create();
   }
@@ -214,7 +214,7 @@ class DatabaseTestController extends Controller
    * @param  int  $amount
    * @return Collection<int, Model>|Model
    */
-  public function randomFillRegistrations($amount)
+  public function randomFillRegistrations(int $amount)
   {
       return Registration::factory()->count($amount)->create();
   }

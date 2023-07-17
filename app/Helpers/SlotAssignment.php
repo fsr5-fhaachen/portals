@@ -23,7 +23,7 @@ class SlotAssignment
      *
      * @return void
      */
-    private function assignAmount(Collection &$registrations, int $amount)
+    private function assignAmount(Collection &$registrations, int $amount): void
     {
         for ($i = 0; $i < $amount; $i++) {
             $registration = $registrations->pop();
@@ -42,7 +42,7 @@ class SlotAssignment
      *
      * @return void
      */
-    private function updateQueuePos(Collection $registrations)
+    private function updateQueuePos(Collection $registrations): void
     {
         $i = 1;
         foreach ($registrations as $registration) {
@@ -60,7 +60,7 @@ class SlotAssignment
      *
      * @return void
      */
-    private function assignInitial()
+    private function assignInitial(): void
     {
         $openRegistrations = $this->slot->registrations()->get()->shuffle();
 
@@ -78,7 +78,7 @@ class SlotAssignment
      *
      * @return void
      */
-    private function assignQueue()
+    private function assignQueue(): void
     {
         $currParticipants = $this->slot->registrations()->get()
           ->where('queue_position', '=', null)
@@ -107,7 +107,7 @@ class SlotAssignment
      *
      * @return void
      */
-    public function assign()
+    public function assign(): void
     {
         // Checks if registrations have no queue_position higher than 0, which indicates that slot needs initial assignment
         $slotNotAssigned = $this->slot->registrations()->get()

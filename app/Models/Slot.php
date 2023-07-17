@@ -25,7 +25,7 @@ class Slot extends Model implements Auditable
      *
      * @return HasMany
      */
-    public function registrations()
+    public function registrations(): HasMany
     {
         return $this->hasMany(Registration::class)->orderBy('queue_position');
     }
@@ -35,7 +35,7 @@ class Slot extends Model implements Auditable
      *
      * @return BelongsTo
      */
-    public function event()
+    public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
     }

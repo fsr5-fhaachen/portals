@@ -30,7 +30,7 @@ class EventsGerolsteinSeeder extends Seeder
      *
      * @return void
      */
-    private function registerStudents(Event $event)
+    private function registerStudents(Event $event): void
     {
         // get all students
         $students = User::where('is_tutor', false)->get();
@@ -49,7 +49,7 @@ class EventsGerolsteinSeeder extends Seeder
      *
      * @return void
      */
-    public function runSpieleolympiade()
+    public function runSpieleolympiade(): void
     {
         // check if event with name "Spieleolympiade" exists
         $event = Event::where('name', 'Spieleolympiade')->first();
@@ -96,7 +96,7 @@ class EventsGerolsteinSeeder extends Seeder
      *
      * @return void
      */
-    public function runSamstagabendGruppenphase()
+    public function runSamstagabendGruppenphase(): void
     {
         // check if event with name "Gruppenphase" exists
         $event = Event::where('name', 'Gruppenphase')->first();
@@ -143,7 +143,7 @@ class EventsGerolsteinSeeder extends Seeder
      *
      * @return void
      */
-    public function runSamstagabendTanzenSketchGesang()
+    public function runSamstagabendTanzenSketchGesang(): void
     {
         // check if event with name "Tanzen, Sketch & Gesang" exists
         $event = Event::where('name', 'Tanzen, Sketch & Gesang')->first();

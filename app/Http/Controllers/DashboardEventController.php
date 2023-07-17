@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Response;
+use Illuminate\Http\RedirectResponse;
 use App\Models\Event;
 use App\Models\Registration;
 use Illuminate\Http\Request;
@@ -17,7 +19,7 @@ class DashboardEventController extends Controller
      *
      * @return Event | \Inertia\Response
      */
-    protected function getEvent(Request $request)
+    protected function getEvent(Request $request): Event
     {
         $event = Event::find($request->event);
         if (! $event) {
@@ -33,7 +35,7 @@ class DashboardEventController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function redirectToEvent(Event $event)
+    protected function redirectToEvent(Event $event): RedirectResponse
     {
         return Redirect::route('dashboard.event.index', ['event' => $event->id]);
     }
@@ -90,7 +92,7 @@ class DashboardEventController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $event = $this->getEvent($request);
         if ($event instanceof \Inertia\Response) {
@@ -118,7 +120,7 @@ class DashboardEventController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function register(Request $request)
+    public function register(Request $request): Response
     {
         $event = $this->getEvent($request);
         if ($event instanceof \Inertia\Response) {
@@ -141,7 +143,7 @@ class DashboardEventController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function unregister(Request $request)
+    public function unregister(Request $request): Response
     {
         $event = $this->getEvent($request);
         if ($event instanceof \Inertia\Response) {
@@ -163,7 +165,7 @@ class DashboardEventController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function registerUser(Request $request)
+    public function registerUser(Request $request): RedirectResponse
     {
         $event = $this->getEvent($request);
         if ($event instanceof \Inertia\Response) {
@@ -254,7 +256,7 @@ class DashboardEventController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function unregisterUser(Request $request)
+    public function unregisterUser(Request $request): RedirectResponse
     {
         $event = $this->getEvent($request);
         if ($event instanceof \Inertia\Response) {

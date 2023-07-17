@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Response;
 use App\Models\Course;
 use App\Models\Event;
 use App\Models\Group;
@@ -16,7 +17,7 @@ class DashboardTutorController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function index()
+    public function index(): Response
     {
         // get events ordered by sort_order
         $events = Event::orderBy('sort_order')->with('registrations')->get();
@@ -32,7 +33,7 @@ class DashboardTutorController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function event(Request $request)
+    public function event(Request $request): Response
     {
         $event = Event::find($request->event);
         if (! $event) {
@@ -56,7 +57,7 @@ class DashboardTutorController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function slot(Request $request)
+    public function slot(Request $request): Response
     {
         $slot = Slot::with('event')->find($request->slot);
         if (! $slot) {
@@ -78,7 +79,7 @@ class DashboardTutorController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function group(Request $request)
+    public function group(Request $request): Response
     {
         $group = Group::with('event')->find($request->group);
         if (! $group) {

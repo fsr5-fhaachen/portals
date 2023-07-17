@@ -24,7 +24,7 @@ class GroupTutor extends Pivot implements Auditable
      *
      * @return BelongsTo
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -34,7 +34,7 @@ class GroupTutor extends Pivot implements Auditable
      *
      * @return BelongsTo
      */
-    public function group()
+    public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
     }

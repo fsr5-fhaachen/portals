@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Event;
@@ -15,7 +16,7 @@ class ApiController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function ping()
+    public function ping(): JsonResponse
     {
         return response()->json(['message' => 'pong']);
     }
@@ -26,7 +27,7 @@ class ApiController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function registrationsShow(Request $request)
+    public function registrationsShow(Request $request): JsonResponse
     {
         // get registration
         $registration = Registration::with('group', 'slot')->get()->find($request->registration);
@@ -48,7 +49,7 @@ class ApiController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function eventRegistrationsAmount(Request $request)
+    public function eventRegistrationsAmount(Request $request): JsonResponse
     {
         $event = Event::find($request->event);
 
@@ -87,7 +88,7 @@ class ApiController extends Controller
      * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function eventsRegistrationsAmount()
+    public function eventsRegistrationsAmount(): JsonResponse
     {
         $events = Event::all();
 
@@ -118,7 +119,7 @@ class ApiController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function eventRegistrationsShow(Request $request)
+    public function eventRegistrationsShow(Request $request): JsonResponse
     {
         $event = Event::find($request->event);
 
@@ -159,7 +160,7 @@ class ApiController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function registrationsToggleIsPresent(Request $request)
+    public function registrationsToggleIsPresent(Request $request): JsonResponse
     {
         $registration = Registration::find($request->registration);
 
@@ -179,7 +180,7 @@ class ApiController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function registrationsToggleFulfilsRequirements(Request $request)
+    public function registrationsToggleFulfilsRequirements(Request $request): JsonResponse
     {
         $registration = Registration::find($request->registration);
 
@@ -199,7 +200,7 @@ class ApiController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function registrationsDestroy(Request $request)
+    public function registrationsDestroy(Request $request): JsonResponse
     {
         $registration = Registration::find($request->registration);
 
@@ -223,7 +224,7 @@ class ApiController extends Controller
      * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function coursesUserAmount()
+    public function coursesUserAmount(): JsonResponse
     {
         $courses = Course::all();
 
@@ -245,7 +246,7 @@ class ApiController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function coursesUserAmountPerEvent(Request $request)
+    public function coursesUserAmountPerEvent(Request $request): JsonResponse
     {
         $event = Event::find($request->event);
 

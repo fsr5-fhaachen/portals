@@ -24,7 +24,7 @@ class StationTutor extends Pivot implements Auditable
      *
      * @return BelongsTo
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -34,7 +34,7 @@ class StationTutor extends Pivot implements Auditable
      *
      * @return BelongsTo
      */
-    public function station()
+    public function station(): BelongsTo
     {
         return $this->belongsTo(Station::class);
     }

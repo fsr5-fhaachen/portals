@@ -34,7 +34,7 @@ class UserFactory extends Factory
      * @param  bool  $is_admin
      * @return Factory
      */
-    public function elevatedPrivileges($is_tutor, $is_admin)
+    public function elevatedPrivileges(bool $is_tutor, bool $is_admin): Factory
     {
         return $this->state(function (array $attributes) use ($is_tutor, $is_admin) {
             return [

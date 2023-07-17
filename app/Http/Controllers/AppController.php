@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Response;
+use Illuminate\Http\RedirectResponse;
 use App\Models\Course;
 use App\Models\Module;
 use App\Models\User;
@@ -18,7 +20,7 @@ class AppController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function index()
+    public function index(): RedirectResponse
     {
         // check if registration module is active
         if (Module::where('key', 'registration')->first()->active) {
@@ -33,7 +35,7 @@ class AppController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function login()
+    public function login(): Response
     {
         return Inertia::render('Login');
     }
@@ -43,7 +45,7 @@ class AppController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function register()
+    public function register(): Response
     {
         // get courses ordered by name
         $courses = Course::orderBy('name')->get();
@@ -58,7 +60,7 @@ class AppController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function notFound()
+    public function notFound(): Response
     {
         return Inertia::render('404');
     }
@@ -68,7 +70,7 @@ class AppController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function registerUser()
+    public function registerUser(): RedirectResponse
     {
         // check if user with email already exists and login
         $user = User::where('email', Request::input('email'))->first();
@@ -101,7 +103,7 @@ class AppController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function loginUser()
+    public function loginUser(): RedirectResponse
     {
         // validate the request
         $validated = Request::validate([
@@ -125,7 +127,7 @@ class AppController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function authenticate(User $user)
+    protected function authenticate(User $user): RedirectResponse
     {
         // login the user
         Auth::login($user, true);

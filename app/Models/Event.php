@@ -34,7 +34,7 @@ class Event extends Model implements Auditable
      *
      * @return HasMany
      */
-    public function groups()
+    public function groups(): HasMany
     {
         return $this->hasMany(Group::class);
     }
@@ -44,7 +44,7 @@ class Event extends Model implements Auditable
      *
      * @return HasMany
      */
-    public function registrations()
+    public function registrations(): HasMany
     {
         return $this->hasMany(Registration::class)->orderBy('queue_position');
     }
@@ -54,7 +54,7 @@ class Event extends Model implements Auditable
      *
      * @return HasMany
      */
-    public function slots()
+    public function slots(): HasMany
     {
         return $this->hasMany(Slot::class);
     }
@@ -64,7 +64,7 @@ class Event extends Model implements Auditable
      *
      * @return HasMany
      */
-    public function stations()
+    public function stations(): HasMany
     {
         return $this->hasMany(Station::class);
     }

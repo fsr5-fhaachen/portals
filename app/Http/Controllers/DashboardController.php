@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
+use Inertia\Response;
 use App\Models\Event;
 use App\Models\Page;
 use Illuminate\Http\Request;
@@ -16,7 +18,7 @@ class DashboardController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function index()
+    public function index(): Response
     {
         // get events ordered by sort_order
         $events = Event::orderBy('sort_order')->get();
@@ -36,7 +38,7 @@ class DashboardController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function loginTutor(Request $request)
+    public function loginTutor(Request $request): RedirectResponse
     {
         // check if the user is a tutor
         if (Auth::user()->is_tutor) {
@@ -71,7 +73,7 @@ class DashboardController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function cmsPage(Request $request)
+    public function cmsPage(Request $request): Response
     {
         $page = Page::where('slug', $request->slug)->first();
 

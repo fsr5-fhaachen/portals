@@ -16,7 +16,7 @@ class ActiveModule
      * @param  string  $module
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next, $module): Response
+    public function handle(Request $request, Closure $next, string $module): Response
     {
         if ($module && ! Module::where('key', $module)->first()->active) {
             return redirect()->route('app.index');

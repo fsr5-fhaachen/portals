@@ -27,7 +27,7 @@ class User extends Authenticatable implements Auditable
      *
      * @return HasMany
      */
-    public function stationTutors()
+    public function stationTutors(): HasMany
     {
         return $this->hasMany(StationTutor::class);
     }
@@ -37,7 +37,7 @@ class User extends Authenticatable implements Auditable
      *
      * @return HasMany
      */
-    public function groupTutors()
+    public function groupTutors(): HasMany
     {
         return $this->hasMany(GroupTutor::class);
     }
@@ -47,7 +47,7 @@ class User extends Authenticatable implements Auditable
      *
      * @return HasMany
      */
-    public function registrations()
+    public function registrations(): HasMany
     {
         return $this->hasMany(Registration::class)->orderBy('queue_position');
     }
@@ -57,7 +57,7 @@ class User extends Authenticatable implements Auditable
      *
      * @return BelongsTo
      */
-    public function course()
+    public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
     }

@@ -26,7 +26,7 @@ class Station extends Model implements Auditable
      *
      * @return HasMany
      */
-    public function stops()
+    public function stops(): HasMany
     {
         return $this->hasMany(Stop::class);
     }
@@ -36,7 +36,7 @@ class Station extends Model implements Auditable
      *
      * @return BelongsTo
      */
-    public function event()
+    public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
     }
@@ -46,7 +46,7 @@ class Station extends Model implements Auditable
      *
      * @return BelongsToMany
      */
-    public function tutors()
+    public function tutors(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'station_tutor')->using(StationTutor::class);
     }
@@ -56,7 +56,7 @@ class Station extends Model implements Auditable
      *
      * @return BelongsToMany
      */
-    public function groups()
+    public function groups(): BelongsToMany
     {
         return $this->belongsToMany(Group::class, 'stops')->using(Stop::class);
     }

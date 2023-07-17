@@ -33,7 +33,7 @@ class EventsErstiwocheSeeder extends Seeder
      *
      * @return void
      */
-    public function runGruppenphase()
+    public function runGruppenphase(): void
     {
         // check if event with name "Gruppenphase" exists
         $event = Event::where('name', 'Gruppenphase')->first();
@@ -91,7 +91,7 @@ class EventsErstiwocheSeeder extends Seeder
      *
      * @return void
      */
-    public function runStadtrallye()
+    public function runStadtrallye(): void
     {
         // check if event with name "Stadtrallye" exists
         $event = Event::where('name', 'Stadtrallye')->first();
@@ -136,7 +136,7 @@ class EventsErstiwocheSeeder extends Seeder
      *
      * @return void
      */
-    public function runHausfuehrungOffline()
+    public function runHausfuehrungOffline(): void
     {
         // check if event with name "Hausführung (Präsenz)" exists
         $event = Event::where('name', 'Hausführung (Präsenz)')->first();
@@ -210,7 +210,7 @@ class EventsErstiwocheSeeder extends Seeder
      *
      * @return void
      */
-    public function runHausfuehrungOnline()
+    public function runHausfuehrungOnline(): void
     {
         // check if event with name "Hausführung (Online)" exists
         $event = Event::where('name', 'Hausführung (Online)')->first();
@@ -238,7 +238,7 @@ class EventsErstiwocheSeeder extends Seeder
      *
      * @return void
      */
-    public function runKneipentour()
+    public function runKneipentour(): void
     {
         // check if event with name "Kneipentour" exists
         $event = Event::where('name', 'Kneipentour')->first();
@@ -283,7 +283,7 @@ class EventsErstiwocheSeeder extends Seeder
      *
      * @return void
      */
-    public function runKaterbrunch()
+    public function runKaterbrunch(): void
     {
         // check if event with name "Katerbrunch" exists
         $event = Event::where('name', 'Katerbrunch')->first();
@@ -328,7 +328,7 @@ class EventsErstiwocheSeeder extends Seeder
      *
      * @return void
      */
-    public function runSport()
+    public function runSport(): void
     {
         // check if event with name "Sport" exists
         $event = Event::where('name', 'Sport')->first();
@@ -399,7 +399,7 @@ class EventsErstiwocheSeeder extends Seeder
      *
      * @return void
      */
-    public function runKultur()
+    public function runKultur(): void
     {
         // check if event with name "Kultur" exists
         $event = Event::where('name', 'Kultur')->first();

@@ -24,7 +24,7 @@ class Course extends Model implements Auditable
      *
      * @return HasMany
      */
-    public function users()
+    public function users(): HasMany
     {
         return $this->hasMany(User::class);
     }
@@ -34,7 +34,7 @@ class Course extends Model implements Auditable
      *
      * @return HasMany
      */
-    public function groups()
+    public function groups(): HasMany
     {
         return $this->hasMany(Group::class);
     }

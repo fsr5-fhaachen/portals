@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Response;
+use Illuminate\Http\RedirectResponse;
 use App\Helpers\GroupBalancedDivision;
 use App\Helpers\GroupCourseDivision;
 use App\Helpers\SlotAssignment;
@@ -22,7 +24,7 @@ class DashboardAdminController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function index()
+    public function index(): Response
     {
         $courses = Course::all();
 
@@ -41,7 +43,7 @@ class DashboardAdminController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function registrations(\Illuminate\Http\Request $request)
+    public function registrations(\Illuminate\Http\Request $request): Response
     {
         $event = Event::with('groups')->with('slots')->find($request->event);
         if (! $event) {
@@ -63,7 +65,7 @@ class DashboardAdminController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function event(\Illuminate\Http\Request $request)
+    public function event(\Illuminate\Http\Request $request): Response
     {
         $event = Event::find($request->event);
         if (! $event) {
@@ -87,7 +89,7 @@ class DashboardAdminController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function eventSubmit(\Illuminate\Http\Request $request)
+    public function eventSubmit(\Illuminate\Http\Request $request): Response
     {
         $event = Event::find($request->event);
         if (! $event) {
@@ -118,7 +120,7 @@ class DashboardAdminController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function eventExecuteSubmit(\Illuminate\Http\Request $request)
+    public function eventExecuteSubmit(\Illuminate\Http\Request $request): RedirectResponse
     {
         $event = Event::find($request->event);
         if (! $event) {
@@ -191,7 +193,7 @@ class DashboardAdminController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function register()
+    public function register(): Response
     {
         // get courses ordered by name
         $courses = Course::orderBy('name')->get();
@@ -210,7 +212,7 @@ class DashboardAdminController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function registerUser()
+    public function registerUser(): RedirectResponse
     {
         // check if user with email already exists
         $user = User::where('email', Request::input('email'))->first();
@@ -246,7 +248,7 @@ class DashboardAdminController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function assignUser()
+    public function assignUser(): RedirectResponse
     {
         // check if user with email not exists
         $user = User::where('email', Request::input('email'))->first();
