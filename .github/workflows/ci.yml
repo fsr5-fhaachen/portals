@@ -39,7 +39,7 @@ jobs:
            npm run lint
       - name: Execute PHP linting
         run: |
-          php artisan fixer:fix --dry-run -vvv
+          ./vendor/bin/pint
       - name: Execute build
         run: npm run build --if-present
       - name: Generate key

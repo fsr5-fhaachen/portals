@@ -135,9 +135,9 @@ abstract class GroupDivision
 
         // Sort groupsWithOpenSpots by how many people are assigned to it, so the one with the least people is in first place
         $groupsWithOpenSpots = $this->getGroupsWithOpenSpots()
-          ->sortBy(function ($group) {
-              return $group->registrations()->count();
-          });
+            ->sortBy(function ($group) {
+                return $group->registrations()->count();
+            });
         if ($groupsWithOpenSpots->isEmpty()) {
             return;
         }
@@ -153,7 +153,7 @@ abstract class GroupDivision
                         ->where('drinks_alcohol', '=', false)
                         ->count() > 0;
                 })
-                  ->first();
+                    ->first();
 
                 // If there is no more group with non-drinkers that has open spots left, remove all non-drinkers from this assign cycle and continue without doing this check anymore
                 if ($group == null) {

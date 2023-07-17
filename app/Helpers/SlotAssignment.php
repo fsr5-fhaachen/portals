@@ -71,8 +71,8 @@ class SlotAssignment
     private function assignQueue(): void
     {
         $currParticipants = $this->slot->registrations()->get()
-          ->where('queue_position', '=', null)
-          ->count();
+            ->where('queue_position', '=', null)
+            ->count();
 
         if ($currParticipants >= $this->maxParticipants) {
             return;
@@ -80,8 +80,8 @@ class SlotAssignment
 
         $openSpots = $this->maxParticipants - $currParticipants;
         $openRegistrations = $this->slot->registrations()->get()
-          ->where('queue_position', '>', 0)
-          ->sortByDesc('queue_position');
+            ->where('queue_position', '>', 0)
+            ->sortByDesc('queue_position');
 
         // Assign remaining spots to registrations with lowest queue position
         $this->assignAmount($openRegistrations, $openSpots);
@@ -99,9 +99,9 @@ class SlotAssignment
     {
         // Checks if registrations have no queue_position higher than 0, which indicates that slot needs initial assignment
         $slotNotAssigned = $this->slot->registrations()->get()
-          ->every(function ($val, $key) {
-              return $val->queue_position <= 0;
-          });
+            ->every(function ($val, $key) {
+                return $val->queue_position <= 0;
+            });
 
         if ($slotNotAssigned) {
             $this->assignInitial();

@@ -24,9 +24,9 @@ class GroupBalancedDivision extends GroupDivision
 
         foreach (Course::all() as $course) {
             $registrationsOfCourse = $registrations->toQuery()
-              ->join('users', 'registrations.user_id', '=', 'users.id')
-              ->where('users.course_id', '=', $course->id)
-              ->get();
+                ->join('users', 'registrations.user_id', '=', 'users.id')
+                ->where('users.course_id', '=', $course->id)
+                ->get();
 
             if ($this->maxGroupSize > 0) {
                 $courseFillPercentage = $registrationsOfCourse->count() / $this->registrations->count();
@@ -47,12 +47,12 @@ class GroupBalancedDivision extends GroupDivision
         foreach ($this->groups as $group) {
             foreach (Course::all() as $course) {
                 $registrationsOfGroupAndCourse = $this->registrations->toQuery()
-                  ->join('users', 'registrations.user_id', '=', 'users.id')
-                  ->where([
-                      ['users.course_id', '=', $course->id],
-                      ['registrations.group_id', '=', $group->id],
-                  ])
-                  ->get();
+                    ->join('users', 'registrations.user_id', '=', 'users.id')
+                    ->where([
+                        ['users.course_id', '=', $course->id],
+                        ['registrations.group_id', '=', $group->id],
+                    ])
+                    ->get();
                 $currFill[$group->id][$course->id] = $registrationsOfGroupAndCourse->count();
             }
         }
@@ -86,7 +86,7 @@ class GroupBalancedDivision extends GroupDivision
             $regsOfCourse = $toBeAssignedRegs->filter(function (Registration $reg) use ($course) {
                 return $reg->user()->first()->course_id == $course->id;
             })
-              ->shuffle();
+                ->shuffle();
 
             foreach ($this->groups as $group) {
                 // Assign registrations of given course to a group until fill rate of course for that group is hit
@@ -121,7 +121,7 @@ class GroupBalancedDivision extends GroupDivision
 
         // Assign yet unassigned non-drinkers
         $nonDrinkerRegs = $nonDrinkerRegs->where('group_id', '=', null)
-          ->shuffle();
+            ->shuffle();
 
         // If chunking by minNonDrinkers would give more chunks than groups, increase chunk size by 1 until it fits
         $nonDrinkersPerGroup = $this->minNonDrinkers;

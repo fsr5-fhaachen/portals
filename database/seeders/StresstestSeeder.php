@@ -23,21 +23,21 @@ class StresstestSeeder extends Seeder
         $faker = Factory::create();
 
         User::factory()
-          ->has(
-              Registration::factory()
-                ->state([
-                    'event_id' => (int) $event_id,
-                    'slot_id' => $slot_id ? (int) $slot_id : null,
-                    'group_id' => null,
-                    'drinks_alcohol' => $faker->boolean((int) $nondrinker_percentage),
-                    'fulfils_requirements' => false,
-                    'is_present' => false,
-                    'queue_position' => -1,
-                ])
-                ->count(1)
-          )
-          ->state(['course_id' => (int) $course_id])
-          ->count((int) $amount)
-          ->create();
+            ->has(
+                Registration::factory()
+                    ->state([
+                        'event_id' => (int) $event_id,
+                        'slot_id' => $slot_id ? (int) $slot_id : null,
+                        'group_id' => null,
+                        'drinks_alcohol' => $faker->boolean((int) $nondrinker_percentage),
+                        'fulfils_requirements' => false,
+                        'is_present' => false,
+                        'queue_position' => -1,
+                    ])
+                    ->count(1)
+            )
+            ->state(['course_id' => (int) $course_id])
+            ->count((int) $amount)
+            ->create();
     }
 }
