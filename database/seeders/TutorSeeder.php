@@ -20,7 +20,7 @@ class TutorSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         // check if the file exists
         if (! file_exists(self::TUTORS_CSV_PATH)) {

@@ -11,7 +11,7 @@ class StopSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         //
     }

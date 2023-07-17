@@ -12,7 +12,7 @@ class ModuleErstiwocheSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $modules = [
             [

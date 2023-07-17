@@ -14,7 +14,7 @@ class EventFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         $registration_from = $this->faker->dateTimeBetween('-2 days', '+2 days');
 

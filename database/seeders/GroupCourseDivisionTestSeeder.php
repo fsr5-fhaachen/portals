@@ -16,7 +16,7 @@ class GroupCourseDivisionTestSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         Course::factory()
           ->count(3)

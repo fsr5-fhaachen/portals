@@ -14,7 +14,7 @@ class StresstestSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $course_id = env('SEEDER_COURSE_ID', 1);
         $event_id = env('SEEDER_EVENT_ID', 1);

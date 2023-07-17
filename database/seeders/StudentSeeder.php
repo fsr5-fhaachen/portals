@@ -20,7 +20,7 @@ class StudentSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         // check if the file exists
         if (! file_exists(self::STUDENTS_CSV_PATH)) {
