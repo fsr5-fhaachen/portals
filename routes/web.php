@@ -29,40 +29,21 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AppController::class, 'index'])->name('app.index');
 
-Route::group([
-    'middleware' => [
-        RedirectIfAuthenticated::class,
-    ],
-], function () {
+Route::middleware(RedirectIfAuthenticated::class)->group(function () {
     Route::get('/login', [AppController::class, 'login'])->name('app.login');
     Route::post('/login', [AppController::class, 'loginUser'])->name('app.loginUser');
 
-    Route::group([
-        'middleware' => [
-            ActiveModule::class.':registration',
-        ],
-    ], function () {
+    Route::middleware(ActiveModule::class . ':registration')->group(function () {
         Route::get('/register', [AppController::class, 'register'])->name('app.register');
         Route::post('/register', [AppController::class, 'registerUser'])->name('app.registerUser');
     });
 });
 
-Route::group([
-    'prefix' => 'dashboard',
-    'middleware' => [
-        Authenticate::class,
-    ],
-], function () {
-    Route::group([
-        'middleware' => [
-            RedirectIfTutor::class,
-        ],
-    ], function () {
+Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
+    Route::middleware(RedirectIfTutor::class)->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
 
-        Route::group([
-            'prefix' => 'event/{event}',
-        ], function () {
+        Route::prefix('event/{event}')->group(function () {
             Route::get('/', [DashboardEventController::class, 'index'])->name('dashboard.event.index');
             Route::get('/register', [DashboardEventController::class, 'register'])->name('dashboard.event.register');
             Route::post('/register', [DashboardEventController::class, 'registerUser'])->name('dashboard.event.registerUser');
@@ -72,25 +53,14 @@ Route::group([
     });
 
     Route::post('/login-tutor', [DashboardController::class, 'loginTutor'])->name('dashboard.loginTutor');
-    Route::group([
-        'prefix' => 'tutor',
-        'middleware' => [
-            IsLoggedInTutor::class,
-        ],
-    ], function () {
+    Route::prefix('tutor')->middleware(IsLoggedInTutor::class)->group(function () {
         Route::get('/', [DashboardTutorController::class, 'index'])->name('dashboard.tutor.index');
         Route::get('/event/{event}', [DashboardTutorController::class, 'event'])->name('dashboard.tutor.event.index');
         Route::get('/slot/{slot}', [DashboardTutorController::class, 'slot'])->name('dashboard.tutor.slot.index');
         Route::get('/group/{group}', [DashboardTutorController::class, 'group'])->name('dashboard.tutor.group.index');
     });
 
-    Route::group([
-        'prefix' => 'admin',
-        'middleware' => [
-            IsLoggedInTutor::class,
-            IsLoggedInAdmin::class,
-        ],
-    ], function () {
+    Route::prefix('admin')->middleware(IsLoggedInTutor::class, IsLoggedInAdmin::class)->group(function () {
         Route::get('/', [DashboardAdminController::class, 'index'])->name('dashboard.admin.index');
 
         Route::get('/register', [DashboardAdminController::class, 'register'])->name('dashboard.admin.register');
@@ -107,17 +77,8 @@ Route::group([
 });
 
 // api routes with authentication
-Route::group([
-    'prefix' => 'api',
-    'middleware' => [
-        Authenticate::class,
-    ],
-], function () {
-    Route::group([
-        'middleware' => [
-            IsLoggedInTutor::class,
-        ],
-    ], function () {
+Route::prefix('api')->middleware(Authenticate::class)->group(function () {
+    Route::middleware(IsLoggedInTutor::class)->group(function () {
         Route::get('/events/{event}/registrations-amount', [ApiController::class, 'eventRegistrationsAmount'])->name('api.event.registrationsAmount');
         Route::get('/events/registrations-amount', [ApiController::class, 'eventsRegistrationsAmount'])->name('api.events.registrationsAmount');
 
@@ -125,11 +86,7 @@ Route::group([
 
         Route::get('/registrations/{registration}/toggle-is-present', [ApiController::class, 'registrationsToggleIsPresent'])->name('api.event.registrations.toggleIsPresent');
 
-        Route::group([
-            'middleware' => [
-                IsLoggedInAdmin::class,
-            ],
-        ], function () {
+        Route::middleware(IsLoggedInAdmin::class)->group(function () {
             Route::get('/registrations/{registration}/toggle-fulfils-requirements', [ApiController::class, 'registrationsToggleFulfilsRequirements'])->name('api.event.registrations.toggleFulfilsRequirements');
             Route::delete('/registrations/{registration}', [ApiController::class, 'registrationsDestroy'])->name('api.event.registrations.destroy');
 
@@ -144,13 +101,7 @@ Route::group([
 
 // TODO: remove devlopment routes
 // TODO: do it next year
-Route::group([
-    'prefix' => 'dev',
-    'middleware' => [
-        IsLoggedInTutor::class,
-        IsLoggedInAdmin::class,
-    ],
-], function () {
+Route::prefix('dev')->middleware(IsLoggedInTutor::class, IsLoggedInAdmin::class)->group(function () {
     //Routes to test database. REMOVE BEFORE DEPLOYMENT
     Route::get('/cleartable/all', [DatabaseTestController::class, 'clearAllTables']);
     Route::get('/cleartable/{tableName}', [DatabaseTestController::class, 'clearTable']);
