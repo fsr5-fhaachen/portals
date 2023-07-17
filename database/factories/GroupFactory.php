@@ -16,12 +16,12 @@ class GroupFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
-          'name' => $this->faker->word(),
-          'event_id' => Event::all(['id'])->random(),
-          'course_id' => Course::all(['id'])->random()
+            'name' => $this->faker->word(),
+            'event_id' => Event::all(['id'])->random(),
+            'course_id' => Course::all(['id'])->random(),
         ];
     }
 }

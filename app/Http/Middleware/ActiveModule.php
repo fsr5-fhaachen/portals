@@ -5,20 +5,18 @@ namespace App\Http\Middleware;
 use App\Models\Module;
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ActiveModule
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
-     * @param  string  $module
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next, $module)
+    public function handle(Request $request, Closure $next, string $module): Response
     {
-        if ($module && !Module::where('key', $module)->first()->active) {
+        if ($module && ! Module::where('key', $module)->first()->active) {
             return redirect()->route('app.index');
         }
 

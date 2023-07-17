@@ -21,12 +21,12 @@ class GroupCourseDivision extends GroupDivision
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function assignNonDrinkers()
     {
         $nonDrinkerRegs = $this->registrations->where('drinks_alcohol', '=', false)
-          ->shuffle();
+            ->shuffle();
 
         // If chunking by minNonDrinkers would give more chunks than groups, increase chunk size by 1 until it fits
         $nonDrinkersPerGroup = $this->minNonDrinkers;
@@ -51,7 +51,7 @@ class GroupCourseDivision extends GroupDivision
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function assignUntilSatisfies()
     {
@@ -62,7 +62,7 @@ class GroupCourseDivision extends GroupDivision
 
         // Get only registrations that have yet to be assigned a group
         $unassignedRegs = $this->getUnassignedRegs()
-          ->shuffle();
+            ->shuffle();
 
         if ($this->maxGroupSize > 0) {
             $assignLimit = ($groupMinSize < $this->maxGroupSize) ? $groupMinSize : $this->maxGroupSize;
@@ -84,7 +84,7 @@ class GroupCourseDivision extends GroupDivision
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function assign()
     {

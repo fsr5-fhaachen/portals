@@ -21,20 +21,16 @@ class Course extends Model implements Auditable
 
     /**
      * Get users for the course.
-     *
-     * @return HasMany
      */
-    public function users()
+    public function users(): HasMany
     {
         return $this->hasMany(User::class);
     }
 
     /**
      * Get groups for the course.
-     *
-     * @return HasMany
      */
-    public function groups()
+    public function groups(): HasMany
     {
         return $this->hasMany(Group::class);
     }

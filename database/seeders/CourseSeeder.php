@@ -9,10 +9,8 @@ class CourseSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         $courses = [
             [
@@ -50,7 +48,7 @@ class CourseSeeder extends Seeder
                 'abbreviation' => 'ISE-Master',
                 'icon' => 'fa-bug',
                 'color' => 'rgb(14 116 144)',
-            ]
+            ],
         ];
 
         foreach ($courses as $course) {

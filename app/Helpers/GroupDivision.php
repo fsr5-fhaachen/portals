@@ -9,11 +9,17 @@ use Illuminate\Database\Eloquent\Collection;
 abstract class GroupDivision
 {
     protected Event $event;
+
     protected Collection $groups;
+
     protected Collection $registrations;
+
     protected bool $assignByAlc;
+
     protected int $maxGroups;
+
     protected int $maxGroupSize;
+
     protected int $minNonDrinkers;
 
     public function __construct(Event $event, bool $assignByAlc, int $maxGroups = 0, int $maxGroupSize = 0, int $minNonDrinkers = 3)
@@ -40,13 +46,13 @@ abstract class GroupDivision
     /**
      * Returns amount of open slots of provided group
      *
-     * @param Group $group
      *
      * @return int
      */
     public function getOpenGroupSpots(Group $group)
     {
         $takenSpots = $group->registrations()->count();
+
         return $this->maxGroupSize ? ($this->maxGroupSize - $takenSpots) : PHP_INT_MAX;
     }
 
@@ -72,7 +78,6 @@ abstract class GroupDivision
     /**
      * Updates the queue positions of the provided registrations
      *
-     * @param Collection $registrations
      *
      * @return void
      */
@@ -130,9 +135,9 @@ abstract class GroupDivision
 
         // Sort groupsWithOpenSpots by how many people are assigned to it, so the one with the least people is in first place
         $groupsWithOpenSpots = $this->getGroupsWithOpenSpots()
-          ->sortBy(function ($group) {
-              return $group->registrations()->count();
-          });
+            ->sortBy(function ($group) {
+                return $group->registrations()->count();
+            });
         if ($groupsWithOpenSpots->isEmpty()) {
             return;
         }
@@ -148,12 +153,13 @@ abstract class GroupDivision
                         ->where('drinks_alcohol', '=', false)
                         ->count() > 0;
                 })
-                  ->first();
+                    ->first();
 
                 // If there is no more group with non-drinkers that has open spots left, remove all non-drinkers from this assign cycle and continue without doing this check anymore
                 if ($group == null) {
                     $unassignedRegs = $unassignedRegs->where('drinks_alcohol', '=', true);
                     $cycleAssignByAlc = false;
+
                     continue;
                 }
             }

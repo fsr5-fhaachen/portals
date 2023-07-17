@@ -16,13 +16,13 @@ class StopFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
-          'group_id' => Group::all(['id'])->random(),
-          'station_id' => Station::all(['id'])->random(),
-          'arrival_at' => $this->faker->dateTimeBetween('now', '+2 hours'),
-          'departure_at' => $this->faker->dateTimeBetween('+2 hours', '+3 hours')
+            'group_id' => Group::all(['id'])->random(),
+            'station_id' => Station::all(['id'])->random(),
+            'arrival_at' => $this->faker->dateTimeBetween('now', '+2 hours'),
+            'departure_at' => $this->faker->dateTimeBetween('+2 hours', '+3 hours'),
         ];
     }
 }

@@ -16,11 +16,11 @@ class StationTutorFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
-          'user_id' => User::all(['id', 'is_tutor'])->where('is_tutor', true)->pluck('id')->random(),
-          'station_id' => Station::all(['id'])->random()
+            'user_id' => User::all(['id', 'is_tutor'])->where('is_tutor', true)->pluck('id')->random(),
+            'station_id' => Station::all(['id'])->random(),
         ];
     }
 }

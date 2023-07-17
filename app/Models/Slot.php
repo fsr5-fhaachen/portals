@@ -22,20 +22,16 @@ class Slot extends Model implements Auditable
 
     /**
      * Get registrations for the slot.
-     *
-     * @return HasMany
      */
-    public function registrations()
+    public function registrations(): HasMany
     {
         return $this->hasMany(Registration::class)->orderBy('queue_position');
     }
 
     /**
      * Get event for the slot.
-     *
-     * @return BelongsTo
      */
-    public function event()
+    public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
     }

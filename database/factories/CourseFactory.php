@@ -14,13 +14,13 @@ class CourseFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
-          'name' => $this->faker->word(),
-          'abbreviation' => $this->faker->lexify('????'),
-          'color' => $this->faker->word(),
-          'icon' => $this->faker->word()
+            'name' => $this->faker->word(),
+            'abbreviation' => $this->faker->lexify('????'),
+            'color' => $this->faker->word(),
+            'icon' => $this->faker->word(),
         ];
     }
 }

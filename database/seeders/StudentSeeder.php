@@ -13,17 +13,15 @@ class StudentSeeder extends Seeder
      *
      * @var string
      */
-    private const STUDENTS_CSV_PATH = __DIR__ . '/students.csv';
+    private const STUDENTS_CSV_PATH = __DIR__.'/students.csv';
 
     /**
      * Run the tutor seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
         // check if the file exists
-        if (!file_exists(self::STUDENTS_CSV_PATH)) {
+        if (! file_exists(self::STUDENTS_CSV_PATH)) {
             return;
         }
 
@@ -48,7 +46,7 @@ class StudentSeeder extends Seeder
 
             // check if student exists
             $user = User::where('email', $student[3])->first();
-            if ($user && !$courseByKey[$student[2]]) {
+            if ($user && ! $courseByKey[$student[2]]) {
                 continue;
             }
 

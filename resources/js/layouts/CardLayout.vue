@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-full flex-col py-8 sm:px-6 lg:py-16 lg:px-8">
+  <div class="flex min-h-full flex-col py-8 sm:px-6 lg:px-8 lg:py-16">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <img
         class="mx-auto h-48 w-auto"
@@ -15,7 +15,7 @@
     </div>
 
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-      <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div class="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
         <AppMessage :message="message" />
 
         <div>
