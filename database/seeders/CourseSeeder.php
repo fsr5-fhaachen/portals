@@ -50,7 +50,7 @@ class CourseSeeder extends Seeder
                 'abbreviation' => 'ISE-Master',
                 'icon' => 'fa-bug',
                 'color' => 'rgb(14 116 144)',
-            ]
+            ],
         ];
 
         foreach ($courses as $course) {

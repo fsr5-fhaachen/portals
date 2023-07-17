@@ -9,11 +9,17 @@ use Illuminate\Database\Eloquent\Collection;
 abstract class GroupDivision
 {
     protected Event $event;
+
     protected Collection $groups;
+
     protected Collection $registrations;
+
     protected bool $assignByAlc;
+
     protected int $maxGroups;
+
     protected int $maxGroupSize;
+
     protected int $minNonDrinkers;
 
     public function __construct(Event $event, bool $assignByAlc, int $maxGroups = 0, int $maxGroupSize = 0, int $minNonDrinkers = 3)
@@ -40,13 +46,13 @@ abstract class GroupDivision
     /**
      * Returns amount of open slots of provided group
      *
-     * @param Group $group
      *
      * @return int
      */
     public function getOpenGroupSpots(Group $group)
     {
         $takenSpots = $group->registrations()->count();
+
         return $this->maxGroupSize ? ($this->maxGroupSize - $takenSpots) : PHP_INT_MAX;
     }
 
@@ -72,7 +78,6 @@ abstract class GroupDivision
     /**
      * Updates the queue positions of the provided registrations
      *
-     * @param Collection $registrations
      *
      * @return void
      */
@@ -154,6 +159,7 @@ abstract class GroupDivision
                 if ($group == null) {
                     $unassignedRegs = $unassignedRegs->where('drinks_alcohol', '=', true);
                     $cycleAssignByAlc = false;
+
                     continue;
                 }
             }

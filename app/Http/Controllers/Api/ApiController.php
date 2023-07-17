@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Event;
-use Illuminate\Http\Request;
 use App\Models\Registration;
+use Illuminate\Http\Request;
 
 class ApiController extends Controller
 {
@@ -23,7 +23,6 @@ class ApiController extends Controller
     /**
      * Return a requested registration if it exists and the user is allowed to see it
      *
-     * @param Request $request
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -31,7 +30,7 @@ class ApiController extends Controller
     {
         // get registration
         $registration = Registration::with('group', 'slot')->get()->find($request->registration);
-        if (!$registration) {
+        if (! $registration) {
             return response()->json(['message' => 'Registration not found'], 404);
         }
 
@@ -46,7 +45,6 @@ class ApiController extends Controller
     /**
      * Return the amount of registrations for a given event
      *
-     * @param Request $request
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -54,7 +52,7 @@ class ApiController extends Controller
     {
         $event = Event::find($request->event);
 
-        if (!$event) {
+        if (! $event) {
             return response()->json(['message' => 'Event not found'], 404);
         }
 
@@ -83,12 +81,10 @@ class ApiController extends Controller
         return response()->json($result);
     }
 
-
     /**
      * Return the amount of registrations for all events
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function eventsRegistrationsAmount()
@@ -119,7 +115,6 @@ class ApiController extends Controller
     /**
      * Return the registrations for a given event
      *
-     * @param Request $request
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -127,7 +122,7 @@ class ApiController extends Controller
     {
         $event = Event::find($request->event);
 
-        if (!$event) {
+        if (! $event) {
             return response()->json(['message' => 'Event not found'], 404);
         }
 
@@ -161,7 +156,6 @@ class ApiController extends Controller
     /**
      * Toggle is_present for a given registration
      *
-     * @param Request $request
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -169,11 +163,11 @@ class ApiController extends Controller
     {
         $registration = Registration::find($request->registration);
 
-        if (!$registration) {
+        if (! $registration) {
             return response()->json(['message' => 'Registration not found'], 404);
         }
 
-        $registration->is_present = !$registration->is_present;
+        $registration->is_present = ! $registration->is_present;
         $registration->save();
 
         return response()->json($registration);
@@ -182,7 +176,6 @@ class ApiController extends Controller
     /**
      * Toggle fulfils_requirements for a given registration
      *
-     * @param Request $request
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -190,11 +183,11 @@ class ApiController extends Controller
     {
         $registration = Registration::find($request->registration);
 
-        if (!$registration) {
+        if (! $registration) {
             return response()->json(['message' => 'Registration not found'], 404);
         }
 
-        $registration->fulfils_requirements = !$registration->fulfils_requirements;
+        $registration->fulfils_requirements = ! $registration->fulfils_requirements;
         $registration->save();
 
         return response()->json($registration);
@@ -203,7 +196,6 @@ class ApiController extends Controller
     /**
      * Delete a given registration
      *
-     * @param Request $request
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -211,7 +203,7 @@ class ApiController extends Controller
     {
         $registration = Registration::find($request->registration);
 
-        if (!$registration) {
+        if (! $registration) {
             return response()->json(['message' => 'Registration not found'], 404);
         }
 
@@ -225,12 +217,10 @@ class ApiController extends Controller
         return response()->json(['message' => 'Registration deleted']);
     }
 
-
     /**
      * Return all courses with users amopunt
      *
-     * @param Request $request
-     *
+     * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function coursesUserAmount()
@@ -249,11 +239,9 @@ class ApiController extends Controller
         return response()->json($result);
     }
 
-
     /**
      * Return all courses with users amount of event
      *
-     * @param Request $request
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -261,7 +249,7 @@ class ApiController extends Controller
     {
         $event = Event::find($request->event);
 
-        if (!$event) {
+        if (! $event) {
             return response()->json(['message' => 'Event not found'], 404);
         }
 

@@ -6,8 +6,8 @@ use App\Models\Event;
 use App\Models\Page;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Session;
+use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
@@ -26,14 +26,13 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard/Index', [
             'events' => $events,
-            'registrations' => $registrations
+            'registrations' => $registrations,
         ]);
     }
 
     /**
      * Login a tutor
      *
-     * @param Request $request
      *
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -69,7 +68,6 @@ class DashboardController extends Controller
     /**
      * Display the request cms page
      *
-     * @param Request $request
      *
      * @return \Inertia\Response
      */
@@ -77,12 +75,12 @@ class DashboardController extends Controller
     {
         $page = Page::where('slug', $request->slug)->first();
 
-        if (!$page) {
+        if (! $page) {
             return Inertia::render('Dashboard/404');
         }
 
         return Inertia::render('Dashboard/Page', [
-            'page' => $page
+            'page' => $page,
         ]);
     }
 }

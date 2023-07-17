@@ -29,14 +29,13 @@ class DashboardTutorController extends Controller
     /**
      * Display the dashboard tutor event page
      *
-     * @param Request $request
      *
      * @return \Inertia\Response
      */
     public function event(Request $request)
     {
         $event = Event::find($request->event);
-        if (!$event) {
+        if (! $event) {
             return Inertia::render('Dashboard/404');
         }
         $event->slots = $event->slots()->with('registrations')->get();
@@ -54,14 +53,13 @@ class DashboardTutorController extends Controller
     /**
      * Display the dashboard tutor slot page
      *
-     * @param Request $request
      *
      * @return \Inertia\Response
      */
     public function slot(Request $request)
     {
         $slot = Slot::with('event')->find($request->slot);
-        if (!$slot) {
+        if (! $slot) {
             return Inertia::render('Dashboard/404');
         }
         $slot->registrations = $slot->registrations()->with('user')->get();
@@ -77,14 +75,13 @@ class DashboardTutorController extends Controller
     /**
      * Display the dashboard tutor group page
      *
-     * @param Request $request
      *
      * @return \Inertia\Response
      */
     public function group(Request $request)
     {
         $group = Group::with('event')->find($request->group);
-        if (!$group) {
+        if (! $group) {
             return Inertia::render('Dashboard/404');
         }
         $group->registrations = $group->registrations()->with('user')->get();

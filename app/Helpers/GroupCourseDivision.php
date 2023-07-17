@@ -21,7 +21,7 @@ class GroupCourseDivision extends GroupDivision
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function assignNonDrinkers()
     {
@@ -51,7 +51,7 @@ class GroupCourseDivision extends GroupDivision
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function assignUntilSatisfies()
     {
@@ -84,7 +84,7 @@ class GroupCourseDivision extends GroupDivision
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function assign()
     {

@@ -49,7 +49,7 @@ class AppController extends Controller
         $courses = Course::orderBy('name')->get();
 
         return Inertia::render('Register', [
-            'courses' => $courses
+            'courses' => $courses,
         ]);
     }
 
@@ -110,7 +110,7 @@ class AppController extends Controller
 
         // check if user exists
         $user = User::where('email', $validated['email'])->first();
-        if (!$user) {
+        if (! $user) {
             Session::flash('error', 'Es konnte kein Benutzer mit dieser E-Mail-Adresse gefunden werden.');
 
             return Redirect::back();
@@ -122,7 +122,6 @@ class AppController extends Controller
     /**
      * Authenticate a user
      *
-     * @param User $user
      *
      * @return \Illuminate\Http\RedirectResponse
      */

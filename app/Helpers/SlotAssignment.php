@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 class SlotAssignment
 {
     private Slot $slot;
+
     private int $maxParticipants;
 
     public function __construct(Slot $slot)
@@ -19,8 +20,6 @@ class SlotAssignment
     /**
      * Assigns registrations of provided collection up to the specified amount
      *
-     * @param Collection $registrations
-     * @param int $amount
      *
      * @return void
      */
@@ -40,7 +39,6 @@ class SlotAssignment
     /**
      * Updates the queue positions of the provided registrations
      *
-     * @param Collection $registrations
      *
      * @return void
      */

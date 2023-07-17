@@ -19,8 +19,8 @@ class GroupTutorFactory extends Factory
     public function definition()
     {
         return [
-          'user_id' => User::all(['id'])->random(),
-          'group_id' => Group::all(['id'])->random()
+            'user_id' => User::all(['id'])->random(),
+            'group_id' => Group::all(['id'])->random(),
         ];
     }
 }

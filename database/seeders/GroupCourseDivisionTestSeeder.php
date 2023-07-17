@@ -7,7 +7,6 @@ use App\Models\Event;
 use App\Models\Group;
 use App\Models\Registration;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class GroupCourseDivisionTestSeeder extends Seeder
@@ -31,9 +30,9 @@ class GroupCourseDivisionTestSeeder extends Seeder
           ->has(
               Registration::factory()
                 ->state([
-                  'event_id' => 1,
-                  'slot_id' => null,
-                  'group_id' => null
+                    'event_id' => 1,
+                    'slot_id' => null,
+                    'group_id' => null,
                 ])
                 ->count(1)
           )
@@ -45,9 +44,9 @@ class GroupCourseDivisionTestSeeder extends Seeder
           ->has(
               Registration::factory()
                 ->state([
-                  'event_id' => 1,
-                  'slot_id' => null,
-                  'group_id' => null
+                    'event_id' => 1,
+                    'slot_id' => null,
+                    'group_id' => null,
                 ])
                 ->count(1)
           )
@@ -59,9 +58,9 @@ class GroupCourseDivisionTestSeeder extends Seeder
           ->has(
               Registration::factory()
                 ->state([
-                  'event_id' => 1,
-                  'slot_id' => null,
-                  'group_id' => null
+                    'event_id' => 1,
+                    'slot_id' => null,
+                    'group_id' => null,
                 ])
                 ->count(1)
           )
@@ -73,9 +72,9 @@ class GroupCourseDivisionTestSeeder extends Seeder
           ->has(
               Registration::factory()
                 ->state([
-                  'event_id' => 2,
-                  'slot_id' => null,
-                  'group_id' => null
+                    'event_id' => 2,
+                    'slot_id' => null,
+                    'group_id' => null,
                 ])
                 ->count(1)
           )
@@ -84,24 +83,24 @@ class GroupCourseDivisionTestSeeder extends Seeder
 
         Group::factory()
           ->state([
-            'event_id' => 1,
-            'course_id' => 1
+              'event_id' => 1,
+              'course_id' => 1,
           ])
           ->count(4)
           ->create();
 
         Group::factory()
           ->state([
-            'event_id' => 1,
-            'course_id' => 2
+              'event_id' => 1,
+              'course_id' => 2,
           ])
           ->count(2)
           ->create();
 
         Group::factory()
           ->state([
-            'event_id' => 1,
-            'course_id' => 3
+              'event_id' => 1,
+              'course_id' => 3,
           ])
           ->count(1)
           ->create();

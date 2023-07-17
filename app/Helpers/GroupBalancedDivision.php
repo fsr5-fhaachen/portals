@@ -20,7 +20,7 @@ class GroupBalancedDivision extends GroupDivision
     // TODO calcOptFill doc
     protected function calcOptFill(Collection $registrations)
     {
-        $optFill = array();
+        $optFill = [];
 
         foreach (Course::all() as $course) {
             $registrationsOfCourse = $registrations->toQuery()
@@ -42,16 +42,16 @@ class GroupBalancedDivision extends GroupDivision
     // TODO calcCurrFill doc
     protected function calcCurrFill()
     {
-        $currFill = array();
+        $currFill = [];
 
         foreach ($this->groups as $group) {
             foreach (Course::all() as $course) {
                 $registrationsOfGroupAndCourse = $this->registrations->toQuery()
                   ->join('users', 'registrations.user_id', '=', 'users.id')
                   ->where([
-                    ['users.course_id', '=', $course->id],
-                    ['registrations.group_id', '=', $group->id]
-                    ])
+                      ['users.course_id', '=', $course->id],
+                      ['registrations.group_id', '=', $group->id],
+                  ])
                   ->get();
                 $currFill[$group->id][$course->id] = $registrationsOfGroupAndCourse->count();
             }
@@ -63,7 +63,7 @@ class GroupBalancedDivision extends GroupDivision
     // TODO calcFillRate doc
     protected function calcFillRate(Collection $registrations)
     {
-        $fillRate = array();
+        $fillRate = [];
         $optFill = $this->calcOptFill($registrations);
         $currFill = $this->calcCurrFill();
 
@@ -106,7 +106,7 @@ class GroupBalancedDivision extends GroupDivision
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function assignNonDrinkers()
     {
@@ -146,7 +146,7 @@ class GroupBalancedDivision extends GroupDivision
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     protected function assignUntilSatisfies()
     {
@@ -202,7 +202,7 @@ class GroupBalancedDivision extends GroupDivision
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function assign()
     {

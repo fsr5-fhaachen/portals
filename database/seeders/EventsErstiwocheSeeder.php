@@ -57,26 +57,26 @@ class EventsErstiwocheSeeder extends Seeder
 
         // create event groups
         $groupNames = [
-            "Die waghalsigen Waschbären",
-            "Die kuscheligen Koalas",
-            "Die originellen Opossums",
-            "Die peppigen Pinguine",
-            "Die risikofreudigen Rentiere",
-            "Die fluffigen Flamingos",
-            "Die kreisförmigen Karpfen",
-            "Die dramatischen Dackel",
-            "Die oszillierten Ozelots",
-            "Die zappelnden Zitterale",
-            "Die schnellen Schildkröten",
-            "Die schicken Spinnen",
-            "Die netten Nasenbären",
-            "Die berühmten Bonobos",
-            "Die tapferen Tucans",
-            "Die klugen Krokodile",
-            "Die wundervollen Wallabys",
-            "Die kantigen Kaninchen",
-            "Die allwissenden Aale",
-            "Die erfahrenen Enten",
+            'Die waghalsigen Waschbären',
+            'Die kuscheligen Koalas',
+            'Die originellen Opossums',
+            'Die peppigen Pinguine',
+            'Die risikofreudigen Rentiere',
+            'Die fluffigen Flamingos',
+            'Die kreisförmigen Karpfen',
+            'Die dramatischen Dackel',
+            'Die oszillierten Ozelots',
+            'Die zappelnden Zitterale',
+            'Die schnellen Schildkröten',
+            'Die schicken Spinnen',
+            'Die netten Nasenbären',
+            'Die berühmten Bonobos',
+            'Die tapferen Tucans',
+            'Die klugen Krokodile',
+            'Die wundervollen Wallabys',
+            'Die kantigen Kaninchen',
+            'Die allwissenden Aale',
+            'Die erfahrenen Enten',
         ];
         foreach ($groupNames as $groupName) {
             $group = new Group();
@@ -118,7 +118,7 @@ class EventsErstiwocheSeeder extends Seeder
 
         for ($i = 1; $i <= 14; $i++) {
             $groups[] = [
-                "name" => "Gruppe $i",
+                'name' => "Gruppe $i",
             ];
         }
 
@@ -172,26 +172,26 @@ class EventsErstiwocheSeeder extends Seeder
 
         for ($i = 1; $i <= 10; $i++) {
             $groups[] = [
-                "name" => "INF Hausführung $i",
-                "course_id" => $coursesByAbbreviation['INF']->id,
+                'name' => "INF Hausführung $i",
+                'course_id' => $coursesByAbbreviation['INF']->id,
             ];
         }
         for ($i = 1; $i <= 5; $i++) {
             $groups[] = [
-                "name" => "ET Hausführung $i",
-                "course_id" => $coursesByAbbreviation['ET']->id,
+                'name' => "ET Hausführung $i",
+                'course_id' => $coursesByAbbreviation['ET']->id,
             ];
         }
         for ($i = 1; $i <= 3; $i++) {
             $groups[] = [
-                "name" => "MCD Hausführung $i",
-                "course_id" => $coursesByAbbreviation['MCD']->id,
+                'name' => "MCD Hausführung $i",
+                'course_id' => $coursesByAbbreviation['MCD']->id,
             ];
         }
         for ($i = 1; $i <= 3; $i++) {
             $groups[] = [
-                "name" => "WI Hausführung $i",
-                "course_id" => $coursesByAbbreviation['WI']->id,
+                'name' => "WI Hausführung $i",
+                'course_id' => $coursesByAbbreviation['WI']->id,
             ];
         }
 
@@ -265,7 +265,7 @@ class EventsErstiwocheSeeder extends Seeder
 
         for ($i = 1; $i <= 30; $i++) {
             $groups[] = [
-                "name" => "Gruppe $i",
+                'name' => "Gruppe $i",
             ];
         }
 
@@ -443,7 +443,7 @@ class EventsErstiwocheSeeder extends Seeder
                 'name' => 'Zoo',
                 'has_requirements' => false,
                 'maximum_participants' => null,
-            ]
+            ],
         ];
 
         foreach ($slots as $slotData) {

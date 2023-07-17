@@ -31,10 +31,9 @@ class PageGerolsteinSeeder extends Seeder
             // check if page with slug exists
             $page = Page::where('slug', $pageData['slug'])->first();
 
-
             if ($page) {
                 // update content
-                $page->content = implode(PHP_EOL, file(__DIR__ . '/pages/gerolstein/' . $pageData['slug'] . '.html'));
+                $page->content = implode(PHP_EOL, file(__DIR__.'/pages/gerolstein/'.$pageData['slug'].'.html'));
 
                 // save the page
                 $page->save();
@@ -44,7 +43,7 @@ class PageGerolsteinSeeder extends Seeder
                 $page->title = $pageData['title'];
                 $page->slug = $pageData['slug'];
                 $page->sort_order = $pageData['sort_order'];
-                $page->content = implode(PHP_EOL, file(__DIR__ . '/pages/gerolstein/' . $pageData['slug'] . '.html'));
+                $page->content = implode(PHP_EOL, file(__DIR__.'/pages/gerolstein/'.$pageData['slug'].'.html'));
 
                 // save the page
                 $page->save();

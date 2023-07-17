@@ -10,9 +10,9 @@ use App\Models\Event;
 use App\Models\Registration;
 use App\Models\Slot;
 use App\Models\User;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 
 class DashboardAdminController extends Controller
@@ -38,14 +38,13 @@ class DashboardAdminController extends Controller
     /**
      * Display the dashboard admin registrations page
      *
-     * @param \Illuminate\Http\Request $request
      *
      * @return \Inertia\Response
      */
     public function registrations(\Illuminate\Http\Request $request)
     {
         $event = Event::with('groups')->with('slots')->find($request->event);
-        if (!$event) {
+        if (! $event) {
             return Inertia::render('Dashboard/404');
         }
         $event->registrations = $event->registrations()->with('user')->get();
@@ -61,14 +60,13 @@ class DashboardAdminController extends Controller
     /**
      * Display the dashboard admin event page
      *
-     * @param \Illuminate\Http\Request $request
      *
      * @return \Inertia\Response
      */
     public function event(\Illuminate\Http\Request $request)
     {
         $event = Event::find($request->event);
-        if (!$event) {
+        if (! $event) {
             return Inertia::render('Dashboard/404');
         }
         $event->slots = $event->slots()->with('registrations')->get();
@@ -86,14 +84,13 @@ class DashboardAdminController extends Controller
     /**
      * Display the dashboard admin event submit page
      *
-     * @param \Illuminate\Http\Request $request
      *
      * @return \Inertia\Response
      */
     public function eventSubmit(\Illuminate\Http\Request $request)
     {
         $event = Event::find($request->event);
-        if (!$event) {
+        if (! $event) {
             return Inertia::render('Dashboard/404');
         }
 
@@ -118,14 +115,13 @@ class DashboardAdminController extends Controller
     /**
      * Execute the dashboard admin event submit action
      *
-     * @param \Illuminate\Http\Request $request
      *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function eventExecuteSubmit(\Illuminate\Http\Request $request)
     {
         $event = Event::find($request->event);
-        if (!$event) {
+        if (! $event) {
             Session::flash('error', 'Das angegebene Event existiert nicht');
 
             return Redirect::back();
@@ -152,11 +148,10 @@ class DashboardAdminController extends Controller
 
                     if (count($groups) > 0) {
                         // get max_groups and max_participants for course by request
-                        $maxGroups = $request->input('max_groups_' . $course->id);
-                        $maxParticipants = $request->input('max_participants_' . $course->id);
+                        $maxGroups = $request->input('max_groups_'.$course->id);
+                        $maxParticipants = $request->input('max_participants_'.$course->id);
 
-
-                        $groupCourseDivision = new GroupCourseDivision($event, $course, $event->consider_alcohol, (int)$maxGroups, (int)$maxParticipants);
+                        $groupCourseDivision = new GroupCourseDivision($event, $course, $event->consider_alcohol, (int) $maxGroups, (int) $maxParticipants);
                         $groupCourseDivision->assign();
                     }
                 }
@@ -167,11 +162,12 @@ class DashboardAdminController extends Controller
                 $maxGroups = $request->max_groups;
                 $maxParticipants = $request->max_participants;
 
-                $groupBalancedDivision = new GroupBalancedDivision($event, $event->consider_alcohol, (int)$maxGroups, (int)$maxParticipants);
+                $groupBalancedDivision = new GroupBalancedDivision($event, $event->consider_alcohol, (int) $maxGroups, (int) $maxParticipants);
                 $groupBalancedDivision->assign();
 
                 Session::flash('success', 'Die Gruppen wurden erfolgreich aufgeteilt');
             }
+
             return Redirect::route('dashboard.admin.event.index', ['event' => $event->id]);
         } elseif ($event->type == 'slot_booking') {
             // foreach event slots
@@ -239,7 +235,7 @@ class DashboardAdminController extends Controller
         // create the user
         $user = User::create($validated);
 
-        Session::flash('success', 'Der Account <strong>' . $user->email . '</strong> wurde erfolgreich erstellt.');
+        Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich erstellt.');
 
         return Redirect::back();
     }
@@ -254,7 +250,7 @@ class DashboardAdminController extends Controller
     {
         // check if user with email not exists
         $user = User::where('email', Request::input('email'))->first();
-        if (!$user) {
+        if (! $user) {
             Session::flash('error', 'Der Account existiert nicht.');
 
             return Redirect::back();
@@ -262,7 +258,7 @@ class DashboardAdminController extends Controller
 
         // get event
         $event = Event::find(Request::input('event_id'));
-        if (!$event) {
+        if (! $event) {
             Session::flash('error', 'Das Event existiert nicht.');
 
             return Redirect::back();
@@ -297,7 +293,7 @@ class DashboardAdminController extends Controller
             $slot = Slot::find($userRegistration['slot_id']);
 
             // check if slot exists
-            if (!$slot) {
+            if (! $slot) {
                 Session::flash('error', 'Das Slot existiert nicht.');
 
                 return Redirect::back();
@@ -307,7 +303,7 @@ class DashboardAdminController extends Controller
             if ($slot->maximum_participants) {
                 $queuePosition = Registration::where('event_id', $event->id)->where('slot_id', $userRegistration['slot_id'])->max('queue_position');
 
-                if (!$queuePosition || $queuePosition == -1) {
+                if (! $queuePosition || $queuePosition == -1) {
                     $queuePosition = -1;
                 } else {
                     $queuePosition++;
@@ -334,7 +330,7 @@ class DashboardAdminController extends Controller
             'queue_position' => $queuePosition,
         ]);
 
-        Session::flash('success', 'Der Account <strong>' . $user->email . '</strong> wurde erfolgreich für das Event <strong>' . $event->name . '</strong>' . (array_key_exists('slot_id', $userRegistration) ? ' zu dem Slot <strong>' . $slot->name . '</strong>' : '') . ' zugewiesen.');
+        Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich für das Event <strong>'.$event->name.'</strong>'.(array_key_exists('slot_id', $userRegistration) ? ' zu dem Slot <strong>'.$slot->name.'</strong>' : '').' zugewiesen.');
 
         return Redirect::back();
     }

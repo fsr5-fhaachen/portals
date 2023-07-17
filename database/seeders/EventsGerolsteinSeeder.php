@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Course;
 use App\Models\Event;
 use App\Models\Group;
 use App\Models\Registration;
@@ -28,7 +27,6 @@ class EventsGerolsteinSeeder extends Seeder
     /**
      * Register all students for the given event.
      *
-     * @param Event $event
      *
      * @return void
      */
@@ -77,7 +75,7 @@ class EventsGerolsteinSeeder extends Seeder
 
         for ($i = 1; $i <= 14; $i++) {
             $groups[] = [
-                "name" => "Gruppe $i",
+                'name' => "Gruppe $i",
             ];
         }
 
@@ -124,7 +122,7 @@ class EventsGerolsteinSeeder extends Seeder
 
         for ($i = 1; $i <= 6; $i++) {
             $groups[] = [
-                "name" => "Gruppe $i",
+                'name' => "Gruppe $i",
             ];
         }
 

@@ -29,8 +29,6 @@ class Event extends Model implements Auditable
         'registration_to' => 'datetime',
     ];
 
-
-
     /**
      * Get groups for the event.
      *

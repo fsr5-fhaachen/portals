@@ -18,10 +18,10 @@ class SlotFactory extends Factory
     public function definition()
     {
         return [
-          'name' => $this->faker->word(),
-          'event_id' => Event::all(['id'])->random(),
-          'has_requirements' => $this->faker->boolean(),
-          'maximum_participants' => $this->faker->numberBetween(0, 25),
+            'name' => $this->faker->word(),
+            'event_id' => Event::all(['id'])->random(),
+            'has_requirements' => $this->faker->boolean(),
+            'maximum_participants' => $this->faker->numberBetween(0, 25),
         ];
     }
 }

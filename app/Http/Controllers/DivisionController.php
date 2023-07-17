@@ -8,7 +8,6 @@ use App\Helpers\SlotAssignment;
 use App\Models\Course;
 use App\Models\Event;
 use App\Models\Slot;
-use Illuminate\Http\Request;
 
 class DivisionController extends Controller
 {
@@ -20,7 +19,8 @@ class DivisionController extends Controller
 
         $gcdiv = new GroupCourseDivision($event, $course, true, 3, 18);
         $gcdiv->assign();
-        return "Done!";
+
+        return 'Done!';
     }
 
     public function test2(int $eventId)
@@ -29,7 +29,8 @@ class DivisionController extends Controller
 
         $gbdiv = new GroupBalancedDivision($event, true);
         $gbdiv->assign();
-        return "Done!";
+
+        return 'Done!';
     }
 
     public function test3(int $slotId)
@@ -38,6 +39,7 @@ class DivisionController extends Controller
 
         $sa = new SlotAssignment($slot);
         $sa->assign();
-        return "Done!";
+
+        return 'Done!';
     }
 }

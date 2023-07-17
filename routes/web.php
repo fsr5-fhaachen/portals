@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\AppController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\AppController;
 use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
@@ -31,7 +31,7 @@ Route::get('/', [AppController::class, 'index'])->name('app.index');
 
 Route::group([
     'middleware' => [
-        RedirectIfAuthenticated::class
+        RedirectIfAuthenticated::class,
     ],
 ], function () {
     Route::get('/login', [AppController::class, 'login'])->name('app.login');
@@ -39,7 +39,7 @@ Route::group([
 
     Route::group([
         'middleware' => [
-            ActiveModule::class . ':registration'
+            ActiveModule::class.':registration',
         ],
     ], function () {
         Route::get('/register', [AppController::class, 'register'])->name('app.register');
@@ -55,7 +55,7 @@ Route::group([
 ], function () {
     Route::group([
         'middleware' => [
-            RedirectIfTutor::class
+            RedirectIfTutor::class,
         ],
     ], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
@@ -75,7 +75,7 @@ Route::group([
     Route::group([
         'prefix' => 'tutor',
         'middleware' => [
-            IsLoggedInTutor::class
+            IsLoggedInTutor::class,
         ],
     ], function () {
         Route::get('/', [DashboardTutorController::class, 'index'])->name('dashboard.tutor.index');
@@ -88,7 +88,7 @@ Route::group([
         'prefix' => 'admin',
         'middleware' => [
             IsLoggedInTutor::class,
-            IsLoggedInAdmin::class
+            IsLoggedInAdmin::class,
         ],
     ], function () {
         Route::get('/', [DashboardAdminController::class, 'index'])->name('dashboard.admin.index');
@@ -115,7 +115,7 @@ Route::group([
 ], function () {
     Route::group([
         'middleware' => [
-            IsLoggedInTutor::class
+            IsLoggedInTutor::class,
         ],
     ], function () {
         Route::get('/events/{event}/registrations-amount', [ApiController::class, 'eventRegistrationsAmount'])->name('api.event.registrationsAmount');
@@ -127,7 +127,7 @@ Route::group([
 
         Route::group([
             'middleware' => [
-                IsLoggedInAdmin::class
+                IsLoggedInAdmin::class,
             ],
         ], function () {
             Route::get('/registrations/{registration}/toggle-fulfils-requirements', [ApiController::class, 'registrationsToggleFulfilsRequirements'])->name('api.event.registrations.toggleFulfilsRequirements');
@@ -139,7 +139,6 @@ Route::group([
         });
     });
 
-
     Route::get('/registrations/{registration}', [ApiController::class, 'registrationsShow'])->name('api.registrations.show');
 });
 
@@ -149,7 +148,7 @@ Route::group([
     'prefix' => 'dev',
     'middleware' => [
         IsLoggedInTutor::class,
-        IsLoggedInAdmin::class
+        IsLoggedInAdmin::class,
     ],
 ], function () {
     //Routes to test database. REMOVE BEFORE DEPLOYMENT
