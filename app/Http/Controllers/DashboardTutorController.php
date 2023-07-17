@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Response;
 use App\Models\Course;
 use App\Models\Event;
 use App\Models\Group;
 use App\Models\Slot;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class DashboardTutorController extends Controller
 {
