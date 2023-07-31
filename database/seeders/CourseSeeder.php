@@ -34,6 +34,11 @@ class CourseSeeder extends Seeder
                 'icon' => 'fa-sack-dollar',
                 'color' => 'rgb(22 101 52)',
             ], [
+                'name' => 'B. Sc. Digital Innovation and Business',
+                'abbreviation' => 'DIB',
+                'icon' => 'fa-briefcase',
+                'color' => 'rgb(247 241 30)',
+            ], [
                 'name' => 'B. Eng. Smart Building Engineering',
                 'abbreviation' => 'SBE',
                 'icon' => 'fa-house-signal',
