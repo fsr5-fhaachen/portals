@@ -1,50 +1,57 @@
-FROM php:8.1.11-cli-alpine
+# --------------------------------------------
+#       STAGE 1.1: Build JS with node
+# --------------------------------------------
 
+FROM node:16-alpine as node
+WORKDIR /app
+
+# install dependencies (only copy package lock here to use docker caching)
+COPY ["package.json", "package-lock.json", "./"] 
+RUN npm install
+
+# copy project data
+COPY ["vite.config.js", "./"]
+COPY ["./resources/js/", "./resources/js/"]
+COPY ["./resources/css/", "./resources/css/"]
+
+# build project
+RUN npm run build
+
+# --------------------------------------------
+#    STAGE 1.2: Setup PHP and Dependencies
+# --------------------------------------------
+
+FROM php:8.1-cli-alpine as php
+LABEL maintainer="FSR5 FH-Aachen"
 WORKDIR /var/www/html
-
-COPY . .
-
-RUN chown www-data:www-data -R /var/www/html
-
-# install packages for php
-#RUN apk add --no-cache bzip2-dev curl-dev libxml2-dev enchant-2
 
 # install php extensions
 RUN docker-php-ext-install bcmath sockets pdo_mysql
-#    ctype \
-#    json \
-#    mbstring \
-#    openssl \
-#    pdo \
-#    tokenizer \
-#    xml
-
 RUN apk add --no-cache pcre-dev $PHPIZE_DEPS && pecl install redis && docker-php-ext-enable redis.so
 
 # install composer
-RUN EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-RUN ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
-RUN if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]; then >&2 echo 'ERROR: Invalid installer checksum' && rm composer-setup.php && exit 1; fi
-RUN php composer-setup.php --quiet
-RUN rm composer-setup.php
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-# install php dependencies
-RUN php composer.phar install
+# copy relevant project data
+COPY ["composer.json", "composer.lock", "artisan", "./"]
+COPY ["./app", "./app"]
+COPY ["./bootstrap", "./bootstrap"]
+COPY ["./config", "./config"]
+COPY ["./database", "./database"]
+COPY ["./lang", "./lang"]
+COPY ["./public", "./public"]
+COPY ["./resources/css", "./resources/css"]
+COPY ["./resources/views", "./resources/views"]
+COPY ["./routes", "./routes"]
 
-# install nodejs
-RUN apk add --no-cache nodejs npm
+# install dependencies
+RUN composer install
 
-# install node dependencies
-RUN npm install
+# get data from previous build
+COPY --from=node ["/app/public/build/", "./public/build/"]
 
-# build application
-RUN npm run build
-
-# install roadrunner
+# install and configure roadrunner
 COPY --from=spiralscout/roadrunner:latest /usr/bin/rr /usr/bin/rr
-
-# configure roadrunner
 RUN php artisan octane:install --server=roadrunner
 
 ENV ROADRUNNER_MAX_REQUESTS=512
