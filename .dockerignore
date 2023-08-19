@@ -14,4 +14,5 @@ vendor
 LICENSE
 rr
 database/seeders/tutors.csv
-scaleup
+charts/
+deploy/
