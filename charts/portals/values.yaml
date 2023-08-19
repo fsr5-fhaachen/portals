@@ -15,7 +15,7 @@ environment:
   APP_NAME: Erstiwoche FB5
   APP_ENV: local
   APP_KEY: # insert app key here
-  APP_DEBUG: "true"
+  APP_DEBUG: "false"
   APP_URL: https://portals.fsr5.de
   TUTOR_PASSWORD: password # insert secret password here
   ADMIN_PASSWORD: admin # insert secret password here
