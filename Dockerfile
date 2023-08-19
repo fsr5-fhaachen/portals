@@ -26,7 +26,9 @@ LABEL maintainer="FSR5 FH-Aachen"
 WORKDIR /var/www/html
 
 # install php extensions
-RUN docker-php-ext-install bcmath sockets pdo_mysql
+RUN apk add libpq-dev
+RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
+RUN docker-php-ext-install bcmath sockets pdo_mysql pdo pdo_pgsql pgsql
 RUN apk add --no-cache pcre-dev $PHPIZE_DEPS && pecl install redis && docker-php-ext-enable redis.so
 
 # install composer
