@@ -1,0 +1,61 @@
+replicaCount: 1
+
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+image:
+  repository: ghcr.io/fsr5-fhaachen/portals
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+environment: 
+  APP_NAME: Erstiwoche FB5
+  APP_ENV: local
+  APP_KEY: # insert app key here
+  APP_DEBUG: "true"
+  APP_URL: https://portals.fsr5.de
+  TUTOR_PASSWORD: password # insert secret password here
+  ADMIN_PASSWORD: admin # insert secret password here
+  DB_CONNECTION: pgsql
+  DB_HOST: # insert db host here
+  DB_PORT: "5432"
+  DB_DATABASE: postgres
+  DB_USERNAME: postgres
+  DB_PASSWORD: # insert db password here
+  OCTANE_HTTPS: "true"
+  OCTANE_WORKERS: "4"
+  OCTANE_MAX_REQUESTS: "512"
+  WWWGROUP: "1000"
+  WWWUSER: "1000"
+  CACHE_DRIVER: redis
+  SESSION_DRIVER: redis
+  SESSION_LIFETIME: "120"
+  REDIS_HOST: # insert redis host here
+  REDIS_PASSWORD: # insert redis password here
+  REDIS_PORT: "6379"
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/issuer: "letsencrypt-prod"
+  hosts:
+    - portals.fsr5.de
+  tls: true
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
