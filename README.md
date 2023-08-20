@@ -135,6 +135,14 @@ docker exec -it portals-web touch database/seeders/tutors.csv
 docker exec -it portals-web php artisan migrate:fresh --seed
 ```
 
+### Kubernetes (Helm)
+
+You can deploy the application to kubernetes using the helm chart.
+
+See [charts/portals](./charts/portals/) for more information.
+
+If you want information about creating the kubernetes cluster, see [deploy information](./deploy).
+
 ## Authors
 
 👤 **Titus Kirch (main author)**
