@@ -1,0 +1,19 @@
+env:
+  HCLOUD_TOKEN:
+    valueFrom:
+      secretKeyRef:
+        name: ccm
+        key: token
+  NODE_NAME:
+    valueFrom:
+      fieldRef:
+        fieldPath: spec.nodeName
+
+networking:
+  enabled: true
+  clusterCIDR: 10.10.0.0/16
+  network:
+    valueFrom:
+      secretKeyRef:
+        name: ccm
+        key: network

@@ -1,0 +1,5 @@
+redisCluster:
+  persistenceEnabled: false
+  redisSecret:
+    secretName: redis-password
+    secretKey: password

@@ -1,0 +1,24 @@
+#cloud-config
+write_files:
+  - content: |
+      table ip nat {
+        chain prerouting {
+          type nat hook prerouting priority dstnat; policy accept;
+        }
+        chain postrouting {
+          type nat hook postrouting priority srcnat; policy accept;
+          oifname "eth0" masquerade
+        }
+      }
+    owner: root:root
+    path: /etc/nftables/nat.conf
+    permissions: '0644'
+
+package_update: true
+package_upgrade: true
+
+runcmd:
+  - echo 1 > /proc/sys/net/ipv4/ip_forward
+  - sed -i -e 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
+  - echo 'include "/etc/nftables/*"' >> /etc/nftables.conf
+  - nft -f /etc/nftables.conf

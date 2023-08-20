@@ -1,0 +1,25 @@
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: <CLUSTER_NAME>
+  namespace: <CLUSTER_NAME>
+spec:
+  controlPlaneEndpoint:
+    host: <CLUSTER_API_URL>
+    port: 6443
+  clusterNetwork:
+    pods:
+      cidrBlocks:
+        - 10.10.0.0/16
+    services:
+      cidrBlocks:
+        - 10.20.0.0/16
+    serviceDomain: cluster.local
+  controlPlaneRef:
+    apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+    kind: KubeadmControlPlane
+    name: <CLUSTER_NAME>-ctl
+  infrastructureRef:
+    apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+    kind: HetznerCluster
+    name: <CLUSTER_NAME>
