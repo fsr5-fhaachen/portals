@@ -107,10 +107,10 @@ brew install clusterctl
 
 You need to create some API tokens inside the cloud project. You can do this in the Hetzner Cloud Console under `Access > API Tokens`. You will need the following tokens:
 
-* cli@<YOUR_NAME>@<YOUR_CLIENT_NAME> (used by hcloud-cli on your linux client)
-* capi@<CLUSTER_NAME> (used by the hcloud capi controller inside the management cluster)
-* ccm@<CLUSTER_NAME> (used by the hcloud controller manager inside the cluster)
-* csi@<CLUSTER_NAME> (used by the hcloud csi driver inside the cluster)
+* `cli@<YOUR_NAME>@<YOUR_CLIENT_NAME>` (used by hcloud-cli on your linux client)
+* `capi@<CLUSTER_NAME>` (used by the hcloud capi controller inside the management cluster)
+* `ccm@<CLUSTER_NAME>` (used by the hcloud controller manager inside the cluster)
+* `csi@<CLUSTER_NAME>` (used by the hcloud csi driver inside the cluster)
 
 You can change the names of the tokens to fit your needs. You will need to replace the names in the following commands.
 
@@ -123,9 +123,10 @@ You need to setup the hcloud-cli on your linux client. You can do this by using 
 
 ```sh
 hcloud context create <CONTEXT_NAME> # replace context name with a name of your choice (e.g. the hcloud project name)
-
-# the command will ask for the token you have created in the previous step
 ```
+
+The command will ask for the token you have created in the previous step.
+
 
 ### Upload SSH Keys
 
