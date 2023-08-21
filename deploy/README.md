@@ -274,7 +274,7 @@ hcloud server create --location fsn1 --image debian-11 --name <CLUSTER_NAME>-nat
 hcloud server attach-to-network -n <CLUSTER_NAME> --ip 10.0.255.254 <CLUSTER_NAME>-nat-gateway
 
 # create dns records
-curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'X-Auth-Key: <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "<IP_OF_API_LOADBALANCER>", "name": "<CLUSTER_API_URL>", "proxied": false, "type": "A", "comment": "Kubernetes API", "tags": [], "ttl": 1}'
+curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'Authorization: Bearer <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "<IP_OF_API_LOADBALANCER>", "name": "<CLUSTER_API_URL>", "proxied": false, "type": "A", "comment": "Kubernetes API", "tags": [], "ttl": 1}'
 ```
 
 ### Get cluster access
@@ -336,6 +336,10 @@ helm upgrade --install metrics-server metrics-server/metrics-server --namespace 
 # ingress
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --namespace ingress-nginx --create-namespace -f deployments/addons/ingress-nginx-values.yaml
+
+# create dns records for ingress
+curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'Authorization: Bearer <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "$SERVER_IP_INGRESS_LOADBALANCER", "name": "<CLUSTER_INGRESS_URL>", "proxied": false, "type": "A", "comment": "Kubernetes Cluster <CLUSTER_NAME> Ingress", "tags": [], "ttl": 1}'
+curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'Authorization: Bearer <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "<CLUSTER_INGRESS_URL>", "name": "*.<CLUSTER_INGRESS_URL>", "proxied": false, "type": "CNAME", "comment": "Kubernetes Cluster <CLUSTER_NAME> Ingress", "tags": [], "ttl": 1}'
 
 # cert-manager
 helm repo add jetstack https://charts.jetstack.io
@@ -402,10 +406,10 @@ To setup the dns records for portals you need to create a dns record for the ing
 
 ```sh
 # wildcard record for ingress
-curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'X-Auth-Key: <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "<IP_OF_INGRESS_LOADBALANCER>", "name": "*.<YOUR_INGRESS_IP>", "proxied": false, "type": "A", "comment": "Kubernetes Ingress", "tags": [], "ttl": 1}'
+curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'Authorization: Bearer <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "<IP_OF_INGRESS_LOADBALANCER>", "name": "*.<YOUR_INGRESS_IP>", "proxied": false, "type": "A", "comment": "Kubernetes Ingress", "tags": [], "ttl": 1}'
 
 # record for portals (only if not inside ingress wildcard)
-curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'X-Auth-Key: <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "<ONE_OF_THE_WILDCARD_DOMAINS_BEFORE>", "name": "<YOUR_PORTALS_DOMAIN>", "proxied": false, "type": "CNAME", "comment": "Kubernetes Ingress Portals", "tags": [], "ttl": 1}'
+curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'Authorization: Bearer <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "<ONE_OF_THE_WILDCARD_DOMAINS_BEFORE>", "name": "<YOUR_PORTALS_DOMAIN>", "proxied": false, "type": "CNAME", "comment": "Kubernetes Ingress Portals", "tags": [], "ttl": 1}'
 ```
 
 Ready, you can connect to portals on your configured url.
