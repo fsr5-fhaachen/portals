@@ -36,20 +36,16 @@ jobs:
         if: ${{ github.event_name == 'release' && steps.latest_release.outputs.release == github.ref_name }} # run only on latest release
         with:
           push: true
-          tags: 
-            - ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_PATH }}:${{ env.IMAGE_TAG }}
-            - ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_PATH }}:latest
+          tags: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_PATH }}:${{ env.IMAGE_TAG }}, ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_PATH }}:latest
       - name: Build and push (release)
         uses: docker/build-push-action@v4
         if: ${{ github.event_name == 'release' && steps.latest_release.outputs.release != github.ref_name }} # run only on release (not latest)
         with:
           push: true
-          tags: 
-            - ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_PATH }}:${{ env.IMAGE_TAG }}
+          tags: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_PATH }}:${{ env.IMAGE_TAG }}
       - name: Build and push (push)
         uses: docker/build-push-action@v4
         if: ${{ github.event_name == 'push' }} # run only on push (to dev)
         with:
           push: true
-          tags: 
-            - ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_PATH }}:${{ env.IMAGE_TAG }}
+          tags: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_PATH }}:${{ env.IMAGE_TAG }}
