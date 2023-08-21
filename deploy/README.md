@@ -339,7 +339,7 @@ helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --namespace ing
 
 # create dns records for ingress
 curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'Authorization: Bearer <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "$SERVER_IP_INGRESS_LOADBALANCER", "name": "<CLUSTER_INGRESS_URL>", "proxied": false, "type": "A", "comment": "Kubernetes Cluster <CLUSTER_NAME> Ingress", "tags": [], "ttl": 1}'
-curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'Authorization: Bearer <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "<CLUSTER_INGRESS_URL>", "name": "*.<CLUSTER_INGRESS_URL>", "proxied": false, "type": "CNAME", "comment": "Kubernetes Cluster <CLUSTER_NAME> Ingress", "tags": [], "ttl": 1}'
+curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'Authorization: Bearer <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "<CLUSTER_INGRESS_URL>", "name": "*.<CLUSTER_INGRESS_URL>.<BASE_DOMAIN>", "proxied": false, "type": "CNAME", "comment": "Kubernetes Cluster <CLUSTER_NAME> Ingress", "tags": [], "ttl": 1}'
 
 # cert-manager
 helm repo add jetstack https://charts.jetstack.io
