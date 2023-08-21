@@ -10,6 +10,12 @@ export default defineConfig({
       "@": "/resources/js",
     },
   },
+  server: {
+    host: '0.0.0.0',
+    hmr: {
+        host: 'localhost'
+    }
+  },
   plugins: [
     laravel({
       input: ["resources/js/app.js"],
