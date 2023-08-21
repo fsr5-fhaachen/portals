@@ -269,11 +269,23 @@ After the `HetznerCluster` object is ready (you can verify this with `k get hetz
 ```sh
 # create nat gateway
 hcloud network add-route <CLUSTER_NAME> --destination 0.0.0.0/0 --gateway 10.0.255.254
-hcloud server create --location fsn1 --image debian-12 --name <CLUSTER_NAME>-nat-gateway --placement-group <CLUSTER_NAME>-gw --ssh-key <YOUR_NAME>@<YOUR_CLIENT_NAME> --type cx11 --user-data-from-file ./nat-gateway/cloud-config.yaml
+hcloud server create --location fsn1 --image debian-11 --name <CLUSTER_NAME>-nat-gateway --placement-group <CLUSTER_NAME>-gw --ssh-key <YOUR_NAME>@<YOUR_CLIENT_NAME> --type cx11 --user-data-from-file ./nat-gateway/cloud-config.yaml
 hcloud server attach-to-network -n <CLUSTER_NAME> --ip 10.0.255.254 <CLUSTER_NAME>-nat-gateway
 
 # create dns records
-curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'X-Auth-Key: <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "<IP_OF_API_LOADBALANCER>", "name": "<CLUSTER_API_URL>", "proxied": false, "type": "A", "comment": "Kubernetes API", "tags": [], "ttl": 3600}'
+curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'X-Auth-Key: <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "<IP_OF_API_LOADBALANCER>", "name": "<CLUSTER_API_URL>", "proxied": false, "type": "A", "comment": "Kubernetes API", "tags": [], "ttl": 1}'
+```
+
+### Get cluster access
+
+To get cluster access you can run the following commands:
+
+```sh
+# get kubeconfig
+kubectl get secret -n <CLUSTER_NAME> <CLUSTER_NAME>-kubeconfig -o jsonpath='{.data.value}' | base64 -d > ~/.kube/<CLUSTER_NAME>.kubeconfig
+
+# set currently used kubeconfig
+export KUBECONFIG=~/.kube/<CLUSTER_NAME>.kubeconfig
 ```
 
 ### Deploy CNI and CCM
@@ -283,12 +295,13 @@ To finish the cluster setup you need to deploy the CNI (container network interf
 ```sh
 # cilium (cni)
 helm repo add cilium https://helm.cilium.io/
-helm upgrade --install cilium cilium/cilium --namespace cilium -f deployments/cilium-values.yaml # remember to replace the placeholders
+helm upgrade --install cilium cilium/cilium --namespace cilium-system --create-namespace -f deployments/addons/cilium-values.yaml # remember to replace the placeholders
 
 # ccm
-kubectl apply -f deployments/ccm-secret.yaml
+kubectl create ns hcloud-system
+kubectl apply -f deployments/addons/ccm-secret.yaml
 helm repo add hcloud https://charts.hetzner.cloud
-helm upgrade --install ccm hcloud/hcloud-cloud-controller-manager -n ccm -f deployments/ccm-values.yaml
+helm upgrade --install ccm hcloud/hcloud-cloud-controller-manager -n hcloud-system -f deployments/addons/ccm-values.yaml
 ```
 
 ### Wait for Cluster to be ready
@@ -385,10 +398,10 @@ To setup the dns records for portals you need to create a dns record for the ing
 
 ```sh
 # wildcard record for ingress
-curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'X-Auth-Key: <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "<IP_OF_INGRESS_LOADBALANCER>", "name": "*.<YOUR_INGRESS_IP>", "proxied": false, "type": "A", "comment": "Kubernetes Ingress", "tags": [], "ttl": 3600}'
+curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'X-Auth-Key: <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "<IP_OF_INGRESS_LOADBALANCER>", "name": "*.<YOUR_INGRESS_IP>", "proxied": false, "type": "A", "comment": "Kubernetes Ingress", "tags": [], "ttl": 1}'
 
 # record for portals (only if not inside ingress wildcard)
-curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'X-Auth-Key: <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "<ONE_OF_THE_WILDCARD_DOMAINS_BEFORE>", "name": "<YOUR_PORTALS_DOMAIN>", "proxied": false, "type": "CNAME", "comment": "Kubernetes Ingress Portals", "tags": [], "ttl": 3600}'
+curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE_ZONE_ID>/dns_records --header 'Content-Type: application/json' --header 'X-Auth-Key: <YOUR_CLOUDFLARE_API_TOKEN>' --data '{"content": "<ONE_OF_THE_WILDCARD_DOMAINS_BEFORE>", "name": "<YOUR_PORTALS_DOMAIN>", "proxied": false, "type": "CNAME", "comment": "Kubernetes Ingress Portals", "tags": [], "ttl": 1}'
 ```
 
 Ready, you can connect to portals on your configured url.

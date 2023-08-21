@@ -2,6 +2,7 @@ apiVersion: cluster.x-k8s.io/v1beta1
 kind: MachineDeployment
 metadata:
   name: <CLUSTER_NAME>-md-0-fsn1
+  namespace: <CLUSTER_NAME>
 spec:
   clusterName: <CLUSTER_NAME>
   replicas: 1
@@ -26,6 +27,7 @@ apiVersion: cluster.x-k8s.io/v1beta1
 kind: MachineDeployment
 metadata:
   name: <CLUSTER_NAME>-md-0-nbg1
+  namespace: <CLUSTER_NAME>
 spec:
   clusterName: <CLUSTER_NAME>
   replicas: 1
@@ -50,6 +52,7 @@ apiVersion: cluster.x-k8s.io/v1beta1
 kind: MachineDeployment
 metadata:
   name: <CLUSTER_NAME>-md-0-hel1
+  namespace: <CLUSTER_NAME>
 spec:
   clusterName: <CLUSTER_NAME>
   replicas: 1
