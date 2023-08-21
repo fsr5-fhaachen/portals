@@ -10,7 +10,7 @@
         "guzzlehttp/guzzle": "^7.2",
         "inertiajs/inertia-laravel": "^0.6.9",
         "laravel/framework": "^10.15",
-        "laravel/octane": "^1.4",
+        "laravel/octane": "^2.0",
         "laravel/tinker": "^2.8",
         "owen-it/laravel-auditing": "^13.5.1",
         "spiral/roadrunner": "^2023.2.2"
