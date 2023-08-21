@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: cert-manager-cloudflare-api-token
+  namespace: cert-manager-system
 type: Opaque
 data:
   token: <YOUR_CLOUDFLARE_API_TOKEN_BASE64_ENCODED>
@@ -10,6 +11,7 @@ apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: letsencrypt-prod
+  namespace: cert-manager-system
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory

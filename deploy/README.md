@@ -208,6 +208,7 @@ Run the following commands on your local machine to copy the kubeconfig file fro
 ```sh
 # copy kubeconfig from server to local machine
 scp root@<IP_ADDRESS>:/root/.kube/config ~/.kube/initial-mgmt-cluster.kubeconfig
+chmod 600 ~/.kube/initial-mgmt-cluster.kubeconfig
 
 # set currently used kubeconfig
 export KUBECONFIG=~/.kube/initial-mgmt-cluster.kubeconfig
@@ -283,6 +284,7 @@ To get cluster access you can run the following commands:
 ```sh
 # get kubeconfig
 kubectl get secret -n <CLUSTER_NAME> <CLUSTER_NAME>-kubeconfig -o jsonpath='{.data.value}' | base64 -d > ~/.kube/<CLUSTER_NAME>.kubeconfig
+chmod 600 ~/.kube/<CLUSTER_NAME>.kubeconfig
 
 # set currently used kubeconfig
 export KUBECONFIG=~/.kube/<CLUSTER_NAME>.kubeconfig
@@ -299,7 +301,7 @@ helm upgrade --install cilium cilium/cilium --namespace cilium-system --create-n
 
 # ccm
 kubectl create ns hcloud-system
-kubectl apply -f deployments/addons/ccm-secret.yaml
+kubectl apply -f deployments/addons/ccm-secret.yaml # remember to replace the placeholders
 helm repo add hcloud https://charts.hetzner.cloud
 helm upgrade --install ccm hcloud/hcloud-cloud-controller-manager -n hcloud-system -f deployments/addons/ccm-values.yaml
 ```
@@ -329,7 +331,7 @@ kubectl apply -f deployments/addons/csi-2.7.0.yaml
 
 # metrics server
 helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
-helm upgrade --install metrics-server metrics-server/metrics-server --namespace metrics-server --create-namespace
+helm upgrade --install metrics-server metrics-server/metrics-server --namespace kube-system
 
 # ingress
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -337,16 +339,16 @@ helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --namespace ing
 
 # cert-manager
 helm repo add jetstack https://charts.jetstack.io
-helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace -f deployments/addons/cert-manager-values.yaml
+helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager-system --create-namespace -f deployments/addons/cert-manager-values.yaml
 kubectl apply -f deployments/addons/cert-manager-issuer.yaml
 
 # postgresql operator
 helm repo add cnpg https://cloudnative-pg.github.io/charts
-helm upgrade --install cnpg cnpg/cloudnative-pg --namespace cnpg --create-namespace
+helm upgrade --install cnpg cnpg/cloudnative-pg --namespace postgresql-system --create-namespace
 
 # redis operator
 helm repo add ot-helm https://ot-container-kit.github.io/helm-charts/
-helm upgrade --install redis-operator ot-helm/redis-operator --namespace redis --create-namespace
+helm upgrade --install redis-operator ot-helm/redis-operator --namespace redis-system --create-namespace
 ```
 
 <!-- TODO: Add monitoring -->
@@ -356,6 +358,8 @@ helm upgrade --install redis-operator ot-helm/redis-operator --namespace redis -
 <!-- TODO: Configure addons -->
 
 <!-- TODO: Add horizontal and vertical autoscaler -->
+
+<!-- TODO: Add access for more users -->
 
 ## Step 6: Deploy Portals
 

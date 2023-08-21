@@ -12,7 +12,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: hcloud-csi-controller
-  namespace: kube-system
+  namespace: hcloud-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -161,7 +161,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: hcloud-csi-controller
-  namespace: kube-system
+  namespace: hcloud-system
 ---
 apiVersion: v1
 kind: Service
@@ -169,7 +169,7 @@ metadata:
   labels:
     app: hcloud-csi-controller
   name: hcloud-csi-controller-metrics
-  namespace: kube-system
+  namespace: hcloud-system
 spec:
   ports:
   - name: metrics
@@ -184,7 +184,7 @@ metadata:
   labels:
     app: hcloud-csi
   name: hcloud-csi-node-metrics
-  namespace: kube-system
+  namespace: hcloud-system
 spec:
   ports:
   - name: metrics
@@ -197,7 +197,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hcloud-csi-controller
-  namespace: kube-system
+  namespace: hcloud-system
 spec:
   replicas: 1
   selector:
@@ -247,7 +247,7 @@ spec:
           valueFrom:
             secretKeyRef:
               key: token
-              name: csi-token
+              name: csi
         image: hetznercloud/hcloud-csi-driver:latest
         imagePullPolicy: Always
         livenessProbe:
@@ -285,7 +285,7 @@ metadata:
   labels:
     app: hcloud-csi
   name: hcloud-csi-node
-  namespace: kube-system
+  namespace: hcloud-system
 spec:
   selector:
     matchLabels:
