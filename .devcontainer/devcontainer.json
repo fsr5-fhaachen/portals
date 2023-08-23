@@ -19,7 +19,7 @@
 		}
 	},
 	"remoteUser": "sail",
-	"postCreateCommand": "chown -R 1000:1000 /var/www/html && echo 'alias sail=\"[ -f sail ] && sh sail || sh vendor/bin/sail\"' >> ~/.bashrc"
+	"postCreateCommand": "chown -R 1000:1000 /var/www/html"
 	// "forwardPorts": [],
 	// "runServices": [],
 	// "shutdownAction": "none",
