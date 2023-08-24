@@ -18,26 +18,31 @@ class CourseSeeder extends Seeder
                 'abbreviation' => 'ET',
                 'icon' => 'fa-plug',
                 'color' => 'rgb(234 179 8)',
+                'show_on_registration' => true,
             ], [
                 'name' => 'B. Sc. Informatik',
                 'abbreviation' => 'INF',
                 'icon' => 'fa-laptop-code',
                 'color' => 'rgb(29 78 216)',
+                'show_on_registration' => true,
             ], [
                 'name' => 'B. Sc. Media and Communications for Digital Business',
                 'abbreviation' => 'MCD',
                 'icon' => 'fa-paint-brush',
                 'color' => 'rgb(91 33 182)',
+                'show_on_registration' => false,
             ], [
                 'name' => 'B. Sc. Wirtschaftsinformatik',
                 'abbreviation' => 'WI',
                 'icon' => 'fa-sack-dollar',
                 'color' => 'rgb(22 101 52)',
+                'show_on_registration' => true,
             ], [
                 'name' => 'B. Eng. Smart Building Engineering',
                 'abbreviation' => 'SBE',
                 'icon' => 'fa-house-signal',
                 'color' => 'rgb(41 37 36)',
+                'show_on_registration' => false,
             ], [
                 'name' => 'M. Eng. Elektrotechnik',
                 'abbreviation' => 'ET-Master',
@@ -48,6 +53,7 @@ class CourseSeeder extends Seeder
                 'abbreviation' => 'ISE-Master',
                 'icon' => 'fa-bug',
                 'color' => 'rgb(14 116 144)',
+                'show_on_registration' => true,
             ],
         ];
 
