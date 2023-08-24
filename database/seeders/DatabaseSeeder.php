@@ -18,12 +18,12 @@ class DatabaseSeeder extends Seeder
             CourseSeeder::class,
             TutorSeeder::class,
             StudentSeeder::class,
-            //ModuleErstiwocheSeeder::class,
-            //EventsErstiwocheSeeder::class,
-            //PageErstiwocheSeeder::class,
-            ModuleGerolsteinSeeder::class,
-            EventsGerolsteinSeeder::class,
-            PageGerolsteinSeeder::class,
+            ModuleErstiwocheSeeder::class,
+            EventsErstiwocheSeeder::class,
+            PageErstiwocheSeeder::class,
+            // ModuleGerolsteinSeeder::class,
+            // EventsGerolsteinSeeder::class,
+            // PageGerolsteinSeeder::class,
         ]);
     }
 }
