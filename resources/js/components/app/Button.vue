@@ -36,10 +36,10 @@ const rootClasses = computed(() => {
       classes.push("hover:bg-gray-700");
     }
   } else if (theme === "danger") {
-    classes.push("bg-red-500");
+    classes.push("bg-red-500 dark:bg-red-700");
 
     if (!disabled) {
-      classes.push("hover:bg-red-700");
+      classes.push("hover:bg-red-700 dark:hover:bg-red-900");
     }
   }
 

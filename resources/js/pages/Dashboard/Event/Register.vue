@@ -90,7 +90,10 @@
       </CardBase>
 
       <CardBase v-if="event.description">
-        <div class="prose !max-w-full" v-html="event.description"></div>
+        <div
+          class="prose !max-w-full dark:prose-invert"
+          v-html="event.description"
+        ></div>
       </CardBase>
     </CardContainer>
   </LayoutDashboardContent>

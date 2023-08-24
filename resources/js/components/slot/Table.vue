@@ -5,42 +5,42 @@
         <div class="inline-block min-w-full py-2 align-middle">
           <div class="shadow-sm ring-1 ring-black ring-opacity-5">
             <table class="min-w-full border-separate" style="border-spacing: 0">
-              <thead class="bg-gray-50">
+              <thead class="bg-gray-50 dark:bg-gray-900">
                 <tr>
                   <th
                     scope="col"
-                    class="border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pl-6 lg:pl-8"
                   >
                     Name
                   </th>
                   <th
                     scope="col"
-                    class="border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
                   >
                     Hat Voraussetzungen
                   </th>
                   <th
                     scope="col"
-                    class="border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
                   >
                     Teilnehmer
                   </th>
                   <th
                     scope="col"
-                    class="border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-3 pr-4 backdrop-blur backdrop-filter sm:pr-6 lg:pr-8"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-3 pr-4 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pr-6 lg:pr-8"
                   >
                     <span class="sr-only">Anzeigen</span>
                   </th>
                 </tr>
               </thead>
-              <tbody class="bg-white">
+              <tbody class="bg-white dark:bg-gray-800">
                 <tr v-for="(slot, index) in slots" :key="slot.id">
                   <td
                     :class="[
                       index !== slots.length - 1
-                        ? 'border-b border-gray-200'
+                        ? 'border-b border-gray-200 dark:border-gray-700'
                         : '',
-                      'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8',
+                      'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-gray-100 sm:pl-6 lg:pl-8',
                     ]"
                   >
                     {{ slot.name }}
@@ -48,9 +48,9 @@
                   <td
                     :class="[
                       index !== slots.length - 1
-                        ? 'border-b border-gray-200'
+                        ? 'border-b border-gray-200 dark:border-gray-700'
                         : '',
-                      'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
+                      'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
                     ]"
                   >
                     {{ slot.has_requirements ? "Ja" : "Nein" }}
@@ -59,9 +59,9 @@
                   <td
                     :class="[
                       index !== slots.length - 1
-                        ? 'border-b border-gray-200'
+                        ? 'border-b border-gray-200 dark:border-gray-700'
                         : '',
-                      'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
+                      'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
                     ]"
                   >
                     <span>{{ registrations[slot.id] || 0 }}</span>
@@ -72,7 +72,7 @@
                   <td
                     :class="[
                       index !== slots.length - 1
-                        ? 'border-b border-gray-200'
+                        ? 'border-b border-gray-200 dark:border-gray-700'
                         : '',
                       'relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8',
                     ]"

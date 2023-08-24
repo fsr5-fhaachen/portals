@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative overflow-hidden rounded-lg bg-white px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6"
+    class="relative overflow-hidden rounded-lg bg-white px-4 pb-12 pt-5 shadow dark:bg-gray-800 sm:px-6 sm:pt-6"
   >
     <dt>
       <div
@@ -13,7 +13,7 @@
           <FontAwesomeIcon :icon="course.icon" />
         </div>
       </div>
-      <p class="ml-20 truncate font-medium text-gray-500">
+      <p class="ml-20 truncate font-medium text-gray-500 dark:text-gray-400">
         {{ course.name }}
       </p>
     </dt>
