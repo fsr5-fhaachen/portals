@@ -56,6 +56,9 @@
               User registrieren/zuweisen
             </InertiaLink>
           </div>
+          <div class="flex h-full items-center justify-center px-4">
+            <ColorModeButton />
+          </div>
         </div>
 
         <div class="-mr-2 flex w-10 items-center sm:hidden">

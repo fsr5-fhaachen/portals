@@ -38,7 +38,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, PropType } from "vue";
+import { computed, PropType } from "vue";
+
+const { initColorMode } = useColorMode();
+initColorMode();
 
 const packageName = __PACKAGE_NAME__;
 const packageRepositoryUrl = __PACKAGE_REPOSITORY_URL__;

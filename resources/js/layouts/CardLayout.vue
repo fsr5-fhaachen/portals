@@ -16,6 +16,10 @@
 
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
       <div class="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
+        <div class="flex justify-end">
+          <ColorModeButton />
+        </div>
+
         <AppMessage :message="message" />
 
         <div>
@@ -54,6 +58,9 @@
 <script setup lang="ts">
 const packageName = __PACKAGE_NAME__;
 const packageRepositoryUrl = __PACKAGE_REPOSITORY_URL__;
+
+const { initColorMode } = useColorMode();
+initColorMode();
 
 defineProps({
   message: {

@@ -15,6 +15,9 @@
 <script setup lang="ts">
 import { PropType } from "vue";
 
+const { initColorMode } = useColorMode();
+initColorMode();
+
 const { pages } = defineProps({
   message: {
     type: Object,
