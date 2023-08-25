@@ -1,0 +1,29 @@
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: HCloudMachineTemplate
+metadata:
+  name: <CLUSTER_NAME>-ctl
+  namespace: <CLUSTER_NAME>
+spec:
+  template:
+    spec:
+      type: cx21
+      imageName: debian-12
+      placementGroupName: ctl
+      publicNetwork:
+        enableIPv4: false
+        enableIPv6: false
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: HCloudMachineTemplate
+metadata:
+  name: <CLUSTER_NAME>-md-0
+  namespace: <CLUSTER_NAME>
+spec:
+  template:
+    spec:
+      type: cx21
+      imageName: debian-12
+      placementGroupName: md-0
+      publicNetwork:
+        enableIPv4: false
+        enableIPv6: false

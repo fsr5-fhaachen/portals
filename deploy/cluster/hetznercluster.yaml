@@ -1,0 +1,37 @@
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: HetznerCluster
+metadata:
+  name: <CLUSTER_NAME>
+  namespace: <CLUSTER_NAME>
+spec:
+  controlPlaneEndpoint:
+    host: <CLUSTER_API_URL>
+    port: 6443
+  controlPlaneLoadBalancer:
+    enabled: true
+    region: nbg1
+    type: lb11
+    name: <CLUSTER_API_URL>
+  controlPlaneRegions:
+    - fsn1
+    - nbg1
+    - hel1
+  hcloudNetwork:
+    enabled: true
+    networkZone: eu-central
+    cidrBlock: 10.0.0.0/8
+    subnetCidrBlock: 10.0.0.0/16
+  hcloudPlacementGroups:
+    - name: ctl
+      type: spread
+    - name: md-0
+      type: spread
+    - name: gw
+      type: spread
+  hetznerSecretRef:
+    name: caph-hcloud-apitoken-<HCLOUD_PROJECT_NAME>
+    key:
+      hcloudToken: token
+  sshKeys:
+    hcloud:
+      - name: <YOUR_NAME>@<YOUR_CLIENT_NAME>
