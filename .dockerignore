@@ -18,6 +18,5 @@ rr
 database/seeders/tutors.csv
 charts/
 deploy/
-scaleup/
 storage/
 docs/
