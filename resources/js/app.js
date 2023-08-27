@@ -21,6 +21,8 @@ import {
   faHouseSignal,
   faPersonThroughWindow,
   faBug,
+  faSun,
+  faMoon,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
@@ -50,7 +52,9 @@ library.add(
   faSackDollar,
   faHouseSignal,
   faPersonThroughWindow,
-  faBug
+  faBug,
+  faSun,
+  faMoon
 );
 
 createInertiaApp({

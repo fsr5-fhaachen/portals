@@ -8,34 +8,46 @@
         loading="lazy"
       />
       <h2
-        class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900"
+        class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100"
       >
-        Herzlich Willkommen in Gerolstein!
+        Herzlich Willkommen in der Erstiwoche 2023
       </h2>
     </div>
 
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-      <div class="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
+      <div
+        class="bg-white px-4 py-8 shadow dark:bg-gray-900 sm:rounded-lg sm:px-10"
+      >
+        <div class="flex justify-end">
+          <ColorModeButton />
+        </div>
+
         <AppMessage :message="message" />
 
         <div>
           <slot />
         </div>
 
-        <div class="mt-6">
-          <div class="relative">
-            <div class="absolute inset-0 flex items-center">
-              <div class="w-full border-t border-gray-300" />
-            </div>
-            <div class="relative flex justify-center text-sm">
-              <AppLink
-                :href="packageRepositoryUrl"
-                theme="gray"
-                class="bg-white px-2"
-              >
-                Powered by {{ packageName }}
-              </AppLink>
-            </div>
+        <div class="mt-6 border-t border-gray-300 dark:border-gray-700">
+          <div class="mt-4 flex items-center justify-center px-2 text-sm">
+            <AppLink :href="packageRepositoryUrl" theme="gray">
+              Powered by {{ packageName }}
+            </AppLink>
+          </div>
+          <div class="mt-6 px-2 text-sm text-gray-500 dark:text-gray-400">
+            <AppLink
+              href="https://www.hetzner.com/"
+              theme="none"
+              class="flex flex-col items-center justify-center gap-2"
+            >
+              <span>Hosted by</span>
+              <img
+                class=""
+                src="/images/hetzner.png"
+                alt="Hetzner"
+                loading="lazy"
+              />
+            </AppLink>
           </div>
         </div>
       </div>
@@ -46,6 +58,9 @@
 <script setup lang="ts">
 const packageName = __PACKAGE_NAME__;
 const packageRepositoryUrl = __PACKAGE_REPOSITORY_URL__;
+
+const { initColorMode } = useColorMode();
+initColorMode();
 
 defineProps({
   message: {

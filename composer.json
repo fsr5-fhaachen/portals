@@ -10,18 +10,20 @@
         "guzzlehttp/guzzle": "^7.2",
         "inertiajs/inertia-laravel": "^0.6.9",
         "laravel/framework": "^10.15",
-        "laravel/octane": "^1.4",
+        "laravel/octane": "^2.0",
         "laravel/tinker": "^2.8",
         "owen-it/laravel-auditing": "^13.5.1",
-        "spiral/roadrunner": "^2.8.2"
+        "spiral/roadrunner": "^2023.2.2",
+        "spiral/roadrunner-http": "^3.0.1",
+        "spiral/roadrunner-cli": "^2.5.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.10",
-        "laravel/sail": "^1.18",
+        "laravel/sail": "^1.23",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^7.0",
-        "phpunit/phpunit": "^9.3.3",
+        "phpunit/phpunit": "^10.3.2",
         "spatie/laravel-ignition": "^2.0"
     },
     "autoload": {

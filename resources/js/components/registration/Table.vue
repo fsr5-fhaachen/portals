@@ -5,70 +5,70 @@
         <div class="inline-block min-w-full py-2 align-middle">
           <div class="shadow-sm ring-1 ring-black ring-opacity-5">
             <table class="min-w-full border-separate" style="border-spacing: 0">
-              <thead class="bg-gray-50">
+              <thead class="bg-gray-50 dark:bg-gray-900">
                 <tr>
                   <th
                     scope="col"
-                    class="border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pl-6 lg:pl-8"
                   >
                     Vorname
                   </th>
                   <th
                     scope="col"
-                    class="border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
                   >
                     Nachname
                   </th>
                   <th
                     scope="col"
-                    class="border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
                   >
                     Studiengang
                   </th>
                   <th
                     v-if="!hideSlots && event.type == 'slot_booking'"
                     scope="col"
-                    class="border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
                   >
                     Slot
                   </th>
                   <th
                     v-if="!hideGroups && event.type == 'group_phase'"
                     scope="col"
-                    class="border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
                   >
                     Gruppe
                   </th>
                   <th
                     v-if="event.consider_alcohol"
                     scope="col"
-                    class="border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
                   >
                     Trinkt Alkohol
                   </th>
                   <th
                     v-if="event.type == 'slot_booking'"
                     scope="col"
-                    class="border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
                   >
                     Warteschlangenposition
                   </th>
                   <th
                     v-if="showFormColomn"
                     scope="col"
-                    class="border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
                   >
                     Rückmeldung
                   </th>
                   <th
                     scope="col"
-                    class="border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-3 pr-4 backdrop-blur backdrop-filter sm:pr-6 lg:pr-8"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-3 pr-4 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pr-6 lg:pr-8"
                   >
                     <span class="sr-only">Ist anwesend</span>
                   </th>
                 </tr>
               </thead>
-              <tbody v-if="registrationsData" class="bg-white">
+              <tbody v-if="registrationsData" class="bg-white dark:bg-gray-800">
                 <template
                   v-for="(registration, index) in registrationsData"
                   :key="registration.id"
@@ -76,21 +76,22 @@
                   <tr
                     v-if="registration.user"
                     :class="{
-                      'bg-yellow-100':
+                      'bg-yellow-100 dark:bg-yellow-900':
                         registration.queue_position &&
                         registration.queue_position > 0,
-                      'bg-red-100':
+                      'bg-red-100 dark:bg-red-900':
                         registration.queue_position &&
                         registration.queue_position == -1,
-                      'bg-green-100': registration.fulfils_requirements,
+                      'bg-green-100 dark:bg-green-900':
+                        registration.fulfils_requirements,
                     }"
                   >
                     <td
                       :class="[
                         index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200'
+                          ? 'border-b border-gray-200 dark:border-gray-700'
                           : '',
-                        'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8',
+                        'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-gray-100 sm:pl-6 lg:pl-8',
                       ]"
                     >
                       {{ registration.user.firstname }}
@@ -98,9 +99,9 @@
                     <td
                       :class="[
                         index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200'
+                          ? 'border-b border-gray-200 dark:border-gray-700'
                           : '',
-                        'whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900',
+                        'whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900 dark:text-gray-100',
                       ]"
                     >
                       {{ registration.user.lastname }}
@@ -108,9 +109,9 @@
                     <td
                       :class="[
                         index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200'
+                          ? 'border-b border-gray-200 dark:border-gray-700'
                           : '',
-                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
+                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
                       ]"
                     >
                       <template
@@ -123,9 +124,9 @@
                       v-if="!hideSlots && event.type == 'slot_booking'"
                       :class="[
                         index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200'
+                          ? 'border-b border-gray-200 dark:border-gray-700'
                           : '',
-                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
+                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
                       ]"
                     >
                       <template
@@ -141,9 +142,9 @@
                       v-if="!hideGroups && event.type == 'group_phase'"
                       :class="[
                         index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200'
+                          ? 'border-b border-gray-200 dark:border-gray-700'
                           : '',
-                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
+                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
                       ]"
                     >
                       <template
@@ -160,9 +161,9 @@
                       v-if="event.consider_alcohol"
                       :class="[
                         index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200'
+                          ? 'border-b border-gray-200 dark:border-gray-700'
                           : '',
-                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
+                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
                       ]"
                     >
                       {{ registration.drinks_alcohol ? "Ja" : "Nein" }}
@@ -171,9 +172,9 @@
                       v-if="event.type == 'slot_booking'"
                       :class="[
                         index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200'
+                          ? 'border-b border-gray-200 dark:border-gray-700'
                           : '',
-                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
+                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
                       ]"
                     >
                       <span
@@ -198,9 +199,9 @@
                       v-if="showFormColomn"
                       :class="[
                         index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200'
+                          ? 'border-b border-gray-200 dark:border-gray-700'
                           : '',
-                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500',
+                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
                       ]"
                     >
                       <code v-if="registration.form_responses">
@@ -210,7 +211,7 @@
                     <td
                       :class="[
                         index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200'
+                          ? 'border-b border-gray-200 dark:border-gray-700'
                           : '',
                         'relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8',
                       ]"

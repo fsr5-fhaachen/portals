@@ -1,0 +1,33 @@
+// https://aka.ms/devcontainer.json
+{
+  "name": "Laravel Sail",
+  "dockerComposeFile": ["../docker-compose.yml"],
+  "service": "laravel.test",
+  "workspaceFolder": "/var/www/html",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "bradlc.vscode-tailwindcss",
+        "christian-kohler.path-intellisense",
+        "esbenp.prettier-vscode",
+        "gruntfuggly.todo-tree",
+        "junstyle.php-cs-fixer",
+        "MehediDracula.php-namespace-resolver",
+        "mike-co.import-sorter",
+        "mikestead.dotenv",
+        "ms-azuretools.vscode-docker",
+        "neilbrayfield.php-docblocker",
+        "steoates.autoimport",
+        "Vue.volar",
+        "xdebug.php-debug"
+      ],
+      "settings": {}
+    }
+  },
+  "remoteUser": "sail",
+  "postCreateCommand": "chown -R 1000:1000 /var/www/html"
+  // "forwardPorts": [],
+  // "runServices": [],
+  // "shutdownAction": "none",
+}

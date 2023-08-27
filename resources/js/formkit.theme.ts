@@ -1,8 +1,8 @@
 const textClassification = {
-  label: "block text-sm font-medium text-gray-700",
+  label: "block text-sm font-medium text-gray-700 dark:text-gray-200",
   inner: "mt-1",
   input:
-    "shadow-sm focus:ring-fhac-mint focus:border-fhac-mint block w-full sm:text-sm border-gray-300 rounded-md formkit-invalid:border-red-300 formkit-invalid:text-red-900 formkit-invalid:placeholder-red-300 formkit-invalid:focus:ring-red-500 formkit-invalid:focus:border-red-500",
+    "shadow-sm focus:ring-fhac-mint focus:border-fhac-mint block w-full sm:text-sm border-gray-300 rounded-md formkit-invalid:border-red-300 formkit-invalid:text-red-900 formkit-invalid:placeholder-red-300 formkit-invalid:focus:ring-red-500 formkit-invalid:focus:border-red-500 dark:bg-gray-700 dark:border-gray-700 dark:focus:ring-gray-500 dark:focus:border-gray-500 dark:text-gray-300 formkit-invalid:dark:placeholder-red-500",
 };
 
 const boxClassification = {

@@ -191,7 +191,7 @@ const getEventById = (id: number) => {
   return events.find((event) => event.id === id);
 };
 
-const selectFormCourseOptions = useSelectFormCourseOptions(courses);
+const selectFormCourseOptions = useSelectFormCourseOptions(courses, true);
 const selectFormEventOptions = useSelectFormEventOptions(events);
 const selectFormSlotOptions = computed(() => {
   const event = getEventById(assignForm.value.event_id);

@@ -7,7 +7,9 @@ module.exports = {
     "./resources/**/*.ts",
     "./resources/**/*.vue",
     "./resources/**/*.blade.php",
+    "./database/seeders/*.php",
   ],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
