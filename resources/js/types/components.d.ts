@@ -18,6 +18,7 @@ declare module "vue" {
     CardCard: typeof import("./../components/card/Card.vue")["default"];
     CardContainer: typeof import("./../components/card/Container.vue")["default"];
     CardLayout: typeof import("./../layouts/CardLayout.vue")["default"];
+    ColorModeButton: typeof import("./../components/color/mode/Button.vue")["default"];
     copy: typeof import("./../components/ui/Dl copy.vue")["default"];
     copyTable: typeof import("./../components/slot copy/Table.vue")["default"];
     CourseBox: typeof import("./../components/course/Box.vue")["default"];

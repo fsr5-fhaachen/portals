@@ -49,9 +49,9 @@ const rootClasses = computed(() => {
   const classes: string[] = [];
 
   if (theme === "default") {
-    classes.push("text-fhac-mint-dark");
+    classes.push("text-fhac-mint-dark dark:text-fhac-mint");
   } else if (theme === "gray") {
-    classes.push("text-gray-500");
+    classes.push("text-gray-500 dark:text-gray-400");
   } else if (theme === "danger") {
     classes.push("text-red-500");
   }

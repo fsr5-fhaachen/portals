@@ -1,8 +1,16 @@
 <template>
-  <Disclosure as="nav" class="bg-white shadow-sm" v-slot="{ open }">
+  <Disclosure
+    as="nav"
+    class="bg-white shadow-sm dark:bg-black"
+    v-slot="{ open }"
+  >
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 justify-between">
-        <div class="w-10 sm:hidden"></div>
+        <div class="w-10 sm:hidden">
+          <div class="flex h-full items-center justify-start px-4">
+            <ColorModeButton class="block h-6 w-6" />
+          </div>
+        </div>
 
         <div class="flex grow justify-center sm:justify-start">
           <div class="flex flex-shrink-0 items-center">
@@ -19,8 +27,9 @@
               :key="item.title"
               :href="item.href"
               :class="{
-                'border-fhac-mint text-gray-900': $page.url == item.href,
-                'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700':
+                'border-fhac-mint text-gray-900 dark:text-gray-100':
+                  $page.url == item.href,
+                'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-100':
                   $page.url != item.href,
               }"
               class="inline-flex items-center border-b-[3px] px-1 pt-1 text-sm font-medium"
@@ -56,12 +65,20 @@
               User registrieren/zuweisen
             </InertiaLink>
           </div>
+          <div
+            :class="{
+              grow: !showAdminLink,
+            }"
+            class="hidden h-full items-center justify-end px-4 sm:flex"
+          >
+            <ColorModeButton />
+          </div>
         </div>
 
         <div class="-mr-2 flex w-10 items-center sm:hidden">
           <!-- Mobile menu button -->
           <DisclosureButton
-            class="inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-fhac-mint focus:ring-offset-2"
+            class="inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-fhac-mint focus:ring-offset-2 dark:bg-black dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-gray-100"
           >
             <span class="sr-only">Open main menu</span>
             <FontAwesomeIcon
@@ -87,9 +104,9 @@
           :as="InertiaLink"
           :href="item.href"
           :class="{
-            'border-fhac-mint bg-gray-100 text-fhac-mint-dark':
+            'border-fhac-mint bg-gray-100 text-fhac-mint-dark dark:bg-black dark:text-gray-100':
               $page.url == item.href,
-            'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800':
+            'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-gray-100':
               $page.url != item.href,
           }"
           class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
@@ -101,9 +118,9 @@
           :as="InertiaLink"
           href="/dashboard/admin"
           :class="{
-            'border-red-500 bg-red-100 text-red-900':
+            'border-red-500 bg-red-100 text-red-900 dark:bg-black dark:text-red-500':
               $page.url == '/dashboard/admin',
-            'border-transparent text-red-600 hover:border-red-300 hover:bg-red-50 hover:text-red-800':
+            'border-transparent text-red-600 hover:border-red-300 hover:bg-red-50 hover:text-red-800 dark:text-red-400 dark:hover:bg-gray-900 dark:hover:text-red-100':
               $page.url != '/dashboard/admin',
           }"
           class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
@@ -115,9 +132,9 @@
           :as="InertiaLink"
           href="/dashboard/admin/register"
           :class="{
-            'border-red-500 bg-red-100 text-red-900':
+            'border-red-500 bg-red-100 text-red-900 dark:bg-black dark:text-red-500':
               $page.url == '/dashboard/admin/register',
-            'border-transparent text-red-600 hover:border-red-300 hover:bg-red-50 hover:text-red-800':
+            'border-transparent text-red-600 hover:border-red-300 hover:bg-red-50 hover:text-red-800 dark:text-red-400 dark:hover:bg-gray-900 dark:hover:text-red-100':
               $page.url != '/dashboard/admin/register',
           }"
           class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium"

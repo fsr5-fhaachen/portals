@@ -4,7 +4,7 @@
 
     <BoxContainer>
       <CourseBox v-for="course in coursesData" :course="course">
-        <p class="text-2xl font-semibold text-gray-900">
+        <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
           {{
             typeof course.users == "number"
               ? course.users
