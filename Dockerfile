@@ -28,7 +28,7 @@ WORKDIR /var/www/html
 # install php extensions
 RUN apk add libpq-dev
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
-RUN docker-php-ext-install bcmath sockets pdo_mysql pdo pdo_pgsql pgsql
+RUN docker-php-ext-install bcmath sockets pdo_mysql pdo pdo_pgsql pgsql pcntl
 RUN apk add --no-cache pcre-dev $PHPIZE_DEPS && pecl install redis && docker-php-ext-enable redis.so
 
 # install composer
@@ -45,12 +45,16 @@ COPY ["./public", "./public"]
 COPY ["./resources/css", "./resources/css"]
 COPY ["./resources/views", "./resources/views"]
 COPY ["./routes", "./routes"]
+COPY ["./storage", "./storage"]
 
 # install dependencies
 RUN composer install
 
 # get data from previous build
 COPY --from=node ["/app/public/build/", "./public/build/"]
+
+# set permissions
+RUN chmod -R 777 ./storage
 
 # install and configure roadrunner
 COPY --from=spiralscout/roadrunner:latest /usr/bin/rr /usr/bin/rr
