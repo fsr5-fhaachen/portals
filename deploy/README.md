@@ -386,8 +386,8 @@ helm repo add ot-helm https://ot-container-kit.github.io/helm-charts/
 helm upgrade --install portals-redis ot-helm/redis-cluster --namespace portals -f deployments/portals/redis-values.yaml
 
 # portals
-helm repo add portals https://fsr5-fhaachen.github.io/portals/
-helm upgrade --install portals portals/portals --namespace portals -f deployments/portals/portals-values.yaml
+helm repo add fsr5-fhaachen https://fsr5-fhaachen.github.io/charts/
+helm upgrade --install portals fsr5-fhaachen/portals --namespace portals -f deployments/portals/portals-values.yaml
 ```
 
 ### Setup Portals
