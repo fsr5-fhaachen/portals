@@ -14,6 +14,9 @@ RUN npm install
 COPY ["vite.config.js", "./"]
 COPY ["./resources/js/", "./resources/js/"]
 COPY ["./resources/css/", "./resources/css/"]
+COPY ["./resources/views/", "./resources/view/"]
+COPY ["postcss.config.js", "./"]
+COPY ["tailwind.config.js", "./"]
 
 # build project
 RUN npm run build
