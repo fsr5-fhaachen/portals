@@ -2,6 +2,7 @@
 #       STAGE 1.1: Build JS with node
 # --------------------------------------------
 
+FROM ghcr.io/roadrunner-server/roadrunner:2023.2.2 AS roadrunner
 FROM node:16-alpine as node
 WORKDIR /app
 
@@ -28,7 +29,7 @@ WORKDIR /var/www/html
 # install php extensions
 RUN apk add libpq-dev
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
-RUN docker-php-ext-install bcmath sockets pdo_mysql pdo pdo_pgsql pgsql pcntl
+RUN docker-php-ext-install bcmath pdo_mysql pdo pdo_pgsql pgsql pcntl sockets
 RUN apk add --no-cache pcre-dev $PHPIZE_DEPS && pecl install redis && docker-php-ext-enable redis.so
 
 # install composer
@@ -58,7 +59,7 @@ RUN mkdir -p /app/storage/logs
 RUN chmod -R 777 ./storage
 
 # install and configure roadrunner
-COPY --from=spiralscout/roadrunner:latest /usr/bin/rr /usr/bin/rr
+COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
 RUN php artisan octane:install --server=roadrunner
 
 ENV ROADRUNNER_MAX_REQUESTS=512
