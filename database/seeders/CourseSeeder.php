@@ -54,7 +54,7 @@ class CourseSeeder extends Seeder
                 'abbreviation' => 'ET-Master',
                 'icon' => 'fa-person-through-window',
                 'classes' => 'bg-red-500 text-white dark:bg-red-600',
-                'show_on_registration' => false,
+                'show_on_registration' => true,
             ], [
                 'name' => 'M. Eng. Information Systems Engineering',
                 'abbreviation' => 'ISE-Master',
