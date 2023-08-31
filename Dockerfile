@@ -53,7 +53,8 @@ RUN composer install
 # get data from previous build
 COPY --from=node ["/app/public/build/", "./public/build/"]
 
-# set permissions
+# fix storage folder
+RUN mkdir -p /app/storage/logs
 RUN chmod -R 777 ./storage
 
 # install and configure roadrunner
