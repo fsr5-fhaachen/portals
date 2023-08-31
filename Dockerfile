@@ -53,6 +53,7 @@ RUN composer install
 
 # get data from previous build
 COPY --from=node ["/app/public/build/", "./public/build/"]
+COPY --from=node ["/app/public/css/", "./public/css/"]
 
 # fix storage folder
 RUN mkdir -p /app/storage/logs
