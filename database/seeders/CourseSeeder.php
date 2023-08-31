@@ -32,6 +32,12 @@ class CourseSeeder extends Seeder
                 'classes' => 'bg-violet-800 text-white dark:bg-violet-900',
                 'show_on_registration' => false,
             ], [
+                'name' => 'B. Sc. Digital Innovation & Business',
+                'abbreviation' => 'DIB',
+                'icon' => 'fa-briefcase',
+                'classes' => 'bg-lime-700 text-white dark:bg-lime-800',
+                'show_on_registration' => true,
+            ], [
                 'name' => 'B. Sc. Wirtschaftsinformatik',
                 'abbreviation' => 'WI',
                 'icon' => 'fa-sack-dollar',
