@@ -162,6 +162,10 @@ If you want information about creating the kubernetes cluster, see [deploy infor
 - LinkedIn: [Simon Ostendorf](https://www.linkedin.com/in/simonostendorf/)
 - Github: [@simonostendorf](https://github.com/simonostendorf)
 
+👤 **Martin Philemon Pinsdorf**
+
+- Github: [@PhilPinsdorf](https://github.com/PhilPinsdorf)
+
 👤 **Patrik Schmolke**
 
 - LinkedIn: [Patrik Schmolke](https://www.linkedin.com/in/patrik-schmolke-612962175/)
