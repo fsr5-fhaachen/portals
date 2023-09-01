@@ -6,9 +6,13 @@ environment:
   ADMIN_PASSWORD: admin
   DB_HOST: portals-db-rw.portals.svc
   DB_PASSWORD: <GET_PASSWORD_FROM_DB_SECRET>
-  REDIS_HOST: portals-redis.portals.svc
+  DB_USERNAME: portals
+  DB_DATABASE: portals
+  REDIS_HOST: portals-redis-sentinel.portals.svc
   REDIS_PASSWORD: password
 ingress:
   hosts:
     - portals.fsr5.de
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 replicaCount: 3

@@ -380,6 +380,9 @@ kubectl create namespace portals
 # postgresql cluster
 kubectl apply -f deployments/portals/pgsql.yaml
 
+# get the db password
+kubectl get secret -n portals portals-db-app -o jsonpath='{.data.password}' | base64 -d
+
 # redis cluster
 kubectl apply -f deployments/portals/redis-pw-secret.yaml
 helm repo add ot-helm https://ot-container-kit.github.io/helm-charts/
