@@ -19,7 +19,6 @@ class EventsErstiwocheSeeder extends Seeder
         $this->runGruppenphase();
         $this->runStadtrallye();
         $this->runHausfuehrungOffline();
-        $this->runHausfuehrungOnline();
         $this->runKneipentour();
         $this->runKaterbrunch();
         $this->runKultur();
