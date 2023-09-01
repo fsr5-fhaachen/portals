@@ -23,6 +23,7 @@ import {
   faBug,
   faSun,
   faMoon,
+  faBriefcase,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
@@ -54,7 +55,8 @@ library.add(
   faPersonThroughWindow,
   faBug,
   faSun,
-  faMoon
+  faMoon,
+  faBriefcase
 );
 
 createInertiaApp({
