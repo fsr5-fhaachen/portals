@@ -16,7 +16,7 @@
       <div class="text-center">
         <p class="text-base font-semibold text-fhac-mint-dark">404</p>
         <UiH1> Seite nicht gefunden </UiH1>
-        <p class="mt-2 text-base text-gray-500">
+        <p class="mt-2 text-base text-gray-500 dark:text-gray-300">
           Die angeforderte Seite konnte nicht gefunden werden.
         </p>
         <div class="mt-6">

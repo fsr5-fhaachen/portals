@@ -4,4 +4,7 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const { initColorMode } = useColorMode();
+initColorMode();
+</script>
