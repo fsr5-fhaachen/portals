@@ -23,9 +23,9 @@ class DatabaseSeeder extends Seeder
         if (config('app.event_type') == 'demo') {
             $seeders = [
                 ...$seeders,
-                // ModuleDemoSeeder::class,
-                // EventsDemoSeeder::class,
-                // PageDemoSeeder::class,
+                ModuleDemoSeeder::class,
+                EventsDemoSeeder::class,
+                PageDemoSeeder::class,
             ];
         } else if (config('app.event_type') == 'erstiwoche') {
             $seeders = [
