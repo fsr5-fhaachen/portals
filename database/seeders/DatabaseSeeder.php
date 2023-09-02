@@ -27,14 +27,14 @@ class DatabaseSeeder extends Seeder
                 EventsDemoSeeder::class,
                 PageDemoSeeder::class,
             ];
-        } else if (config('app.event_type') == 'erstiwoche') {
+        } elseif (config('app.event_type') == 'erstiwoche') {
             $seeders = [
                 ...$seeders,
                 ModuleErstiwocheSeeder::class,
                 EventsErstiwocheSeeder::class,
                 PageErstiwocheSeeder::class,
             ];
-        } else if (config('app.event_type') == 'gerolstein') {
+        } elseif (config('app.event_type') == 'gerolstein') {
             $seeders = [
                 ...$seeders,
                 ModuleGerolsteinSeeder::class,

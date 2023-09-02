@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Course;
 use App\Models\Event;
 use App\Models\Group;
 use App\Models\Slot;

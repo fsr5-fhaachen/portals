@@ -31,7 +31,7 @@ class PageDemoSeeder extends Seeder
 
             if ($page) {
                 // update content
-                $page->content = implode(PHP_EOL, file(__DIR__ . '/pages/demo/' . $pageData['slug'] . '.html'));
+                $page->content = implode(PHP_EOL, file(__DIR__.'/pages/demo/'.$pageData['slug'].'.html'));
 
                 // save the page
                 $page->save();
@@ -41,7 +41,7 @@ class PageDemoSeeder extends Seeder
                 $page->title = $pageData['title'];
                 $page->slug = $pageData['slug'];
                 $page->sort_order = $pageData['sort_order'];
-                $page->content = implode(PHP_EOL, file(__DIR__ . '/pages/demo/' . $pageData['slug'] . '.html'));
+                $page->content = implode(PHP_EOL, file(__DIR__.'/pages/demo/'.$pageData['slug'].'.html'));
 
                 // save the page
                 $page->save();
