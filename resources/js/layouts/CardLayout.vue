@@ -2,8 +2,14 @@
   <div class="flex min-h-full flex-col py-8 sm:px-6 lg:px-8 lg:py-16">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <img
-        class="mx-auto h-48 w-auto"
+        class="mx-auto h-48 w-auto dark:hidden"
         src="/images/logo.png"
+        alt="FSR 5 Logo"
+        loading="lazy"
+      />
+      <img
+        class="mx-auto hidden h-48 w-auto dark:block"
+        src="/images/logo-dark.png"
         alt="FSR 5 Logo"
         loading="lazy"
       />
