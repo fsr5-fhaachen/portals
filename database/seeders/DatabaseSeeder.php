@@ -14,16 +14,36 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
+        $seeders = [
             CourseSeeder::class,
             TutorSeeder::class,
-            StudentSeeder::class,
-            ModuleErstiwocheSeeder::class,
-            EventsErstiwocheSeeder::class,
-            PageErstiwocheSeeder::class,
-            // ModuleGerolsteinSeeder::class,
-            // EventsGerolsteinSeeder::class,
-            // PageGerolsteinSeeder::class,
-        ]);
+        ];
+
+        // add seder by event
+        if (config('app.event_type') == 'demo') {
+            $seeders = [
+                ...$seeders,
+                // ModuleDemoSeeder::class,
+                // EventsDemoSeeder::class,
+                // PageDemoSeeder::class,
+            ];
+        } else if (config('app.event_type') == 'erstiwoche') {
+            $seeders = [
+                ...$seeders,
+                ModuleErstiwocheSeeder::class,
+                EventsErstiwocheSeeder::class,
+                PageErstiwocheSeeder::class,
+            ];
+        } else if (config('app.event_type') == 'gerolstein') {
+            $seeders = [
+                ...$seeders,
+                ModuleGerolsteinSeeder::class,
+                EventsGerolsteinSeeder::class,
+                PageGerolsteinSeeder::class,
+            ];
+        }
+
+        // call seeders
+        $this->call($seeders);
     }
 }

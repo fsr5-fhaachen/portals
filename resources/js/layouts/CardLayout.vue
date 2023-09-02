@@ -10,7 +10,7 @@
       <h2
         class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100"
       >
-        Herzlich Willkommen in der Erstiwoche 2023
+        Herzlich Willkommen in der {{ title }} {{ new Date().getFullYear() }}
       </h2>
     </div>
 
@@ -62,10 +62,16 @@ const packageRepositoryUrl = __PACKAGE_REPOSITORY_URL__;
 const { initColorMode } = useColorMode();
 initColorMode();
 
-defineProps({
+const props = defineProps({
+  appEventType: {
+    type: String,
+    default: "demo",
+  },
   message: {
     type: Object,
     default: () => ({}),
   },
 });
+
+const { title } = useAppEventType(props.appEventType);
 </script>

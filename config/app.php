@@ -20,6 +20,31 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application force HTTPS
+    |--------------------------------------------------------------------------
+    |
+    | This value determines if the application should force HTTPS. This value
+    | is used to determine if the application should force HTTPS.
+    |
+    */
+
+    'force_https' => env('APP_FORCE_HTTPS', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application event type
+    |--------------------------------------------------------------------------
+    |
+    | This value is the type of the event. This value is used to determine
+    | the event type in the application. Possible values are 'demo',
+    | 'erstiwoche' and 'gerolstein'.
+    |
+    */
+
+    'event_type' => env('APP_EVENT_TYPE', 'demo'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Tutor password
     |--------------------------------------------------------------------------
     |
