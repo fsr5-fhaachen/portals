@@ -16,7 +16,7 @@
       <h2
         class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100"
       >
-        Herzlich Willkommen in der {{ title }} {{ new Date().getFullYear() }}
+        Herzlich Willkommen in {{ title }} {{ new Date().getFullYear() }}
       </h2>
     </div>
 
@@ -79,5 +79,10 @@ const props = defineProps({
   },
 });
 
-const { title } = useAppEventType(props.appEventType);
+const appEventType = useAppEventType(props.appEventType);
+const title = computed(() =>
+  appEventType.titleArticle
+    ? `${appEventType.titleArticle} ${appEventType.title}`
+    : appEventType.title
+);
 </script>
