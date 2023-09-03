@@ -2,6 +2,9 @@
 tutors.csv
 students.csv
 
+# deployment
+deployOwn/
+
 # dev files
 laravel.sql
 .php-cs-fixer.cache

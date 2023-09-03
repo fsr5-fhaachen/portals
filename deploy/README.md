@@ -380,24 +380,19 @@ kubectl create namespace portals
 # postgresql cluster
 kubectl apply -f deployments/portals/pgsql.yaml
 
+# get the db password
+kubectl get secret -n portals portals-db-app -o jsonpath='{.data.password}' | base64 -d
+
 # redis cluster
 kubectl apply -f deployments/portals/redis-pw-secret.yaml
 helm repo add ot-helm https://ot-container-kit.github.io/helm-charts/
 helm upgrade --install portals-redis ot-helm/redis-cluster --namespace portals -f deployments/portals/redis-values.yaml
 
 # portals
+kubectl create configmap -n portals portals-tutors-csv --from-file=tutors.csv=../database/seeders/tutors.csv
+kubectl create configmap -n portals portals-students-csv --from-file=students.csv=../database/seeders/students.csv
 helm repo add fsr5-fhaachen https://fsr5-fhaachen.github.io/charts/
 helm upgrade --install portals fsr5-fhaachen/portals --namespace portals -f deployments/portals/portals-values.yaml
-```
-
-### Setup Portals
-
-To fully setup portals you need to seed the database. You can do it by executing the following command in one portals pod. You can exec into the pod with `kubectl exec -it <POD_NAME> -n portals -- sh`.
-
-After switching into the pod, execute the following command to seed the db:
-
-```sh
-php artisan migrate:fresh --seed
 ```
 
 ### Setup DNS
