@@ -353,6 +353,11 @@ helm upgrade --install cnpg cnpg/cloudnative-pg --namespace postgresql-system --
 # redis operator
 helm repo add ot-helm https://ot-container-kit.github.io/helm-charts/
 helm upgrade --install redis-operator ot-helm/redis-operator --namespace redis-system --create-namespace
+
+# monitoring
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring-system --create-namespace -f ../deploy/deployments/addons/prometheus-values.yaml
+kubectl apply -f deployments/addons/cilium-pod-monitor.yaml
 ```
 
 <!-- TODO: Add monitoring -->
