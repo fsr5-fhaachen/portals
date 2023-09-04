@@ -4,6 +4,7 @@ environment:
   APP_DEBUG: "false"
   APP_ENV: production
   APP_FORCE_HTTPS: "true"
+  APP_EVENT_TYPE: "demo"
   TUTOR_PASSWORD: password
   ADMIN_PASSWORD: admin
   DB_HOST: portals-db-rw.portals.svc
