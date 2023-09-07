@@ -22,7 +22,7 @@ const buttonClassification = {
 };
 const checkboxClassification = {
   ...boxClassification,
-  label: "ml-3 text-md text-gray-900",
+  label: "ml-3 text-md text-gray-900 dark:text-gray-200",
 };
 
 export default {
