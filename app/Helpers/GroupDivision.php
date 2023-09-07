@@ -22,6 +22,9 @@ abstract class GroupDivision
 
     protected int $minNonDrinkers;
 
+    protected bool $loggingEnabled;
+    protected string $loggingFilePath;
+
     public function __construct(Event $event, bool $assignByAlc, int $maxGroups = 0, int $maxGroupSize = 0, int $minNonDrinkers = 3)
     {
         $this->event = $event;
@@ -31,6 +34,37 @@ abstract class GroupDivision
         $this->maxGroups = $maxGroups;
         $this->maxGroupSize = $maxGroupSize;
         $this->minNonDrinkers = $minNonDrinkers;
+
+        $this->loggingEnabled = false;
+        $this->loggingFilePath = storage_path('logs/' . env('DIVISION_LOG_FILE_NAME', 'division.log'));
+    }
+
+    /**
+     * Enables detailed logging for this division to a specified file path. Use before calling "assign()"
+     *
+     * @param string $logFilePath Path where the logs will be written
+     * @return void
+     */
+    public function enableLogging(string $logFilePath = "")
+    {
+        $this->loggingEnabled = true;
+        if ($logFilePath) $this->loggingFilePath = $logFilePath;
+    }
+
+    /**
+     * Logs current state of this division (meaning groups with info on their assigned registrations) if logging is enabled
+     *
+     * @param string $statename Describes what state the division is in at the time of logging
+     * @return void
+     */
+    public function logCurrState(string $statename)
+    {
+        if ($this->loggingEnabled == false) return;
+
+        $logger = new DivisionLogger($this->loggingFilePath);
+
+        $logger->logMsg("-----\n DIVISION STATE: " . $statename . "\n-----\n");
+        $logger->logEvent($this->event);
     }
 
     /**
@@ -100,8 +134,10 @@ abstract class GroupDivision
     {
         if ($this->assignByAlc) {
             $this->assignNonDrinkers();
+            $this->loggingEnabled ? $this->logCurrState("Post-assignNonDrinkers") : 0;
         }
         $this->assignUntilSatisfies();
+        $this->loggingEnabled ? $this->logCurrState("Post-assignUntilSatisfies") : 0;
         if ($this->maxGroupSize > 0) {
             $this->updateQueuePos($this->getUnassignedRegs());
         }
@@ -144,8 +180,14 @@ abstract class GroupDivision
 
         $cycleAssignByAlc = $this->assignByAlc;  // Determines if this assign cycle should consider alcohol consumption at any given time
 
-        foreach ($unassignedRegs as $registration) {
+        while ($unassignedRegs->isNotEmpty()) {
             $group = $groupsWithOpenSpots->first();
+
+            // If there are no non-drinkers left, the following assign cycles can safely skip alcohol considerations
+            if ($unassignedRegs->where('drinks_alcohol', '=', false)->count() == 0)
+                $cycleAssignByAlc = false;
+
+            $registration = $unassignedRegs->pop();
 
             if ($cycleAssignByAlc) {
                 $group = $groupsWithOpenSpots->filter(function ($val, $key) {
