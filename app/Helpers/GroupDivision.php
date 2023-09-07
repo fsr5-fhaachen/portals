@@ -184,12 +184,12 @@ abstract class GroupDivision
             $group = $groupsWithOpenSpots->first();
 
             // If there are no non-drinkers left, the following assign cycles can safely skip alcohol considerations
-            if ($unassignedRegs->where('drinks_alcohol', '=', false)->count() == 0)
+            if ($cycleAssignByAlc && $unassignedRegs->where('drinks_alcohol', '=', false)->count() == 0)
                 $cycleAssignByAlc = false;
 
             $registration = $unassignedRegs->pop();
 
-            if ($cycleAssignByAlc) {
+            if ($cycleAssignByAlc && $registration->drinks_alcohol) {
                 $group = $groupsWithOpenSpots->filter(function ($val, $key) {
                     return $val->registrations()
                         ->where('drinks_alcohol', '=', false)
