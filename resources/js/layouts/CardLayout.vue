@@ -62,6 +62,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+
 const packageName = __PACKAGE_NAME__;
 const packageRepositoryUrl = __PACKAGE_REPOSITORY_URL__;
 
