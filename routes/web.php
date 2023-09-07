@@ -99,25 +99,4 @@ Route::prefix('api')->middleware(Authenticate::class)->group(function () {
     Route::get('/registrations/{registration}', [ApiController::class, 'registrationsShow'])->name('api.registrations.show');
 });
 
-// TODO: remove devlopment routes
-// TODO: do it next year
-Route::prefix('dev')->middleware(IsLoggedInTutor::class, IsLoggedInAdmin::class)->group(function () {
-    //Routes to test database. REMOVE BEFORE DEPLOYMENT
-    Route::get('/cleartable/all', [DatabaseTestController::class, 'clearAllTables']);
-    Route::get('/cleartable/{tableName}', [DatabaseTestController::class, 'clearTable']);
-    Route::get('/randomfill/{tableName}/{amount}', [DatabaseTestController::class, 'randomFillTable']);
-    Route::get('/simulatedfill/{et}/{inf}/{mcd}/{wi}', [DatabaseTestController::class, 'simulatedFillStudents']);
-
-    Route::get('/randassigntimeslots/{timeslotsAmount}', [DatabaseTestController::class, 'randomAssignTimeslots']);
-    // Only works with exactly 3 timeslots and only on ET Students
-    Route::get('/simassigntimeslots/{amount1}/{amount2}/{amount3}', [DatabaseTestController::class, 'simulatedAssignTimeslots']);
-
-    Route::get('/students/{attr}/{val?}/{val2?}', [DatabaseTestController::class, 'getStudentsBy']);
-    Route::get('/tutors/{attr}/{val?}', [DatabaseTestController::class, 'getTutorsBy']);
-
-    Route::get('/resetassign', [AdminController::class, 'resetGroupAssignment']);
-    Route::get('/assign/{groupSize}/groupphase', [AdminController::class, 'randAssignmentGroupPhase']);
-    Route::get('/assign/{groupSize}/fhtour/{course}', [AdminController::class, 'randAssignmentFhTour']);
-});
-
 Route::get('{any?}', [AppController::class, 'notFound'])->where('any', '^((?!api).)*');
