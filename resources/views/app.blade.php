@@ -11,6 +11,11 @@
     <title>{{ config('app.name') }}</title>
 
     @vite(['resources/js/app.js'])
+
+    <!-- import css when not in development -->
+    @if (config('app.env') === 'production')
+    <link rel="stylesheet" href="/css/app.css">
+    @endif
 </head>
 
 <body class="bg-gray-100 dark:bg-gray-950">

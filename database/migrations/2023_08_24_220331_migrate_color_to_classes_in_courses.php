@@ -9,7 +9,7 @@ return new class extends Migration
 {
     /**
      * Map of color to classes.
-     * 
+     *
      * @var array<string, string>
      */
     protected $colorToClasses = [

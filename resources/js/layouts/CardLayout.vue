@@ -2,15 +2,21 @@
   <div class="flex min-h-full flex-col py-8 sm:px-6 lg:px-8 lg:py-16">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <img
-        class="mx-auto h-48 w-auto"
+        class="mx-auto h-48 w-auto dark:hidden"
         src="/images/logo.png"
+        alt="FSR 5 Logo"
+        loading="lazy"
+      />
+      <img
+        class="mx-auto hidden h-48 w-auto dark:block"
+        src="/images/logo-dark.png"
         alt="FSR 5 Logo"
         loading="lazy"
       />
       <h2
         class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100"
       >
-        Herzlich Willkommen in der Erstiwoche 2023
+        Herzlich Willkommen in {{ title }} {{ new Date().getFullYear() }}
       </h2>
     </div>
 
@@ -62,10 +68,21 @@ const packageRepositoryUrl = __PACKAGE_REPOSITORY_URL__;
 const { initColorMode } = useColorMode();
 initColorMode();
 
-defineProps({
+const props = defineProps({
+  appEventType: {
+    type: String,
+    default: "demo",
+  },
   message: {
     type: Object,
     default: () => ({}),
   },
 });
+
+const appEventType = useAppEventType(props.appEventType);
+const title = computed(() =>
+  appEventType.titleArticle
+    ? `${appEventType.titleArticle} ${appEventType.title}`
+    : appEventType.title
+);
 </script>

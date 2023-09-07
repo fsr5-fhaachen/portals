@@ -2,13 +2,26 @@ environment:
   APP_KEY: <INSERT_YOUR_SECURE_APP_KEY_HERE>
   APP_URL: https://portals.fsr5.de
   APP_DEBUG: "false"
+  APP_ENV: production
+  APP_FORCE_HTTPS: "true"
   TUTOR_PASSWORD: password
   ADMIN_PASSWORD: admin
   DB_HOST: portals-db-rw.portals.svc
   DB_PASSWORD: <GET_PASSWORD_FROM_DB_SECRET>
-  REDIS_HOST: portals-redis.portals.svc
+  DB_USERNAME: portals
+  DB_DATABASE: portals
+  REDIS_HOST: portals-redis-leader.portals.svc
+  REDIS_PORT: "6379"
   REDIS_PASSWORD: password
 ingress:
   hosts:
     - portals.fsr5.de
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 replicaCount: 3
+migrateJob:
+  onInstall: true
+  onUpgrade: false
+  seed: true
+  tutorsCsvConfigMapName: portals-tutors-csv
+  studentsCsvConfigMapName: portals-students-csv

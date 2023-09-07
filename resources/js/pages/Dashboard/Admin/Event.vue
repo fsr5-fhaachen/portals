@@ -93,7 +93,14 @@ const fetchRegistrations = async () => {
 // });
 
 const coursesData = ref(courses);
+const isCoursesFetching = ref(false);
 const fetchCourses = async () => {
+  if (isCoursesFetching.value) {
+    return;
+  }
+
+  isCoursesFetching.value = true;
+
   const response = await fetch("/api/events/" + event.id + "/user-amount", {
     method: "GET",
     credentials: "include",
@@ -117,6 +124,8 @@ const fetchCourses = async () => {
       };
     });
   }
+
+  isCoursesFetching.value = false;
 };
 const coursesInterval = setInterval(fetchCourses, 1000);
 onBeforeUnmount(() => {
