@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
 use App\Http\Controllers\DatabaseTestController;
+use App\Http\Controllers\DivisionLoggingController;
 use App\Http\Middleware\ActiveModule;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\IsLoggedInAdmin;
@@ -118,6 +119,11 @@ Route::prefix('dev')->middleware(IsLoggedInTutor::class, IsLoggedInAdmin::class)
     Route::get('/resetassign', [AdminController::class, 'resetGroupAssignment']);
     Route::get('/assign/{groupSize}/groupphase', [AdminController::class, 'randAssignmentGroupPhase']);
     Route::get('/assign/{groupSize}/fhtour/{course}', [AdminController::class, 'randAssignmentFhTour']);
+});
+
+Route::prefix('divisionlogger')->middleware(IsLoggedInTutor::class, IsLoggedInAdmin::class)->group(function() {
+   Route::get('/group/{groupId}', [DivisionLoggingController::class, 'logGrp']);
+   Route::get('/event/{eventId}', [DivisionLoggingController::class, 'logEvt']);
 });
 
 Route::get('{any?}', [AppController::class, 'notFound'])->where('any', '^((?!api).)*');
