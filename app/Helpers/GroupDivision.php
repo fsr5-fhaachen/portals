@@ -36,7 +36,7 @@ abstract class GroupDivision
         $this->minNonDrinkers = $minNonDrinkers;
 
         $this->loggingEnabled = false;
-        $this->loggingFilePath = storage_path('logs/' . env('DIVISION_LOG_FILE_NAME', 'division.log'));
+        $this->loggingFilePath = storage_path('logs/' . env('DIVISION_DEBUG_LOG', 'division.log'));
     }
 
     /**

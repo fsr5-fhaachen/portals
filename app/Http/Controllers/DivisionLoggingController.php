@@ -11,7 +11,7 @@ class DivisionLoggingController extends Controller
 {
     public function logGrp(int $groupId)
     {
-        $logPath = 'logs/' . env('DIVISION_LOG_FILE_NAME', 'division.log');
+        $logPath = 'logs/' . env('DIVISION_DEBUG_LOG', 'division.log');
         $logger = new DivisionLogger(storage_path($logPath));
 
         $group = Group::find($groupId);
@@ -25,7 +25,7 @@ class DivisionLoggingController extends Controller
 
     public function logEvt(int $eventId)
     {
-        $logPath = 'logs/' . env('DIVISION_LOG_FILE_NAME', 'division.log');
+        $logPath = 'logs/' . env('DIVISION_DEBUG_LOG', 'division.log');
         $logger = new DivisionLogger(storage_path($logPath));
 
         $event = Event::find($eventId);

@@ -140,7 +140,6 @@ class DashboardAdminController extends Controller
                         $maxParticipants = $request->input('max_participants_'.$course->id);
 
                         $groupCourseDivision = new GroupCourseDivision($event, $course, $event->consider_alcohol, (int) $maxGroups, (int) $maxParticipants);
-                        $groupCourseDivision->enableLogging();
                         $groupCourseDivision->assign();
                     }
                 }
@@ -152,7 +151,6 @@ class DashboardAdminController extends Controller
                 $maxParticipants = $request->max_participants;
 
                 $groupBalancedDivision = new GroupBalancedDivision($event, $event->consider_alcohol, (int) $maxGroups, (int) $maxParticipants);
-                $groupBalancedDivision->enableLogging();
                 $groupBalancedDivision->assign();
 
                 Session::flash('success', 'Die Gruppen wurden erfolgreich aufgeteilt');

@@ -121,9 +121,4 @@ Route::prefix('dev')->middleware(IsLoggedInTutor::class, IsLoggedInAdmin::class)
     Route::get('/assign/{groupSize}/fhtour/{course}', [AdminController::class, 'randAssignmentFhTour']);
 });
 
-Route::prefix('divisionlogger')->middleware(IsLoggedInTutor::class, IsLoggedInAdmin::class)->group(function() {
-   Route::get('/group/{groupId}', [DivisionLoggingController::class, 'logGrp']);
-   Route::get('/event/{eventId}', [DivisionLoggingController::class, 'logEvt']);
-});
-
 Route::get('{any?}', [AppController::class, 'notFound'])->where('any', '^((?!api).)*');
