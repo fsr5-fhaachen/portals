@@ -27,7 +27,14 @@ const { courses } = defineProps({
 });
 
 const coursesData = ref(courses);
+const isFetchingCourses = ref(false);
 const fetchCourses = async () => {
+  if (isFetchingCourses.value) {
+    return;
+  }
+
+  isFetchingCourses.value = true;
+
   const response = await fetch("/api/courses/user-amount", {
     method: "GET",
     credentials: "include",
@@ -51,6 +58,8 @@ const fetchCourses = async () => {
       };
     });
   }
+
+  isFetchingCourses.value = false;
 };
 const coursesInterval = setInterval(fetchCourses, 1000);
 onBeforeUnmount(() => {

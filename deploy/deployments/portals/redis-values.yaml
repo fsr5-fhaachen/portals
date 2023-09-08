@@ -1,5 +1,6 @@
 redisCluster:
-  persistenceEnabled: false
+  clusterSize: 3
+  persistenceEnabled: true # must be because of issues with disabled storage
   redisSecret:
     secretName: redis-password
     secretKey: password

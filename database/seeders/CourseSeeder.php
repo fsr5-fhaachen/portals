@@ -32,6 +32,12 @@ class CourseSeeder extends Seeder
                 'classes' => 'bg-violet-800 text-white dark:bg-violet-900',
                 'show_on_registration' => false,
             ], [
+                'name' => 'B. Sc. Digital Innovation & Business',
+                'abbreviation' => 'DIB',
+                'icon' => 'fa-briefcase',
+                'classes' => 'bg-fuchsia-700 text-white dark:bg-fuchsia-800',
+                'show_on_registration' => true,
+            ], [
                 'name' => 'B. Sc. Wirtschaftsinformatik',
                 'abbreviation' => 'WI',
                 'icon' => 'fa-sack-dollar',
@@ -48,7 +54,7 @@ class CourseSeeder extends Seeder
                 'abbreviation' => 'ET-Master',
                 'icon' => 'fa-person-through-window',
                 'classes' => 'bg-red-500 text-white dark:bg-red-600',
-                'show_on_registration' => false,
+                'show_on_registration' => true,
             ], [
                 'name' => 'M. Eng. Information Systems Engineering',
                 'abbreviation' => 'ISE-Master',

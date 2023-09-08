@@ -8,3 +8,7 @@ spec:
   primaryUpdateStrategy: unsupervised
   storage:
     size: 10Gi
+  bootstrap:
+    initdb:
+      database: app
+      owner: app
