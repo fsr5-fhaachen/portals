@@ -13,11 +13,11 @@ class TestingSeeder extends Seeder
      */
     public function run(): void
     {
-        $event_id = config('database.seeder.event_id', 1);
-        $course_id = config('database.seeder.course_id', 1);
-        $slot_id = config('database.seeder.slot_id', null);
-        $regs_total = config('database.seeder.regs_total', 1);
-        $regs_nd = config('database.seeder.regs_nd', 1);
+        $event_id = config('database.testingSeeder.event_id', 1);
+        $course_id = config('database.testingSeeder.course_id', 1);
+        $slot_id = config('database.testingSeeder.slot_id', null);
+        $regs_total = config('database.testingSeeder.regs_total', 1);
+        $regs_nd = config('database.testingSeeder.regs_nd', 1);
 
         // Drinkers
         $amount = (int) $regs_total - (int) $regs_nd;

@@ -110,16 +110,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Seeder Values
+    | Testing Seeder Values
     |--------------------------------------------------------------------------
     |
-    | These values can be used to dynamically configure some of the seeders.
+    | These values can be used to dynamically configure the testing seeder.
     | For example, we can decide for what course and how many registrations
     | (drinker and non-drinker) the seeder should create.
     |
     */
 
-    'seeder' => [
+    'testingSeeder' => [
         'event_id' => env('SEEDER_EVENT_ID', 1),
         'course_id' => env('SEEDER_COURSE_ID', 1),
         'slot_id' => env('SEEDER_SLOT_ID', null),
