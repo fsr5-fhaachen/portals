@@ -358,15 +358,14 @@ helm upgrade --install redis-operator ot-helm/redis-operator --namespace redis-s
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring-system --create-namespace -f ../deploy/deployments/addons/prometheus-values.yaml
 kubectl apply -f deployments/addons/cilium-pod-monitor.yaml
+kubectl apply -f deployments/addons/pgsql-operator-pod-monitor.yaml
 ```
-
-<!-- TODO: Add monitoring -->
 
 <!-- TODO: Add logging -->
 
 <!-- TODO: Configure addons -->
 
-<!-- TODO: Add horizontal and vertical autoscaler -->
+<!-- TODO: Add cluster autoscaler -->
 
 <!-- TODO: Add access for more users -->
 
@@ -413,3 +412,11 @@ curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE
 ```
 
 Ready, you can connect to portals on your configured url.
+
+### Load Test
+
+If you want to load test the application you could use wrk.
+
+```sh
+docker run -it --name load-test --rm alpine:latest /bin/sh -c "apk update && apk add wrk && apk add curl && ulimit -n 65535 && wrk -t12 -c400 -d120s https://<YOUR_PORTALS_DOMAIN>/login"
+```

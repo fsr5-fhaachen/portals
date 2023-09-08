@@ -19,10 +19,16 @@ ingress:
     - portals.fsr5.de
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-replicaCount: 3
+    nginx.ingress.kubernetes.io/limit-rps: "500"
+replicaCount: 5
 migrateJob:
   onInstall: true
   onUpgrade: false
   seed: true
   tutorsCsvConfigMapName: portals-tutors-csv
   studentsCsvConfigMapName: portals-students-csv
+hpa:
+  enabled: true
+  minReplicas: 5
+  maxReplicas: 10
+  averageCPUUtilization: 90
