@@ -156,51 +156,6 @@ class GroupBalancedDivision extends GroupDivision
         $this->assignBalanced($unassignedRegs, $this->registrations);
     }
 
-    // TODO If confident that this is not necessary anymore, just delete
-    protected function assignLeftoverTo(Collection $leftoverRegs, Collection $groups)
-    {
-        // Sort groups by how many registrations are assigned to it
-        $sortedGroups = $groups->sortBy(function ($group) {
-            return $group->registrations()->count();
-        });
-
-        // Assign registrations to the groups
-        $i = 0;
-        $amountOfGroups = $sortedGroups->count();
-        foreach ($leftoverRegs as $registration) {
-            if ($i >= $amountOfGroups) {
-                $i = 0;
-            }
-
-            $registration->group_id = $sortedGroups[$i]->id;
-            $registration->save();
-            $i++;
-        }
-    }
-
-    // TODO If confident that this is not necessary anymore, just delete
-    public function assignLeftoverAlt()
-    {
-        // Get only registrations that have yet to be assigned a group
-        $unassignedRegs = $this->getUnassignedRegs();
-
-        if ($this->assignByAlc) {
-            $unassignedNonDrinkers = $unassignedRegs->where('drinks_alcohol', '=', false);
-            $groupsWithNonDrinkers = $this->groups->filter(function ($val, $key) {
-                return $val->registrations()
-                    ->where('drinks_alcohol', '=', false)
-                    ->count() > 0;
-            });
-
-            $this->assignLeftoverTo($unassignedNonDrinkers, $groupsWithNonDrinkers);
-        }
-
-        // Refresh in case non-drinkers got assigned
-        $unassignedRegs = $unassignedRegs->where('group_id', '=', null);
-
-        $this->assignLeftoverTo($unassignedRegs, $this->groups);
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -212,11 +167,15 @@ class GroupBalancedDivision extends GroupDivision
         });
 
         if ($groupsNotAssigned) {
+            $this->loggingEnabled ? $this->logCurrState("Pre-assignInitial") : 0;
             $this->assignInitial();
+            $this->loggingEnabled ? $this->logCurrState("Post-assignInitial") : 0;
         }
+        $this->loggingEnabled ? $this->logCurrState("Pre-assignLeftover") : 0;
         $this->assignLeftover();
         if ($this->maxGroupSize > 0) {
             $this->updateQueuePos($this->getUnassignedRegs()->sortBy('queue_position'));
         }
+        $this->loggingEnabled ? $this->logCurrState("Post-assignLeftover") : 0;
     }
 }

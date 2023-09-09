@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
 use App\Http\Controllers\DatabaseTestController;
+use App\Http\Controllers\DivisionLoggingController;
 use App\Http\Middleware\ActiveModule;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\IsLoggedInAdmin;

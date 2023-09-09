@@ -110,6 +110,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Testing Seeder Values
+    |--------------------------------------------------------------------------
+    |
+    | These values can be used to dynamically configure the testing seeder.
+    | For example, we can decide for what course and how many registrations
+    | (drinker and non-drinker) the seeder should create.
+    |
+    */
+
+    'testingSeeder' => [
+        'event_id' => env('SEEDER_EVENT_ID', 1),
+        'course_id' => env('SEEDER_COURSE_ID', 1),
+        'slot_id' => env('SEEDER_SLOT_ID', null),
+        'regs_total' => env('SEEDER_TOTAL', 1),
+        'regs_nd' => env('SEEDER_NONDRINKERS', 1)
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Redis Databases
     |--------------------------------------------------------------------------
     |
