@@ -8,7 +8,39 @@ spec:
   primaryUpdateStrategy: unsupervised
   storage:
     size: 10Gi
+  postgresql:
+    parameters:
+      max_connections: "300"
+      shared_buffers: "80MB"
   bootstrap:
     initdb:
       database: app
       owner: app
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: portals-db
+  namespace: portals
+spec:
+  selector:
+    matchLabels:
+      cnpg.io/cluster: portals-db
+  podMetricsEndpoints:
+    - port: metrics
+#---
+#apiVersion: postgresql.cnpg.io/v1
+#kind: Pooler
+#metadata:
+#  name: portals-db-pooler
+#  namespace: portals
+#spec:
+#  cluster:
+#    name: portals-db
+#  instances: 3
+#  type: rw
+#  pgbouncer:
+#    poolMode: transaction
+#    parameters:
+#      max_client_conn: "1000"
+#      default_pool_size: "20"

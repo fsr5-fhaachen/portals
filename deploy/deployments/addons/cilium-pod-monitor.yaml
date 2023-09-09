@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: cilium-agent
+  namespace: cilium-system
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cilium-agent
+  podMetricsEndpoints:
+    - port: prometheus
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: cilium-operator
+  namespace: cilium-system
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cilium-operator
+  podMetricsEndpoints:
+    - port: prometheus
