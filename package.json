@@ -14,7 +14,7 @@
     "lint:fix": "npx prettier --write \"./resources/js/**/*.{ts,vue}\" --check \"./README.md\""
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.9",
+    "@tailwindcss/typography": "^0.5.10",
     "@vitejs/plugin-vue": "^3.2.0",
     "autoprefixer": "^10.4.15",
     "axios": "^1.5.0",
