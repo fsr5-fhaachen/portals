@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         if (config('app.event_type') == 'demo') {
             $seeders = [
                 ...$seeders,
+                UserDemoSeeder::class,
                 ModuleDemoSeeder::class,
                 EventsDemoSeeder::class,
                 PageDemoSeeder::class,

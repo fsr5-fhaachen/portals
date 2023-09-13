@@ -124,7 +124,7 @@ return [
         'course_id' => env('SEEDER_COURSE_ID', 1),
         'slot_id' => env('SEEDER_SLOT_ID', null),
         'regs_total' => env('SEEDER_TOTAL', 1),
-        'regs_nd' => env('SEEDER_NONDRINKERS', 1)
+        'regs_nd' => env('SEEDER_NONDRINKERS', 1),
     ],
 
     /*

@@ -1,14 +1,11 @@
 <?php
 
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
-use App\Http\Controllers\DatabaseTestController;
-use App\Http\Controllers\DivisionLoggingController;
 use App\Http\Middleware\ActiveModule;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\IsLoggedInAdmin;

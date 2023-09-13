@@ -98,15 +98,15 @@ class GroupCourseDivision extends GroupDivision
         });
 
         if ($courseNotAssigned) {
-            $this->loggingEnabled ? $this->logCurrState("Pre-assignInitial") : 0;
+            $this->loggingEnabled ? $this->logCurrState('Pre-assignInitial') : 0;
             $this->assignInitial();
-            $this->loggingEnabled ? $this->logCurrState("Post-assignInitial") : 0;
+            $this->loggingEnabled ? $this->logCurrState('Post-assignInitial') : 0;
         }
-        $this->loggingEnabled ? $this->logCurrState("Pre-assignLeftover") : 0;
+        $this->loggingEnabled ? $this->logCurrState('Pre-assignLeftover') : 0;
         $this->assignLeftover();
         if ($this->maxGroupSize > 0) {
             $this->updateQueuePos($this->getUnassignedRegs()->sortBy('queue_position'));
         }
-        $this->loggingEnabled ? $this->logCurrState("Pre-assignLeftover") : 0;
+        $this->loggingEnabled ? $this->logCurrState('Pre-assignLeftover') : 0;
     }
 }
