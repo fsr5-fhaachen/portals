@@ -4,7 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\Event;
 use App\Models\Group;
+use App\Models\Registration;
 use App\Models\Slot;
+use App\Models\User;
 use DateTime;
 use Illuminate\Database\Seeder;
 
@@ -65,6 +67,18 @@ class EventsDemoSeeder extends Seeder
             $group->event_id = $event->id;
             $group->save();
         }
+
+        // get all users (except admin and tutor)
+        $users = User::where('is_admin', false)->where('is_tutor', false)->get();
+
+        // register users to event
+        foreach ($users as $user) {
+            // create registration
+            $event->registrations()->create([
+                'user_id' => $user->id,
+                'drinks_alcohol' => rand(0, 1) == 1,
+            ]);
+        }
     }
 
     /**
@@ -110,6 +124,20 @@ class EventsDemoSeeder extends Seeder
 
         // save the event
         $event->save();
+
+        // get all users (except admin and tutor)
+        $users = User::where('is_admin', false)->where('is_tutor', false)->get();
+
+        // register users to event
+        foreach ($users as $user) {
+            // create registration
+            $event->registrations()->create([
+                'user_id' => $user->id,
+                'form_responses' => json_encode([
+                    'lorem' => ['ipsum', 'dolor', 'sit'][rand(0, 2)],
+                ]),
+            ]);
+        }
     }
 
     /**
@@ -181,6 +209,7 @@ class EventsDemoSeeder extends Seeder
             ],
         ];
 
+        // save slots
         foreach ($slots as $slotData) {
             $slot = new Slot();
             $slot->name = $slotData['name'];
@@ -189,6 +218,37 @@ class EventsDemoSeeder extends Seeder
             $slot->maximum_participants = $slotData['maximum_participants'];
 
             $slot->save();
+        }
+
+        // get all users (except admin and tutor)
+        $users = User::where('is_admin', false)->where('is_tutor', false)->get();
+
+        // get all slots of the event
+        $slots = $event->slots()->get();
+
+        // register users to event
+        foreach ($users as $user) {
+            // get random slot
+            $slot = $slots[rand(0, count($slots) - 1)];
+
+            // check if slot has maximum_participants
+            $queuePosition = null;
+            if ($slot->maximum_participants) {
+                $queuePosition = Registration::where('event_id', $event->id)->where('slot_id', $slot->id)->max('queue_position');
+
+                if (! $queuePosition || $queuePosition == -1) {
+                    $queuePosition = -1;
+                } else {
+                    $queuePosition++;
+                }
+            }
+
+            // create registration
+            $event->registrations()->create([
+                'user_id' => $user->id,
+                'slot_id' => $slot->id,
+                'queue_position' => $queuePosition ?? null,
+            ]);
         }
     }
 }
