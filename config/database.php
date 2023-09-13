@@ -156,6 +156,7 @@ return [
                     'password' => env('REDIS_PASSWORD'),
                     'port' => env('REDIS_PORT', '6379'),
                     'database' => env('REDIS_DB', '0'),
+                    'prefix' => '',
                 ],
             ],
 
@@ -166,6 +167,7 @@ return [
                     'password' => env('REDIS_PASSWORD'),
                     'port' => env('REDIS_PORT', '6379'),
                     'database' => env('REDIS_CACHE_DB', '1'),
+                    'prefix' => 'cache',
                 ],
             ],
         ],
