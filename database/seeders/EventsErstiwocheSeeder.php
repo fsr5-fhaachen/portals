@@ -65,7 +65,7 @@ class EventsErstiwocheSeeder extends Seeder
             'Die schnellen Schildkröten',
             'Die schicken Spinnen',
             'Die netten Nasenbären',
-            'Die berühmten Bonobos',
+            'Die putzigen Pandas',
             'Die tapferen Tucans',
             'Die klugen Krokodile',
             'Die wundervollen Wallabys',

@@ -41,3 +41,8 @@ image:
 operator:
   rollOutPods: true
   priorityClassName: "system-node-critical"
+  prometheus:
+    enabled: true
+
+prometheus:
+  enabled: true
