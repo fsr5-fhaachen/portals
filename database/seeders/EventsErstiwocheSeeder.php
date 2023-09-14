@@ -18,7 +18,7 @@ class EventsErstiwocheSeeder extends Seeder
     {
         $this->runGruppenphase();
         $this->runStadtrallye();
-        $this->runHausfuehrungOffline();
+        $this->runHausfuehrung();
         $this->runKneipentour();
         $this->runKaterbrunch();
         $this->runKultur();
@@ -39,10 +39,10 @@ class EventsErstiwocheSeeder extends Seeder
         // create a new event
         $event = new Event();
         $event->name = 'Gruppenphase';
-        $event->description = 'Während der Gruppenphase erhältst du von deinen Tutoren und Tutorinnen wichtige Informationen rund um das Studium. Außerdem ist die Gruppenphase dazu da, um direkt die anderen Erstis kennenzulernen und erste Freundschaften zu schließen.';
+        $event->description = '<p>Während der Gruppenphase erhältst du von deinen Tutoren und Tutorinnen wichtige Informationen rund um das Studium. Außerdem ist die Gruppenphase dazu da, um direkt die anderen Erstis kennenzulernen und erste Freundschaften zu schließen.</p>';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2022-09-19 8:00:00');
-        $event->registration_to = new DateTime('2022-09-19 12:30:00');
+        $event->registration_from = new DateTime('2023-09-25 8:00:00');
+        $event->registration_to = new DateTime('2023-09-25 12:30:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 100;
@@ -97,8 +97,8 @@ class EventsErstiwocheSeeder extends Seeder
         $event->name = 'Stadtrallye';
         $event->description = '<p>Die Stadtrallye ist ein Event, bei dem du in Gruppen die Stadt erkundest. Dabei gibt es verschiedene Aufgaben, die ihr lösen müsst. Dabei könnt ihr euch gegenseitig unterstützen und euch so besser kennenlernen.</p><p><strong>Treffpunkt: </strong> 9:00 Uhr Campus Eupener Straße</p>';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2022-09-19 8:00:00');
-        $event->registration_to = new DateTime('2022-09-20 9:15:00');
+        $event->registration_from = new DateTime('2023-09-25 8:00:00');
+        $event->registration_to = new DateTime('2023-09-26 9:15:00');
         $event->has_requirements = false;
         $event->consider_alcohol = true;
         $event->sort_order = 110;
@@ -125,23 +125,23 @@ class EventsErstiwocheSeeder extends Seeder
     }
 
     /**
-     * Run the "Hausführung Offline" event seeds.
+     * Run the "Hausführung" event seeds.
      */
-    public function runHausfuehrungOffline(): void
+    public function runHausfuehrung(): void
     {
-        // check if event with name "Hausführung (Präsenz)" exists
-        $event = Event::where('name', 'Hausführung (Präsenz)')->first();
+        // check if event with name "Hausführung" exists
+        $event = Event::where('name', 'Hausführung')->first();
         if ($event) {
             return;
         }
 
         // create a new event
         $event = new Event();
-        $event->name = 'Hausführung (Präsenz)';
-        $event->description = 'Nachdem ihr nun die Stadt erkundet habt, ist es Zeit auch mal eure Hochschule von innen zu sehen. In der Hausführung erwarten euch sowohl Informationen über wichtige Stationen am Campus, die ihr während eurer Studienzeit sicherlich das ein oder andere Mal aufsuchen werdet, als auch die Möglichkeit, einige eurer Professoren und ein paar ihrer Projekte kennenzulernen. Durch die Aufteilung nach Studiengang ist es auch eine gute Möglichkeit, schonmal Bekanntschaft mit euren Sitznachbarn in den Vorlesungen zu machen.';
+        $event->name = 'Hausführung';
+        $event->description = '<p>Nachdem ihr nun die Stadt erkundet habt, ist es Zeit auch mal eure Hochschule von innen zu sehen. In der Hausführung erwarten euch sowohl Informationen über wichtige Stationen am Campus, die ihr während eurer Studienzeit sicherlich das ein oder andere Mal aufsuchen werdet, als auch die Möglichkeit, einige eurer Professoren und ein paar ihrer Projekte kennenzulernen. Durch die Aufteilung nach Studiengang ist es auch eine gute Möglichkeit, schonmal Bekanntschaft mit euren Sitznachbarn in den Vorlesungen zu machen.</p>';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2022-09-19 8:00:00');
-        $event->registration_to = new DateTime('2022-09-21 9:15:00');
+        $event->registration_from = new DateTime('2023-09-25 8:00:00');
+        $event->registration_to = new DateTime('2023-09-27 9:15:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 120;
@@ -161,13 +161,13 @@ class EventsErstiwocheSeeder extends Seeder
         // create event groups
         $groups = [];
 
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 8; $i++) {
             $groups[] = [
                 'name' => "INF Hausführung $i",
                 'course_id' => $coursesByAbbreviation['INF']->id,
             ];
         }
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 2; $i++) {
             $groups[] = [
                 'name' => "ET Hausführung $i",
                 'course_id' => $coursesByAbbreviation['ET']->id,
@@ -175,8 +175,8 @@ class EventsErstiwocheSeeder extends Seeder
         }
         for ($i = 1; $i <= 3; $i++) {
             $groups[] = [
-                'name' => "MCD Hausführung $i",
-                'course_id' => $coursesByAbbreviation['MCD']->id,
+                'name' => "DIB Hausführung $i",
+                'course_id' => $coursesByAbbreviation['DIB']->id,
             ];
         }
         for ($i = 1; $i <= 3; $i++) {
@@ -210,10 +210,10 @@ class EventsErstiwocheSeeder extends Seeder
         // create a new event
         $event = new Event();
         $event->name = 'Kneipentour';
-        $event->description = null;
+        $event->description = '<p>Sei Teil unserer Kneipentour, um die besten Bars zu entdecken, unterhaltsame Spiele zu genießen und deine Kommilitonen kennenzulernen.</p>';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2022-09-20 8:00:00');
-        $event->registration_to = new DateTime('2022-09-21 17:50:00');
+        $event->registration_from = new DateTime('2023-09-26 8:00:00');
+        $event->registration_to = new DateTime('2023-09-27 17:50:00');
         $event->has_requirements = false;
         $event->consider_alcohol = true;
         $event->sort_order = 130;
@@ -253,13 +253,13 @@ class EventsErstiwocheSeeder extends Seeder
         // create a new event
         $event = new Event();
         $event->name = 'Katerbrunch';
-        $event->description = '<p>Nachdem wir alle nach der Kneipentour am Mittwoch Abend etwas verkatert sind, gibt es doch nichts besseres als zusammen bei einem guten Fr&uuml;hst&uuml;ck auszukatern 😊 <br />Hierf&uuml;r bitte wir euch die 2&euro; Anmeldegeb&uuml;hr am Montag zwischen 13:00 und 14:30 Uhr oder Mittwoch zwischen 08:30 und 13:00 Uhr im FSR zu bezahlen, sonst k&ouml;nnt ihr leider nicht teilnehmen. </p>
-        <p><strong>Wann:</strong> 22.09 ab 12:30 Uhr <br /><strong>Wo:</strong> FH, am D Geb&auml;ude <br /><strong>Was mitbringen:</strong> Tasse/ Becher und Teller ggf, Picknickdecke bei gutem Wetter.</p>
+        $event->description = '<p>Nachdem wir alle nach der Kneipentour am Mittwoch Abend etwas verkatert sind, gibt es doch nichts besseres als zusammen bei einem guten Fr&uuml;hst&uuml;ck auszukatern 😊 <br />Hierf&uuml;r bitte wir euch die 2&euro; Anmeldegeb&uuml;hr am Montag zwischen 13:00 und 14:30 Uhr oder Mittwoch zwischen 08:30 und 13:00 Uhr im FSR zu bezahlen, sonst k&ouml;nnt ihr leider nicht teilnehmen.</p>
+        <p><strong>Wann:</strong> 28.09 ab 12:30 Uhr <br /><strong>Wo:</strong> FH, am D Geb&auml;ude <br /><strong>Was mitbringen:</strong> Tasse/ Becher und Teller ggf, Picknickdecke bei gutem Wetter.</p>
         <p>Im Anschluss k&ouml;nnen wir noch gemeinsam in den Park gehen und den Tag bei ein paar runden Flunkyball ausklingen lassen 😊</p>
         <p>Wir freuen uns auf euch</p>';
         $event->type = 'event_registration';
-        $event->registration_from = new DateTime('2022-09-19 8:00:00');
-        $event->registration_to = new DateTime('2022-09-21 12:00:00');
+        $event->registration_from = new DateTime('2023-09-25 8:00:00');
+        $event->registration_to = new DateTime('2023-09-26 23:59:59');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 140;
@@ -287,28 +287,20 @@ class EventsErstiwocheSeeder extends Seeder
      */
     public function runSport(): void
     {
-        // check if event with name "Sport" exists
-        $event = Event::where('name', 'Sport')->first();
-        if ($event) {
-            return;
-        }
-
         // create a new event
         $event = new Event();
         $event->name = 'Sport';
         $event->description = '<p>Auch sportliche Aktivitäten kommen bei uns nicht zu kurz. Für eine Anmeldegebühr von <strong>5€</strong> könnt ihr euch am Freitag auspowern.</p>
-        <p>Bitte bezahlt die Anmeldegebühr am Montag oder Mittwoch im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben.</p>
-        <p>Bitte beachtet auch die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
-        <p><strong>Fußball, Volleyball, Basketball:</strong> Die Anmeldegebühr dient als Pfand und wird euch zurückerstattet, wenn ihr Freitag erscheint.</p>
-        <p>Anschließende Teilnahme am Kulturprogramm Punkt “Zoo” ist leider Zeitlich nicht möglich.</p>
-        <p><strong>Yoga:</strong> Bitte bringt eine eigene Yogamatte mit.
-        <p>Bouldern: Anschließende Teilnahme am Kulturprogramm Punkt “Zoo” ist leider Zeitlich nicht möglich.</p>
-        <p><strong>Lasertag:</strong> Anschließende Teilnahme an den Kulturprogramm Punkten “Zoo” und “Stadtführung” ist leider Zeitlich nicht möglich.</p>
-        <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
-        <p>Wir freuen uns auf euch!</p>';
+            <p>Bitte bezahlt die Anmeldegebühr am Montag oder Mittwoch im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben.</p>
+            <p>Bitte beachtet auch die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
+            <p><strong>Fußball, Volleyball, Basketball:</strong> Die Anmeldegebühr bekommt ihr zurückerstattet, wenn es wegen schlechtem Wetter ausfällt.</p>
+            <p><strong>Yoga:</strong> Bitte bringt eine eigene Yogamatte mit.</p>
+            <p><strong>Allgemein:</strong> Anschließende Teilnahme an den Kulturprogrammpunkten ist nur die “Kebabtour” zeitlich möglich.</p>
+            <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
+            <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
-        $event->registration_from = new DateTime('2022-09-19 08:00:00');
-        $event->registration_to = new DateTime('2022-09-20 23:59:00');
+        $event->registration_from = new DateTime('2023-09-25 08:00:00');
+        $event->registration_to = new DateTime('2023-09-26 23:59:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 150;
@@ -331,12 +323,12 @@ class EventsErstiwocheSeeder extends Seeder
             [
                 'name' => 'Bouldern',
                 'has_requirements' => true,
-                'maximum_participants' => 50,
+                'maximum_participants' => 30,
             ],
             [
                 'name' => 'Lasertag',
                 'has_requirements' => true,
-                'maximum_participants' => 60,
+                'maximum_participants' => 57,
             ],
         ];
 
@@ -365,25 +357,32 @@ class EventsErstiwocheSeeder extends Seeder
         // create a new event
         $event = new Event();
         $event->name = 'Kultur';
-        $event->description = '<p>Die Stadt Aachen von einer etwas anderen Seite besser kennenlernen, Ziegen streicheln oder sich einfach den Bauch richtig voll schlagen? Auch das ist am Freitag in der Erstiwoche möglich.</p>
-        <p>Bitte beachtet die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
-        <p><strong>Stadtführung:</strong> Die Stadtführung ist für euch kostenlos. Wenn ihr für Lasertag angemeldet seid, ist eine Teilnahme bei der Stadtführung leider <strong>nicht</strong> möglich.</p>
-        <p><strong>Zoo:</strong> Den Eintrittspreis von <strong>4,10€</strong> müsst ihr vor Ort selber Zahlen Wenn ihr für Fußball, Volleyball, Basketball, Lasertag oder Bouldern angemeldet seid, ist eine Teilnahme bei der Stadtführung leider <strong>nicht</strong> möglich.</p>
-        <p><strong>Kebaptour:</strong> Ihr müsst eure Döner/ Falafel-Taschen selber zahlen.</p>
-        <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
-        <p>Wir freuen uns auf euch!</p>';
+        $event->description = '<p>Die Stadt Aachen von einer etwas anderen Seite besser kennenlernen, Ziegen streicheln oder sich einfach den Bauch richtig voll schlagen?
+            Auch das ist am Freitag in der Erstiwoche möglich.</p>
+            <p>Bitte beachtet die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
+            <p><strong>Tour durch das Alemaniastadion:</strong> Die Stadiontour ist für euch kostenlos.</p>
+            <p><strong>Stadtführung:</strong> Die Stadtführung ist für euch kostenlos.</p>
+            <p><strong>Zoo:</strong> Den Eintrittspreis von <strong>4,10€</strong> müsst ihr vor Ort selber zahlen.</p>
+            <p><strong>Kebabtour:</strong> Ihr müsst eure Döner/ Falafel-Taschen selber zahlen.</p>
+            <p><strong>Allgemein:</strong> Anschließende Teilnahme weiteren Programmpunkten ist nur die “Kebabtour” zeitlich möglich.</p>
+            <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
+            <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
-        $event->registration_from = new DateTime('2022-09-19 08:00:00');
-        $event->registration_to = new DateTime('2022-09-20 23:59:00');
+        $event->registration_from = new DateTime('2023-09-25 08:00:00');
+        $event->registration_to = new DateTime('2023-09-26 23:59:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 151;
-
         // save the event
         $event->save();
 
         // create event slots
         $slots = [
+            [
+                'name' => 'Tour durch das Alemaniastadion',
+                'has_requirements' => false,
+                'maximum_participants' => 200,
+            ],
             [
                 'name' => 'Kebabtour',
                 'has_requirements' => false,
@@ -392,12 +391,12 @@ class EventsErstiwocheSeeder extends Seeder
             [
                 'name' => 'Stadtführung',
                 'has_requirements' => false,
-                'maximum_participants' => 15,
+                'maximum_participants' => 20,
             ],
             [
                 'name' => 'Zoo',
                 'has_requirements' => false,
-                'maximum_participants' => null,
+                'maximum_participants' => 15,
             ],
         ];
 
