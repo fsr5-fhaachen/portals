@@ -9,8 +9,8 @@ use OwenIt\Auditing\Contracts\Auditable;
 
 class StationTutor extends Pivot implements Auditable
 {
-    use \OwenIt\Auditing\Auditable;
     use HasFactory;
+    use \OwenIt\Auditing\Auditable;
 
     /**
      * The attributes that aren't mass assignable.
