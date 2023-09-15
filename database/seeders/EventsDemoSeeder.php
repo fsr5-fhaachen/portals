@@ -311,7 +311,7 @@ class EventsDemoSeeder extends Seeder
             if ($slot->maximum_participants) {
                 $queuePosition = Registration::where('event_id', $event->id)->where('slot_id', $slot->id)->max('queue_position');
 
-                if (!$queuePosition || $queuePosition == -1) {
+                if (! $queuePosition || $queuePosition == -1) {
                     $queuePosition = -1;
                 } else {
                     $queuePosition++;
