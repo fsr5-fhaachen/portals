@@ -1,0 +1,26 @@
+######################################################
+#                                                    #
+# This workflow deletes all untagged images from     #
+# the GitHub Container Registry every day at 3am UTC #
+# except for the 10 most recent untagged images.     #
+#                                                    #
+######################################################
+
+name: Docker Cleanup
+
+on:
+  schedule:
+    - cron: "0 3 * * *" # Every day at 3am UTC
+
+jobs:
+  delete:
+    name: Delete untagged images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete untagged images
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: "portals"
+          package-type: "container"
+          min-versions-to-keep: 10
+          delete-only-untagged-versions: "true"
