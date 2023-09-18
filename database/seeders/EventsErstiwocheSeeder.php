@@ -98,7 +98,7 @@ class EventsErstiwocheSeeder extends Seeder
         $event->description = '<p>Die Stadtrallye ist ein Event, bei dem du in Gruppen die Stadt erkundest. Dabei gibt es verschiedene Aufgaben, die ihr lösen müsst. Dabei könnt ihr euch gegenseitig unterstützen und euch so besser kennenlernen.</p><p><strong>Treffpunkt: </strong> 9:00 Uhr Campus Eupener Straße</p>';
         $event->type = 'group_phase';
         $event->registration_from = new DateTime('2023-09-25 8:00:00');
-        $event->registration_to = new DateTime('2023-09-26 9:15:00');
+        $event->registration_to = new DateTime('2023-09-26 10:00:00');
         $event->has_requirements = false;
         $event->consider_alcohol = true;
         $event->sort_order = 110;
