@@ -13,9 +13,7 @@ spec:
     type: lb11
     name: <CLUSTER_API_URL>
   controlPlaneRegions:
-    - fsn1
     - nbg1
-    - hel1
   hcloudNetwork:
     enabled: true
     networkZone: eu-central

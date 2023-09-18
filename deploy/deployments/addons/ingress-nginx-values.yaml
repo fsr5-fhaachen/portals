@@ -8,7 +8,7 @@ controller:
   replicaCount: 2
   service:
     annotations:
-      load-balancer.hetzner.cloud/location: fsn1
+      load-balancer.hetzner.cloud/location: nbg1
       load-balancer.hetzner.cloud/use-private-ip: true
       load-balancer.hetzner.cloud/name: <YOUR_LB_NAME>
       load-balancer.hetzner.cloud/uses-proxyprotocol: true
@@ -16,3 +16,4 @@ controller:
     enabled: true
     serviceMonitor:
       enabled: true
+  kind: DaemonSet

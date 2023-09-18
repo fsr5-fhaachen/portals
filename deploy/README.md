@@ -270,7 +270,7 @@ After the `HetznerCluster` object is ready (you can verify this with `k get hetz
 ```sh
 # create nat gateway
 hcloud network add-route <CLUSTER_NAME> --destination 0.0.0.0/0 --gateway 10.0.255.254
-hcloud server create --location fsn1 --image debian-11 --name <CLUSTER_NAME>-nat-gateway --placement-group <CLUSTER_NAME>-gw --ssh-key <YOUR_NAME>@<YOUR_CLIENT_NAME> --type cx11 --user-data-from-file ./nat-gateway/cloud-config.yaml
+hcloud server create --location nbg1 --image debian-11 --name <CLUSTER_NAME>-nat-gateway --placement-group <CLUSTER_NAME>-gw --ssh-key <YOUR_NAME>@<YOUR_CLIENT_NAME> --type cx11 --user-data-from-file ./nat-gateway/cloud-config.yaml
 hcloud server attach-to-network -n <CLUSTER_NAME> --ip 10.0.255.254 <CLUSTER_NAME>-nat-gateway
 
 # create dns records
