@@ -213,7 +213,7 @@ class EventsErstiwocheSeeder extends Seeder
         $event->description = '<p>Sei Teil unserer Kneipentour, um die besten Bars zu entdecken, unterhaltsame Spiele zu genießen und deine Kommilitonen kennenzulernen.</p>';
         $event->type = 'group_phase';
         $event->registration_from = new DateTime('2023-09-26 8:00:00');
-        $event->registration_to = new DateTime('2023-09-27 17:50:00');
+        $event->registration_to = new DateTime('2023-09-27 16:30:00');
         $event->has_requirements = false;
         $event->consider_alcohol = true;
         $event->sort_order = 130;
