@@ -167,7 +167,7 @@ class EventsErstiwocheSeeder extends Seeder
                 'course_id' => $coursesByAbbreviation['INF']->id,
             ];
         }
-        for ($i = 1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 3; $i++) {
             $groups[] = [
                 'name' => "ET Hausführung $i",
                 'course_id' => $coursesByAbbreviation['ET']->id,
