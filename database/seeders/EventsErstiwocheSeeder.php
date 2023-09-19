@@ -360,11 +360,9 @@ class EventsErstiwocheSeeder extends Seeder
         $event->description = '<p>Die Stadt Aachen von einer etwas anderen Seite besser kennenlernen, Ziegen streicheln oder sich einfach den Bauch richtig voll schlagen?
             Auch das ist am Freitag in der Erstiwoche möglich.</p>
             <p>Bitte beachtet die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
-            <p><strong>Tour durch das Alemaniastadion:</strong> Die Stadiontour ist für euch kostenlos.</p>
-            <p><strong>Stadtführung:</strong> Die Stadtführung ist für euch kostenlos.</p>
-            <p><strong>Zoo:</strong> Den Eintrittspreis von <strong>4,10€</strong> müsst ihr vor Ort selber zahlen.</p>
+            <p><strong>Stadtführung, Tierpark, Tour durch das Alemaniastadion:</strong> Für eine Anmeldegebühr von <strong>5€</strong> ist eine Teilnahme an diesen Angeboten möglich. Bitte bezahlt die Anmeldegebühr am Montag oder Mittwoch im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben. Die Anmeldegebühr fungiert als Pfand, welches ihr beim Erscheinen der Kulturangebote wieder zurückbekommt.</p>
             <p><strong>Kebabtour:</strong> Ihr müsst eure Döner/ Falafel-Taschen selber zahlen.</p>
-            <p><strong>Allgemein:</strong> Anschließende Teilnahme weiteren Programmpunkten ist nur die “Kebabtour” zeitlich möglich.</p>
+            <p><strong>Allgemein:</strong> Anschließende Teilnahme an weiteren Programmpunkten ist nur die “Kebabtour” zeitlich möglich.</p>
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
             <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
