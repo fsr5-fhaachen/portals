@@ -20,13 +20,13 @@
                 <FormRow>
                   <FormKit
                     type="number"
-                    :name="'max_groups[' + course.id + ']'"
+                    :name="'max_groups_' + course.id"
                     label="Maximale Gruppenanzahl"
                     placeholder="Leer lassen für die voreingestellte Anzahl"
                   />
                   <FormKit
                     type="number"
-                    :name="'max_participants[' + course.id + ']'"
+                    :name="'max_participants_' + course.id"
                     label="Maximale Teilnehmeranzahl pro Gruppe"
                     placeholder="Leer lassen für keine Begrenzung"
                   />
