@@ -48,7 +48,7 @@ const fetchRegistrations = async () => {
     registrations.value = data.slots[slot.id];
   }
 };
-const registrationsInterval = setInterval(fetchRegistrations, 1000);
+const registrationsInterval = setInterval(fetchRegistrations, 5000);
 onBeforeUnmount(() => {
   clearInterval(registrationsInterval);
 });

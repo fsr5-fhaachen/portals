@@ -89,7 +89,7 @@ const filteredRegistrations = computed(() => {
 //     registrations.value = data.registrations;
 //   }
 // };
-// const registrationsInterval = setInterval(fetchRegistrations, 1000);
+// const registrationsInterval = setInterval(fetchRegistrations, 2500);
 // onBeforeUnmount(() => {
 //   clearInterval(registrationsInterval);
 // });
