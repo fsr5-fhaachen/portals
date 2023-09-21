@@ -87,7 +87,7 @@ const fetchRegistrations = async () => {
   }
 };
 // TODO: Optimize this
-//const registrationsInterval = setInterval(fetchRegistrations, 1000);
+//const registrationsInterval = setInterval(fetchRegistrations, 2500);
 // onBeforeUnmount(() => {
 //   clearInterval(registrationsInterval);
 // });
@@ -127,7 +127,7 @@ const fetchCourses = async () => {
 
   isCoursesFetching.value = false;
 };
-const coursesInterval = setInterval(fetchCourses, 1000);
+const coursesInterval = setInterval(fetchCourses, 2500);
 onBeforeUnmount(() => {
   clearInterval(coursesInterval);
 });

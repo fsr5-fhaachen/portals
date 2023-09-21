@@ -14,18 +14,20 @@
 
         <div class="flex grow justify-center sm:justify-start">
           <div class="flex flex-shrink-0 items-center">
-            <img
-              class="h-12 w-auto dark:hidden"
-              src="/images/logo.png"
-              alt="FSR 5 Logo"
-              loading="lazy"
-            />
-            <img
-              class="hidden h-12 w-auto dark:block"
-              src="/images/logo-dark.png"
-              alt="FSR 5 Logo"
-              loading="lazy"
-            />
+            <InertiaLink href="/">
+              <img
+                class="h-12 w-auto dark:hidden"
+                src="/images/logo.png"
+                alt="FSR 5 Logo"
+                loading="lazy"
+              />
+              <img
+                class="hidden h-12 w-auto dark:block"
+                src="/images/logo-dark.png"
+                alt="FSR 5 Logo"
+                loading="lazy"
+              />
+            </InertiaLink>
           </div>
           <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
             <InertiaLink

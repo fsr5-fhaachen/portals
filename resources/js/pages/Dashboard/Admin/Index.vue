@@ -61,7 +61,7 @@ const fetchCourses = async () => {
 
   isFetchingCourses.value = false;
 };
-const coursesInterval = setInterval(fetchCourses, 1000);
+const coursesInterval = setInterval(fetchCourses, 2500);
 onBeforeUnmount(() => {
   clearInterval(coursesInterval);
 });

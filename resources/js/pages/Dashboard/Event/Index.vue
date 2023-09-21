@@ -214,7 +214,7 @@ const fetchRegistration = async () => {
 
   isFetchingRegistration.value = false;
 };
-const registrationInterval = setInterval(fetchRegistration, 1000);
+const registrationInterval = setInterval(fetchRegistration, 5000);
 onBeforeUnmount(() => {
   clearInterval(registrationInterval);
 });
