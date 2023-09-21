@@ -21,7 +21,7 @@ metadata:
 spec:
   template:
     spec:
-      type: cx21
+      type: cpx41
       imageName: debian-12
       placementGroupName: md-0
       publicNetwork:

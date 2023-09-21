@@ -4,7 +4,7 @@
 
     <BoxContainer class="mb-16">
       <CourseBox v-for="course in coursesData" :course="course">
-        <p class="text-2xl font-semibold text-gray-900">
+        <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
           {{
             typeof course.users == "number"
               ? course.users
@@ -87,13 +87,20 @@ const fetchRegistrations = async () => {
   }
 };
 // TODO: Optimize this
-//const registrationsInterval = setInterval(fetchRegistrations, 1000);
+//const registrationsInterval = setInterval(fetchRegistrations, 2500);
 // onBeforeUnmount(() => {
 //   clearInterval(registrationsInterval);
 // });
 
 const coursesData = ref(courses);
+const isCoursesFetching = ref(false);
 const fetchCourses = async () => {
+  if (isCoursesFetching.value) {
+    return;
+  }
+
+  isCoursesFetching.value = true;
+
   const response = await fetch("/api/events/" + event.id + "/user-amount", {
     method: "GET",
     credentials: "include",
@@ -117,8 +124,10 @@ const fetchCourses = async () => {
       };
     });
   }
+
+  isCoursesFetching.value = false;
 };
-const coursesInterval = setInterval(fetchCourses, 1000);
+const coursesInterval = setInterval(fetchCourses, 2500);
 onBeforeUnmount(() => {
   clearInterval(coursesInterval);
 });

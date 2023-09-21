@@ -270,7 +270,7 @@ After the `HetznerCluster` object is ready (you can verify this with `k get hetz
 ```sh
 # create nat gateway
 hcloud network add-route <CLUSTER_NAME> --destination 0.0.0.0/0 --gateway 10.0.255.254
-hcloud server create --location fsn1 --image debian-11 --name <CLUSTER_NAME>-nat-gateway --placement-group <CLUSTER_NAME>-gw --ssh-key <YOUR_NAME>@<YOUR_CLIENT_NAME> --type cx11 --user-data-from-file ./nat-gateway/cloud-config.yaml
+hcloud server create --location nbg1 --image debian-11 --name <CLUSTER_NAME>-nat-gateway --placement-group <CLUSTER_NAME>-gw --ssh-key <YOUR_NAME>@<YOUR_CLIENT_NAME> --type cx11 --user-data-from-file ./nat-gateway/cloud-config.yaml
 hcloud server attach-to-network -n <CLUSTER_NAME> --ip 10.0.255.254 <CLUSTER_NAME>-nat-gateway
 
 # create dns records
@@ -353,15 +353,19 @@ helm upgrade --install cnpg cnpg/cloudnative-pg --namespace postgresql-system --
 # redis operator
 helm repo add ot-helm https://ot-container-kit.github.io/helm-charts/
 helm upgrade --install redis-operator ot-helm/redis-operator --namespace redis-system --create-namespace
-```
 
-<!-- TODO: Add monitoring -->
+# monitoring
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm upgrade --install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring-system --create-namespace -f ../deploy/deployments/addons/prometheus-values.yaml
+kubectl apply -f deployments/addons/cilium-pod-monitor.yaml
+kubectl apply -f deployments/addons/pgsql-operator-pod-monitor.yaml
+```
 
 <!-- TODO: Add logging -->
 
 <!-- TODO: Configure addons -->
 
-<!-- TODO: Add horizontal and vertical autoscaler -->
+<!-- TODO: Add cluster autoscaler -->
 
 <!-- TODO: Add access for more users -->
 
@@ -380,24 +384,19 @@ kubectl create namespace portals
 # postgresql cluster
 kubectl apply -f deployments/portals/pgsql.yaml
 
+# get the db password
+kubectl get secret -n portals portals-db-app -o jsonpath='{.data.password}' | base64 -d
+
 # redis cluster
 kubectl apply -f deployments/portals/redis-pw-secret.yaml
 helm repo add ot-helm https://ot-container-kit.github.io/helm-charts/
 helm upgrade --install portals-redis ot-helm/redis-cluster --namespace portals -f deployments/portals/redis-values.yaml
 
 # portals
-helm repo add portals https://fsr5-fhaachen.github.io/portals/
-helm upgrade --install portals portals/portals --namespace portals -f deployments/portals/portals-values.yaml
-```
-
-### Setup Portals
-
-To fully setup portals you need to seed the database. You can do it by executing the following command in one portals pod. You can exec into the pod with `kubectl exec -it <POD_NAME> -n portals -- sh`.
-
-After switching into the pod, execute the following command to seed the db:
-
-```sh
-php artisan migrate:fresh --seed
+kubectl create configmap -n portals portals-tutors-csv --from-file=tutors.csv=../database/seeders/tutors.csv
+kubectl create configmap -n portals portals-students-csv --from-file=students.csv=../database/seeders/students.csv
+helm repo add fsr5-fhaachen https://fsr5-fhaachen.github.io/charts/
+helm upgrade --install portals fsr5-fhaachen/portals --namespace portals -f deployments/portals/portals-values.yaml
 ```
 
 ### Setup DNS
@@ -413,3 +412,11 @@ curl --request POST --url https://api.cloudflare.com/client/v4/zones/<CLOUDFLARE
 ```
 
 Ready, you can connect to portals on your configured url.
+
+### Load Test
+
+If you want to load test the application you could use wrk.
+
+```sh
+docker run -it --name load-test --rm alpine:latest /bin/sh -c "apk update && apk add wrk && apk add curl && ulimit -n 65535 && wrk -t12 -c400 -d120s https://<YOUR_PORTALS_DOMAIN>/login"
+```

@@ -23,6 +23,11 @@ class PageErstiwocheSeeder extends Seeder
                 'slug' => 'faq',
                 'sort_order' => 200,
             ],
+            [
+                'title' => 'Videos',
+                'slug' => 'videos',
+                'sort_order' => 300,
+            ],
         ];
 
         foreach ($pages as $pageData) {

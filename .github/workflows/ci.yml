@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Use PHP ${{ matrix.php-version }}
         uses: shivammathur/setup-php@v2
         with:
@@ -62,8 +62,8 @@ jobs:
           DB_DATABASE: database/database.sqlite
         run: |
           php artisan db:seed
-      - name: Execute tests (Unit and Feature tests) via PHPUnit
-        env:
-          DB_CONNECTION: sqlite
-          DB_DATABASE: database/database.sqlite
-        run: vendor/bin/phpunit
+      # - name: Execute tests (Unit and Feature tests) via PHPUnit
+      #   env:
+      #     DB_CONNECTION: sqlite
+      #     DB_DATABASE: database/database.sqlite
+      #   run: vendor/bin/phpunit

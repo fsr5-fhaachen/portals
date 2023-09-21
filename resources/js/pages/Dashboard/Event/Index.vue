@@ -191,7 +191,14 @@ const slotData = computed(() => {
 });
 
 const userRegistration = ref(registration);
+const isFetchingRegistration = ref(false);
 const fetchRegistration = async () => {
+  if (isFetchingRegistration.value) {
+    return;
+  }
+
+  isFetchingRegistration.value = true;
+
   const response = await fetch("/api/registrations/" + registration.id, {
     method: "GET",
     credentials: "include",
@@ -204,8 +211,10 @@ const fetchRegistration = async () => {
     const data = await response.json();
     userRegistration.value = data;
   }
+
+  isFetchingRegistration.value = false;
 };
-const registrationInterval = setInterval(fetchRegistration, 1000);
+const registrationInterval = setInterval(fetchRegistration, 5000);
 onBeforeUnmount(() => {
   clearInterval(registrationInterval);
 });

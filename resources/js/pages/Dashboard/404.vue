@@ -3,8 +3,14 @@
     <div class="flex flex-shrink-0 justify-center">
       <AppLink href="/dashboard" theme="none" class="inline-flex">
         <img
-          class="mx-auto h-48 w-auto"
+          class="mx-auto h-48 w-auto dark:hidden"
           src="/images/logo.png"
+          alt="FSR 5 Logo"
+          loading="lazy"
+        />
+        <img
+          class="mx-auto hidden h-48 w-auto dark:block"
+          src="/images/logo-dark.png"
           alt="FSR 5 Logo"
           loading="lazy"
         />

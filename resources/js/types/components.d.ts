@@ -7,24 +7,18 @@ export {}
 
 declare module "vue" {
   export interface GlobalComponents {
-    2: typeof import("./../components/ui/Dl copy 2.vue")["default"];
     AppButton: typeof import("./../components/app/Button.vue")["default"];
     AppLink: typeof import("./../components/app/Link.vue")["default"];
     AppMessage: typeof import("./../components/app/Message.vue")["default"];
     AppNavbar: typeof import("./../components/app/Navbar.vue")["default"];
     BoxContainer: typeof import("./../components/box/Container.vue")["default"];
-    Card: typeof import("./../layouts/Card.vue")["default"];
     CardBase: typeof import("./../components/card/Base.vue")["default"];
-    CardCard: typeof import("./../components/card/Card.vue")["default"];
     CardContainer: typeof import("./../components/card/Container.vue")["default"];
     CardLayout: typeof import("./../layouts/CardLayout.vue")["default"];
     ColorModeButton: typeof import("./../components/color/mode/Button.vue")["default"];
-    copy: typeof import("./../components/ui/Dl copy.vue")["default"];
-    copyTable: typeof import("./../components/slot copy/Table.vue")["default"];
     CourseBox: typeof import("./../components/course/Box.vue")["default"];
     DashboardCardLayout: typeof import("./../layouts/DashboardCardLayout.vue")["default"];
     DashboardLayout: typeof import("./../layouts/DashboardLayout.vue")["default"];
-    Default: typeof import("./../layouts/Default.vue")["default"];
     DefaultLayout: typeof import("./../layouts/DefaultLayout.vue")["default"];
     EventCard: typeof import("./../components/event/Card.vue")["default"];
     EventTable: typeof import("./../components/event/Table.vue")["default"];
@@ -32,12 +26,10 @@ declare module "vue" {
     FormDivider: typeof import("./../components/form/Divider.vue")["default"];
     FormRow: typeof import("./../components/form/Row.vue")["default"];
     FormSchema: typeof import("./../components/form/Schema.vue")["default"];
-    GgroupTable: typeof import("./../components/ggroup/Table.vue")["default"];
     GirdContainer: typeof import("./../components/gird/Container.vue")["default"];
     GroupTable: typeof import("./../components/group/Table.vue")["default"];
     LayoutDashboardContent: typeof import("./../components/layout/DashboardContent.vue")["default"];
     RegistrationTable: typeof import("./../components/registration/Table.vue")["default"];
-    SlotsTable: typeof import("./../components/slots/Table.vue")["default"];
     SlotTable: typeof import("./../components/slot/Table.vue")["default"];
     UiDateString: typeof import("./../components/ui/DateString.vue")["default"];
     UiDateTimeString: typeof import("./../components/ui/DateTimeString.vue")["default"];

@@ -179,12 +179,19 @@ const { events } = defineProps({
 });
 
 const registrations = ref({});
+const isFetchingRegistrations = ref(false);
 events.forEach((event) => {
   registrations.value[event.id] = {
     amount: event.registrations?.length || 0,
   };
 });
 const fetchRegistrations = async () => {
+  if (isFetchingRegistrations.value) {
+    return;
+  }
+
+  isFetchingRegistrations.value = true;
+
   const response = await fetch("/api/events/registrations-amount", {
     method: "GET",
     credentials: "include",
@@ -199,8 +206,10 @@ const fetchRegistrations = async () => {
       registrations.value[event.id] = event;
     });
   }
+
+  isFetchingRegistrations.value = false;
 };
-const registrationsInterval = setInterval(fetchRegistrations, 1000);
+const registrationsInterval = setInterval(fetchRegistrations, 5000);
 onBeforeUnmount(() => {
   clearInterval(registrationsInterval);
 });
