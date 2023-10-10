@@ -139,7 +139,7 @@ docker exec -it portals-web php artisan migrate:fresh --seed
 
 You can deploy the application to kubernetes using the helm chart.
 
-See [fsr5-fhaachen/charts/portals](https://github.com/fsr5-fhaachen/charts/charts/portals/) for more information.
+See [fsr5-fhaachen/charts/portals](https://github.com/fsr5-fhaachen/charts/tree/main/charts/portals) for more information.
 
 If you want information about creating the kubernetes cluster, see [deploy information](./deploy).
 
