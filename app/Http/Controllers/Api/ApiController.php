@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Event;
 use App\Models\Registration;
+use App\Models\State;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -247,5 +248,34 @@ class ApiController extends Controller
         }
 
         return response()->json($result);
+    }
+
+    /**
+     * Return the current state of the random generator.
+     * The state is structured like this:
+     *   {
+     *     "state": "setup", // setup, idle, running, stopped
+     *     "user": null | User, // default null and if stopped, the user that was selected by the random generator
+     *   }
+     *
+     * The definition of the states is as follows:
+     *   setup: The random generator is not set up yet
+     *   idle: The random generator is set up, but not running yet
+     *   running: The random generator is running
+     *   stopped: The random generator is stopped and a user was selected
+     */
+    public function randomGeneratorState(): JsonResponse
+    {
+        // get state with key randomGenerator
+        $state = State::where('key', 'randomGenerator')->first();
+
+        // if state does not exist, return setup
+        if (! $state) {
+            return response()->json([
+                'state' => 'setup',
+            ]);
+        }
+
+        return response()->json($state->value);
     }
 }

@@ -61,6 +61,19 @@
               Statistik
             </InertiaLink>
             <InertiaLink
+              v-if="modules['randomGenerator']?.active"
+              href="/dashboard/admin/random-generator"
+              :class="{
+                'border-red-500 text-red-900':
+                  $page.url == '/dashboard/admin/random-generator',
+                'border-transparent text-red-500 hover:border-red-300 hover:text-red-700':
+                  $page.url != '/dashboard/admin/random-generator',
+              }"
+              class="inline-flex items-center border-b-[3px] px-1 pt-1 text-sm font-medium"
+            >
+              Zufallsgenerator
+            </InertiaLink>
+            <InertiaLink
               href="/dashboard/admin/register"
               :class="{
                 'border-red-500 text-red-900':
@@ -136,6 +149,20 @@
           Statistik
         </DisclosureButton>
         <DisclosureButton
+          v-if="showAdminLink && modules['randomGenerator']?.active"
+          :as="InertiaLink"
+          href="/dashboard/admin/random-generator"
+          :class="{
+            'border-red-500 bg-red-100 text-red-900 dark:bg-black dark:text-red-500':
+              $page.url == '/dashboard/admin/random-generator',
+            'border-transparent text-red-600 hover:border-red-300 hover:bg-red-50 hover:text-red-800 dark:text-red-400 dark:hover:bg-gray-900 dark:hover:text-red-100':
+              $page.url != '/dashboard/admin/random-generator',
+          }"
+          class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
+        >
+          Zufallsgenerator
+        </DisclosureButton>
+        <DisclosureButton
           v-if="showAdminLink"
           :as="InertiaLink"
           href="/dashboard/admin/register"
@@ -166,6 +193,10 @@ defineProps({
   showAdminLink: {
     type: Boolean,
     default: false,
+  },
+  modules: {
+    type: Array as () => App.Models.Module[],
+    default: () => [],
   },
 });
 </script>
