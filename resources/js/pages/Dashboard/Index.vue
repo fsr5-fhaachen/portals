@@ -38,14 +38,14 @@
       </CardBase>
     </template>
     <template v-else>
-      <GirdContainer v-if="events.length">
+      <GridContainer v-if="events.length">
         <EventCard
           v-for="event in events"
           :key="event.id"
           :event="event"
           :registration="getUserRegistrationForEvent(event)"
         />
-      </GirdContainer>
+      </GridContainer>
     </template>
   </LayoutDashboardContent>
 </template>
