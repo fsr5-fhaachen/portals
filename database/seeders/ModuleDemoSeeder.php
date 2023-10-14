@@ -26,8 +26,8 @@ class ModuleDemoSeeder extends Seeder
         foreach ($modules as $module) {
             // check if module with key already exists
             $existingModule = Module::where('key', $module['key'])->first();
-            if (!$existingModule) {
-                throw new \Exception('Module with key "' . $module['key'] . '" not found.');
+            if (! $existingModule) {
+                throw new \Exception('Module with key "'.$module['key'].'" not found.');
             }
 
             // update module
