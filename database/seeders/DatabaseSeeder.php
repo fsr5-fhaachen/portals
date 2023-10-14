@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $seeders = [
+            ModuleSeeder::class,
             CourseSeeder::class,
             TutorSeeder::class,
         ];
