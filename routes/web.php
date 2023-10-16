@@ -14,6 +14,8 @@ use App\Http\Middleware\IsLoggedInTutor;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RedirectIfTutor;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ImageUploadController;
+use App\Http\Controllers\FileS3Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +27,18 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+//s3 upload test
+Route::get('image-upload', [ ImageUploadController::class, 'imageUpload' ])->name('image.upload');
+Route::post('image-upload', [ ImageUploadController::class, 'imageUploadPost' ])->name('image.upload.post');
+
+Route::get('/upload', [\App\Http\Controllers\FileS3Controller::class,'uploadFile']);
+Route::get('/download/{filename}', [\App\Http\Controllers\FileS3Controller::class,'downloadFile'])->name('download.file');
+Route::post('/upload', [\App\Http\Controllers\FileS3Controller::class,'uploadFile']);
+//Route::get('/download/{filename}', 'FileS3Controller@downloadFile')->name('download.file');
+
+
+
 
 Route::get('/', [AppController::class, 'index'])->name('app.index');
 
