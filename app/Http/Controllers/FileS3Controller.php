@@ -1,8 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
+use Aws\Credentials\Credentials;
+use Aws\S3\S3Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
+use Aws\Credentials\CredentialsInterface;
+use League\Flysystem\FilesystemOperator;
+use League\Flysystem\FilesystemAdapter;
+
 
 
 class FileS3Controller extends Controller
@@ -13,19 +20,27 @@ class FileS3Controller extends Controller
     if ($request->hasFile('file')) {
       $data = $request->file('file');
       $filename = $data->getClientOriginalName();
-      $data->storeAs( '/Bilder', $filename, 's3');
+      $data->storeAs( '', $filename, 's3');
     }
 
     return view('uploadFile');
   }
 
-  public function downloadFile($filename)
+  public function showImage(Request $request, $filename)
   {
-      $path =  $filename;
-      $url = Storage::disk('s3')->get($path);
-      return view('downloadFile', ['url' => $url]);
+    $client = Storage::disk('s3')->getClient();
+    $bucket = Config::get('filesystems.disks.s3.bucket');
 
+    $command = $client->getCommand('GetObject', [
+      'Bucket' => $bucket,
+      'Key' => 'downtest.png'  // file name in s3 bucket which you want to access
+    ]);
 
+    $request = $client->createPresignedRequest($command, '+200 minutes');
+
+    $url = (string)$request->getUri();
+
+    return view('downloadFile', ['url' => $url]);
   }
 
 }

@@ -33,7 +33,7 @@ Route::get('image-upload', [ ImageUploadController::class, 'imageUpload' ])->nam
 Route::post('image-upload', [ ImageUploadController::class, 'imageUploadPost' ])->name('image.upload.post');
 
 Route::get('/upload', [\App\Http\Controllers\FileS3Controller::class,'uploadFile']);
-Route::get('/download/{filename}', [\App\Http\Controllers\FileS3Controller::class,'downloadFile'])->name('download.file');
+Route::get('/download/{filename}', [\App\Http\Controllers\FileS3Controller::class,'showImage'])->name('download.file');
 Route::post('/upload', [\App\Http\Controllers\FileS3Controller::class,'uploadFile']);
 //Route::get('/download/{filename}', 'FileS3Controller@downloadFile')->name('download.file');
 

@@ -177,7 +177,7 @@ class DashboardAdminController extends Controller
     /**
      * Display the register page
      */
-    public function register(): Response
+    public function register(Request $request): Response
     {
         // get courses ordered by name
         $courses = Course::orderBy('name')->get();
@@ -216,10 +216,16 @@ class DashboardAdminController extends Controller
         // remove email_confirm from array
         unset($validated['email_confirm']);
 
+        // TODO: validate input
+        //upload picture to S3
+         if (request()->hasFile('profile_image')) {
+            $image = request()->file('profile_image')[0]['file'];
+            $image->store('', 's3');
+          }
         // create the user
         $user = User::create($validated);
 
-        Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich erstellt.');
+        Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich erstellt.'. var_dump(Request::input('file')));
 
         return Redirect::back();
     }
