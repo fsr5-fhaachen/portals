@@ -216,16 +216,27 @@ class DashboardAdminController extends Controller
         // remove email_confirm from array
         unset($validated['email_confirm']);
 
-        // TODO: validate input
-        //upload picture to S3
-         if (request()->hasFile('profile_image')) {
-            $image = request()->file('profile_image')[0]['file'];
-            $image->store('', 's3');
-          }
         // create the user
         $user = User::create($validated);
 
-        Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich erstellt.'. var_dump(Request::input('file')));
+        $given_file = Request::file('profile_image')[0]['file'];
+        //Check if it is a valid file and valid file
+        if ($given_file instanceof \Illuminate\Http\UploadedFile && $given_file->isValid()) {
+          $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+          $originalExtension = strtolower($given_file->getClientOriginalExtension());
+
+          //naming for all files in s3 Buckt: name nachname Studiengang
+          if (in_array($originalExtension, $allowedExtensions)) {
+            $filename = $user->firstname.$user->lastname.$user->course_id .'.'.$originalExtension;
+            $given_file->storeAs('', $filename, 's3');
+          } else {
+            Session::flash('error', 'Ungültige Dateiendung!');
+          }
+        } else {
+          Session::flash('error','Ungültige Datei!');
+        }
+
+        Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich erstellt.');
 
         return Redirect::back();
     }

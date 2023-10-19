@@ -6,7 +6,9 @@ use App\Models\Course;
 use App\Models\State;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -75,4 +77,22 @@ class DashboardAdminRandomGeneratorController extends Controller
             'success' => true,
         ]);
     }
+  //TODO: function must be integrated in cooperation with Phil
+  public function showImage(\Illuminate\Http\Request $request, $filename)
+  {
+    $client = Storage::disk('s3')->getClient();
+    $bucket = Config::get('filesystems.disks.s3.bucket');
+
+    $command = $client->getCommand('GetObject', [
+      'Bucket' => $bucket,
+      'Key' => 'downtest.png'//Naming convention firstname lastname courseID
+      // maybe find a solution without having to work with the fileending
+    ]);
+
+    $request = $client->createPresignedRequest($command, '+200 minutes');
+
+    $url = (string)$request->getUri();
+
+    return view('downloadFile', ['url' => $url]);
+  }
 }

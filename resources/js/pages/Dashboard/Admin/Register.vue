@@ -66,7 +66,7 @@
                 type="file"
                 name="profile_image"
                 label="Profilbild hochladen"
-                validation="file|image|mimes:jpeg,png,gif"
+                validation="file|image|mimes:jpeg,jpg,png,gif"
               />
             </FormRow>
             <FormRow>
