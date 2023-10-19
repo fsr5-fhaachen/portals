@@ -1,7 +1,7 @@
 name: Docker e2e Test
 
 on:
-  pull-request: {}
+  pull_request: {}
 
 env:
   IMAGE_REGISTRY: ghcr.io
