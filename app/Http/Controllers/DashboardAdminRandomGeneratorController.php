@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Http\Request as Req;
 
 class DashboardAdminRandomGeneratorController extends Controller
 {
@@ -77,19 +78,18 @@ class DashboardAdminRandomGeneratorController extends Controller
             'success' => true,
         ]);
     }
-  //TODO: function must be integrated in cooperation with Phil
-  public function showImage(\Illuminate\Http\Request $request, $filename)
+  //TODO: function must be implemented. See issue #224
+  public function showImage(Req $request, $filename)
   {
     $client = Storage::disk('s3')->getClient();
     $bucket = Config::get('filesystems.disks.s3.bucket');
 
     $command = $client->getCommand('GetObject', [
       'Bucket' => $bucket,
-      'Key' => 'downtest.png'//Naming convention firstname lastname courseID
-      // maybe find a solution without having to work with the fileending
+      'Key' => $request->post('uuid') //read uuid from Server depends on Vue implementation
     ]);
-
-    $request = $client->createPresignedRequest($command, '+200 minutes');
+    //Time is Link expiry, but link doesnt seem to expiry not sure why
+    $request = $client->createPresignedRequest($command, '+20 minutes');
 
     $url = (string)$request->getUri();
 

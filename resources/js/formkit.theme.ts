@@ -35,7 +35,6 @@ const fileUploadClassification = {
   removeFiles: "block text-sm font-medium text-gray-700 dark:text-gray-200",
 };
 
-
 export default {
   global: {
     outer: "flex-1 formkit-disabled:opacity-60",
