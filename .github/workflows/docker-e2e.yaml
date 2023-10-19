@@ -35,15 +35,12 @@ jobs:
           LOG_CHANNEL=stack
           LOG_LEVEL=debug
           BROADCAST_DRIVER=log
-          CACHE_DRIVER=redis
+          CACHE_DRIVER=file # TODO
           FILESYSTEM_DRIVER=local
           QUEUE_CONNECTION=sync
-          SESSION_DRIVER=redis
+          SESSION_DRIVER=file # TODO
           SESSION_LIFETIME=120
           MEMCACHED_HOST=127.0.0.1
-          REDIS_HOST=redis
-          #REDIS_PASSWORD=password
-          REDIS_PORT=6379
           OCTANE_HTTPS=false
           OCTANE_WORKERS=1
           OCTANE_MAX_REQUESTS=512
@@ -64,12 +61,9 @@ jobs:
         run: |
           # run "php artisan migrate:fresh --seed" inside docker container
           docker exec portals-web php artisan migrate:fresh --seed
-      - name: Debug 1
+      - name: Debug
         run: |
           curl http://localhost:8000
-      - name: Debug 2
-        run: |
-          curl --output /dev/null --silent --head --fail http://localhost:8000
       - name: Test reachable
         run: |
           # test every 10 seconds if http://localhost:8000 is reachable and has a OK status code. Timeout after 2 minutes
