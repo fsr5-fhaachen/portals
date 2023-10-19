@@ -15,6 +15,10 @@
         </FormKit>
       </CardBase>
 
+      {{ users?.length }}
+
+      {{ filteredUsers?.length }}
+
       <UserTable
         v-if="filteredUsers"
         :courses="courses"
@@ -33,7 +37,7 @@ const form = ref({
   query: "",
 });
 
-const { users } = defineProps({
+const props = defineProps({
   courses: {
     type: Array as PropType<App.Models.Course[]>,
     required: true,
@@ -42,31 +46,64 @@ const { users } = defineProps({
     type: Object as PropType<Models.User>,
     required: true,
   },
-  users: {
-    type: Array as PropType<Models.User[]>,
-    required: true,
-  },
   roles: {
     type: Array as PropType<Models.Role[]>,
     required: true,
   },
 });
+const users = ref<App.Models.User[] | null>(null);
 
 const filteredUsers = computed(() => {
   if (!form.value.query) {
-    return users;
+    return users.value;
   }
 
-  if (!users) {
+  if (!users.value) {
     return [];
   }
 
-  return users.filter((user) => {
+  return users.value.filter((user) => {
     return (
       user?.firstname.toLowerCase().includes(form.value.query.toLowerCase()) ||
       user?.lastname.toLowerCase().includes(form.value.query.toLowerCase()) ||
       user?.email.toLowerCase().includes(form.value.query.toLowerCase())
     );
   });
+});
+
+const fetchUsers = async () => {
+  const response = await fetch("/api/users", {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+
+    if (!users.value) {
+      users.value = data.users;
+      return;
+    }
+
+    // update users
+    for (let i = 0; i < data?.users.length; i++) {
+      const user = data.users[i];
+
+      // get index of user by id
+      const index = users.value.findIndex((u) => u.id === user.id);
+
+      if (index === -1) {
+        users.value.push(user);
+        continue;
+      } else {
+        users.value[index] = user;
+      }
+    }
+  }
+};
+
+const userInterval = setInterval(fetchUsers, 2500);
+onBeforeUnmount(() => {
+  clearInterval(userInterval);
 });
 </script>

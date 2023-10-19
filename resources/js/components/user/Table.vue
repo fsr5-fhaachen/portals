@@ -45,82 +45,77 @@
                   </th>
                 </tr>
               </thead>
-              <tbody v-if="usersData" class="bg-white dark:bg-gray-800">
-                <template
-                  v-for="(userData, index) in usersData"
-                  :key="userData.id"
-                >
+              <tbody v-if="users" class="bg-white dark:bg-gray-800">
+                <template v-for="(user, index) in users" :key="user.id">
                   <tr
-                    v-if="userData"
+                    v-if="user"
                     :class="{
                       'bg-yellow-100 dark:bg-yellow-900':
-                        userData.roles.length &&
-                        userData.roles
+                        user.roles.length &&
+                        user.roles
                           .map((role) => role.name)
                           .includes('super admin'),
+                      'bg-red-100 dark:bg-red-900': user.is_disabled,
                     }"
                   >
                     <td
                       :class="[
-                        index !== usersData.length - 1
+                        index !== users.length - 1
                           ? 'border-b border-gray-200 dark:border-gray-700'
                           : '',
                         'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-gray-100 sm:pl-6 lg:pl-8',
                       ]"
                     >
-                      {{ userData.firstname }}
+                      {{ user.firstname }}
                     </td>
                     <td
                       :class="[
-                        index !== usersData.length - 1
+                        index !== users.length - 1
                           ? 'border-b border-gray-200 dark:border-gray-700'
                           : '',
                         'whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900 dark:text-gray-100',
                       ]"
                     >
-                      {{ userData.lastname }}
+                      {{ user.lastname }}
                     </td>
                     <td
                       :class="[
-                        index !== usersData.length - 1
+                        index !== users.length - 1
                           ? 'border-b border-gray-200 dark:border-gray-700'
                           : '',
                         'whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900 dark:text-gray-100',
                       ]"
                     >
-                      {{ userData.email }}
+                      {{ user.email }}
                     </td>
                     <td
                       :class="[
-                        index !== usersData.length - 1
+                        index !== users.length - 1
                           ? 'border-b border-gray-200 dark:border-gray-700'
                           : '',
                         'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
                       ]"
                     >
                       <span
-                        v-if="userData.course?.id"
+                        v-if="user.course?.id"
                         :class="[
-                          userData.course.classes,
+                          user.course.classes,
                           'rounded-md p-1 text-xs text-white',
                         ]"
                       >
-                        {{ userData.course.abbreviation }}
+                        {{ user.course.abbreviation }}
                       </span>
                     </td>
                     <td
                       :class="[
-                        index !== usersData.length - 1
+                        index !== users.length - 1
                           ? 'border-b border-gray-200 dark:border-gray-700'
                           : '',
                         'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
                       ]"
                     >
-                      <div
-                        v-if="userData.roles.length"
-                        class="flex flex-col gap-2"
-                      >
-                        <div v-for="role in userData.roles" :key="role.id">
+                      <div v-if="user.roles.length" class="flex flex-col gap-2">
+                        <div v-for="role in user.roles" :key="role.id">
                           <span
                             class="rounded-md bg-slate-900 p-1 text-xs text-white"
                           >
@@ -131,7 +126,7 @@
                     </td>
                     <td
                       :class="[
-                        index !== usersData.length - 1
+                        index !== users.length - 1
                           ? 'border-b border-gray-200 dark:border-gray-700'
                           : '',
                         'relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8',
@@ -140,19 +135,19 @@
                       <div class="flex gap-4">
                         <div
                           v-if="
-                            !userData.roles.length ||
-                            !userData.roles
+                            !user.roles.length ||
+                            !user.roles
                               .map((role) => role.name)
                               .includes('super admin')
                           "
                         >
                           <AppButton
                             theme="warning"
-                            @click="selectUserToEdit(userData)"
+                            @click="selectUserToEdit(user)"
                           >
                             <span class="sr-only">
-                              {{ userData.firstname }}
-                              {{ userData.lastname }}
+                              {{ user.firstname }}
+                              {{ user.lastname }}
                             </span>
                             bearbeiten
                           </AppButton>
@@ -174,22 +169,22 @@
       :courses="courses"
       :roles="roles"
       @close="clearUserToEdit"
-      @submit="clearUserToEdit"
+      @submit="submitUserEdit"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, PropType, watch } from "vue";
+import { ref, PropType, watch, onBeforeUnmount } from "vue";
 
 const props = defineProps({
-  users: {
-    type: Array as PropType<Models.User[]>,
-    required: true,
-  },
   user: {
     type: Object as PropType<Models.User>,
     default: null,
+  },
+  users: {
+    type: Array as PropType<Models.User[]>,
+    required: true,
   },
   courses: {
     type: Array as PropType<Models.Course[]>,
@@ -203,15 +198,13 @@ const props = defineProps({
 
 const userToEdit = ref<Models.User | null>(null);
 
-const usersData = ref(props.users);
-watch(props, (props) => {
-  usersData.value = props.users;
-});
-
 const clearUserToEdit = () => {
   userToEdit.value = null;
 };
 const selectUserToEdit = async (user: Models.User) => {
   userToEdit.value = user;
+};
+const submitUserEdit = async () => {
+  clearUserToEdit();
 };
 </script>

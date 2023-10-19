@@ -100,6 +100,14 @@
                         multiple
                       />
                     </FormRow>
+
+                    <FormRow>
+                      <FormKit
+                        type="checkbox"
+                        name="is_disabled"
+                        label="Deaktiviert"
+                      />
+                    </FormRow>
                     <FormRow>
                       <FormKit type="submit" label="Speichern" />
                     </FormRow>
@@ -151,6 +159,7 @@ const editForm = ref({
   email_confirm: user.email,
   course_id: user.course_id,
   role_id: user.roles.map((role) => role.id),
+  is_disabled: user.is_disabled == 1 ? true : false,
 });
 
 const selectFormCourseOptions = useSelectFormCourseOptions(courses, true);

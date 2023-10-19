@@ -47,7 +47,6 @@ class DashboardAdminController extends Controller
         $coures = Course::all();
 
         return Inertia::render('Dashboard/Admin/Users', [
-            'users' => $users,
             'roles' => $roles,
             'courses' => $coures,
         ]);
@@ -84,6 +83,7 @@ class DashboardAdminController extends Controller
             'email_confirm' => ['required', 'string', 'email', 'min:3', 'max:255', 'same:email'],
             'course_id' => ['required', 'integer', 'exists:courses,id'],
             'role_id' => ['array'],
+            'is_disabled' => ['boolean'],
         ]);
 
         // check if all roles exists and not super admin if so add to roles array
@@ -113,7 +113,7 @@ class DashboardAdminController extends Controller
         // sync roles
         $user->syncRoles($roles);
 
-        Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich bearbeitet. Um die Änderungen zu sehen, muss die Seite neu geladen werden.');
+        Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich bearbeitet. Die Tabelle aktualisiert sich in wenigen Sekunden automatisch.');
 
         return Redirect::back();
     }

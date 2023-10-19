@@ -22,27 +22,27 @@ class RoleSeeder extends Seeder
             'manage users',
             'manage random generator',
         ] as $permission) {
-            if (!Permission::where('name', $permission)->exists()) {
+            if (! Permission::where('name', $permission)->exists()) {
                 Permission::create(['name' => $permission]);
             }
             $permissions[$permission] = Permission::where('name', $permission)->first();
         }
 
         // create tutor role if it doesn't exist
-        if (!Role::where('name', 'tutor')->exists()) {
+        if (! Role::where('name', 'tutor')->exists()) {
             Role::create(['name' => 'tutor']);
         }
         $tutorRole = Role::where('name', 'tutor')->first();
 
         // create stage tutor role if it doesn't exist
-        if (!Role::where('name', 'stage tutor')->exists()) {
+        if (! Role::where('name', 'stage tutor')->exists()) {
             Role::create(['name' => 'stage tutor']);
         }
         $stageTutorRole = Role::where('name', 'stage tutor')->first();
         $stageTutorRole->givePermissionTo($permissions['manage random generator']);
 
         // create esa role if it doesn't exist
-        if (!Role::where('name', 'esa')->exists()) {
+        if (! Role::where('name', 'esa')->exists()) {
             Role::create(['name' => 'esa']);
         }
         $esaRole = Role::where('name', 'esa')->first();
@@ -50,7 +50,7 @@ class RoleSeeder extends Seeder
         $esaRole->givePermissionTo($permissions['view hidden event details']);
 
         // create admin role if it doesn't exist
-        if (!Role::where('name', 'admin')->exists()) {
+        if (! Role::where('name', 'admin')->exists()) {
             Role::create(['name' => 'admin']);
         }
         $adminRole = Role::where('name', 'admin')->first();
@@ -61,7 +61,7 @@ class RoleSeeder extends Seeder
         $adminRole->givePermissionTo($permissions['manage users']);
 
         // create super admin role if it doesn't exist
-        if (!Role::where('name', 'super admin')->exists()) {
+        if (! Role::where('name', 'super admin')->exists()) {
             Role::create(['name' => 'super admin']);
         }
         $superAdminRole = Role::where('name', 'super admin')->first();
@@ -72,7 +72,7 @@ class RoleSeeder extends Seeder
         $superAdminRole->givePermissionTo($permissions['manage users']);
 
         // create special role if it doesn't exist
-        if (!Role::where('name', 'special')->exists()) {
+        if (! Role::where('name', 'special')->exists()) {
             Role::create(['name' => 'special']);
         }
         $specialRole = Role::where('name', 'special')->first();

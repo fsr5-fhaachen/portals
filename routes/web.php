@@ -110,6 +110,10 @@ Route::prefix('api')->middleware(Authenticate::class)->group(function () {
         Route::group(['middleware' => ['can:view statistics']], function () {
             Route::get('/courses/user-amount', [ApiController::class, 'coursesUserAmount'])->name('api.courses.userAmount');
         });
+
+        Route::group(['middleware' => ['can:manage users']], function () {
+            Route::get('/users', [ApiController::class, 'users'])->name('api.users');
+        });
     });
 
     Route::get('/registrations/{registration}', [ApiController::class, 'registrationsShow'])->name('api.registrations.show');
