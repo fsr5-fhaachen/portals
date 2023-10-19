@@ -18,7 +18,7 @@ class UserDemoSeeder extends Seeder
             'lastname' => 'Admin',
             'email' => 'superadmin@example.com',
         ]);
-        $superAdminUser->assignRole(['super admin', 'admin', 'tutor']);
+        $superAdminUser->assignRole(['super admin', 'admin', 'tutor', 'special']);
 
         // create one admin user
         $adminUser = User::factory()->create([
