@@ -22,7 +22,7 @@ jobs:
           tags: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_PATH }}:latest
       - name: Create Environment
         run: |
-          cat > .env < EOF
+          cat > .env << EOF
           APP_NAME="Erstiwoche FB5"
           APP_ENV=local
           APP_KEY=1234567890ABCDEFGHIJ1234567890AB
