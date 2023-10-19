@@ -64,6 +64,12 @@ jobs:
         run: |
           # run "php artisan migrate:fresh --seed" inside docker container
           docker exec portals-web php artisan migrate:fresh --seed
+      - name: Debug 1
+        run: |
+          curl http://localhost:8000
+      - name: Debug 2
+        run: |
+          curl --output /dev/null --silent --head --fail http://localhost:8000
       - name: Test reachable
         run: |
           # test every 10 seconds if http://localhost:8000 is reachable and has a OK status code. Timeout after 2 minutes
