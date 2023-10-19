@@ -22,7 +22,7 @@ services:
       OCTANE_MAX_REQUESTS: '${OCTANE_MAX_REQUESTS}'
       LOG_CHANNEL: '${LOG_CHANNEL}'
       LOG_LEVEL: '${LOG_LEVEL}'
-      DB_CONNECTION: mariadb
+      DB_CONNECTION: mysql
       DB_HOST: mariadb
       DB_PORT: 3306
       DB_DATABASE: portals
