@@ -77,17 +77,17 @@
               Zufallsgenerator
             </InertiaLink>
             <InertiaLink
-              v-if="user.permissionsArray.includes('manage registrations')"
-              href="/dashboard/admin/register"
+              v-if="user.permissionsArray.includes('manage users')"
+              href="/dashboard/admin/users"
               :class="{
                 'border-red-500 text-red-900':
-                  $page.url == '/dashboard/admin/register',
+                  $page.url == '/dashboard/admin/users',
                 'border-transparent text-red-500 hover:border-red-300 hover:text-red-700':
-                  $page.url != '/dashboard/admin/register',
+                  $page.url != '/dashboard/admin/users',
               }"
               class="inline-flex items-center border-b-[3px] px-1 pt-1 text-sm font-medium"
             >
-              User registrieren/zuweisen
+              User Verwaltung
             </InertiaLink>
           </div>
           <div class="hidden h-full items-center justify-end px-4 sm:flex">
@@ -165,9 +165,9 @@
           Zufallsgenerator
         </DisclosureButton>
         <DisclosureButton
-          v-if="user.permissionsArray.includes('manage registrations')"
+          v-if="user.permissionsArray.includes('manage users')"
           :as="InertiaLink"
-          href="/dashboard/admin/register"
+          href="/dashboard/admin/users"
           :class="{
             'border-red-500 bg-red-100 text-red-900 dark:bg-black dark:text-red-500':
               $page.url == '/dashboard/admin/register',
@@ -176,7 +176,7 @@
           }"
           class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
         >
-          User registrieren/zuweisen
+          User Verwaltung
         </DisclosureButton>
       </div>
     </DisclosurePanel>

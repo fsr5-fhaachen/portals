@@ -42,5 +42,8 @@ declare module "vue" {
     UiMessage: typeof import("./../components/ui/Message.vue")["default"];
     UiTimeString: typeof import("./../components/ui/TimeString.vue")["default"];
     UserBox: typeof import("./../components/user/Box.vue")["default"];
+    UserEditModal: typeof import("./../components/user/EditModal.vue")["default"];
+    UserTable: typeof import("./../components/user/Table.vue")["default"];
+    UserUser: typeof import("./../components/user/User.vue")["default"];
   }
 }

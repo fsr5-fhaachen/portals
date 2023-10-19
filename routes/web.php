@@ -9,7 +9,6 @@ use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
 use App\Http\Middleware\ActiveModule;
 use App\Http\Middleware\Authenticate;
-use App\Http\Middleware\IsLoggedInAdmin;
 use App\Http\Middleware\IsLoggedInTutor;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RedirectIfTutor;
@@ -32,7 +31,7 @@ Route::middleware(RedirectIfAuthenticated::class)->group(function () {
     Route::get('/login', [AppController::class, 'login'])->name('app.login');
     Route::post('/login', [AppController::class, 'loginUser'])->name('app.loginUser');
 
-    Route::middleware(ActiveModule::class . ':registration')->group(function () {
+    Route::middleware(ActiveModule::class.':registration')->group(function () {
         Route::get('/register', [AppController::class, 'register'])->name('app.register');
         Route::post('/register', [AppController::class, 'registerUser'])->name('app.registerUser');
     });
@@ -64,7 +63,10 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
             Route::get('/', [DashboardAdminController::class, 'index'])->name('dashboard.admin.index');
         });
 
-        Route::group(['middleware' => ['can:manage registrations']], function () {
+        Route::group(['middleware' => ['can:manage users']], function () {
+            Route::get('/users', [DashboardAdminController::class, 'users'])->name('dashboard.admin.users');
+            Route::post('/user/{user}', [DashboardAdminController::class, 'editUser'])->name('dashboard.admin.editUser');
+
             Route::get('/register', [DashboardAdminController::class, 'register'])->name('dashboard.admin.register');
             Route::post('/register', [DashboardAdminController::class, 'registerUser'])->name('dashboard.admin.registerUser');
             Route::post('/assign', [DashboardAdminController::class, 'assignUser'])->name('dashboard.admin.assignUser');
@@ -78,7 +80,7 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
         });
 
         Route::group([
-            'middleware' => [ActiveModule::class . ':randomGenerator', 'can:manage random generator']
+            'middleware' => [ActiveModule::class.':randomGenerator', 'can:manage random generator'],
         ], function () {
             Route::get('/random-generator', [DashboardAdminRandomGeneratorController::class, 'index'])->name('dashboard.admin.randomGenerator.index');
             Route::post('/random-generator', [DashboardAdminRandomGeneratorController::class, 'indexExecuteSubmit'])->name('dashboard.admin.randomGenerator.indexExecuteSubmit');
@@ -105,7 +107,6 @@ Route::prefix('api')->middleware(Authenticate::class)->group(function () {
             Route::get('/events/{event}/user-amount', [ApiController::class, 'coursesUserAmountPerEvent'])->name('api.event.coursesUserAmountPerEvent');
         });
 
-
         Route::group(['middleware' => ['can:view statistics']], function () {
             Route::get('/courses/user-amount', [ApiController::class, 'coursesUserAmount'])->name('api.courses.userAmount');
         });
@@ -114,7 +115,7 @@ Route::prefix('api')->middleware(Authenticate::class)->group(function () {
     Route::get('/registrations/{registration}', [ApiController::class, 'registrationsShow'])->name('api.registrations.show');
 
     Route::group([
-        'middleware' => [ActiveModule::class . ':randomGenerator', 'can:manage random generator']
+        'middleware' => [ActiveModule::class.':randomGenerator', 'can:manage random generator'],
     ], function () {
         Route::get('/random-generator/state', [ApiController::class, 'randomGeneratorState'])->name('api.randomGeneratorState');
     });

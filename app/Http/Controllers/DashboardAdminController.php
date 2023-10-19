@@ -11,11 +11,13 @@ use App\Models\Registration;
 use App\Models\Slot;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request as IlluminateRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Permission\Models\Role;
 
 class DashboardAdminController extends Controller
 {
@@ -36,9 +38,90 @@ class DashboardAdminController extends Controller
     }
 
     /**
+     * Display the dashboard admin users page
+     */
+    public function users(): Response
+    {
+        $users = User::with('course', 'roles')->get();
+        $roles = Role::where('name', '!=', 'super admin')->get();
+        $coures = Course::all();
+
+        return Inertia::render('Dashboard/Admin/Users', [
+            'users' => $users,
+            'roles' => $roles,
+            'courses' => $coures,
+        ]);
+    }
+
+    /**
+     * Submit edit a user
+     */
+    public function editUser(IlluminateRequest $request): RedirectResponse
+    {
+        $user = User::find($request->user);
+
+        if (! $user) {
+            Session::flash('error', 'Der angegebene User existiert nicht');
+
+            return Redirect::back();
+        }
+
+        // check if the user is now super admin
+        if ($user->hasRole('super admin')) {
+            // check if the user was super admin before
+            if (! $request->input('role_id')) {
+                Session::flash('error', 'Der User kann nicht von Super Admin zu Super Admin gemacht werden');
+
+                return Redirect::back();
+            }
+        }
+
+        // validate the request
+        $validated = Request::validate([
+            'firstname' => ['required', 'string', 'min:2', 'max:255'],
+            'lastname' => ['required', 'string', 'min:2', 'max:255'],
+            'email' => ['required', 'string', 'email', 'min:3', 'max:255', 'unique:users,email,'.$user->id],
+            'email_confirm' => ['required', 'string', 'email', 'min:3', 'max:255', 'same:email'],
+            'course_id' => ['required', 'integer', 'exists:courses,id'],
+            'role_id' => ['array'],
+        ]);
+
+        // check if all roles exists and not super admin if so add to roles array
+        $roles = [];
+        foreach ($validated['role_id'] as $role) {
+            if (! Role::find($role)) {
+                Session::flash('error', 'Die angegebene Rolle existiert nicht');
+
+                return Redirect::back();
+            }
+            $roleObject = Role::find($role);
+            if ($roleObject->name == 'super admin') {
+                Session::flash('error', 'Der User kann nicht zu Super Admin gemacht werden');
+
+                return Redirect::back();
+            }
+            $roles[] = $role;
+        }
+
+        // remove email_confirm and role_id from array
+        unset($validated['email_confirm']);
+        unset($validated['role_id']);
+
+        // update the user
+        $user->update($validated);
+
+        // sync roles
+        $user->syncRoles($roles);
+
+        Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich bearbeitet. Um die Änderungen zu sehen, muss die Seite neu geladen werden.');
+
+        return Redirect::back();
+    }
+
+    /**
      * Display the dashboard admin registrations page
      */
-    public function registrations(\Illuminate\Http\Request $request): Response
+    public function registrations(IlluminateRequest $request): Response
     {
         $event = Event::with('groups')->with('slots')->find($request->event);
         if (! $event) {
@@ -57,7 +140,7 @@ class DashboardAdminController extends Controller
     /**
      * Display the dashboard admin event page
      */
-    public function event(\Illuminate\Http\Request $request): Response
+    public function event(IlluminateRequest $request): Response
     {
         $event = Event::find($request->event);
         if (! $event) {
@@ -78,7 +161,7 @@ class DashboardAdminController extends Controller
     /**
      * Display the dashboard admin event submit page
      */
-    public function eventSubmit(\Illuminate\Http\Request $request): Response
+    public function eventSubmit(IlluminateRequest $request): Response
     {
         $event = Event::find($request->event);
         if (! $event) {
@@ -106,7 +189,7 @@ class DashboardAdminController extends Controller
     /**
      * Execute the dashboard admin event submit action
      */
-    public function eventExecuteSubmit(\Illuminate\Http\Request $request): RedirectResponse
+    public function eventExecuteSubmit(IlluminateRequest $request): RedirectResponse
     {
         $event = Event::find($request->event);
         if (! $event) {
