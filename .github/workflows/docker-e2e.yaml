@@ -28,6 +28,8 @@ jobs:
           APP_KEY=1234567890ABCDEFGHIJ1234567890AB
           APP_DEBUG=true
           APP_URL=http://localhost
+          APP_FORCE_HTTPS=false
+          APP_EVENT_TYPE=demo
           TUTOR_PASSWORD=password
           ADMIN_PASSWORD=admin
           LOG_CHANNEL=stack
@@ -54,6 +56,10 @@ jobs:
         with:
           compose-file: "docker-compose.yaml"
           down-flags: "--volumes"
+      - name: Wait
+        run: |
+          # wait 10 seconds for the docker container to start
+          sleep 10
       - name: Run DB Seed
         run: |
           # run "php artisan migrate:fresh --seed" inside docker container
