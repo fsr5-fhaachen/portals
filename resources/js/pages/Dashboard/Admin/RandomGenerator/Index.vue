@@ -32,9 +32,6 @@
         </FormRow>
       </CardBase>
 
-      {{ users.length }}
-      {{ filteredUsers.length }}
-
       <CardBase>
         <UiH2>DEBUG</UiH2>
 
@@ -74,7 +71,7 @@ const form = ref({
 
 const { users } = defineProps({
   users: {
-    type: Array as PropType<App.Models.User[]>,
+    type: Array as PropType<Models.User[]>,
     required: true,
   },
   courses: {
