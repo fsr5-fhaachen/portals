@@ -26,7 +26,6 @@ declare module "vue" {
     FormDivider: typeof import("./../components/form/Divider.vue")["default"];
     FormRow: typeof import("./../components/form/Row.vue")["default"];
     FormSchema: typeof import("./../components/form/Schema.vue")["default"];
-    GirdContainer: typeof import("./../components/gird/Container.vue")["default"];
     GridContainer: typeof import("./../components/grid/Container.vue")["default"];
     GroupTable: typeof import("./../components/group/Table.vue")["default"];
     LayoutDashboardContent: typeof import("./../components/layout/DashboardContent.vue")["default"];
@@ -44,6 +43,5 @@ declare module "vue" {
     UserBox: typeof import("./../components/user/Box.vue")["default"];
     UserEditModal: typeof import("./../components/user/EditModal.vue")["default"];
     UserTable: typeof import("./../components/user/Table.vue")["default"];
-    UserUser: typeof import("./../components/user/User.vue")["default"];
   }
 }

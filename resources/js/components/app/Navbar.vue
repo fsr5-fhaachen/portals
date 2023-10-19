@@ -89,6 +89,19 @@
             >
               User Verwaltung
             </InertiaLink>
+            <InertiaLink
+              v-if="user.permissionsArray.includes('manage users')"
+              href="/dashboard/admin/register"
+              :class="{
+                'border-red-500 text-red-900':
+                  $page.url == '/dashboard/admin/register',
+                'border-transparent text-red-500 hover:border-red-300 hover:text-red-700':
+                  $page.url != '/dashboard/admin/register',
+              }"
+              class="inline-flex items-center border-b-[3px] px-1 pt-1 text-sm font-medium"
+            >
+              User registrieren/zuweisen
+            </InertiaLink>
           </div>
           <div class="hidden h-full items-center justify-end px-4 sm:flex">
             <ColorModeButton />
@@ -170,13 +183,27 @@
           href="/dashboard/admin/users"
           :class="{
             'border-red-500 bg-red-100 text-red-900 dark:bg-black dark:text-red-500':
+              $page.url == '/dashboard/admin/users',
+            'border-transparent text-red-600 hover:border-red-300 hover:bg-red-50 hover:text-red-800 dark:text-red-400 dark:hover:bg-gray-900 dark:hover:text-red-100':
+              $page.url != '/dashboard/admin/users',
+          }"
+          class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
+        >
+          User Verwaltung
+        </DisclosureButton>
+        <DisclosureButton
+          v-if="user.permissionsArray.includes('manage users')"
+          :as="InertiaLink"
+          href="/dashboard/admin/register"
+          :class="{
+            'border-red-500 bg-red-100 text-red-900 dark:bg-black dark:text-red-500':
               $page.url == '/dashboard/admin/register',
             'border-transparent text-red-600 hover:border-red-300 hover:bg-red-50 hover:text-red-800 dark:text-red-400 dark:hover:bg-gray-900 dark:hover:text-red-100':
               $page.url != '/dashboard/admin/register',
           }"
           class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
         >
-          User Verwaltung
+          User registrieren/zuweisen
         </DisclosureButton>
       </div>
     </DisclosurePanel>
