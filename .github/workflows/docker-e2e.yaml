@@ -1,0 +1,64 @@
+name: Docker e2e Test
+
+on:
+  pull-request: {}
+
+env:
+  IMAGE_REGISTRY: ghcr.io
+  IMAGE_PATH: ${{ github.repository }}
+  IMAGE_TAG: ${{ github.ref_name }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build Image
+        uses: docker/build-push-action@v5
+        with:
+          push: false
+          load: true
+          tags: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_PATH }}:latest
+      - name: Create Environment
+        run: |
+          cat > .env < EOF
+          APP_NAME="Erstiwoche FB5"
+          APP_ENV=local
+          APP_KEY=1234567890ABCDEFGHIJ1234567890AB
+          APP_DEBUG=true
+          APP_URL=http://localhost
+          TUTOR_PASSWORD=password
+          ADMIN_PASSWORD=admin
+          LOG_CHANNEL=stack
+          LOG_LEVEL=debug
+          BROADCAST_DRIVER=log
+          CACHE_DRIVER=redis
+          FILESYSTEM_DRIVER=local
+          QUEUE_CONNECTION=sync
+          SESSION_DRIVER=redis
+          SESSION_LIFETIME=120
+          MEMCACHED_HOST=127.0.0.1
+          REDIS_HOST=redis
+          #REDIS_PASSWORD=password
+          REDIS_PORT=6379
+          OCTANE_HTTPS=false
+          OCTANE_WORKERS=1
+          OCTANE_MAX_REQUESTS=512
+          WWWGROUP=1000
+          WWWUSER=1000
+          OCTANE_SERVER=roadrunner
+          EOF
+      - name: Run Image
+        uses: isbang/compose-action@v1.5.1
+        with:
+          compose-file: "docker-compose.yaml"
+          down-flags: "--volumes"
+      - name: Run DB Seed
+        run: |
+          # run "php artisan migrate:fresh --seed" inside docker container
+          docker exec portals-web php artisan migrate:fresh --seed
+      - name: Wait reachable
+        run: |
+          # test every 10 seconds if http://localhost:8000 is reachable and has a OK status code. Timeout after 2 minutes
+          timeout 120 bash -c 'until curl --output /dev/null --silent --head --fail http://localhost:8000; do printf "."; sleep 10; done'
