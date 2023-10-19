@@ -1,10 +1,6 @@
 <template>
   <div class="min-h-full">
-    <AppNavbar
-      :navigation="navigation"
-      :showAdminLink="user.is_admin"
-      :modules="modules"
-    />
+    <AppNavbar :navigation="navigation" :user="user" :modules="modules" />
 
     <div class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
       <AppMessage :message="message" />
@@ -60,7 +56,7 @@ const { pages, user } = defineProps({
     default: () => [],
   },
   user: {
-    type: Object as PropType<App.Models.User>,
+    type: Object as PropType<Models.User>,
     required: true,
   },
   modules: {

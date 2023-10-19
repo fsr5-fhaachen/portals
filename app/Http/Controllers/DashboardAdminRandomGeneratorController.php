@@ -18,7 +18,7 @@ class DashboardAdminRandomGeneratorController extends Controller
     public function index(): Response
     {
         // get all users except tutors and admins
-        $users = User::where('is_tutor', false)->where('is_admin', false)->orderBy('firstname')->get();
+        $users = User::doesntHave('roles')->orderBy('firstname')->get();
 
         // get all courses
         $courses = Course::all();

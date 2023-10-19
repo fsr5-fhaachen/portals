@@ -46,10 +46,10 @@
             </InertiaLink>
           </div>
           <div
-            v-if="showAdminLink"
             class="hidden grow justify-end sm:-my-px sm:ml-6 sm:flex sm:space-x-8"
           >
             <InertiaLink
+              v-if="user.permissionsArray.includes('view statistics')"
               href="/dashboard/admin"
               :class="{
                 'border-red-500 text-red-900': $page.url == '/dashboard/admin',
@@ -61,7 +61,10 @@
               Statistik
             </InertiaLink>
             <InertiaLink
-              v-if="modules['randomGenerator']?.active"
+              v-if="
+                modules['randomGenerator']?.active &&
+                user.permissionsArray.includes('manage random generator')
+              "
               href="/dashboard/admin/random-generator"
               :class="{
                 'border-red-500 text-red-900':
@@ -74,6 +77,7 @@
               Zufallsgenerator
             </InertiaLink>
             <InertiaLink
+              v-if="user.permissionsArray.includes('manage registrations')"
               href="/dashboard/admin/register"
               :class="{
                 'border-red-500 text-red-900':
@@ -86,12 +90,7 @@
               User registrieren/zuweisen
             </InertiaLink>
           </div>
-          <div
-            :class="{
-              grow: !showAdminLink,
-            }"
-            class="hidden h-full items-center justify-end px-4 sm:flex"
-          >
+          <div class="hidden h-full items-center justify-end px-4 sm:flex">
             <ColorModeButton />
           </div>
         </div>
@@ -135,7 +134,7 @@
           {{ item.title }}
         </DisclosureButton>
         <DisclosureButton
-          v-if="showAdminLink"
+          v-if="user.permissionsArray.includes('view statistics')"
           :as="InertiaLink"
           href="/dashboard/admin"
           :class="{
@@ -149,7 +148,10 @@
           Statistik
         </DisclosureButton>
         <DisclosureButton
-          v-if="showAdminLink && modules['randomGenerator']?.active"
+          v-if="
+            modules['randomGenerator']?.active &&
+            user.permissionsArray.includes('manage random generator')
+          "
           :as="InertiaLink"
           href="/dashboard/admin/random-generator"
           :class="{
@@ -163,7 +165,7 @@
           Zufallsgenerator
         </DisclosureButton>
         <DisclosureButton
-          v-if="showAdminLink"
+          v-if="user.permissionsArray.includes('manage registrations')"
           :as="InertiaLink"
           href="/dashboard/admin/register"
           :class="{
@@ -190,8 +192,8 @@ defineProps({
     type: Array as () => NavbarLink[],
     required: true,
   },
-  showAdminLink: {
-    type: Boolean,
+  user: {
+    type: Object as () => Models.User,
     default: false,
   },
   modules: {

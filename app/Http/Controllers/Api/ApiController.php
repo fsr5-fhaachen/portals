@@ -212,7 +212,7 @@ class ApiController extends Controller
         foreach ($courses as $course) {
             $result[] = [
                 'id' => $course->id,
-                'amount' => $course->users()->where('is_tutor', false)->count(),
+                'amount' => $course->users()->doesntHave('roles')->count(),
             ];
         }
 
@@ -243,7 +243,7 @@ class ApiController extends Controller
         foreach ($courses as $course) {
             $result[] = [
                 'id' => $course->id,
-                'amount' => $course->users()->where('is_tutor', false)->whereIn('id', $userIds)->count(),
+                'amount' => $course->users()->doesntHave('roles')->whereIn('id', $userIds)->count(),
             ];
         }
 

@@ -42,9 +42,18 @@ class HandleInertiaRequests extends Middleware
             $modulesArray[$module->key] = $module;
         }
 
+        // get user
+        $user = $request->user();
+
+        // get all roles of the user
+        $user->rolesArray = $user->roles->pluck('name')->toArray();
+
+        // get all permissions of the user
+        $user->permissionsArray = $user->getAllPermissions()->pluck('name')->toArray();
+
         return array_merge(parent::share($request), [
             'appEventType' => config('app.event_type'),
-            'user' => $request->user(),
+            'user' => $user,
             'modules' => $modulesArray,
             'message' => [
                 'success' => fn () => $request->session()->get('success'),

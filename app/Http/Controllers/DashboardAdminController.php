@@ -27,7 +27,7 @@ class DashboardAdminController extends Controller
         $courses = Course::all();
 
         foreach ($courses as $course) {
-            $course->users = $course->users()->where('is_tutor', false)->get();
+            $course->users = $course->users()->doesntHave('roles')->get();
         }
 
         return Inertia::render('Dashboard/Admin/Index', [
