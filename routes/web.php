@@ -32,7 +32,7 @@ Route::middleware(RedirectIfAuthenticated::class)->group(function () {
     Route::get('/login', [AppController::class, 'login'])->name('app.login');
     Route::post('/login', [AppController::class, 'loginUser'])->name('app.loginUser');
 
-    Route::middleware(ActiveModule::class.':registration')->group(function () {
+    Route::middleware(ActiveModule::class . ':registration')->group(function () {
         Route::get('/register', [AppController::class, 'register'])->name('app.register');
         Route::post('/register', [AppController::class, 'registerUser'])->name('app.registerUser');
     });
@@ -59,19 +59,27 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
         Route::get('/group/{group}', [DashboardTutorController::class, 'group'])->name('dashboard.tutor.group.index');
     });
 
-    Route::prefix('admin')->middleware(IsLoggedInTutor::class, IsLoggedInAdmin::class)->group(function () {
-        Route::get('/', [DashboardAdminController::class, 'index'])->name('dashboard.admin.index');
+    Route::prefix('admin')->group(function () {
+        Route::group(['middleware' => ['can:view statistics']], function () {
+            Route::get('/', [DashboardAdminController::class, 'index'])->name('dashboard.admin.index');
+        });
 
-        Route::get('/register', [DashboardAdminController::class, 'register'])->name('dashboard.admin.register');
-        Route::post('/register', [DashboardAdminController::class, 'registerUser'])->name('dashboard.admin.registerUser');
-        Route::post('/assign', [DashboardAdminController::class, 'assignUser'])->name('dashboard.admin.assignUser');
+        Route::group(['middleware' => ['can:manage registrations']], function () {
+            Route::get('/register', [DashboardAdminController::class, 'register'])->name('dashboard.admin.register');
+            Route::post('/register', [DashboardAdminController::class, 'registerUser'])->name('dashboard.admin.registerUser');
+            Route::post('/assign', [DashboardAdminController::class, 'assignUser'])->name('dashboard.admin.assignUser');
+        });
 
-        Route::get('/event/{event}', [DashboardAdminController::class, 'event'])->name('dashboard.admin.event.index');
-        Route::get('/event/{event}/registrations', [DashboardAdminController::class, 'registrations'])->name('dashboard.admin.event.registrations');
-        Route::get('/event/{event}/submit', [DashboardAdminController::class, 'eventSubmit'])->name('dashboard.admin.event.submit');
-        Route::post('/event/{event}/submit', [DashboardAdminController::class, 'eventExecuteSubmit'])->name('dashboard.admin.event.executeSubmit');
+        Route::group(['middleware' => ['can:manage events']], function () {
+            Route::get('/event/{event}', [DashboardAdminController::class, 'event'])->name('dashboard.admin.event.index');
+            Route::get('/event/{event}/registrations', [DashboardAdminController::class, 'registrations'])->name('dashboard.admin.event.registrations');
+            Route::get('/event/{event}/submit', [DashboardAdminController::class, 'eventSubmit'])->name('dashboard.admin.event.submit');
+            Route::post('/event/{event}/submit', [DashboardAdminController::class, 'eventExecuteSubmit'])->name('dashboard.admin.event.executeSubmit');
+        });
 
-        Route::middleware(ActiveModule::class.':randomGenerator')->group(function () {
+        Route::group([
+            'middleware' => [ActiveModule::class . ':randomGenerator', 'can:manage random generator']
+        ], function () {
             Route::get('/random-generator', [DashboardAdminRandomGeneratorController::class, 'index'])->name('dashboard.admin.randomGenerator.index');
             Route::post('/random-generator', [DashboardAdminRandomGeneratorController::class, 'indexExecuteSubmit'])->name('dashboard.admin.randomGenerator.indexExecuteSubmit');
         });
@@ -90,19 +98,24 @@ Route::prefix('api')->middleware(Authenticate::class)->group(function () {
 
         Route::get('/registrations/{registration}/toggle-is-present', [ApiController::class, 'registrationsToggleIsPresent'])->name('api.event.registrations.toggleIsPresent');
 
-        Route::middleware(IsLoggedInAdmin::class)->group(function () {
+        Route::group(['middleware' => ['can:manage events']], function () {
             Route::get('/registrations/{registration}/toggle-fulfils-requirements', [ApiController::class, 'registrationsToggleFulfilsRequirements'])->name('api.event.registrations.toggleFulfilsRequirements');
             Route::delete('/registrations/{registration}', [ApiController::class, 'registrationsDestroy'])->name('api.event.registrations.destroy');
 
             Route::get('/events/{event}/user-amount', [ApiController::class, 'coursesUserAmountPerEvent'])->name('api.event.coursesUserAmountPerEvent');
+        });
 
+
+        Route::group(['middleware' => ['can:view statistics']], function () {
             Route::get('/courses/user-amount', [ApiController::class, 'coursesUserAmount'])->name('api.courses.userAmount');
         });
     });
 
     Route::get('/registrations/{registration}', [ApiController::class, 'registrationsShow'])->name('api.registrations.show');
 
-    Route::middleware(ActiveModule::class.':randomGenerator')->group(function () {
+    Route::group([
+        'middleware' => [ActiveModule::class . ':randomGenerator', 'can:manage random generator']
+    ], function () {
         Route::get('/random-generator/state', [ApiController::class, 'randomGeneratorState'])->name('api.randomGeneratorState');
     });
 });
