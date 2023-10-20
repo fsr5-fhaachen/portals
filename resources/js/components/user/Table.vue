@@ -149,14 +149,7 @@
                       ]"
                     >
                       <div class="flex gap-4">
-                        <div
-                          v-if="
-                            !user.roles.length ||
-                            !user.roles
-                              .map((role) => role.name)
-                              .includes('super admin')
-                          "
-                        >
+                        <div>
                           <AppButton
                             theme="warning"
                             @click="selectUserToEdit(user)"

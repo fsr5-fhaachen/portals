@@ -66,16 +66,6 @@ class DashboardAdminController extends Controller
             return Redirect::back();
         }
 
-        // check if the user is now super admin
-        if ($user->hasRole('super admin')) {
-            // check if the user was super admin before
-            if (! $request->input('role_id')) {
-                Session::flash('error', 'Der User kann nicht von Super Admin zu Super Admin gemacht werden');
-
-                return Redirect::back();
-            }
-        }
-
         // validate the request
         $validated = Request::validate([
             'firstname' => ['required', 'string', 'min:2', 'max:255'],
@@ -91,8 +81,7 @@ class DashboardAdminController extends Controller
 
         // check if all roles exists and not super admin if so add to roles array
         $roles = [];
-        if (array_key_exists('role_id', $validated)) {
-
+        if (array_key_exists('role_id', $validated) && ! $user->hasRole('super admin')) {
             foreach ($validated['role_id'] as $role) {
                 if (! Role::find($role)) {
                     Session::flash('error', 'Die angegebene Rolle existiert nicht');
@@ -136,7 +125,9 @@ class DashboardAdminController extends Controller
         $user->update($validated);
 
         // sync roles
-        $user->syncRoles($roles);
+        if (! $user->hasRole('super admin')) {
+            $user->syncRoles($roles);
+        }
 
         Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich bearbeitet. Die Tabelle aktualisiert sich in wenigen Sekunden automatisch.');
 
@@ -333,14 +324,11 @@ class DashboardAdminController extends Controller
             // generate a uuid
             $uuid = Str::uuid()->toString();
 
-            // get filename with extension
-            $filenameWithExtension = $uuid.'.'.$avatarFile->getClientOriginalExtension();
-
             // store file in s3 bucket
-            Storage::disk('s3')->put('avatars/'.$filenameWithExtension, file_get_contents($avatarFile), 'public');
+            $path = Storage::disk('s3')->put('/avatars/'.$uuid, $avatarFile);
 
             // add avatar to validated array
-            $validated['avatar'] = $filenameWithExtension;
+            $validated['avatar'] = $path;
         }
 
         // create the user

@@ -91,7 +91,14 @@
                       />
                     </FormRow>
 
-                    <FormRow>
+                    <FormRow
+                      v-if="
+                        !user.roles.length ||
+                        !user.roles
+                          .map((role) => role.name)
+                          .includes('super admin')
+                      "
+                    >
                       <FormKit
                         type="select"
                         name="role_id"
