@@ -64,9 +64,9 @@
             <FormRow>
               <FormKit
                 type="file"
-                name="profile_image"
-                label="Profilbild hochladen"
-                validation="required|file|image|mimes:jpeg,jpg,png,gif"
+                name="avatar"
+                label="Avatar hochladen"
+                validation="file|image|mimes:jpeg,jpg,png,gif"
               />
             </FormRow>
             <FormRow>

@@ -277,7 +277,7 @@ class ApiController extends Controller
             ]);
         }
 
-        return response()->json($state->value);
+        return response()->json(json_decode($state->value));
     }
 
     /**
@@ -285,7 +285,11 @@ class ApiController extends Controller
      */
     public function users(): JsonResponse
     {
-        $users = User::with('course', 'roles')->get();
+        $users = User::with('course', 'roles')->get()->map(function ($user) {
+            $user->avatarUrl = $user->avatarUrl();
+
+            return $user;
+        });
 
         return response()->json([
             'users' => $users,

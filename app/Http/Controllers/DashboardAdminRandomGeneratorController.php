@@ -6,12 +6,9 @@ use App\Models\Course;
 use App\Models\State;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\Request as Req;
 
 class DashboardAdminRandomGeneratorController extends Controller
 {
@@ -21,7 +18,11 @@ class DashboardAdminRandomGeneratorController extends Controller
     public function index(): Response
     {
         // get all users except tutors and admins
-        $users = User::doesntHave('roles')->orderBy('firstname')->get();
+        $users = User::doesntHave('roles')->orderBy('firstname')->get()->map(function ($user) {
+            $user->avatarUrl = $user->avatarUrl();
+
+            return $user;
+        });
 
         // get all courses
         $courses = Course::all();
@@ -46,7 +47,7 @@ class DashboardAdminRandomGeneratorController extends Controller
         // get the user
         $user = null;
         if ($request['state'] == 'stopped') {
-            $user = User::select('id', 'firstname', 'lastname')->where('id', $request['user_id'])->get();
+            $user = User::find($request['user_id']);
 
             // check if no user was found
             if (! $user) {
@@ -55,6 +56,8 @@ class DashboardAdminRandomGeneratorController extends Controller
                     'message' => 'User not found',
                 ]);
             }
+
+            $user->avatarUrl = $user->avatarUrl();
         }
 
         // check if a state exists or we need to create a new one
@@ -67,7 +70,8 @@ class DashboardAdminRandomGeneratorController extends Controller
         // update the state
         $state->value = json_encode([
             'state' => $request['state'],
-            'user' => $user,
+            // return only id, firstname, lastname and avatarUrl
+            'user' => $user ? $user->only(['id', 'firstname', 'lastname', 'avatarUrl']) : null,
         ]);
 
         // save the state
@@ -78,21 +82,4 @@ class DashboardAdminRandomGeneratorController extends Controller
             'success' => true,
         ]);
     }
-  //TODO: function must be implemented. See issue #224
-  public function showImage(Req $request, $filename)
-  {
-    $client = Storage::disk('s3')->getClient();
-    $bucket = Config::get('filesystems.disks.s3.bucket');
-
-    $command = $client->getCommand('GetObject', [
-      'Bucket' => $bucket,
-      'Key' => $request->post('uuid') //read uuid from Server depends on Vue implementation
-    ]);
-    //Time is Link expiry, but link doesnt seem to expiry not sure why
-    $request = $client->createPresignedRequest($command, '+20 minutes');
-
-    $url = (string)$request->getUri();
-
-    return view('downloadFile', ['url' => $url]);
-  }
 }

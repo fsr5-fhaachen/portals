@@ -15,10 +15,6 @@
         </FormKit>
       </CardBase>
 
-      {{ users?.length }}
-
-      {{ filteredUsers?.length }}
-
       <UserTable
         v-if="filteredUsers"
         :courses="courses"

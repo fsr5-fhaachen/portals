@@ -15,10 +15,10 @@ use Illuminate\Http\Request as IlluminateRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Support\Str;
-use \Illuminate\Http\UploadedFile;
 use Spatie\Permission\Models\Role;
 
 class DashboardAdminController extends Controller
@@ -44,7 +44,6 @@ class DashboardAdminController extends Controller
      */
     public function users(): Response
     {
-        $users = User::with('course', 'roles')->get();
         $roles = Role::where('name', '!=', 'super admin')->get();
         $coures = Course::all();
 
@@ -86,28 +85,55 @@ class DashboardAdminController extends Controller
             'course_id' => ['required', 'integer', 'exists:courses,id'],
             'role_id' => ['array'],
             'is_disabled' => ['boolean'],
+            'remove_avatar' => ['boolean'],
+            'avatar.*.file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif'],
         ]);
 
         // check if all roles exists and not super admin if so add to roles array
         $roles = [];
-        foreach ($validated['role_id'] as $role) {
-            if (! Role::find($role)) {
-                Session::flash('error', 'Die angegebene Rolle existiert nicht');
+        if (array_key_exists('role_id', $validated)) {
 
-                return Redirect::back();
-            }
-            $roleObject = Role::find($role);
-            if ($roleObject->name == 'super admin') {
-                Session::flash('error', 'Der User kann nicht zu Super Admin gemacht werden');
+            foreach ($validated['role_id'] as $role) {
+                if (! Role::find($role)) {
+                    Session::flash('error', 'Die angegebene Rolle existiert nicht');
 
-                return Redirect::back();
+                    return Redirect::back();
+                }
+                $roleObject = Role::find($role);
+                if ($roleObject->name == 'super admin') {
+                    Session::flash('error', 'Der User kann nicht zu Super Admin gemacht werden');
+
+                    return Redirect::back();
+                }
+                $roles[] = $role;
             }
-            $roles[] = $role;
         }
 
-        // remove email_confirm and role_id from array
+        // check if remove_avatar is set
+        if (array_key_exists('remove_avatar', $validated) && $validated['remove_avatar']) {
+            // seet avatar to null
+            $validated['avatar'] = null;
+        } elseif (array_key_exists('avatar', $validated) && $validated['avatar'][0]) {
+            // get avatar file
+            $avatarFile = Request::file('avatar')[0]['file'];
+
+            // generate a uuid
+            $uuid = Str::uuid()->toString();
+
+            // get filename with extension
+            $filenameWithExtension = $uuid.'.'.$avatarFile->getClientOriginalExtension();
+
+            // store file in s3 bucket
+            Storage::disk('s3')->put('/avatars/'.$filenameWithExtension, file_get_contents($avatarFile), 'public');
+
+            // add avatar to validated array
+            $validated['avatar'] = $filenameWithExtension;
+        }
+
+        // remove email_confirm, role_id and remove_avatar from array
         unset($validated['email_confirm']);
         unset($validated['role_id']);
+        unset($validated['remove_avatar']);
 
         // update the user
         $user->update($validated);
@@ -296,32 +322,32 @@ class DashboardAdminController extends Controller
             'email' => ['required', 'string', 'email', 'min:3', 'max:255', 'unique:users'],
             'email_confirm' => ['required', 'string', 'email', 'min:3', 'max:255', 'same:email'],
             'course_id' => ['required', 'integer', 'exists:courses,id'],
+            'avatar.*.file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif'],
         ]);
 
         // remove email_confirm from array
         unset($validated['email_confirm']);
 
+        // check if avatar is set
+        if (array_key_exists('avatar', $validated) && $validated['avatar'][0]) {
+            // get avatar file
+            $avatarFile = Request::file('avatar')[0]['file'];
+
+            // generate a uuid
+            $uuid = Str::uuid()->toString();
+
+            // get filename with extension
+            $filenameWithExtension = $uuid.'.'.$avatarFile->getClientOriginalExtension();
+
+            // store file in s3 bucket
+            Storage::disk('s3')->put('avatars/'.$filenameWithExtension, file_get_contents($avatarFile), 'public');
+
+            // add avatar to validated array
+            $validated['avatar'] = $filenameWithExtension;
+        }
+
         // create the user
         $user = User::create($validated);
-        if(!is_null(Request::file('profile_image')[0]['file'])) {
-          $given_file = Request::file('profile_image')[0]['file'];
-        }
-        //Check if it is a valid file and valid file
-        if ($given_file instanceof UploadedFile && $given_file->isValid()) {
-          $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-          $originalExtension = strtolower($given_file->getClientOriginalExtension());
-
-          //naming for all files in s3 Buckt: name nachname Studiengang
-          if (in_array($originalExtension, $allowedExtensions)) {
-            $uuid = Str::uuid()->toString();
-            $filename = $uuid.'.'.$originalExtension;
-            $given_file->storeAs('', $filename, 's3');
-          } else {
-            Session::flash('error', 'Ungültige Dateiendung!');
-          }
-        } else {
-          Session::flash('error','Ungültige Datei!');
-        }
 
         Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich erstellt.');
 

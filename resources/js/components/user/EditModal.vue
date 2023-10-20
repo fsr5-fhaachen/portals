@@ -41,8 +41,9 @@
                 >
                   <FormContainer>
                     <FormRow>
-                      <UiH2>User beearbeiten</UiH2>
+                      <UiH2>User bearbeiten</UiH2>
                     </FormRow>
+
                     <FormRow>
                       <FormKit
                         type="text"
@@ -98,6 +99,27 @@
                         placeholder="Wähle eine oder mehrere Rollen aus"
                         :options="selectFormRoleOptions"
                         multiple
+                      />
+                    </FormRow>
+
+                    <div v-if="user.avatarUrl">
+                      <img :src="user.avatarUrl" class="mx-auto" />
+                    </div>
+
+                    <FormRow v-if="user.avatarUrl">
+                      <FormKit
+                        type="checkbox"
+                        name="remove_avatar"
+                        label="Avatar entfernen"
+                      />
+                    </FormRow>
+
+                    <FormRow v-if="!editForm.remove_avatar">
+                      <FormKit
+                        type="file"
+                        name="avatar"
+                        label="Avatar hochladen"
+                        validation="file|image|mimes:jpeg,jpg,png,gif"
                       />
                     </FormRow>
 
@@ -159,6 +181,8 @@ const editForm = ref({
   email_confirm: user.email,
   course_id: user.course_id,
   role_id: user.roles.map((role) => role.id),
+  remove_avatar: false,
+  avatar: null,
   is_disabled: user.is_disabled == 1 ? true : false,
 });
 

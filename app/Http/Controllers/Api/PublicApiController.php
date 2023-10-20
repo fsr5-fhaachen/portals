@@ -13,8 +13,12 @@ class PublicApiController extends Controller
      */
     public function users(): JsonResponse
     {
-        // get all users
-        $users = User::with('course', 'roles')->get();
+        // get all users and get execute avatarUrl
+        $users = User::with('course', 'roles')->get()->map(function ($user) {
+            $user->avatarUrl = $user->avatarUrl();
+
+            return $user;
+        });
 
         return response()->json([
             'success' => true,

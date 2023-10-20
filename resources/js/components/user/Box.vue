@@ -5,6 +5,9 @@
     <p class="font-medium text-gray-500 dark:text-gray-400">
       {{ user.firstname }} {{ user.lastname }}
     </p>
+    <div v-if="user.avatarUrl">
+      <img :src="user.avatarUrl" class="mx-auto" />
+    </div>
     <div v-if="course">
       <span :class="[course.classes, 'rounded-md p-1 text-xs text-white']">
         {{ course.abbreviation }}
