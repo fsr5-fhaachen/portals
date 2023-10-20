@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Str;
+use \Illuminate\Http\UploadedFile;
 use Spatie\Permission\Models\Role;
 
 class DashboardAdminController extends Controller
@@ -260,7 +262,7 @@ class DashboardAdminController extends Controller
     /**
      * Display the register page
      */
-    public function register(): Response
+    public function register(Request $request): Response
     {
         // get courses ordered by name
         $courses = Course::orderBy('name')->get();
@@ -301,6 +303,25 @@ class DashboardAdminController extends Controller
 
         // create the user
         $user = User::create($validated);
+        if(!is_null(Request::file('profile_image')[0]['file'])) {
+          $given_file = Request::file('profile_image')[0]['file'];
+        }
+        //Check if it is a valid file and valid file
+        if ($given_file instanceof UploadedFile && $given_file->isValid()) {
+          $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+          $originalExtension = strtolower($given_file->getClientOriginalExtension());
+
+          //naming for all files in s3 Buckt: name nachname Studiengang
+          if (in_array($originalExtension, $allowedExtensions)) {
+            $uuid = Str::uuid()->toString();
+            $filename = $uuid.'.'.$originalExtension;
+            $given_file->storeAs('', $filename, 's3');
+          } else {
+            Session::flash('error', 'Ungültige Dateiendung!');
+          }
+        } else {
+          Session::flash('error','Ungültige Datei!');
+        }
 
         Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich erstellt.');
 

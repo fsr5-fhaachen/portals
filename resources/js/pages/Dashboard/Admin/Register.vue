@@ -62,6 +62,14 @@
               />
             </FormRow>
             <FormRow>
+              <FormKit
+                type="file"
+                name="profile_image"
+                label="Profilbild hochladen"
+                validation="required|file|image|mimes:jpeg,jpg,png,gif"
+              />
+            </FormRow>
+            <FormRow>
               <FormKit type="submit" label="Registrieren" />
             </FormRow>
             <FormRow>
@@ -207,6 +215,7 @@ const randomPlaceholderPerson = usePlaceholderPerson();
 const registerSubmitHandler = async () => {
   Inertia.post("/dashboard/admin/register", registerForm.value);
 };
+
 const assignSubmitHandler = async () => {
   Inertia.post("/dashboard/admin/assign", assignForm.value);
 };
