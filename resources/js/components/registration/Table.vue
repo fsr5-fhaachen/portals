@@ -240,7 +240,14 @@
                             ist nicht anwesend
                           </AppButton>
                         </div>
-                        <template v-if="user && user.is_admin">
+                        <template
+                          v-if="
+                            user &&
+                            user.permissionsArray.includes(
+                              'view hidden event details'
+                            )
+                          "
+                        >
                           <div>
                             <AppButton
                               v-if="registration.fulfils_requirements"
@@ -332,7 +339,7 @@ const props = defineProps({
     default: false,
   },
   user: {
-    type: Object as PropType<App.Models.User>,
+    type: Object as PropType<Models.User>,
     default: null,
   },
 });

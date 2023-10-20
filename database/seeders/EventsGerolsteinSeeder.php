@@ -28,7 +28,7 @@ class EventsGerolsteinSeeder extends Seeder
     private function registerStudents(Event $event): void
     {
         // get all students
-        $students = User::where('is_tutor', false)->get();
+        $students = User::doesntHave('roles')->get();
 
         // create registration
         foreach ($students as $student) {
@@ -54,8 +54,8 @@ class EventsGerolsteinSeeder extends Seeder
         $event = new Event();
         $event->name = 'Spieleolympiade';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2022-10-27 8:00:00');
-        $event->registration_to = new DateTime('2022-10-27 8:00:00');
+        $event->registration_from = new DateTime('2023-11-01 8:00:00');
+        $event->registration_to = new DateTime('2023-11-01 8:00:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 110;
@@ -99,8 +99,8 @@ class EventsGerolsteinSeeder extends Seeder
         $event = new Event();
         $event->name = 'Gruppenphase';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2022-10-27 8:00:00');
-        $event->registration_to = new DateTime('2022-10-27 8:00:00');
+        $event->registration_from = new DateTime('2023-11-01 8:00:00');
+        $event->registration_to = new DateTime('2023-11-01 8:00:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 210;

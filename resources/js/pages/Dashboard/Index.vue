@@ -6,7 +6,13 @@
       hier findest du eine Übersicht über alle Veranstaltungen.
     </template>
 
-    <template v-if="user.is_tutor">
+    <template
+      v-if="
+        user.rolesArray.some((role) =>
+          ['admin', 'esa', 'stage tutor', 'tutor'].includes(role)
+        )
+      "
+    >
       <CardBase>
         <FormKit
           type="form"
@@ -38,14 +44,14 @@
       </CardBase>
     </template>
     <template v-else>
-      <GirdContainer v-if="events.length">
+      <GridContainer v-if="events.length">
         <EventCard
           v-for="event in events"
           :key="event.id"
           :event="event"
           :registration="getUserRegistrationForEvent(event)"
         />
-      </GirdContainer>
+      </GridContainer>
     </template>
   </LayoutDashboardContent>
 </template>
@@ -64,7 +70,7 @@ const { registrations } = defineProps({
     required: true,
   },
   user: {
-    type: Object as PropType<App.Models.User>,
+    type: Object as PropType<Models.User>,
     required: true,
   },
 });
