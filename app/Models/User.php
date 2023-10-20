@@ -66,7 +66,7 @@ class User extends Authenticatable implements Auditable
         if ($this->avatar) {
 
             // get immage from S3
-            return Storage::disk('s3')->url('avatars/'.$this->avatar);
+            return Storage::disk('s3')->url($this->avatar);
         }
 
         return null;
