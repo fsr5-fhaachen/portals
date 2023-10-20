@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@formkit/addons": "^1.1.0",
+    "@formkit/core": "^1.2.2",
     "@formkit/themes": "^1.1.0",
     "@formkit/vue": "^1.1.0",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
