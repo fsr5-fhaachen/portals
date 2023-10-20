@@ -28,7 +28,7 @@ class EventsGerolsteinSeeder extends Seeder
     private function registerStudents(Event $event): void
     {
         // get all students
-        $students = User::where('is_tutor', false)->get();
+        $students = User::doesntHave('roles')->get();
 
         // create registration
         foreach ($students as $student) {

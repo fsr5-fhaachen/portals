@@ -43,7 +43,7 @@ const { event } = defineProps({
     required: true,
   },
   user: {
-    type: Object as PropType<App.Models.User>,
+    type: Object as PropType<Models.User>,
     required: true,
   },
 });

@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Event;
 use App\Models\Registration;
 use App\Models\State;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -212,7 +213,7 @@ class ApiController extends Controller
         foreach ($courses as $course) {
             $result[] = [
                 'id' => $course->id,
-                'amount' => $course->users()->where('is_tutor', false)->count(),
+                'amount' => $course->users()->doesntHave('roles')->count(),
             ];
         }
 
@@ -243,7 +244,7 @@ class ApiController extends Controller
         foreach ($courses as $course) {
             $result[] = [
                 'id' => $course->id,
-                'amount' => $course->users()->where('is_tutor', false)->whereIn('id', $userIds)->count(),
+                'amount' => $course->users()->doesntHave('roles')->whereIn('id', $userIds)->count(),
             ];
         }
 
@@ -277,5 +278,17 @@ class ApiController extends Controller
         }
 
         return response()->json($state->value);
+    }
+
+    /**
+     * Fresh users data
+     */
+    public function users(): JsonResponse
+    {
+        $users = User::with('course', 'roles')->get();
+
+        return response()->json([
+            'users' => $users,
+        ]);
     }
 }
