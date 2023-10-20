@@ -120,14 +120,11 @@ class DashboardAdminController extends Controller
             // generate a uuid
             $uuid = Str::uuid()->toString();
 
-            // get filename with extension
-            $filenameWithExtension = $uuid.'.'.$avatarFile->getClientOriginalExtension();
-
             // store file in s3 bucket
-            Storage::disk('s3')->put('/avatars/'.$filenameWithExtension, file_get_contents($avatarFile), 'public');
+            $path = Storage::disk('s3')->put('/avatars/'.$uuid, $avatarFile);
 
             // add avatar to validated array
-            $validated['avatar'] = $filenameWithExtension;
+            $validated['avatar'] = $path;
         }
 
         // remove email_confirm, role_id and remove_avatar from array

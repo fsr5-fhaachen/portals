@@ -18,7 +18,7 @@ class DashboardAdminRandomGeneratorController extends Controller
     public function index(): Response
     {
         // get all users except tutors and admins
-        $users = User::doesntHave('roles')->orderBy('firstname')->get()->map(function ($user) {
+        $users = User::doesntHave('roles')->orderBy('firstname')->with('course')->get()->map(function ($user) {
             $user->avatarUrl = $user->avatarUrl();
 
             return $user;
