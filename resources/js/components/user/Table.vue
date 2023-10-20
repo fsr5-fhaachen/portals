@@ -39,6 +39,12 @@
                   </th>
                   <th
                     scope="col"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
+                  >
+                    Hat ein Bild
+                  </th>
+                  <th
+                    scope="col"
                     class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-3 pr-4 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pr-6 lg:pr-8"
                   >
                     <span class="sr-only">Aktionen</span>
@@ -129,6 +135,16 @@
                         index !== users.length - 1
                           ? 'border-b border-gray-200 dark:border-gray-700'
                           : '',
+                        'whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900 dark:text-gray-100',
+                      ]"
+                    >
+                      {{ user.avatarUrl ? "Ja" : "Nein" }}
+                    </td>
+                    <td
+                      :class="[
+                        index !== users.length - 1
+                          ? 'border-b border-gray-200 dark:border-gray-700'
+                          : '',
                         'relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8',
                       ]"
                     >
@@ -175,7 +191,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, PropType, watch, onBeforeUnmount } from "vue";
+import { ref, PropType } from "vue";
 
 const props = defineProps({
   user: {

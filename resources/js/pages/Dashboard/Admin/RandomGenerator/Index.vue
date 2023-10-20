@@ -48,7 +48,6 @@
           v-for="filteredUser in filteredUsers"
           @click="selectedDebugUser(filteredUser.id)"
           :user="filteredUser"
-          :courses="courses"
           :class="{
             'ring-2 ring-fhac-mint': filteredUser.id === selectedDebugUserId,
           }"
@@ -73,9 +72,6 @@ const { users } = defineProps({
   users: {
     type: Array as PropType<Models.User[]>,
     required: true,
-  },
-  courses: {
-    type: Array as PropType<App.Models.Course[]>,
   },
 });
 

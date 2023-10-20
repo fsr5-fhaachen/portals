@@ -8,28 +8,21 @@
     <div v-if="user.avatarUrl">
       <img :src="user.avatarUrl" class="mx-auto" />
     </div>
-    <div v-if="course">
-      <span :class="[course.classes, 'rounded-md p-1 text-xs text-white']">
-        {{ course.abbreviation }}
+    <div v-if="user.course?.id">
+      <span :class="[user.course.classes, 'rounded-md p-1 text-xs text-white']">
+        {{ user.course.abbreviation }}
       </span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, PropType } from "vue";
+import { PropType } from "vue";
 
-const { user, courses } = defineProps({
+defineProps({
   user: {
     type: Object as PropType<App.Models.Useer>,
     required: true,
   },
-  courses: {
-    type: Array as PropType<App.Models.Course[]>,
-  },
-});
-
-const course = computed(() => {
-  return courses.find((course) => course.id === user.course_id);
 });
 </script>
