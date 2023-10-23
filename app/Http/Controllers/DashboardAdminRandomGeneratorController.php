@@ -82,4 +82,9 @@ class DashboardAdminRandomGeneratorController extends Controller
             'success' => true,
         ]);
     }
+
+    public function display(): Response
+    {
+        return Inertia::render('Dashboard/Admin/RandomGenerator/Display');
+    }
 }
