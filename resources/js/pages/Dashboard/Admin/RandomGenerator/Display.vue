@@ -1,25 +1,49 @@
 <template>
-  {{ generatorData }}
+  <div>
+    TEST
+    {{ generatorState }}
+
+    <div v-if="generatorState.state === 'idle'">NICHTS</div>
+    <div v-else-if="generatorState.state === 'running'">
+      {{ users[currentUserIndex].firstname }}
+      {{ users[currentUserIndex].lastname }}
+    </div>
+    <div v-else-if="generatorState.state === 'stopped'">
+      STOPPT <img :src="generatorState.user?.avatarUrl" />
+    </div>
+  </div>
 </template>
+
+<script lang="ts">
+import RandomGeneratorLayout from "@/layouts/RandomGeneratorLayout.vue";
+
+export default {
+  layout: RandomGeneratorLayout,
+};
+</script>
 
 <script setup lang="ts">
 import { ref, PropType, onBeforeUnmount } from "vue";
 
-const generator = defineProps({
-  state: {
-    type: String,
-    required: true,
-  },
-  user: {
-    type: Object as PropType<App.Models.User>,
+const props = defineProps({
+  users: {
+    type: Array as PropType<App.Models.User[]>,
     required: true,
   },
 });
 
-const generatorData = ref(generator);
+// locale state variables
+const generatorState = ref<{
+  state: "setup" | "idle" | "running" | "stopped";
+  user?: Models.User;
+}>({
+  state: "setup",
+});
 const isFetchingGenerator = ref(false);
+const currentUserIndex = ref(0);
 
-const fetchCourses = async () => {
+// functions
+const fetchRandomGeneratorState = async () => {
   if (isFetchingGenerator.value) {
     return;
   }
@@ -37,26 +61,21 @@ const fetchCourses = async () => {
   if (response.ok) {
     const data = await response.json();
 
-    // map the data to the courses
-    generatorData.value = ;
-    generatorData.value = generator.map((generator) => {
-      const generatorData = data.find(
-        (generatorData: any) => generatorData == generator
-      );
-
-      return {
-        ...generator,
-        users: generatorData.amount,
-      };
-    });
+    generatorState.value = data;
   }
 
   isFetchingGenerator.value = false;
 };
 
-const generatorInterval = setInterval(fetchCourses, 500);
+const generatorInterval = setInterval(fetchRandomGeneratorState, 500);
+const uglyAnimationIndex = setInterval(() => {
+  if (generatorState.value.state === "running") {
+    currentUserIndex.value = Math.floor(Math.random() * props.users.length);
+  }
+}, 100);
 
 onBeforeUnmount(() => {
   clearInterval(generatorInterval);
+  clearInterval(uglyAnimationIndex);
 });
 </script>
