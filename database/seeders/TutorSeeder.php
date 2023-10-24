@@ -57,22 +57,22 @@ class TutorSeeder extends Seeder
             $user->firstname = $tutor[1];
             $user->course_id = $courseByKey[$tutor[2]]->id;
             $user->email = $tutor[3];
-        }
 
-        // save the user
-        $user->save();
+            // save the user
+            $user->save();
 
-        // assigne user role
-        $user->assignRole('tutor');
+            // assigne user role
+            $user->assignRole('tutor');
 
-        // check if the user has additional roles
-        if (array_key_exists(4, $tutor)) {
-            // split roles by comma
-            $roles = explode(',', $tutor[4]);
+            // check if the user has additional roles
+            if (array_key_exists(4, $tutor)) {
+                // split roles by comma
+                $roles = explode(',', $tutor[4]);
 
-            // loop through the roles
-            foreach ($roles as $role) {
-                $user->assignRole($role);
+                // loop through the roles
+                foreach ($roles as $role) {
+                    $user->assignRole($role);
+                }
             }
         }
     }
