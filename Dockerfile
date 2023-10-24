@@ -2,7 +2,7 @@
 #       STAGE 1.1: Build JS with node
 # --------------------------------------------
 
-FROM ghcr.io/roadrunner-server/roadrunner:2023.2.2 AS roadrunner
+FROM ghcr.io/roadrunner-server/roadrunner:2023.3.2 AS roadrunner
 FROM node:16-alpine as node
 WORKDIR /app
 
