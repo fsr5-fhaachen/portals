@@ -43,6 +43,7 @@ class DatabaseSeeder extends Seeder
                 ModuleGerolsteinSeeder::class,
                 EventsGerolsteinSeeder::class,
                 PageGerolsteinSeeder::class,
+                StudentSeeder::class,
             ];
         }
 
