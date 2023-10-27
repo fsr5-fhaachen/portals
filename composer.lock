@@ -4,8 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "68a673abac8a5e8218b66737d5310f07",
-
+    "content-hash": "abff4dffb0a51bb1da877808b292c931",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -4559,16 +4558,16 @@
         },
         {
             "name": "spiral/roadrunner",
-            "version": "v2023.3.1",
+            "version": "v2023.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/roadrunner-server/roadrunner.git",
-                "reference": "99cbb8923e07c285d8540d68c72f4a04dfa09d32"
+                "reference": "b5acfd6212252c1977990e88f416b2d813939a03"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/roadrunner-server/roadrunner/zipball/99cbb8923e07c285d8540d68c72f4a04dfa09d32",
-                "reference": "99cbb8923e07c285d8540d68c72f4a04dfa09d32",
+                "url": "https://api.github.com/repos/roadrunner-server/roadrunner/zipball/b5acfd6212252c1977990e88f416b2d813939a03",
+                "reference": "b5acfd6212252c1977990e88f416b2d813939a03",
                 "shasum": ""
             },
             "type": "metapackage",
@@ -4597,7 +4596,7 @@
                 "docs": "https://roadrunner.dev/docs",
                 "forum": "https://forum.roadrunner.dev/",
                 "issues": "https://github.com/roadrunner-server/roadrunner/issues",
-                "source": "https://github.com/roadrunner-server/roadrunner/tree/v2023.3.1"
+                "source": "https://github.com/roadrunner-server/roadrunner/tree/v2023.3.3"
             },
             "funding": [
                 {
@@ -4605,7 +4604,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-10-12T13:43:50+00:00"
+            "time": "2023-10-26T17:36:10+00:00"
         },
         {
             "name": "spiral/roadrunner-cli",
@@ -10142,5 +10141,5 @@
         "php": "^8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
