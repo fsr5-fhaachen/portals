@@ -30,19 +30,10 @@ module.exports = {
             transform: "translateY(-100%)",
           },
         },
-        scaleup: {
-          "0%": {
-            transform: "scale(0)",
-          },
-          "100%": {
-            transform: "scale(1)",
-          },
-        },
       },
       animation: {
         wiggle: "wiggle 2s ease-in-out infinite",
         fly: "fly 75s infinite linear alternate",
-        scaleup: "scaleup 1s",
       },
       colors: {
         fhac: {
