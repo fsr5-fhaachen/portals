@@ -12,6 +12,7 @@ declare module "vue" {
     AppMessage: typeof import("./../components/app/Message.vue")["default"];
     AppNavbar: typeof import("./../components/app/Navbar.vue")["default"];
     BoxContainer: typeof import("./../components/box/Container.vue")["default"];
+    CardAvatar: typeof import("./../components/card/Avatar.vue")["default"];
     CardBase: typeof import("./../components/card/Base.vue")["default"];
     CardContainer: typeof import("./../components/card/Container.vue")["default"];
     CardLayout: typeof import("./../layouts/CardLayout.vue")["default"];
