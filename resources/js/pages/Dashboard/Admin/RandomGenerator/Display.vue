@@ -65,15 +65,21 @@
       </div>
     </Transition>
 
-    <audio autoplay v-if="randomGeneratorState.state === 'running'">
+    <audio
+      autoplay
+      v-if="randomGeneratorRunningSoundState != 'stopped'"
+      id="running-sound"
+    >
       <source src="/sounds/random-generator/running.mp3" type="audio/mpeg" />
     </audio>
-    <audio autoplay v-if="randomGeneratorState.state === 'stopped'">
-      <source src="/sounds/random-generator/airhorn.mp3" type="audio/mpeg" />
-    </audio>
-    <audio autoplay v-if="randomGeneratorState.state === 'stopped'">
-      <source src="/sounds/random-generator/rise.mp3" type="audio/mpeg" />
-    </audio>
+    <template v-if="randomGeneratorState.state === 'stopped'">
+      <audio autoplay>
+        <source src="/sounds/random-generator/airhorn.mp3" type="audio/mpeg" />
+      </audio>
+      <audio autoplay>
+        <source src="/sounds/random-generator/rise.mp3" type="audio/mpeg" />
+      </audio>
+    </template>
   </div>
 </template>
 
@@ -96,6 +102,9 @@ const props = defineProps({
 });
 
 // locale state variables
+const randomGeneratorRunningSoundState = ref<
+  "running" | "fade-out" | "stopped"
+>("stopped");
 const randomGeneratorState = ref<{
   state: "setup" | "idle" | "running" | "stopped";
   user?: Models.User;
@@ -128,7 +137,31 @@ const fetchRandomGeneratorState = async () => {
       randomGeneratorState.value.state != "running" &&
       data.state == "running"
     ) {
+      randomGeneratorRunningSoundState.value = "running";
       props.users.sort(() => Math.random() - 0.5);
+    } else if (
+      randomGeneratorState.value.state == "running" &&
+      data.state == "stopped"
+    ) {
+      const runningSound = document.getElementById(
+        "running-sound"
+      ) as HTMLAudioElement;
+
+      if (runningSound) {
+        const fadeOutRunningSoundInterval = setInterval(() => {
+          if (runningSound.volume > 0) {
+            runningSound.volume -= 0.1;
+          } else {
+            randomGeneratorRunningSoundState.value = "stopped";
+          }
+        }, 200);
+
+        setTimeout(() => {
+          clearInterval(fadeOutRunningSoundInterval);
+          randomGeneratorRunningSoundState.value = "stopped";
+          runningSound.volume = 1;
+        }, 2000);
+      }
     }
 
     randomGeneratorState.value = data;
