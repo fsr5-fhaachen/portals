@@ -12,7 +12,6 @@ declare module "vue" {
     AppMessage: typeof import("./../components/app/Message.vue")["default"];
     AppNavbar: typeof import("./../components/app/Navbar.vue")["default"];
     BoxContainer: typeof import("./../components/box/Container.vue")["default"];
-    CardAvatarCard: typeof import("./../components/card/AvatarCard.vue")["default"];
     CardBase: typeof import("./../components/card/Base.vue")["default"];
     CardContainer: typeof import("./../components/card/Container.vue")["default"];
     CardLayout: typeof import("./../layouts/CardLayout.vue")["default"];
@@ -21,6 +20,7 @@ declare module "vue" {
     DashboardCardLayout: typeof import("./../layouts/DashboardCardLayout.vue")["default"];
     DashboardLayout: typeof import("./../layouts/DashboardLayout.vue")["default"];
     DefaultLayout: typeof import("./../layouts/DefaultLayout.vue")["default"];
+    DisplayLayout: typeof import("./../layouts/DisplayLayout.vue")["default"];
     EventCard: typeof import("./../components/event/Card.vue")["default"];
     EventTable: typeof import("./../components/event/Table.vue")["default"];
     FormContainer: typeof import("./../components/form/Container.vue")["default"];
@@ -30,7 +30,6 @@ declare module "vue" {
     GridContainer: typeof import("./../components/grid/Container.vue")["default"];
     GroupTable: typeof import("./../components/group/Table.vue")["default"];
     LayoutDashboardContent: typeof import("./../components/layout/DashboardContent.vue")["default"];
-    RandomGeneratorLayout: typeof import("./../layouts/RandomGeneratorLayout.vue")["default"];
     RandomGeneratorUserAvatarCard: typeof import("./../components/random/generator/user/AvatarCard.vue")["default"];
     RegistrationTable: typeof import("./../components/registration/Table.vue")["default"];
     SlotTable: typeof import("./../components/slot/Table.vue")["default"];

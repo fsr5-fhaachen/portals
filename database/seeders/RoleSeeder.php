@@ -21,6 +21,7 @@ class RoleSeeder extends Seeder
             'manage events',
             'manage users',
             'manage random generator',
+            'manage score system',
         ] as $permission) {
             if (! Permission::where('name', $permission)->exists()) {
                 Permission::create(['name' => $permission]);
@@ -40,6 +41,7 @@ class RoleSeeder extends Seeder
         }
         $stageTutorRole = Role::where('name', 'stage tutor')->first();
         $stageTutorRole->givePermissionTo($permissions['manage random generator']);
+        $stageTutorRole->givePermissionTo($permissions['manage score system']);
 
         // create esa role if it doesn't exist
         if (! Role::where('name', 'esa')->exists()) {
@@ -58,6 +60,7 @@ class RoleSeeder extends Seeder
         $adminRole->givePermissionTo($permissions['view hidden event details']);
         $adminRole->givePermissionTo($permissions['manage events']);
         $adminRole->givePermissionTo($permissions['manage random generator']);
+        $adminRole->givePermissionTo($permissions['manage score system']);
         $adminRole->givePermissionTo($permissions['manage users']);
 
         // create super admin role if it doesn't exist
@@ -69,6 +72,7 @@ class RoleSeeder extends Seeder
         $superAdminRole->givePermissionTo($permissions['view hidden event details']);
         $superAdminRole->givePermissionTo($permissions['manage events']);
         $superAdminRole->givePermissionTo($permissions['manage random generator']);
+        $superAdminRole->givePermissionTo($permissions['manage score system']);
         $superAdminRole->givePermissionTo($permissions['manage users']);
 
         // create special role if it doesn't exist
