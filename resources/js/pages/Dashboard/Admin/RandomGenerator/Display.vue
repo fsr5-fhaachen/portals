@@ -86,32 +86,6 @@
   </div>
 </template>
 
-<style>
-.v-enter-active,
-.v-leave-active {
-  transition: opacity 2s ease;
-}
-
-.v-enter-from,
-.v-leave-to {
-  opacity: 0;
-}
-
-.winner-enter-active {
-  transition: opacity 2s ease;
-  transition-delay: 2s;
-}
-
-.winner-leave-active {
-  transition: opacity 0.1s ease;
-}
-
-.winner-enter-from,
-.winner-leave-to {
-  opacity: 0;
-}
-</style>
-
 <script lang="ts">
 import RandomGeneratorLayout from "@/layouts/RandomGeneratorLayout.vue";
 
@@ -176,3 +150,29 @@ onBeforeUnmount(() => {
   clearInterval(generatorInterval);
 });
 </script>
+
+<style>
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 2s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+
+.winner-enter-active {
+  transition: opacity 2s ease;
+  transition-delay: 2s;
+}
+
+.winner-leave-active {
+  transition: opacity 0.1s ease;
+}
+
+.winner-enter-from,
+.winner-leave-to {
+  opacity: 0;
+}
+</style>
