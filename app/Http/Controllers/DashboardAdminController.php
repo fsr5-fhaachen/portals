@@ -150,7 +150,7 @@ class DashboardAdminController extends Controller
         // check if user has super admin role
         if ($user->hasRole('super admin')) {
 
-            Session::flash('error', 'Der User kann nicht zu Super Admin gemacht werden');
+            Session::flash('error', 'Der User kann nicht gelöscht werden');
         }
 
         // copy user to temp user variable
