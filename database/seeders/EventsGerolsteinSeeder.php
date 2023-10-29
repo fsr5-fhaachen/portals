@@ -142,7 +142,7 @@ class EventsGerolsteinSeeder extends Seeder
     public function runSamstagabendTanzenGesang(): void
     {
         // check if event with name "Tanzen & Gesang" exists
-        $event = Event::where('name', 'Tanzen, Gesang')->first();
+        $event = Event::where('name', 'Tanzen & Gesang')->first();
         if ($event) {
             return;
         }
