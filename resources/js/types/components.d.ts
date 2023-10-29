@@ -31,6 +31,7 @@ declare module "vue" {
     GroupTable: typeof import("./../components/group/Table.vue")["default"];
     LayoutDashboardContent: typeof import("./../components/layout/DashboardContent.vue")["default"];
     RandomGeneratorLayout: typeof import("./../layouts/RandomGeneratorLayout.vue")["default"];
+    RandomGeneratorUserAvatarCard: typeof import("./../components/random/generator/user/AvatarCard.vue")["default"];
     RegistrationTable: typeof import("./../components/registration/Table.vue")["default"];
     SlotTable: typeof import("./../components/slot/Table.vue")["default"];
     UiDateString: typeof import("./../components/ui/DateString.vue")["default"];

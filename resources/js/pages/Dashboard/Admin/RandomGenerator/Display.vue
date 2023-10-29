@@ -24,7 +24,7 @@
               <div
                 class="grid h-fit w-screen animate-fly justify-items-center space-y-32 overflow-hidden pt-20"
               >
-                <AvatarCard
+                <RandomGeneratorUserAvatarCard
                   class="animate-wiggle"
                   v-for="user in users"
                   :src="user.avatarUrl"
@@ -58,7 +58,7 @@
       >
         <Transition name="winner">
           <div>
-            <AvatarCard
+            <RandomGeneratorUserAvatarCard
               class="scale-[130%]"
               :src="generatorState.user?.avatarUrl"
               :firstname="generatorState.user?.firstname"
@@ -96,7 +96,7 @@ export default {
 
 <script setup lang="ts">
 import { ref, PropType, onBeforeUnmount } from "vue";
-import AvatarCard from "@/components/card/AvatarCard.vue";
+import RandomGeneratorUserAvatarCard from "@/components/random/generator/user/AvatarCard.vue";
 
 const props = defineProps({
   users: {
