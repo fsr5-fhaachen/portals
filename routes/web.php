@@ -32,7 +32,7 @@ Route::middleware(RedirectIfAuthenticated::class)->group(function () {
     Route::get('/login', [AppController::class, 'login'])->name('app.login');
     Route::post('/login', [AppController::class, 'loginUser'])->name('app.loginUser');
 
-    Route::middleware(ActiveModule::class . ':registration')->group(function () {
+    Route::middleware(ActiveModule::class.':registration')->group(function () {
         Route::get('/register', [AppController::class, 'register'])->name('app.register');
         Route::post('/register', [AppController::class, 'registerUser'])->name('app.registerUser');
     });
@@ -81,7 +81,7 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
         });
 
         Route::group([
-            'middleware' => [ActiveModule::class . ':randomGenerator', 'can:manage random generator'],
+            'middleware' => [ActiveModule::class.':randomGenerator', 'can:manage random generator'],
         ], function () {
             Route::get('/random-generator', [DashboardAdminRandomGeneratorController::class, 'index'])->name('dashboard.admin.randomGenerator.index');
             Route::post('/random-generator', [DashboardAdminRandomGeneratorController::class, 'indexExecuteSubmit'])->name('dashboard.admin.randomGenerator.indexExecuteSubmit');
@@ -89,7 +89,7 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
         });
 
         Route::group([
-            'middleware' => [ActiveModule::class . ':scoreSystem', 'can:manage score system'],
+            'middleware' => [ActiveModule::class.':scoreSystem', 'can:manage score system'],
         ], function () {
             Route::get('/score-system', [DashboardAdminScoreSystemController::class, 'index'])->name('dashboard.admin.scoreSystem.index');
             Route::post('/score-system', [DashboardAdminScoreSystemController::class, 'indexExecuteSubmit'])->name('dashboard.admin.scoreSystem.indexExecuteSubmit');
@@ -129,13 +129,13 @@ Route::prefix('api')->middleware(Authenticate::class)->group(function () {
     Route::get('/registrations/{registration}', [ApiController::class, 'registrationsShow'])->name('api.registrations.show');
 
     Route::group([
-        'middleware' => [ActiveModule::class . ':randomGenerator', 'can:manage random generator'],
+        'middleware' => [ActiveModule::class.':randomGenerator', 'can:manage random generator'],
     ], function () {
         Route::get('/random-generator/state', [ApiController::class, 'randomGeneratorState'])->name('api.randomGeneratorState');
     });
 
     Route::group([
-        'middleware' => [ActiveModule::class . ':scoreSystem', 'can:manage score system'],
+        'middleware' => [ActiveModule::class.':scoreSystem', 'can:manage score system'],
     ], function () {
         Route::get('/score-system/state', [ApiController::class, 'scoreSystemState'])->name('api.scoreSystemState');
     });

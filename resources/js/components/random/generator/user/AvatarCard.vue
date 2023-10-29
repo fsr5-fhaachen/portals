@@ -4,7 +4,7 @@
   >
     <img v-if="props.src" :src="props.src" class="h-fit" />
     <div
-      v-elseAD
+      v-else
       class="flex h-[30rem] transform flex-col items-center justify-center text-center font-eighty-miles text-8xl text-white"
     >
       <span>{{ props.firstname }}</span>
