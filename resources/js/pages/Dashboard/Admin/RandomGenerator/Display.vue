@@ -113,15 +113,15 @@ const generatorState = ref<{
   state: "setup",
 });
 
-const isFetchingGenerator = ref(false);
+const isFetchingRandomGenerator = ref(false);
 
 // functions
 const fetchRandomGeneratorState = async () => {
-  if (isFetchingGenerator.value) {
+  if (isFetchingRandomGenerator.value) {
     return;
   }
 
-  isFetchingGenerator.value = true;
+  isFetchingRandomGenerator.value = true;
 
   const response = await fetch("/api/random-generator/state", {
     method: "GET",
@@ -141,7 +141,7 @@ const fetchRandomGeneratorState = async () => {
     generatorState.value = data;
   }
 
-  isFetchingGenerator.value = false;
+  isFetchingRandomGenerator.value = false;
 };
 
 const generatorInterval = setInterval(fetchRandomGeneratorState, 500);
