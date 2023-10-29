@@ -82,4 +82,24 @@ class DashboardAdminRandomGeneratorController extends Controller
             'success' => true,
         ]);
     }
+
+    /*
+     * Display the dashboard admin random generator display page
+    */
+    public function display(): Response
+    {
+        // get all users except tutors and admins
+        $users = User::doesntHave('roles')->with('course')->get()->map(function ($user) {
+            $user->avatarUrl = $user->avatarUrl();
+
+            return $user;
+        });
+
+        // shuffle the users
+        $users = $users->shuffle();
+
+        return Inertia::render('Dashboard/Admin/RandomGenerator/Display', [
+            'users' => $users,
+        ]);
+    }
 }
