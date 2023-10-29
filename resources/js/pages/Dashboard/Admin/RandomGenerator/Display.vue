@@ -23,7 +23,7 @@
             <div
               class="grid h-fit w-screen animate-fly justify-items-center space-y-32 overflow-hidden pt-20"
             >
-              <Avatar
+              <AvatarCard
                 class="animate-wiggle"
                 v-for="user in users"
                 :src="user.avatarUrl"
@@ -54,7 +54,7 @@
           v-if="generatorState.state === 'stopped'"
           class="flex h-screen items-center justify-center"
         >
-          <Avatar
+          <AvatarCard
             class="scale-[130%]"
             :src="generatorState.user?.avatarUrl"
             :firstname="generatorState.user?.firstname"
@@ -115,8 +115,8 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { ref, PropType, onBeforeUnmount, render, createElement } from "vue";
-import Avatar from "@/components/card/Avatar.vue";
+import { ref, PropType, onBeforeUnmount } from "vue";
+import AvatarCard from "@/components/card/AvatarCard.vue";
 
 const props = defineProps({
   users: {

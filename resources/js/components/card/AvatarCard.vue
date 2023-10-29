@@ -7,8 +7,7 @@
       v-else
       class="flex h-[30rem] transform items-center justify-center text-center font-eighty-miles text-8xl text-white"
     >
-      {{ props.firstname }} <br />
-      {{ props.lastname }}
+      <span>{{ props.firstname }} {{ props.lastname }}</span>
     </div>
   </div>
 </template>
