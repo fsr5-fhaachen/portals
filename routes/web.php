@@ -67,6 +67,10 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
             Route::get('/users', [DashboardAdminController::class, 'users'])->name('dashboard.admin.users');
             Route::post('/user/{user}', [DashboardAdminController::class, 'editUser'])->name('dashboard.admin.editUser');
 
+            Route::group(['middleware' => ['can:delete users']], function () {
+                Route::delete('/user/{user}', [DashboardAdminController::class, 'deleteUser'])->name('dashboard.admin.deleteUser');
+            });
+
             Route::get('/register', [DashboardAdminController::class, 'register'])->name('dashboard.admin.register');
             Route::post('/register', [DashboardAdminController::class, 'registerUser'])->name('dashboard.admin.registerUser');
             Route::post('/assign', [DashboardAdminController::class, 'assignUser'])->name('dashboard.admin.assignUser');

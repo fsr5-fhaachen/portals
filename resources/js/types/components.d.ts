@@ -16,6 +16,7 @@ declare module "vue" {
     CardContainer: typeof import("./../components/card/Container.vue")["default"];
     CardLayout: typeof import("./../layouts/CardLayout.vue")["default"];
     ColorModeButton: typeof import("./../components/color/mode/Button.vue")["default"];
+    copy: typeof import("./../components/user/EditModal copy.vue")["default"];
     CourseBox: typeof import("./../components/course/Box.vue")["default"];
     DashboardCardLayout: typeof import("./../layouts/DashboardCardLayout.vue")["default"];
     DashboardLayout: typeof import("./../layouts/DashboardLayout.vue")["default"];
@@ -41,6 +42,7 @@ declare module "vue" {
     UiMessage: typeof import("./../components/ui/Message.vue")["default"];
     UiTimeString: typeof import("./../components/ui/TimeString.vue")["default"];
     UserBox: typeof import("./../components/user/Box.vue")["default"];
+    UserDeleteModal: typeof import("./../components/user/DeleteModal.vue")["default"];
     UserEditModal: typeof import("./../components/user/EditModal.vue")["default"];
     UserTable: typeof import("./../components/user/Table.vue")["default"];
   }

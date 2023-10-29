@@ -52,16 +52,16 @@
                 </tr>
               </thead>
               <tbody v-if="users" class="bg-white dark:bg-gray-800">
-                <template v-for="(user, index) in users" :key="user.id">
+                <template v-for="(userData, index) in users" :key="userData.id">
                   <tr
-                    v-if="user"
+                    v-if="userData"
                     :class="{
                       'bg-yellow-100 dark:bg-yellow-900':
-                        user.roles.length &&
-                        user.roles
+                        userData.roles.length &&
+                        userData.roles
                           .map((role) => role.name)
                           .includes('super admin'),
-                      'bg-red-100 dark:bg-red-900': user.is_disabled,
+                      'bg-red-100 dark:bg-red-900': userData.is_disabled,
                     }"
                   >
                     <td
@@ -72,7 +72,7 @@
                         'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-gray-100 sm:pl-6 lg:pl-8',
                       ]"
                     >
-                      {{ user.firstname }}
+                      {{ userData.firstname }}
                     </td>
                     <td
                       :class="[
@@ -82,7 +82,7 @@
                         'whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900 dark:text-gray-100',
                       ]"
                     >
-                      {{ user.lastname }}
+                      {{ userData.lastname }}
                     </td>
                     <td
                       :class="[
@@ -92,7 +92,7 @@
                         'whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900 dark:text-gray-100',
                       ]"
                     >
-                      {{ user.email }}
+                      {{ userData.email }}
                     </td>
                     <td
                       :class="[
@@ -103,13 +103,13 @@
                       ]"
                     >
                       <span
-                        v-if="user.course?.id"
+                        v-if="userData.course?.id"
                         :class="[
-                          user.course.classes,
+                          userData.course.classes,
                           'rounded-md p-1 text-xs text-white',
                         ]"
                       >
-                        {{ user.course.abbreviation }}
+                        {{ userData.course.abbreviation }}
                       </span>
                     </td>
                     <td
@@ -120,8 +120,11 @@
                         'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
                       ]"
                     >
-                      <div v-if="user.roles.length" class="flex flex-col gap-2">
-                        <div v-for="role in user.roles" :key="role.id">
+                      <div
+                        v-if="userData.roles.length"
+                        class="flex flex-col gap-2"
+                      >
+                        <div v-for="role in userData.roles" :key="role.id">
                           <span
                             class="rounded-md bg-slate-900 p-1 text-xs text-white"
                           >
@@ -138,7 +141,7 @@
                         'whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900 dark:text-gray-100',
                       ]"
                     >
-                      {{ user.avatarUrl ? "Ja" : "Nein" }}
+                      {{ userData.avatarUrl ? "Ja" : "Nein" }}
                     </td>
                     <td
                       :class="[
@@ -152,13 +155,33 @@
                         <div>
                           <AppButton
                             theme="warning"
-                            @click="selectUserToEdit(user)"
+                            @click="selectUserToEdit(userData)"
                           >
                             <span class="sr-only">
-                              {{ user.firstname }}
-                              {{ user.lastname }}
+                              {{ userData.firstname }}
+                              {{ userData.lastname }}
                             </span>
                             bearbeiten
+                          </AppButton>
+                        </div>
+                        <div
+                          v-if="
+                            user.permissionsArray.includes('delete users') &&
+                            user.id !== userData.id &&
+                            !userData.roles
+                              .map((role) => role.name)
+                              .includes('super admin')
+                          "
+                        >
+                          <AppButton
+                            theme="danger"
+                            @click="selectUserToDelete(userData)"
+                          >
+                            <span class="sr-only">
+                              {{ userData.firstname }}
+                              {{ userData.lastname }}
+                            </span>
+                            löschen
                           </AppButton>
                         </div>
                       </div>
@@ -179,6 +202,13 @@
       :roles="roles"
       @close="clearUserToEdit"
       @submit="submitUserEdit"
+    />
+
+    <UserDeleteModal
+      v-if="userToDelete"
+      :user="userToDelete"
+      @close="clearUserToDelete"
+      @submit="submitUserDelete"
     />
   </div>
 </template>
@@ -206,6 +236,7 @@ const props = defineProps({
 });
 
 const userToEdit = ref<Models.User | null>(null);
+const userToDelete = ref<Models.User | null>(null);
 
 const clearUserToEdit = () => {
   userToEdit.value = null;
@@ -215,5 +246,15 @@ const selectUserToEdit = async (user: Models.User) => {
 };
 const submitUserEdit = async () => {
   clearUserToEdit();
+};
+
+const clearUserToDelete = () => {
+  userToDelete.value = null;
+};
+const selectUserToDelete = async (user: Models.User) => {
+  userToDelete.value = user;
+};
+const submitUserDelete = async () => {
+  clearUserToDelete();
 };
 </script>
