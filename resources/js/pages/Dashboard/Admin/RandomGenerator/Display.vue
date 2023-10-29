@@ -3,7 +3,7 @@
     <div
       class="h-screen bg-[url('/images/random-generator/background/comic-yellow.jpg')] bg-cover"
     >
-      <div v-if="generatorState.state === 'setup'" class="flex h-screen">
+      <div v-if="randomGeneratorState.state === 'setup'" class="flex h-screen">
         <div
           class="m-auto rounded-full bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text font-eighty-miles text-[15rem] text-transparent"
         >
@@ -11,11 +11,11 @@
         </div>
       </div>
       <div
-        v-if="generatorState.state === 'idle'"
+        v-if="randomGeneratorState.state === 'idle'"
         class="flex h-screen w-screen flex-col"
       ></div>
       <div
-        v-if="generatorState.state === 'running'"
+        v-if="randomGeneratorState.state === 'running'"
         class="flex h-screen w-screen flex-col overflow-hidden"
       >
         <div class="h-screen flex-1 overflow-hidden">
@@ -53,16 +53,16 @@
       </div>
 
       <div
-        v-if="generatorState.state === 'stopped'"
+        v-if="randomGeneratorState.state === 'stopped'"
         class="flex h-screen items-center justify-center"
       >
         <Transition name="winner">
           <div>
             <RandomGeneratorUserAvatarCard
               class="scale-[130%]"
-              :src="generatorState.user?.avatarUrl"
-              :firstname="generatorState.user?.firstname"
-              :lastname="generatorState.user?.lastname"
+              :src="randomGeneratorState.user?.avatarUrl"
+              :firstname="randomGeneratorState.user?.firstname"
+              :lastname="randomGeneratorState.user?.lastname"
             />
 
             <img
@@ -106,7 +106,7 @@ const props = defineProps({
 });
 
 // locale state variables
-const generatorState = ref<{
+const randomGeneratorState = ref<{
   state: "setup" | "idle" | "running" | "stopped";
   user?: Models.User;
 }>({
@@ -134,20 +134,23 @@ const fetchRandomGeneratorState = async () => {
   if (response.ok) {
     const data = await response.json();
 
-    if (generatorState.value.state != "running" && data.state == "running") {
+    if (
+      randomGeneratorState.value.state != "running" &&
+      data.state == "running"
+    ) {
       props.users.sort(() => Math.random() - 0.5);
     }
 
-    generatorState.value = data;
+    randomGeneratorState.value = data;
   }
 
   isFetchingRandomGenerator.value = false;
 };
 
-const generatorInterval = setInterval(fetchRandomGeneratorState, 500);
+const randomGeneratorInterval = setInterval(fetchRandomGeneratorState, 500);
 
 onBeforeUnmount(() => {
-  clearInterval(generatorInterval);
+  clearInterval(randomGeneratorInterval);
 });
 </script>
 
