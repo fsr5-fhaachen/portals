@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\DashboardAdminRandomGeneratorController;
+use App\Http\Controllers\DashboardAdminScoreSystemController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
@@ -88,6 +89,15 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
         ], function () {
             Route::get('/random-generator', [DashboardAdminRandomGeneratorController::class, 'index'])->name('dashboard.admin.randomGenerator.index');
             Route::post('/random-generator', [DashboardAdminRandomGeneratorController::class, 'indexExecuteSubmit'])->name('dashboard.admin.randomGenerator.indexExecuteSubmit');
+            Route::get('/random-generator/display', [DashboardAdminRandomGeneratorController::class, 'display'])->name('dashboard.admin.randomGenerator.display');
+        });
+
+        Route::group([
+            'middleware' => [ActiveModule::class.':scoreSystem', 'can:manage score system'],
+        ], function () {
+            Route::get('/score-system', [DashboardAdminScoreSystemController::class, 'index'])->name('dashboard.admin.scoreSystem.index');
+            Route::post('/score-system', [DashboardAdminScoreSystemController::class, 'indexExecuteSubmit'])->name('dashboard.admin.scoreSystem.indexExecuteSubmit');
+            Route::get('/score-system/display', [DashboardAdminScoreSystemController::class, 'display'])->name('dashboard.admin.scoreSystem.display');
         });
     });
 
@@ -126,6 +136,12 @@ Route::prefix('api')->middleware(Authenticate::class)->group(function () {
         'middleware' => [ActiveModule::class.':randomGenerator', 'can:manage random generator'],
     ], function () {
         Route::get('/random-generator/state', [ApiController::class, 'randomGeneratorState'])->name('api.randomGeneratorState');
+    });
+
+    Route::group([
+        'middleware' => [ActiveModule::class.':scoreSystem', 'can:manage score system'],
+    ], function () {
+        Route::get('/score-system/state', [ApiController::class, 'scoreSystemState'])->name('api.scoreSystemState');
     });
 });
 

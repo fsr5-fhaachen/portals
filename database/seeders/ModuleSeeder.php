@@ -21,6 +21,10 @@ class ModuleSeeder extends Seeder
                 'key' => 'randomGenerator',
                 'active' => false,
             ],
+            [
+                'key' => 'scoreSystem',
+                'active' => false,
+            ],
         ];
 
         foreach ($modules as $module) {
