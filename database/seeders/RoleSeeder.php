@@ -20,6 +20,7 @@ class RoleSeeder extends Seeder
             'view hidden event details',
             'manage events',
             'manage users',
+            'delete users',
             'manage random generator',
             'manage score system',
         ] as $permission) {
@@ -74,6 +75,7 @@ class RoleSeeder extends Seeder
         $superAdminRole->givePermissionTo($permissions['manage random generator']);
         $superAdminRole->givePermissionTo($permissions['manage score system']);
         $superAdminRole->givePermissionTo($permissions['manage users']);
+        $superAdminRole->givePermissionTo($permissions['delete users']);
 
         // create special role if it doesn't exist
         if (! Role::where('name', 'special')->exists()) {

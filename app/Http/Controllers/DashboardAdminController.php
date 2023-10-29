@@ -135,6 +135,38 @@ class DashboardAdminController extends Controller
     }
 
     /**
+     * Submit delete a user
+     */
+    public function deleteUser(IlluminateRequest $request): RedirectResponse
+    {
+        $user = User::find($request->user);
+
+        if (! $user) {
+            Session::flash('error', 'Der angegebene User existiert nicht');
+
+            return Redirect::back();
+        }
+
+        // check if user has super admin role
+        if ($user->hasRole('super admin')) {
+
+            Session::flash('error', 'Der User kann nicht gelöscht werden');
+
+            return Redirect::back();
+        }
+
+        // copy user to temp user variable
+        $userTemp = $user;
+
+        // delete the user
+        $user->delete();
+
+        Session::flash('success', 'Der Account <strong>'.$userTemp->email.'</strong> wurde erfolgreich gelöscht. Die Tabelle aktualisiert sich in wenigen Sekunden automatisch.');
+
+        return Redirect::back();
+    }
+
+    /**
      * Display the dashboard admin registrations page
      */
     public function registrations(IlluminateRequest $request): Response
