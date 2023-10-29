@@ -14,76 +14,69 @@
         v-if="randomGeneratorState.state === 'idle'"
         class="flex h-screen w-screen flex-col"
       ></div>
-      <div
-        v-if="randomGeneratorState.state === 'running'"
-        class="flex h-screen w-screen flex-col overflow-hidden"
-      >
-        <div class="h-screen flex-1 overflow-hidden">
-          <Transition>
-            <div>
-              <div
-                class="grid h-fit w-screen animate-fly justify-items-center space-y-32 overflow-hidden pt-20"
-              >
-                <RandomGeneratorUserAvatarCard
-                  class="animate-wiggle"
-                  v-for="user in users"
-                  :src="user.avatarUrl"
-                  :firstname="user.firstname"
-                  :lastname="user.lastname"
-                />
-              </div>
-
-              <img
-                class="absolute left-[10%] top-1/2 h-1/3 -translate-y-1/2 transform"
-                src="/images/random-generator/gifs/cat.gif"
-              />
-              <img
-                class="absolute right-[10%] top-1/2 h-1/3 -translate-y-1/2 scale-x-[-1] transform"
-                src="/images/random-generator/gifs/cat.gif"
+      <Transition>
+        <div
+          v-if="randomGeneratorState.state === 'running'"
+          class="flex h-screen w-screen flex-col overflow-hidden"
+        >
+          <div class="h-screen flex-1 overflow-hidden">
+            <div
+              class="grid h-fit w-screen animate-fly justify-items-center space-y-32 overflow-hidden py-20"
+            >
+              <RandomGeneratorUserAvatarCard
+                class="animate-wiggle"
+                v-for="user in users"
+                :src="user.avatarUrl"
+                :firstname="user.firstname"
+                :lastname="user.lastname"
               />
             </div>
-          </Transition>
-          <audio autoplay>
-            <source
-              src="/sounds/random-generator/running.mp3"
-              type="audio/mpeg"
-            />
-          </audio>
-        </div>
-      </div>
-
-      <div
-        v-if="randomGeneratorState.state === 'stopped'"
-        class="flex h-screen items-center justify-center"
-      >
-        <Transition name="winner">
-          <div>
-            <RandomGeneratorUserAvatarCard
-              class="scale-[130%]"
-              :src="randomGeneratorState.user?.avatarUrl"
-              :firstname="randomGeneratorState.user?.firstname"
-              :lastname="randomGeneratorState.user?.lastname"
-            />
 
             <img
-              class="absolute left-0 top-1/2 h-2/3 -translate-y-1/2 transform"
-              src="/images/random-generator/gifs/trumpet.gif"
+              class="absolute left-[10%] top-1/2 h-1/3 -translate-y-1/2 transform"
+              src="/images/random-generator/gifs/cat.gif"
             />
             <img
-              class="absolute right-0 top-1/2 h-2/3 -translate-y-1/2 scale-x-[-1] transform"
-              src="/images/random-generator/gifs/trumpet.gif"
+              class="absolute right-[10%] top-1/2 h-1/3 -translate-y-1/2 scale-x-[-1] transform"
+              src="/images/random-generator/gifs/cat.gif"
             />
           </div>
-        </Transition>
-        <audio autoplay>
-          <source
-            src="/sounds/random-generator/airhorn.mp3"
-            type="audio/mpeg"
+        </div>
+      </Transition>
+      <Transition name="winner">
+        <div
+          v-if="randomGeneratorState.state === 'stopped'"
+          class="flex h-screen items-center justify-center"
+        >
+          <RandomGeneratorUserAvatarCard
+            class="scale-[130%]"
+            :src="randomGeneratorState.user?.avatarUrl"
+            :firstname="randomGeneratorState.user?.firstname"
+            :lastname="randomGeneratorState.user?.lastname"
           />
-        </audio>
-      </div>
+
+          <img
+            class="absolute left-0 top-1/2 h-2/3 -translate-y-1/2 transform"
+            src="/images/random-generator/gifs/trumpet.gif"
+          />
+          <img
+            class="absolute right-0 top-1/2 h-2/3 -translate-y-1/2 scale-x-[-1] transform"
+            src="/images/random-generator/gifs/trumpet.gif"
+          />
+        </div>
+      </Transition>
     </div>
   </div>
+
+  <audio autoplay v-if="randomGeneratorState.state === 'running'">
+    <source src="/sounds/random-generator/running.mp3" type="audio/mpeg" />
+  </audio>
+  <audio autoplay v-if="randomGeneratorState.state === 'stopped'">
+    <source src="/sounds/random-generator/airhorn.mp3" type="audio/mpeg" />
+  </audio>
+  <audio autoplay v-if="randomGeneratorState.state === 'stopped'">
+    <source src="/sounds/random-generator/rise.mp3" type="audio/mpeg" />
+  </audio>
 </template>
 
 <script lang="ts">
