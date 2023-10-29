@@ -1,26 +1,27 @@
 <template>
   <div>
-    <div v-if="generatorState.state === 'setup'" class="flex h-screen">
+    <div v-if="randomGeneratorState.state === 'setup'" class="flex h-screen">
       <div
-        class="m-auto rounded-full bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text font-['EIGHTY_MILES'] text-[15rem] text-transparent"
+        class="m-auto rounded-full bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text font-eighty-miles text-[15rem] text-transparent"
       >
         ZuFHallsgenerator
       </div>
     </div>
     <div
-      v-if="generatorState.state === 'idle'"
+      v-else-if="randomGeneratorState.state === 'idle'"
       class="flex h-screen w-screen flex-col"
-    ></div>
+    />
+
     <Transition>
       <div
-        v-if="generatorState.state === 'running'"
+        v-if="randomGeneratorState.state === 'running'"
         class="flex h-screen w-screen flex-col overflow-hidden"
       >
         <div class="h-screen flex-1 overflow-hidden">
           <div
-            class="grid h-fit w-screen animate-fly justify-items-center space-y-32 overflow-hidden pt-20"
+            class="grid h-fit w-screen animate-fly justify-items-center space-y-32 overflow-hidden py-20"
           >
-            <Avatar
+            <RandomGeneratorUserAvatarCard
               class="animate-wiggle"
               v-for="user in users"
               :src="user.avatarUrl"
@@ -28,12 +29,7 @@
               :lastname="user.lastname"
             />
           </div>
-          <audio autoplay>
-            <source
-              src="/sounds/random-generator/running.mp3"
-              type="audio/mpeg"
-            />
-          </audio>
+
           <img
             class="absolute left-[10%] top-1/2 h-1/3 -translate-y-1/2 transform"
             src="/images/random-generator/gifs/cat.gif"
@@ -48,33 +44,105 @@
 
     <Transition name="winner">
       <div
-        v-if="generatorState.state === 'stopped'"
+        v-if="randomGeneratorState.state === 'stopped'"
         class="flex h-screen items-center justify-center"
       >
-        <Avatar
+        <RandomGeneratorUserAvatarCard
           class="scale-[130%]"
-          :src="generatorState.user?.avatarUrl"
-          :firstname="generatorState.user?.firstname"
-          :lastname="generatorState.user?.lastname"
+          :src="randomGeneratorState.user?.avatarUrl"
+          :firstname="randomGeneratorState.user?.firstname"
+          :lastname="randomGeneratorState.user?.lastname"
         />
-        <audio autoplay>
-          <source
-            src="/sounds/random-generator/airhorn.mp3"
-            type="audio/mpeg"
-          />
-        </audio>
+
         <img
-          class="absolute left-0 top-1/2 h-2/3 -translate-y-1/2 transform"
-          src="/images/random-generator/gifs/trumpet.gif"
+          class="absolute left-[10%] top-1/2 h-1/3 -translate-y-1/2 transform"
+          src="/images/random-generator/gifs/cat.gif"
         />
         <img
-          class="absolute right-0 top-1/2 h-2/3 -translate-y-1/2 scale-x-[-1] transform"
-          src="/images/random-generator/gifs/trumpet.gif"
+          class="absolute right-[10%] top-1/2 h-1/3 -translate-y-1/2 scale-x-[-1] transform"
+          src="/images/random-generator/gifs/cat.gif"
         />
       </div>
     </Transition>
+
+    <audio autoplay v-if="randomGeneratorState.state === 'running'">
+      <source src="/sounds/random-generator/running.mp3" type="audio/mpeg" />
+    </audio>
+    <audio autoplay v-if="randomGeneratorState.state === 'stopped'">
+      <source src="/sounds/random-generator/airhorn.mp3" type="audio/mpeg" />
+    </audio>
+    <audio autoplay v-if="randomGeneratorState.state === 'stopped'">
+      <source src="/sounds/random-generator/rise.mp3" type="audio/mpeg" />
+    </audio>
   </div>
 </template>
+
+<script lang="ts">
+import DisplayLayout from "@/layouts/DisplayLayout.vue";
+
+export default {
+  layout: DisplayLayout,
+};
+</script>
+
+<script setup lang="ts">
+import { ref, PropType, onBeforeUnmount } from "vue";
+
+const props = defineProps({
+  users: {
+    type: Array as PropType<App.Models.User[]>,
+    required: true,
+  },
+});
+
+// locale state variables
+const randomGeneratorState = ref<{
+  state: "setup" | "idle" | "running" | "stopped";
+  user?: Models.User;
+}>({
+  state: "setup",
+});
+
+const isFetchingRandomGenerator = ref(false);
+
+// functions
+const fetchRandomGeneratorState = async () => {
+  if (isFetchingRandomGenerator.value) {
+    return;
+  }
+
+  isFetchingRandomGenerator.value = true;
+
+  const response = await fetch("/api/random-generator/state", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+
+    if (
+      randomGeneratorState.value.state != "running" &&
+      data.state == "running"
+    ) {
+      props.users.sort(() => Math.random() - 0.5);
+    }
+
+    randomGeneratorState.value = data;
+  }
+
+  isFetchingRandomGenerator.value = false;
+};
+
+const randomGeneratorInterval = setInterval(fetchRandomGeneratorState, 500);
+
+onBeforeUnmount(() => {
+  clearInterval(randomGeneratorInterval);
+});
+</script>
 
 <style>
 .v-enter-active,
@@ -101,68 +169,3 @@
   opacity: 0;
 }
 </style>
-
-<script lang="ts">
-import DisplayLayout from "@/layouts/DisplayLayout.vue";
-
-export default {
-  layout: DisplayLayout,
-};
-</script>
-
-<script setup lang="ts">
-import { ref, PropType, onBeforeUnmount, render, createElement } from "vue";
-import Avatar from "@/components/card/Avatar.vue";
-
-const props = defineProps({
-  users: {
-    type: Array as PropType<App.Models.User[]>,
-    required: true,
-  },
-});
-
-// locale state variables
-const generatorState = ref<{
-  state: "setup" | "idle" | "running" | "stopped";
-  user?: Models.User;
-}>({
-  state: "setup",
-});
-
-const isFetchingGenerator = ref(false);
-
-// functions
-const fetchRandomGeneratorState = async () => {
-  if (isFetchingGenerator.value) {
-    return;
-  }
-
-  isFetchingGenerator.value = true;
-
-  const response = await fetch("/api/random-generator/state", {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (response.ok) {
-    const data = await response.json();
-
-    if (generatorState.value.state != "running" && data.state == "running") {
-      props.users.sort(() => Math.random() - 0.5);
-    }
-
-    generatorState.value = data;
-  }
-
-  isFetchingGenerator.value = false;
-};
-
-const generatorInterval = setInterval(fetchRandomGeneratorState, 500);
-
-onBeforeUnmount(() => {
-  clearInterval(generatorInterval);
-});
-</script>

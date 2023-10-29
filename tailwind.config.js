@@ -43,6 +43,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ["Inter var", ...defaultTheme.fontFamily.sans],
+        "eighty-miles": ['"EIGHTY MILES"'],
       },
     },
   },
