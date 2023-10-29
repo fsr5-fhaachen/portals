@@ -5,7 +5,7 @@
     >
       <div v-if="generatorState.state === 'setup'" class="flex h-screen">
         <div
-          class="m-auto rounded-full bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text font-['EIGHTY_MILES'] text-[15rem] text-transparent"
+          class="m-auto rounded-full bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text font-eighty-miles text-[15rem] text-transparent"
         >
           ZuFHallsgenerator
         </div>
