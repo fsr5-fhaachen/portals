@@ -166,6 +166,10 @@ If you want information about creating the kubernetes cluster, see [deploy infor
 
 - GitHub: [@PhilPinsdorf](https://github.com/PhilPinsdorf)
 
+👤 **Vitor Macedo**
+
+- GitHub: [@DontEdit](https://github.com/DontEdit)
+
 👤 **Patrik Schmolke**
 
 - LinkedIn: [Patrik Schmolke](https://www.linkedin.com/in/patrik-schmolke-612962175/)
