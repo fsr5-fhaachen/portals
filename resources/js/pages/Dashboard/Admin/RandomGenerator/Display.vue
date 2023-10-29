@@ -55,12 +55,12 @@
         />
 
         <img
-          class="absolute left-[10%] top-1/2 h-1/3 -translate-y-1/2 transform"
-          src="/images/random-generator/gifs/cat.gif"
+          class="absolute left-0 top-1/2 h-2/3 -translate-y-1/2 transform"
+          src="/images/random-generator/gifs/trumpet.gif"
         />
         <img
-          class="absolute right-[10%] top-1/2 h-1/3 -translate-y-1/2 scale-x-[-1] transform"
-          src="/images/random-generator/gifs/cat.gif"
+          class="absolute right-0 top-1/2 h-2/3 -translate-y-1/2 scale-x-[-1] transform"
+          src="/images/random-generator/gifs/trumpet.gif"
         />
       </div>
     </Transition>
