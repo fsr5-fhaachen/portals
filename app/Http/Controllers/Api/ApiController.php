@@ -281,6 +281,31 @@ class ApiController extends Controller
     }
 
     /**
+     * Return the current state of the score system.
+     * The state is structured like this:
+     *   {
+     *     "teams": {
+     *       "name": string;
+     *       "score": string;
+     *     }[];
+     *   }
+     */
+    public function scoreSystemState(): JsonResponse
+    {
+        // get state with key scoreSystem
+        $state = State::where('key', 'scoreSystem')->first();
+
+        // if state does not exist, return setup
+        if (! $state) {
+            return response()->json([
+                'teams' => [],
+            ]);
+        }
+
+        return response()->json(json_decode($state->value));
+    }
+
+    /**
      * Fresh users data
      */
     public function users(): JsonResponse

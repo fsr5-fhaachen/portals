@@ -77,6 +77,22 @@
               Zufallsgenerator
             </InertiaLink>
             <InertiaLink
+              v-if="
+                modules['scoreSystem']?.active &&
+                user.permissionsArray.includes('manage score system')
+              "
+              href="/dashboard/admin/score-system"
+              :class="{
+                'border-red-500 text-red-900':
+                  $page.url == '/dashboard/admin/score-system',
+                'border-transparent text-red-500 hover:border-red-300 hover:text-red-700':
+                  $page.url != '/dashboard/admin/score-system',
+              }"
+              class="inline-flex items-center border-b-[3px] px-1 pt-1 text-sm font-medium"
+            >
+              Punktesystem
+            </InertiaLink>
+            <InertiaLink
               v-if="user.permissionsArray.includes('manage users')"
               href="/dashboard/admin/users"
               :class="{
@@ -176,6 +192,23 @@
           class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
         >
           Zufallsgenerator
+        </DisclosureButton>
+        <DisclosureButton
+          v-if="
+            modules['scoreSystem']?.active &&
+            user.permissionsArray.includes('manage score system')
+          "
+          :as="InertiaLink"
+          href="/dashboard/admin/score-system"
+          :class="{
+            'border-red-500 bg-red-100 text-red-900 dark:bg-black dark:text-red-500':
+              $page.url == '/dashboard/admin/score-system',
+            'border-transparent text-red-600 hover:border-red-300 hover:bg-red-50 hover:text-red-800 dark:text-red-400 dark:hover:bg-gray-900 dark:hover:text-red-100':
+              $page.url != '/dashboard/admin/score-system',
+          }"
+          class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
+        >
+          Punktesystem
         </DisclosureButton>
         <DisclosureButton
           v-if="user.permissionsArray.includes('manage users')"

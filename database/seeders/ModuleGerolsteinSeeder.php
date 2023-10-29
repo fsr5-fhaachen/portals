@@ -17,6 +17,10 @@ class ModuleGerolsteinSeeder extends Seeder
                 'key' => 'randomGenerator',
                 'active' => true,
             ],
+            [
+                'key' => 'scoreSystem',
+                'active' => true,
+            ],
         ];
 
         foreach ($modules as $module) {
