@@ -151,6 +151,8 @@ class DashboardAdminController extends Controller
         if ($user->hasRole('super admin')) {
 
             Session::flash('error', 'Der User kann nicht gelöscht werden');
+
+            return Redirect::back();
         }
 
         // copy user to temp user variable
