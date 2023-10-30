@@ -9,7 +9,6 @@
           :key="index"
           class="flex flex-col items-center"
         >
-          >
           <div class="text-[10rem] leading-[10rem]">{{ team.name }}</div>
           <div class="text-[15rem] leading-[15rem]">{{ team.score }}</div>
         </div>
