@@ -28,7 +28,6 @@ To follow this guide you will need
 * A Hetzner Cloud account with an empty project where the cluster should be deployed
 * A Cloudflare account with a domain and a zone for the domain
 * A personal ssh-key pair (or more keys if you want to use different keys or want to grant access for more people)
-* A S3 based object storage (e.g. [aws s3](https://aws.amazon.com/s3/) or [minio](https://min.io/))
 
 ## Step 0: Install prerequisites
 
@@ -147,20 +146,6 @@ You need to create two API tokens for Cloudflare. You can do this in the Cloudfl
 * Zone Edit for all needed DNS Zones (for cert-manager)
 
 You can change the names of the tokens to fit your needs. You will need to replace the names in the following commands.
-
-## Step 1.3 Setup S3
-
-In this guide we will use AWS S3 because it is cheap and easy to use. Feel free to use other object storage with s3 compatibility like minio.
-
-### Create Bucket
-
-If you use aws, go to the [aws console](https://console.aws.amazon.com/s3/) and create a bucket. You don't need special bucket settings.
-
-If you use your root aws account, please create a new IAM user with s3 permissions and create access and secret key for this user. Do not create and publish access and secret keys for your root account.
-
-Remember to create a user, a role with attached policy to access s3 and a s3 bucket access policy that grants access for the user to the bucket. 
-
-Please note your bucket name, bucket region, access and secret key.
 
 ## Step 2: Create a Management Cluster
 

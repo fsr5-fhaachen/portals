@@ -25,16 +25,6 @@ const checkboxClassification = {
   label: "ml-3 text-md text-gray-900 dark:text-gray-200",
 };
 
-const fileUploadClassification = {
-  label: "block text-sm font-medium text-gray-700 dark:text-gray-200",
-  inner: "max-w-md cursor-pointer",
-  input:
-    "text-gray-600 text-sm mb-1 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-blue-500 file:text-white hover:file:bg-blue-600",
-  noFiles: "block text-sm font-medium text-gray-700 dark:text-gray-200",
-  fileItem: "block text-sm font-medium text-gray-700 dark:text-gray-200",
-  removeFiles: "block text-sm font-medium text-gray-700 dark:text-gray-200",
-};
-
 export default {
   global: {
     outer: "flex-1 formkit-disabled:opacity-60",
@@ -52,7 +42,15 @@ export default {
   "datetime-local": textClassification,
   checkbox: checkboxClassification,
   email: textClassification,
-  file: fileUploadClassification,
+  file: {
+    label: "block mb-1 font-bold text-sm",
+    inner: "max-w-md cursor-pointer",
+    input:
+      "text-gray-600 text-sm mb-1 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-blue-500 file:text-white hover:file:bg-blue-600",
+    noFiles: "block text-gray-800 text-sm mb-1",
+    fileItem: "block flex text-gray-800 text-sm mb-1",
+    removeFiles: "ml-auto text-blue-500 text-sm",
+  },
   month: textClassification,
   number: textClassification,
   password: textClassification,

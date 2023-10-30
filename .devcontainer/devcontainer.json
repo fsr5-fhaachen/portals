@@ -1,7 +1,7 @@
 // https://aka.ms/devcontainer.json
 {
   "name": "Laravel Sail",
-  "dockerComposeFile": ["../docker-compose.sail.yaml"],
+  "dockerComposeFile": ["../docker-compose.yml"],
   "service": "laravel.test",
   "workspaceFolder": "/var/www/html",
   "customizations": {
@@ -20,8 +20,7 @@
         "neilbrayfield.php-docblocker",
         "steoates.autoimport",
         "Vue.volar",
-        "xdebug.php-debug",
-        "github.copilot"
+        "xdebug.php-debug"
       ],
       "settings": {}
     }

@@ -17,12 +17,12 @@ class IsLoggedInAdmin
         $user = $request->user();
 
         // check if user is no tutor or is not logged in as tutor
-        if (! $user->hasRole(['admin', 'esa', 'stage tutor', 'tutor']) || ! $request->session()->has('tutor')) {
+        if (! $user->is_tutor || ! $request->session()->has('tutor')) {
             return redirect()->route('dashboard.index');
         }
 
         // check if user is not a admin
-        if (! $user->hasRole(['admin'])) {
+        if (! $user->is_admin) {
             return redirect()->route('dashboard.index');
         }
 

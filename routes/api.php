@@ -1,8 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\ApiController;
-use App\Http\Controllers\Api\PublicApiController;
-use App\Http\Middleware\PublicApiSecret;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,12 +15,3 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/server/ping', [ApiController::class, 'ping'])->name('api.ping');
-
-Route::group([
-    'prefix' => 'v1',
-    'middleware' => [
-        PublicApiSecret::class,
-    ],
-], function () {
-    Route::get('/users', [PublicApiController::class, 'users'])->name('apiV1.users');
-});
