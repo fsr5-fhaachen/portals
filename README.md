@@ -67,6 +67,10 @@ and the vite dev server:
 npm run dev
 ```
 
+### devcontainer
+
+If you want to use the provided devcontainer via laravel sail you need vscode and the devcontainer extension.
+
 ### type generation
 
 To generate the typescript types for the frontend, run:
@@ -139,7 +143,7 @@ docker exec -it portals-web php artisan migrate:fresh --seed
 
 You can deploy the application to kubernetes using the helm chart.
 
-See [fsr5-fhaachen/charts/portals](github.com/fsr5-fhaachen/charts/charts/portals/) for more information.
+See [fsr5-fhaachen/charts/portals](https://github.com/fsr5-fhaachen/charts/tree/main/charts/portals) for more information.
 
 If you want information about creating the kubernetes cluster, see [deploy information](./deploy).
 
@@ -150,22 +154,30 @@ If you want information about creating the kubernetes cluster, see [deploy infor
 - Website: https://tkirch.dev/
 - LinkedIn: [Titus Kirch](https://www.linkedin.com/in/tituskirch/)
 - Twitter: [@TitusKirch](https://twitter.com/TitusKirch)
-- Github: [@TitusKirch](https://github.com/TitusKirch)
+- GitHub: [@TitusKirch](https://github.com/TitusKirch)
 
 👤 **Benedikt Haas (main author)**
 
 - LinkedIn: [Benedikt Haas](https://www.linkedin.com/in/benedikt-haas-ab698924a/)
-- Github: [@BenediktHaas96](https://github.com/BenediktHaas96)
+- GitHub: [@BenediktHaas96](https://github.com/BenediktHaas96)
 
 👤 **Simon Ostendorf**
 
 - LinkedIn: [Simon Ostendorf](https://www.linkedin.com/in/simonostendorf/)
-- Github: [@simonostendorf](https://github.com/simonostendorf)
+- GitHub: [@simonostendorf](https://github.com/simonostendorf)
+
+👤 **Martin Philemon Pinsdorf**
+
+- GitHub: [@PhilPinsdorf](https://github.com/PhilPinsdorf)
+
+👤 **Vitor Macedo**
+
+- GitHub: [@DontEdit](https://github.com/DontEdit)
 
 👤 **Patrik Schmolke**
 
 - LinkedIn: [Patrik Schmolke](https://www.linkedin.com/in/patrik-schmolke-612962175/)
-- Github: [@Rec0gnice](https://github.com/Rec0gnice)
+- GitHub: [@Rec0gnice](https://github.com/Rec0gnice)
 
 Show here to see the full list of [contributors](https://github.com/fsr5-fhaachen/portals/graphs/contributors) who participated in this project.
 

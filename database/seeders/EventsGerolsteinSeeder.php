@@ -19,7 +19,7 @@ class EventsGerolsteinSeeder extends Seeder
     {
         $this->runSpieleolympiade();
         $this->runSamstagabendGruppenphase();
-        $this->runSamstagabendTanzenSketchGesang();
+        $this->runSamstagabendTanzenGesang();
     }
 
     /**
@@ -28,7 +28,7 @@ class EventsGerolsteinSeeder extends Seeder
     private function registerStudents(Event $event): void
     {
         // get all students
-        $students = User::where('is_tutor', false)->get();
+        $students = User::doesntHave('roles')->get();
 
         // create registration
         foreach ($students as $student) {
@@ -54,8 +54,8 @@ class EventsGerolsteinSeeder extends Seeder
         $event = new Event();
         $event->name = 'Spieleolympiade';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2022-10-27 8:00:00');
-        $event->registration_to = new DateTime('2022-10-27 8:00:00');
+        $event->registration_from = new DateTime('2023-11-01 8:00:00');
+        $event->registration_to = new DateTime('2023-11-01 8:00:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 110;
@@ -64,18 +64,25 @@ class EventsGerolsteinSeeder extends Seeder
         $event->save();
 
         // create event groups
-        $groups = [];
-
-        for ($i = 1; $i <= 14; $i++) {
-            $groups[] = [
-                'name' => "Gruppe $i",
-            ];
-        }
-
-        // save groups
-        foreach ($groups as $groupData) {
+        $groupNames = [
+            'Die mutigen Mojito-Mixer ',
+            'Die wilden Weihnachtsbäume',
+            'Die rasanten Rasenmäher',
+            'Die koolen Kürbisse',
+            'Die ehrgeizigen Eisbären',
+            'Die pfiffigen Pfeilgiftfrösche',
+            'Die musikalischen Milkakühe',
+            'Die schicken Schlümpfe',
+            'Die putzigen Panther',
+            'Die bärenstarken Braunbären',
+            'Die originellen Orchideen',
+            'Die treuen Telekom-Kunden',
+            'Die freshen Flamingos',
+            'Die ehrenhaften Erdbeeren',
+        ];
+        foreach ($groupNames as $groupName) {
             $group = new Group();
-            $group->name = $groupData['name'];
+            $group->name = $groupName;
             $group->event_id = $event->id;
             $group->save();
         }
@@ -99,8 +106,8 @@ class EventsGerolsteinSeeder extends Seeder
         $event = new Event();
         $event->name = 'Gruppenphase';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2022-10-27 8:00:00');
-        $event->registration_to = new DateTime('2022-10-27 8:00:00');
+        $event->registration_from = new DateTime('2023-11-01 8:00:00');
+        $event->registration_to = new DateTime('2023-11-01 8:00:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 210;
@@ -111,7 +118,7 @@ class EventsGerolsteinSeeder extends Seeder
         // create event groups
         $groups = [];
 
-        for ($i = 1; $i <= 6; $i++) {
+        for ($i = 1; $i <= 7; $i++) {
             $groups[] = [
                 'name' => "Gruppe $i",
             ];
@@ -130,22 +137,22 @@ class EventsGerolsteinSeeder extends Seeder
     }
 
     /**
-     * Run the "Tanzen, Sketch & Gesang" event seeds.
+     * Run the "Tanzen & Gesang" event seeds.
      */
-    public function runSamstagabendTanzenSketchGesang(): void
+    public function runSamstagabendTanzenGesang(): void
     {
-        // check if event with name "Tanzen, Sketch & Gesang" exists
-        $event = Event::where('name', 'Tanzen, Sketch & Gesang')->first();
+        // check if event with name "Tanzen & Gesang" exists
+        $event = Event::where('name', 'Tanzen & Gesang')->first();
         if ($event) {
             return;
         }
 
         // create a new event
         $event = new Event();
-        $event->name = 'Tanzen, Sketch & Gesang';
+        $event->name = 'Tanzen & Gesang';
         $event->type = 'slot_booking';
-        $event->registration_from = new DateTime('2022-08-28 8:00:00');
-        $event->registration_to = new DateTime('2022-10-29 10:00:00');
+        $event->registration_from = new DateTime('2023-11-01 8:00:00');
+        $event->registration_to = new DateTime('2023-11-04 10:00:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 220;
@@ -159,11 +166,6 @@ class EventsGerolsteinSeeder extends Seeder
                 'name' => 'Tanzen',
                 'has_requirements' => true,
                 'maximum_participants' => 22,
-            ],
-            [
-                'name' => 'Sketch',
-                'has_requirements' => true,
-                'maximum_participants' => 11,
             ],
             [
                 'name' => 'Gesang',
