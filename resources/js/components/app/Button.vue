@@ -16,7 +16,8 @@ const { disabled, theme } = defineProps({
   theme: {
     type: String,
     default: "default",
-    validator: (value: string) => ["default", "gray", "danger"].includes(value),
+    validator: (value: string) =>
+      ["default", "gray", "warning", "danger"].includes(value),
   },
 });
 
@@ -40,6 +41,12 @@ const rootClasses = computed(() => {
 
     if (!disabled) {
       classes.push("hover:bg-red-700 dark:hover:bg-red-900");
+    }
+  } else if (theme === "warning") {
+    classes.push("bg-orange-500 dark:bg-orange-700");
+
+    if (!disabled) {
+      classes.push("hover:bg-orange-700 dark:hover:bg-orange-900");
     }
   }
 
