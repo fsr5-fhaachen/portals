@@ -7,7 +7,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-    <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/eighty-miles">
 
     <title>{{ config('app.name') }}</title>
 

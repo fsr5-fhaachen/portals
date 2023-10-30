@@ -11,15 +11,11 @@ use App\Models\Registration;
 use App\Models\Slot;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request as IlluminateRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
-use Spatie\Permission\Models\Role;
 
 class DashboardAdminController extends Controller
 {
@@ -31,7 +27,7 @@ class DashboardAdminController extends Controller
         $courses = Course::all();
 
         foreach ($courses as $course) {
-            $course->users = $course->users()->doesntHave('roles')->get();
+            $course->users = $course->users()->where('is_tutor', false)->get();
         }
 
         return Inertia::render('Dashboard/Admin/Index', [
@@ -40,136 +36,9 @@ class DashboardAdminController extends Controller
     }
 
     /**
-     * Display the dashboard admin users page
-     */
-    public function users(): Response
-    {
-        $roles = Role::where('name', '!=', 'super admin')->get();
-        $coures = Course::all();
-
-        return Inertia::render('Dashboard/Admin/Users', [
-            'roles' => $roles,
-            'courses' => $coures,
-        ]);
-    }
-
-    /**
-     * Submit edit a user
-     */
-    public function editUser(IlluminateRequest $request): RedirectResponse
-    {
-        $user = User::find($request->user);
-
-        if (! $user) {
-            Session::flash('error', 'Der angegebene User existiert nicht');
-
-            return Redirect::back();
-        }
-
-        // validate the request
-        $validated = Request::validate([
-            'firstname' => ['required', 'string', 'min:2', 'max:255'],
-            'lastname' => ['required', 'string', 'min:2', 'max:255'],
-            'email' => ['required', 'string', 'email', 'min:3', 'max:255', 'unique:users,email,'.$user->id],
-            'email_confirm' => ['required', 'string', 'email', 'min:3', 'max:255', 'same:email'],
-            'course_id' => ['required', 'integer', 'exists:courses,id'],
-            'role_id' => ['array'],
-            'is_disabled' => ['boolean'],
-            'remove_avatar' => ['boolean'],
-            'avatar.*.file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif'],
-        ]);
-
-        // check if all roles exists and not super admin if so add to roles array
-        $roles = [];
-        if (array_key_exists('role_id', $validated) && ! $user->hasRole('super admin')) {
-            foreach ($validated['role_id'] as $role) {
-                if (! Role::find($role)) {
-                    Session::flash('error', 'Die angegebene Rolle existiert nicht');
-
-                    return Redirect::back();
-                }
-                $roleObject = Role::find($role);
-                if ($roleObject->name == 'super admin') {
-                    Session::flash('error', 'Der User kann nicht zu Super Admin gemacht werden');
-
-                    return Redirect::back();
-                }
-                $roles[] = $role;
-            }
-        }
-
-        // check if remove_avatar is set
-        if (array_key_exists('remove_avatar', $validated) && $validated['remove_avatar']) {
-            // seet avatar to null
-            $validated['avatar'] = null;
-        } elseif (array_key_exists('avatar', $validated) && $validated['avatar'][0]) {
-            // get avatar file
-            $avatarFile = Request::file('avatar')[0]['file'];
-
-            // generate a uuid
-            $uuid = Str::uuid()->toString();
-
-            // store file in s3 bucket
-            $path = Storage::disk('s3')->put('/avatars/'.$uuid, $avatarFile);
-
-            // add avatar to validated array
-            $validated['avatar'] = $path;
-        }
-
-        // remove email_confirm, role_id and remove_avatar from array
-        unset($validated['email_confirm']);
-        unset($validated['role_id']);
-        unset($validated['remove_avatar']);
-
-        // update the user
-        $user->update($validated);
-
-        // sync roles
-        if (! $user->hasRole('super admin')) {
-            $user->syncRoles($roles);
-        }
-
-        Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich bearbeitet. Die Tabelle aktualisiert sich in wenigen Sekunden automatisch.');
-
-        return Redirect::back();
-    }
-
-    /**
-     * Submit delete a user
-     */
-    public function deleteUser(IlluminateRequest $request): RedirectResponse
-    {
-        $user = User::find($request->user);
-
-        if (! $user) {
-            Session::flash('error', 'Der angegebene User existiert nicht');
-
-            return Redirect::back();
-        }
-
-        // check if user has super admin role
-        if ($user->hasRole('super admin')) {
-
-            Session::flash('error', 'Der User kann nicht gelöscht werden');
-
-            return Redirect::back();
-        }
-
-        // copy user to temp user variable
-        $userTemp = $user;
-
-        // delete the user
-        $user->delete();
-
-        Session::flash('success', 'Der Account <strong>'.$userTemp->email.'</strong> wurde erfolgreich gelöscht. Die Tabelle aktualisiert sich in wenigen Sekunden automatisch.');
-
-        return Redirect::back();
-    }
-
-    /**
      * Display the dashboard admin registrations page
      */
-    public function registrations(IlluminateRequest $request): Response
+    public function registrations(\Illuminate\Http\Request $request): Response
     {
         $event = Event::with('groups')->with('slots')->find($request->event);
         if (! $event) {
@@ -188,7 +57,7 @@ class DashboardAdminController extends Controller
     /**
      * Display the dashboard admin event page
      */
-    public function event(IlluminateRequest $request): Response
+    public function event(\Illuminate\Http\Request $request): Response
     {
         $event = Event::find($request->event);
         if (! $event) {
@@ -209,7 +78,7 @@ class DashboardAdminController extends Controller
     /**
      * Display the dashboard admin event submit page
      */
-    public function eventSubmit(IlluminateRequest $request): Response
+    public function eventSubmit(\Illuminate\Http\Request $request): Response
     {
         $event = Event::find($request->event);
         if (! $event) {
@@ -237,7 +106,7 @@ class DashboardAdminController extends Controller
     /**
      * Execute the dashboard admin event submit action
      */
-    public function eventExecuteSubmit(IlluminateRequest $request): RedirectResponse
+    public function eventExecuteSubmit(\Illuminate\Http\Request $request): RedirectResponse
     {
         $event = Event::find($request->event);
         if (! $event) {
@@ -308,7 +177,7 @@ class DashboardAdminController extends Controller
     /**
      * Display the register page
      */
-    public function register(Request $request): Response
+    public function register(): Response
     {
         // get courses ordered by name
         $courses = Course::orderBy('name')->get();
@@ -342,26 +211,10 @@ class DashboardAdminController extends Controller
             'email' => ['required', 'string', 'email', 'min:3', 'max:255', 'unique:users'],
             'email_confirm' => ['required', 'string', 'email', 'min:3', 'max:255', 'same:email'],
             'course_id' => ['required', 'integer', 'exists:courses,id'],
-            'avatar.*.file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif'],
         ]);
 
         // remove email_confirm from array
         unset($validated['email_confirm']);
-
-        // check if avatar is set
-        if (array_key_exists('avatar', $validated) && $validated['avatar'][0]) {
-            // get avatar file
-            $avatarFile = Request::file('avatar')[0]['file'];
-
-            // generate a uuid
-            $uuid = Str::uuid()->toString();
-
-            // store file in s3 bucket
-            $path = Storage::disk('s3')->put('/avatars/'.$uuid, $avatarFile);
-
-            // add avatar to validated array
-            $validated['avatar'] = $path;
-        }
 
         // create the user
         $user = User::create($validated);

@@ -11,7 +11,7 @@ declare namespace App.Models {
     updated_at: string | null;
     user_id: number;
     group_id: number;
-    user?: Models.User | null;
+    user?: App.Models.User | null;
     group?: App.Models.Group | null;
   }
 
@@ -23,6 +23,8 @@ declare namespace App.Models {
     lastname: string;
     email: string;
     course_id: number;
+    is_tutor: boolean;
+    is_admin: boolean;
     remember_token: string | null;
     station_tutors?: Array<App.Models.StationTutor> | null;
     group_tutors?: Array<App.Models.GroupTutor> | null;
@@ -42,7 +44,7 @@ declare namespace App.Models {
     icon: string;
     show_on_registration: boolean;
     classes: string;
-    users?: Array<Models.User> | null;
+    users?: Array<App.Models.User> | null;
     groups?: Array<App.Models.Group> | null;
     users_count?: number | null;
     groups_count?: number | null;
@@ -54,7 +56,7 @@ declare namespace App.Models {
     updated_at: string | null;
     user_id: number;
     station_id: number;
-    user?: Models.User | null;
+    user?: App.Models.User | null;
     station?: App.Models.Station | null;
   }
 
@@ -103,7 +105,7 @@ declare namespace App.Models {
     form_responses: string | null;
     queue_position: number | null;
     event?: App.Models.Event | null;
-    user?: Models.User | null;
+    user?: App.Models.User | null;
     slot?: App.Models.Slot | null;
     group?: App.Models.Group | null;
   }
@@ -134,7 +136,7 @@ declare namespace App.Models {
     stops?: Array<App.Models.Stop> | null;
     course?: App.Models.Course | null;
     event?: App.Models.Event | null;
-    tutors?: Array<Models.User> | null;
+    tutors?: Array<App.Models.User> | null;
     stations?: Array<App.Models.Station> | null;
     group_tutors_count?: number | null;
     registrations_count?: number | null;
@@ -151,7 +153,7 @@ declare namespace App.Models {
     event_id: number;
     stops?: Array<App.Models.Stop> | null;
     event?: App.Models.Event | null;
-    tutors?: Array<Models.User> | null;
+    tutors?: Array<App.Models.User> | null;
     groups?: Array<App.Models.Group> | null;
     stops_count?: number | null;
     tutors_count?: number | null;
@@ -166,14 +168,6 @@ declare namespace App.Models {
     slug: string;
     content: string;
     sort_order: number;
-  }
-
-  export interface State {
-    id: number;
-    key: string;
-    value: string | null;
-    created_at: string | null;
-    updated_at: string | null;
   }
 
   export interface Stop {

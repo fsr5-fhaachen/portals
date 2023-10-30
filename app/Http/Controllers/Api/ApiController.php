@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Event;
 use App\Models\Registration;
-use App\Models\State;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -213,7 +211,7 @@ class ApiController extends Controller
         foreach ($courses as $course) {
             $result[] = [
                 'id' => $course->id,
-                'amount' => $course->users()->doesntHave('roles')->count(),
+                'amount' => $course->users()->where('is_tutor', false)->count(),
             ];
         }
 
@@ -244,80 +242,10 @@ class ApiController extends Controller
         foreach ($courses as $course) {
             $result[] = [
                 'id' => $course->id,
-                'amount' => $course->users()->doesntHave('roles')->whereIn('id', $userIds)->count(),
+                'amount' => $course->users()->where('is_tutor', false)->whereIn('id', $userIds)->count(),
             ];
         }
 
         return response()->json($result);
-    }
-
-    /**
-     * Return the current state of the random generator.
-     * The state is structured like this:
-     *   {
-     *     "state": "setup", // setup, idle, running, stopped
-     *     "user": null | User, // default null and if stopped, the user that was selected by the random generator
-     *   }
-     *
-     * The definition of the states is as follows:
-     *   setup: The random generator is not set up yet
-     *   idle: The random generator is set up, but not running yet
-     *   running: The random generator is running
-     *   stopped: The random generator is stopped and a user was selected
-     */
-    public function randomGeneratorState(): JsonResponse
-    {
-        // get state with key randomGenerator
-        $state = State::where('key', 'randomGenerator')->first();
-
-        // if state does not exist, return setup
-        if (! $state) {
-            return response()->json([
-                'state' => 'setup',
-            ]);
-        }
-
-        return response()->json(json_decode($state->value));
-    }
-
-    /**
-     * Return the current state of the score system.
-     * The state is structured like this:
-     *   {
-     *     "teams": {
-     *       "name": string;
-     *       "score": string;
-     *     }[];
-     *   }
-     */
-    public function scoreSystemState(): JsonResponse
-    {
-        // get state with key scoreSystem
-        $state = State::where('key', 'scoreSystem')->first();
-
-        // if state does not exist, return setup
-        if (! $state) {
-            return response()->json([
-                'teams' => [],
-            ]);
-        }
-
-        return response()->json(json_decode($state->value));
-    }
-
-    /**
-     * Fresh users data
-     */
-    public function users(): JsonResponse
-    {
-        $users = User::with('course', 'roles')->get()->map(function ($user) {
-            $user->avatarUrl = $user->avatarUrl();
-
-            return $user;
-        });
-
-        return response()->json([
-            'users' => $users,
-        ]);
     }
 }

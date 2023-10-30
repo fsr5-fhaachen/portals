@@ -67,17 +67,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Public API secret
-    |--------------------------------------------------------------------------
-    |
-    | This value is the public API secret for the application.
-    |
-    */
-
-    'public_api_secret' => env('PUBLIC_API_SECRET', 'secret'),
-
-    /*
-    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
@@ -218,6 +207,7 @@ return [
          * Package Service Providers...
          */
         OwenIt\Auditing\AuditingServiceProvider::class,
+
         /*
          * Application Service Providers...
          */
@@ -226,7 +216,6 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Spatie\Permission\PermissionServiceProvider::class,
     ])->toArray(),
 
     /*

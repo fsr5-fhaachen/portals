@@ -70,8 +70,8 @@ class EventsDemoSeeder extends Seeder
             $group->save();
         }
 
-        // get all users without roles
-        $users = User::doesntHave('roles')->get();
+        // get all users (except admin and tutor)
+        $users = User::where('is_admin', false)->where('is_tutor', false)->get();
 
         // register users to event
         foreach ($users as $user) {
@@ -144,8 +144,8 @@ class EventsDemoSeeder extends Seeder
             $group->save();
         }
 
-        // get all users without roles
-        $users = User::doesntHave('roles')->get();
+        // get all users (except admin and tutor)
+        $users = User::where('is_admin', false)->where('is_tutor', false)->get();
 
         // register users to event
         foreach ($users as $user) {
@@ -200,8 +200,8 @@ class EventsDemoSeeder extends Seeder
         // save the event
         $event->save();
 
-        // get all users without roles
-        $users = User::doesntHave('roles')->get();
+        // get all users (except admin and tutor)
+        $users = User::where('is_admin', false)->where('is_tutor', false)->get();
 
         // register users to event
         foreach ($users as $user) {
@@ -295,8 +295,8 @@ class EventsDemoSeeder extends Seeder
             $slot->save();
         }
 
-        // get all users without roles
-        $users = User::doesntHave('roles')->get();
+        // get all users (except admin and tutor)
+        $users = User::where('is_admin', false)->where('is_tutor', false)->get();
 
         // get all slots of the event
         $slots = $event->slots()->get();

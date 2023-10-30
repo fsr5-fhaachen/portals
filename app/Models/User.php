@@ -6,14 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Support\Facades\Storage;
 use OwenIt\Auditing\Contracts\Auditable;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements Auditable
 {
     use HasFactory;
-    use HasRoles;
     use \OwenIt\Auditing\Auditable;
 
     /**
@@ -55,20 +52,5 @@ class User extends Authenticatable implements Auditable
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
-    }
-
-    /**
-     * Get avatar for the user.
-     */
-    public function avatarUrl(): ?string
-    {
-        // check if avatar is set
-        if ($this->avatar) {
-
-            // get immage from S3
-            return Storage::disk('s3')->url($this->avatar);
-        }
-
-        return null;
     }
 }

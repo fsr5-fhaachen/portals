@@ -57,35 +57,15 @@ class TutorSeeder extends Seeder
             $user->firstname = $tutor[1];
             $user->course_id = $courseByKey[$tutor[2]]->id;
             $user->email = $tutor[3];
+            $user->is_tutor = true;
 
-            //set user to disabled
-            if (array_key_exists(5, $tutor) && $tutor[5] == '1') {
-                echo 'Setting tutor to disabled for '.$tutor[0].' '.$tutor[1].' ('.$tutor[3].')'.PHP_EOL;
-                $user->is_disabled = true;
+            // check if the user is an admin
+            if (array_key_exists(4, $tutor) && $tutor[4] == '1') {
+                $user->is_admin = true;
             }
 
             // save the user
             $user->save();
-
-            // assigne user role
-            echo 'Assigning role tutor to '.$tutor[0].' '.$tutor[1].' ('.$tutor[3].')'.PHP_EOL;
-            $user->assignRole('tutor');
-
-            // check if the user has additional roles
-            if (array_key_exists(4, $tutor)) {
-                // split roles by comma
-                $roles = explode('|', $tutor[4]);
-
-                // loop through the roles
-                foreach ($roles as $role) {
-                    // skip empty strings because of ";;" in the csv file
-                    if (empty($role)) {
-                        continue;
-                    }
-                    echo 'Assigning role '.$role.' to '.$tutor[0].' '.$tutor[1].' ('.$tutor[3].')'.PHP_EOL;
-                    $user->assignRole($role);
-                }
-            }
         }
     }
 }

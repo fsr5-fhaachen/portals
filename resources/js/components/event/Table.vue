@@ -20,22 +20,14 @@
                     Type
                   </th>
                   <th
-                    v-if="
-                      user.permissionsArray.includes(
-                        'view hidden event details'
-                      )
-                    "
+                    v-if="user.is_admin"
                     scope="col"
                     class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
                   >
                     Berücksichtigt Verzehr von Alkohol
                   </th>
                   <th
-                    v-if="
-                      user.permissionsArray.includes(
-                        'view hidden event details'
-                      )
-                    "
+                    v-if="user.is_admin"
                     scope="col"
                     class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
                   >
@@ -84,11 +76,7 @@
                     {{ event.type }}
                   </td>
                   <td
-                    v-if="
-                      user.permissionsArray.includes(
-                        'view hidden event details'
-                      )
-                    "
+                    v-if="user.is_admin"
                     :class="[
                       index !== events.length - 1
                         ? 'border-b border-gray-200 dark:border-gray-700'
@@ -99,11 +87,7 @@
                     {{ event.consider_alcohol ? "Ja" : "Nein" }}
                   </td>
                   <td
-                    v-if="
-                      user.permissionsArray.includes(
-                        'view hidden event details'
-                      )
-                    "
+                    v-if="user.is_admin"
                     :class="[
                       index !== events.length - 1
                         ? 'border-b border-gray-200 dark:border-gray-700'
@@ -161,7 +145,7 @@
                         <span class="sr-only">, {{ event.name }}</span>
                       </AppLink>
                       <AppLink
-                        v-if="user.permissionsArray.includes('manage events')"
+                        v-if="user.is_admin"
                         theme="danger"
                         :href="'/dashboard/admin/event/' + event.id"
                       >
@@ -189,7 +173,7 @@ const { events } = defineProps({
     required: true,
   },
   user: {
-    type: Object as PropType<Models.User>,
+    type: Object as PropType<App.Models.User>,
     required: true,
   },
 });

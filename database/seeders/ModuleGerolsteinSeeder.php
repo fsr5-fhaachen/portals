@@ -14,27 +14,25 @@ class ModuleGerolsteinSeeder extends Seeder
     {
         $modules = [
             [
-                'key' => 'randomGenerator',
-                'active' => true,
-            ],
-            [
-                'key' => 'scoreSystem',
-                'active' => true,
+                'key' => 'registration',
+                'active' => false,
             ],
         ];
 
         foreach ($modules as $module) {
             // check if module with key already exists
             $existingModule = Module::where('key', $module['key'])->first();
-            if (! $existingModule) {
-                throw new \Exception('Module with key "'.$module['key'].'" not found.');
+            if ($existingModule) {
+                continue;
             }
 
-            // update module
-            $existingModule->active = $module['active'];
+            // create a new module
+            $newModule = new Module();
+            $newModule->key = $module['key'];
+            $newModule->active = $module['active'];
 
             // save module
-            $existingModule->save();
+            $newModule->save();
         }
     }
 }

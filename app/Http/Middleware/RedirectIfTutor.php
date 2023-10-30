@@ -17,7 +17,7 @@ class RedirectIfTutor
         $user = $request->user();
 
         // check if user is tutor and is logged in as tutor
-        if ($user->hasRole(['admin', 'esa', 'stage tutor', 'tutor']) && $request->session()->has('tutor')) {
+        if ($user->is_tutor && $request->session()->has('tutor')) {
             return redirect()->route('dashboard.tutor.index');
         }
 

@@ -1,5 +1,4 @@
 /** @type {import('tailwindcss').Config} */
-
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
@@ -13,28 +12,6 @@ module.exports = {
   darkMode: "class",
   theme: {
     extend: {
-      keyframes: {
-        wiggle: {
-          "0%, 100%": {
-            transform: "rotate(-15deg)",
-          },
-          "50%": {
-            transform: "rotate(15deg)",
-          },
-        },
-        fly: {
-          from: {
-            transform: "translateY(100vh)",
-          },
-          to: {
-            transform: "translateY(-100%)",
-          },
-        },
-      },
-      animation: {
-        wiggle: "wiggle 2s ease-in-out infinite",
-        fly: "fly 75s infinite linear alternate",
-      },
       colors: {
         fhac: {
           mint: "#00b5ad",
@@ -43,7 +20,6 @@ module.exports = {
       },
       fontFamily: {
         sans: ["Inter var", ...defaultTheme.fontFamily.sans],
-        "eighty-miles": ['"EIGHTY MILES"'],
       },
     },
   },
