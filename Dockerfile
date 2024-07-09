@@ -26,7 +26,7 @@ RUN npm run build
 #    STAGE 1.2: Setup PHP and Dependencies
 # --------------------------------------------
 
-FROM php:8.1-cli-alpine as php
+FROM php:8.3-cli-alpine as php
 LABEL maintainer="FSR5 FH-Aachen"
 WORKDIR /var/www/html
 
