@@ -15,7 +15,7 @@
         "laravel/tinker": "^2.8",
         "league/flysystem-aws-s3-v3": "^3.16",
         "owen-it/laravel-auditing": "^13.5.1",
-        "spatie/laravel-permission": "^5.11",
+        "spatie/laravel-permission": "^6.9",
         "spiral/roadrunner": "^2023.2.2",
         "spiral/roadrunner-cli": "^2.5.0",
         "spiral/roadrunner-http": "^3.0.1"
