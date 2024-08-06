@@ -135,7 +135,6 @@
                 name="group_id"
                 label="Gruppe"
                 placeholder="Wähle eine Gruppe aus"
-                validation="required"
                 :options="selectFormGroupOptions"
               />
             </FormRow>
