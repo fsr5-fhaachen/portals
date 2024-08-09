@@ -112,35 +112,38 @@ class GroupBalancedDivision extends GroupDivision
     {
         $nonDrinkerRegs = $this->registrations->where('drinks_alcohol', '=', false);
 
-        $nonDrinkerFillRates = $this->calcFillRate($nonDrinkerRegs);
+        if ($nonDrinkerRegs->count() > 0) {
 
-        // If you can satisfy minNonDrinkers requirement with a balanced fill, do it first
-        if (array_sum($nonDrinkerFillRates[min(array_keys($nonDrinkerFillRates))]) > $this->minNonDrinkers) {
-            $this->assignBalanced($nonDrinkerRegs, $nonDrinkerRegs);
-        }
+            $nonDrinkerFillRates = $this->calcFillRate($nonDrinkerRegs);
 
-        // Assign yet unassigned non-drinkers
-        $nonDrinkerRegs = $nonDrinkerRegs->where('group_id', '=', null)
-            ->shuffle();
-
-        // If chunking by minNonDrinkers would give more chunks than groups, increase chunk size by 1 until it fits
-        $nonDrinkersPerGroup = $this->minNonDrinkers;
-        while (($nonDrinkerRegs->count() / $nonDrinkersPerGroup) > $this->groups->count()) {
-            $nonDrinkersPerGroup++;
-        }
-        $chunks = $nonDrinkerRegs->chunk($nonDrinkersPerGroup);
-
-        // Assign each chunk to a group
-        foreach ($this->groups as $group) {
-            if ($chunks->count() == 0) {
-                return;
+            // If you can satisfy minNonDrinkers requirement with a balanced fill, do it first
+            if (array_sum($nonDrinkerFillRates[min(array_keys($nonDrinkerFillRates))]) > $this->minNonDrinkers) {
+                $this->assignBalanced($nonDrinkerRegs, $nonDrinkerRegs);
             }
-            $chunk = $chunks->pop();
 
-            foreach ($chunk as $registration) {
-                $registration->group_id = $group->id;
-                $registration->queue_position = null;
-                $registration->save();
+            // Assign yet unassigned non-drinkers
+            $nonDrinkerRegs = $nonDrinkerRegs->where('group_id', '=', null)
+                ->shuffle();
+
+            // If chunking by minNonDrinkers would give more chunks than groups, increase chunk size by 1 until it fits
+            $nonDrinkersPerGroup = $this->minNonDrinkers;
+            while (($nonDrinkerRegs->count() / $nonDrinkersPerGroup) > $this->groups->count()) {
+                $nonDrinkersPerGroup++;
+            }
+            $chunks = $nonDrinkerRegs->chunk($nonDrinkersPerGroup);
+
+            // Assign each chunk to a group
+            foreach ($this->groups as $group) {
+                if ($chunks->count() == 0) {
+                    return;
+                }
+                $chunk = $chunks->pop();
+
+                foreach ($chunk as $registration) {
+                    $registration->group_id = $group->id;
+                    $registration->queue_position = null;
+                    $registration->save();
+                }
             }
         }
     }
