@@ -97,10 +97,16 @@ npm run lint:fix
 
 ### testing
 
+Copy phpunit.xml.example to phpunit.xml and fill in the test database credentials or leave it as is for in-memory testing with sqlite.
+
+```sh
+cp phpunit.xml.example phpunit.xml
+```
+
 You can run the tests with:
 
 ```sh
-vendor/bin/phpunit
+php artisan test
 ```
 
 ### build
