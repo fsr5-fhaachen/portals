@@ -112,8 +112,8 @@ class GroupBalancedDivision extends GroupDivision
     {
         $nonDrinkerRegs = $this->registrations->where('drinks_alcohol', '=', false);
 
+        // check if there are any non drinkers
         if ($nonDrinkerRegs->count() > 0) {
-
             $nonDrinkerFillRates = $this->calcFillRate($nonDrinkerRegs);
 
             // If you can satisfy minNonDrinkers requirement with a balanced fill, do it first
