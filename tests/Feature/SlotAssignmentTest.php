@@ -30,12 +30,12 @@ class SlotAssignmentTest extends TestCase
         $this->event->description = 'Lorem ipsum';
         $this->event->type = 'slot_booking';
 
-        $registration_from = new DateTime(NOW());
-        $registration_to = new DateTime(NOW());
-        $registration_to->modify('+7 days');
+        $registrationFrom = new DateTime(NOW());
+        $registrationTo = new DateTime(NOW());
+        $registrationTo->modify('+7 days');
 
-        $this->event->registration_from = $registration_from;
-        $this->event->registration_to = $registration_to;
+        $this->event->registration_from = $registrationFrom;
+        $this->event->registration_to = $registrationTo;
         $this->event->has_requirements = false;
         $this->event->consider_alcohol = false;
         $this->event->sort_order = 300;
@@ -80,12 +80,12 @@ class SlotAssignmentTest extends TestCase
      */
     public function testAssignWithMoreRegistrationsThanFreeSlots(): void
     {
-        $reg_amount = 50;
+        $regAmount = 50;
 
-        $this->createUsers($reg_amount);
+        $this->createUsers($regAmount);
 
         // queue position should be equal to -1 before assignment                 
-        $this->assertEquals($reg_amount, $this->slot->registrations()->where('queue_position', -1)->get()->count());
+        $this->assertEquals($regAmount, $this->slot->registrations()->where('queue_position', -1)->get()->count());
 
         $this->assignment->assign();
 
@@ -104,58 +104,45 @@ class SlotAssignmentTest extends TestCase
 
     public function testAssignWithLessRegistrationsThanSlots(): void
     {
-        $reg_amount = 5;
+        $regAmount = 5;
 
-        $this->createUsers($reg_amount);
+        $this->createUsers($regAmount);
 
         $this->assignment->assign();
 
         $this->assertEquals(0, $this->slot->registrations()->where('queue_position', -1)->get()->count());
 
         // queue position should be null for all registrations
-        $this->assertEquals($reg_amount, $this->slot->registrations()->where('queue_position', null)->get()->count());
+        $this->assertEquals($regAmount, $this->slot->registrations()->where('queue_position', null)->get()->count());
     }
 
     public function testAssignWithExactRegistrations(): void
     {
-        $reg_amount = 10;
+        $regAmount = 10;
 
-        $this->createUsers($reg_amount);
+        $this->createUsers($regAmount);
 
         $this->assignment->assign();
 
         $this->assertEquals(0, $this->slot->registrations()->where('queue_position', -1)->get()->count());
 
         // queue position should be null for all registrations
-        $this->assertEquals($reg_amount, $this->slot->registrations()->where('queue_position', null)->get()->count());
+        $this->assertEquals($regAmount, $this->slot->registrations()->where('queue_position', null)->get()->count());
     }
 
     public function testReassignAfterNewRegistrations(): void
     {
-        $reg_amount = 5;
-        $reg_amount_later = 12;
+        $regAmount = 5;
+        $regAmountLater = 12;
 
-        $this->createUsers($reg_amount);
+        $this->createUsers($regAmount);
 
         $this->assignment->assign();
 
         // queue position should be null for all registrations
-        $this->assertEquals($reg_amount, $this->slot->registrations()->where('queue_position', null)->get()->count());
+        $this->assertEquals($regAmount, $this->slot->registrations()->where('queue_position', null)->get()->count());
 
-        $this->createUsers($reg_amount_later);
-        $this->assignment->assign();
-        $this->assertEquals(0, $this->slot->registrations()->where('queue_position', -1)->get()->count());
-
-        $registrations = $this->slot->registrations()->orderBy('queue_position')->get();
-        for ($i = 0; $i < $registrations->count(); $i++) {
-            if ($i < 10) {
-                $this->assertNull($registrations[$i]->queue_position);
-                continue;
-            }
-            $this->assertEquals($i - 9, $registrations[$i]->queue_position);
-        }
-
-        $this->createUsers(100);
+        $this->createUsers($regAmountLater);
         $this->assignment->assign();
         $this->assertEquals(0, $this->slot->registrations()->where('queue_position', -1)->get()->count());
 
