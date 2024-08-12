@@ -21,7 +21,7 @@ class GroupBalancedDivisionTest extends TestCase
     /**
      * most simple case. All courses distributed equally with no non-drinkers
      */
-    public function test_equal_div_only_drinkers(): void
+    public function testEqualDivOnlyDrinkers(): void
     {
         $event = Event::factory()->create(['consider_alcohol' => true])->first();
         $courses = Course::factory()->count(10)->create();
@@ -62,7 +62,7 @@ class GroupBalancedDivisionTest extends TestCase
     /**
      * not all courses distributed equally with no non-drinkers
      */
-    public function test_unequal_div_only_drinkers(): void
+    public function testUnequalDivOnlyDrinkers(): void
     {
         $event = Event::factory()->create(['consider_alcohol' => true])->first();
         $courses = Course::factory()->count(10)->create();
@@ -106,7 +106,7 @@ class GroupBalancedDivisionTest extends TestCase
     /**
      * not all courses distributed equally with non-drinkers
      */
-    public function test_unequal_div_nondrinkers(): void
+    public function testUnequalDivNondrinkers(): void
     {
         $event = Event::factory()->create(['consider_alcohol' => true])->first();
         $courses = Course::factory()->count(10)->create();
@@ -146,7 +146,7 @@ class GroupBalancedDivisionTest extends TestCase
                     $this->assertEquals(0, $nondrinkerCount);
                 }
 
-                // check course balance (with allowed deviation due to non drinkers)
+                // check course balance (with allowed deviation due to priority for assigning non drinkers)
                 $i = 1;
                 foreach ($courses as $course) {
                     $courseCount = $group->registrations()
