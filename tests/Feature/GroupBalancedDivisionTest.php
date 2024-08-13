@@ -135,27 +135,27 @@ class GroupBalancedDivisionTest extends TestCase
 
             foreach ($groups as $group) {
                 // check non drinker count
-                $nondrinkerCount = $group->registrations()
+                $nondrinker_count = $group->registrations()
                     ->where('drinks_alcohol', '=', false)
                     ->count();
 
                 // either only drinkers or at least 3 non drinkers
-                if ($nondrinkerCount > 0) {
-                    $this->assertGreaterThanOrEqual(3, $nondrinkerCount);
+                if ($nondrinker_count > 0) {
+                    $this->assertGreaterThanOrEqual(3, $nondrinker_count);
                 } else {
-                    $this->assertEquals(0, $nondrinkerCount);
+                    $this->assertEquals(0, $nondrinker_count);
                 }
 
                 // check course balance (with allowed deviation due to priority for assigning non drinkers)
                 $i = 1;
                 foreach ($courses as $course) {
-                    $courseCount = $group->registrations()
+                    $course_count = $group->registrations()
                         ->join('users', 'registrations.user_id', '=', 'users.id')
                         ->where('users.course_id', '=', $course->id)
                         ->count();
 
-                    $this->assertGreaterThanOrEqual($i - 2, $courseCount);
-                    $this->assertLessThanOrEqual($i + 2, $courseCount);
+                    $this->assertGreaterThanOrEqual($i - 2, $course_count);
+                    $this->assertLessThanOrEqual($i + 2, $course_count);
                     $i += 1;
                 }
             }
