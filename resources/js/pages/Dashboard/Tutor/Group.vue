@@ -31,22 +31,22 @@
 import { computed, ref, PropType, onBeforeUnmount } from "vue";
 
 const form = ref({
-  query: ""
+  query: "",
 });
 
 const { group } = defineProps({
   courses: {
     type: Array as PropType<App.Models.Course[]>,
-    required: true
+    required: true,
   },
   group: {
     type: Object as PropType<App.Models.Group>,
-    required: true
+    required: true,
   },
   user: {
     type: Object as PropType<Models.User>,
-    required: true
-  }
+    required: true,
+  },
 });
 const registrations = ref(group.registrations);
 
@@ -81,8 +81,8 @@ const fetchRegistrations = async () => {
       method: "GET",
       credentials: "include",
       headers: {
-        "Content-Type": "application/json"
-      }
+        "Content-Type": "application/json",
+      },
     }
   );
 
