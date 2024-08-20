@@ -473,4 +473,24 @@ class DashboardAdminController extends Controller
 
         return Redirect::back();
     }
+
+    /**
+     * Generate a presigned URL for avatar upload
+     */
+    public function generatePresignedUrlForAvatarUpload(IlluminateRequest $request): array
+    {
+        $user = User::find($request->user);
+
+        $request->validate([
+            'avatar' => 'required|image',
+        ]);
+
+        $fileName = uniqid() . '.' . $request->avatar->extension();
+        $path = 'avatars/' . $user->id . '/' . $fileName;
+        $presignedUrl = Storage::disk('s3')->temporaryUploadUrl(
+            $path,
+            now()->addMinutes(5)
+        );
+        return $presignedUrl;
+    }
 }

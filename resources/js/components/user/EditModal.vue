@@ -197,6 +197,8 @@ const selectFormCourseOptions = useSelectFormCourseOptions(courses, true);
 const selectFormRoleOptions = useSelectFormRoleOptions(roles);
 const randomPlaceholderPerson = usePlaceholderPerson();
 
+const { uploadFileByPresignedUrl } = useS3();
+
 const close = () => {
   emits("close");
 };
