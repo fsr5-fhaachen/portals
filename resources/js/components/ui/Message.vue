@@ -58,7 +58,6 @@ import { computed } from "vue";
 const { type } = defineProps({
   message: {
     type: String,
-    required: false,
   },
   type: {
     type: String,

@@ -53,31 +53,33 @@
               "
               type="success"
             >
-              <template #message v-if="userRegistration.group.name">
-                Die Einteilung ist erfolgt. Du bist in der Gruppe
-                <strong>{{ userRegistration.group.name }}</strong
-                >.
-                <div v-if="userRegistration.group.telegram_group_link">
-                  <AppLink
-                    :href="userRegistration.group.telegram_group_link"
-                    rootClass="inline"
-                    >Klicke hier</AppLink
-                  >
-                  um der Telegram Gruppe beizutreten.
-                </div>
-              </template>
-              <template #message v-else>
-                Die Einteilung ist erfolgt. Du bist in
-                <strong>Gruppe {{ userRegistration.group.name }}</strong
-                >.
-                <div v-if="userRegistration.group.telegram_group_link">
-                  <AppLink
-                    :href="userRegistration.group.telegram_group_link"
-                    rootClass="inline"
-                    >Klicke hier</AppLink
-                  >
-                  um der Telegram Gruppe beizutreten.
-                </div>
+              <template #message>
+                <template v-if="userRegistration.group.name">
+                  Die Einteilung ist erfolgt. Du bist in der Gruppe
+                  <strong>{{ userRegistration.group.name }}</strong
+                  >.
+                  <div v-if="userRegistration.group.telegram_group_link">
+                    <AppLink
+                      :href="userRegistration.group.telegram_group_link"
+                      rootClass="inline"
+                      >Klicke hier</AppLink
+                    >
+                    um der Telegram Gruppe beizutreten.
+                  </div>
+                </template>
+                <template v-else>
+                  Die Einteilung ist erfolgt. Du bist in
+                  <strong>Gruppe {{ userRegistration.group.id }}</strong
+                  >.
+                  <div v-if="userRegistration.group.telegram_group_link">
+                    <AppLink
+                      :href="userRegistration.group.telegram_group_link"
+                      rootClass="inline"
+                      >Klicke hier</AppLink
+                    >
+                    um der Telegram Gruppe beizutreten.
+                  </div>
+                </template>
               </template>
             </UiMessage>
             <UiMessage
