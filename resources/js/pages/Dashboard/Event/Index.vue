@@ -52,18 +52,34 @@
                   userRegistration.fulfils_requirements)
               "
               type="success"
-              :message="
-                'Die Einteilung ist erfolgt. Du bist in ' +
-                (userRegistration.group.name
-                  ? 'der Gruppe <strong>' +
-                    userRegistration.group.name +
-                    '</strong>'
-                  : '<strong>Gruppe ' +
-                    userRegistration.group.id +
-                    '</strong>') +
-                '.'
-              "
-            />
+            >
+              <template #message v-if="userRegistration.group.name">
+                Die Einteilung ist erfolgt. Du bist in der Gruppe
+                <strong>{{ userRegistration.group.name }}</strong
+                >.
+                <div v-if="userRegistration.group.telegram_group_link">
+                  <AppLink
+                    :href="userRegistration.group.telegram_group_link"
+                    rootClass="inline"
+                    >Klicke hier</AppLink
+                  >
+                  um der Telegram Gruppe beizutreten.
+                </div>
+              </template>
+              <template #message v-else>
+                Die Einteilung ist erfolgt. Du bist in
+                <strong>Gruppe {{ userRegistration.group.name }}</strong
+                >.
+                <div v-if="userRegistration.group.telegram_group_link">
+                  <AppLink
+                    :href="userRegistration.group.telegram_group_link"
+                    rootClass="inline"
+                    >Klicke hier</AppLink
+                  >
+                  um der Telegram Gruppe beizutreten.
+                </div>
+              </template>
+            </UiMessage>
             <UiMessage
               v-else
               type="warning"
@@ -99,12 +115,21 @@
                   userRegistration.fulfils_requirements)
               "
               type="success"
-              :message="
-                'Die Einteilung ist erfolgt. Du bist im Slot <strong>' +
-                slotData.name +
-                '</strong>.'
-              "
-            />
+            >
+              <template #message>
+                Die Einteilung ist erfolgt. Du bist im Slot
+                <strong>{{ slotData.name }}</strong
+                >.
+                <div v-if="slotData.telegram_group_link">
+                  <AppLink
+                    :href="slotData.telegram_group_link"
+                    rootClass="inline"
+                    >Klicke hier</AppLink
+                  >
+                  um der Telegram Gruppe beizutreten.
+                </div>
+              </template>
+            </UiMessage>
             <UiMessage
               v-else
               type="warning"

@@ -2,6 +2,14 @@
   <LayoutDashboardContent>
     <template #title>{{ group.name }}</template>
     <CardContainer>
+      <CardBase v-if="group.telegram_group_link">
+        <UiH2>Telegram Gruppe</UiH2>
+        Für diese Gruppe wurde eine Telegram Gruppe erstellt. Diesen Link sehen
+        nur Gruppenmitglieder und Tutoren.
+        <AppLink :href="group.telegram_group_link">
+          {{ group.telegram_group_link }}
+        </AppLink>
+      </CardBase>
       <CardBase>
         <FormKit type="form" id="assign" :actions="false" v-model="form">
           <FormContainer>
