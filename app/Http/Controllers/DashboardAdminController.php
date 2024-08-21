@@ -20,6 +20,7 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Role;
+use Illuminate\Http\JsonResponse;
 
 class DashboardAdminController extends Controller
 {
@@ -477,7 +478,7 @@ class DashboardAdminController extends Controller
     /**
      * Generate a presigned URL for avatar upload
      */
-    public function generatePresignedUrlForAvatarUpload(IlluminateRequest $request): array
+    public function generatePresignedUrlForAvatarUpload(IlluminateRequest $request): JsonResponse
     {
         $user = User::find($request->user);
 
@@ -491,6 +492,6 @@ class DashboardAdminController extends Controller
             $path,
             now()->addMinutes(5)
         );
-        return $presignedUrl;
+        return response()->json($presignedUrl);
     }
 }
