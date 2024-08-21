@@ -20,7 +20,6 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Role;
-use Illuminate\Http\JsonResponse;
 
 class DashboardAdminController extends Controller
 {
@@ -473,25 +472,5 @@ class DashboardAdminController extends Controller
         Session::flash('success', 'Der Account <strong>' . $user->email . '</strong> wurde erfolgreich für das Event <strong>' . $event->name . '</strong>' . (array_key_exists('slot_id', $userRegistration) ? ' zu dem Slot <strong>' . $slot->name . '</strong>' : '') . ' zugewiesen.');
 
         return Redirect::back();
-    }
-
-    /**
-     * Generate a presigned URL for avatar upload
-     */
-    public function generatePresignedUrlForAvatarUpload(IlluminateRequest $request): JsonResponse
-    {
-        $user = User::find($request->user);
-
-        $request->validate([
-            'avatar' => 'required|image',
-        ]);
-
-        $fileName = uniqid() . '.' . $request->avatar->extension();
-        $path = 'avatars/' . $user->id . '/' . $fileName;
-        $presignedUrl = Storage::disk('s3')->temporaryUploadUrl(
-            $path,
-            now()->addMinutes(5)
-        );
-        return response()->json($presignedUrl);
     }
 }

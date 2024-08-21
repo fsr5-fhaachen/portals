@@ -127,7 +127,7 @@ Route::prefix('api')->middleware(Authenticate::class)->group(function () {
 
         Route::group(['middleware' => ['can:manage users']], function () {
             Route::get('/users', [ApiController::class, 'users'])->name('api.users');
-            Route::get('/user/{user}/presigned-avatar-url', [DashboardAdminController::class, 'generatePresignedUrlForAvatarUpload'])->name('api.user.presignedAvatarUrl');
+            Route::get('/user/{user}/presigned-avatar-url', [ApiController::class, 'generatePresignedUrlForAvatarUpload'])->name('api.user.presignedAvatarUrl');
         });
     });
 
