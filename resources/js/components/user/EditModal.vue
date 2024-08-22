@@ -203,7 +203,48 @@ const close = () => {
   emits("close");
 };
 const editSubmitHandler = async () => {
-  Inertia.post(`/dashboard/admin/user/${user.id}`, editForm.value);
+  var avatarPath = null;
+
+  if (editForm.value.avatar) {
+    const formData = new FormData();
+    formData.append("avatar", editForm.value.avatar[0].file);
+
+    const response = await fetch(`/api/user/${user.id}/presigned-avatar-url`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "X-CSRF-TOKEN":
+          document
+            .querySelector("meta[name='csrf-token']")
+            ?.getAttribute("content") || "",
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      console.error("Failed to get presigned URL for avatar upload");
+      return;
+    }
+
+    const data = await response.json();
+
+    try {
+      await uploadFileByPresignedUrl({
+        file: formData.get("avatar"),
+        presignedUrl: data.presignedUrl.url,
+      });
+      avatarPath = data.path;
+      console.info("Avatar uploaded");
+    } catch (error) {
+      console.error("Failed to upload avatar", error);
+      return;
+    }
+  }
+
+  Inertia.post(`/dashboard/admin/user/${user.id}`, {
+    ...editForm.value,
+    avatar: avatarPath,
+  });
   emits("submit");
 };
 </script>
