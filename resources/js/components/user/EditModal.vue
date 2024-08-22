@@ -203,9 +203,9 @@ const close = () => {
   emits("close");
 };
 const editSubmitHandler = async () => {
-  var avatarPath = null;
+  const avatarPath = ref<string | undefinded>(null);
 
-  if (editForm.value.avatar) {
+  if (editForm.value.avatar?.length) {
     const formData = new FormData();
     formData.append("avatar", editForm.value.avatar[0].file);
 
@@ -229,11 +229,11 @@ const editSubmitHandler = async () => {
     const data = await response.json();
 
     try {
-      await uploadFileByPresignedUrl({
-        file: formData.get("avatar"),
-        presignedUrl: data.presignedUrl.url,
-      });
-      avatarPath = data.path;
+      await uploadFileByPresignedUrl(
+        formData.get("avatar"),
+        data.presignedUrl.url
+      );
+      avatarPath.value = data.path;
       console.info("Avatar uploaded");
     } catch (error) {
       console.error("Failed to upload avatar", error);
@@ -243,7 +243,7 @@ const editSubmitHandler = async () => {
 
   Inertia.post(`/dashboard/admin/user/${user.id}`, {
     ...editForm.value,
-    avatar: avatarPath,
+    avatar: avatarPath.value,
   });
   emits("submit");
 };
