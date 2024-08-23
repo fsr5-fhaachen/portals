@@ -203,13 +203,13 @@ const close = () => {
   emits("close");
 };
 const editSubmitHandler = async () => {
-  const avatarPath = ref<string | undefinded>(null);
+  const avatarPath = ref<string | undefinded>();
 
   if (editForm.value.avatar?.length) {
     const formData = new FormData();
     formData.append("avatar", editForm.value.avatar[0].file);
 
-    const response = await fetch(`/api/user/${user.id}/presigned-avatar-url`, {
+    const response = await fetch(`/api/user/presigned-avatar-url`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -234,7 +234,6 @@ const editSubmitHandler = async () => {
         data.presignedUrl.url
       );
       avatarPath.value = data.path;
-      console.info("Avatar uploaded");
     } catch (error) {
       console.error("Failed to upload avatar", error);
       return;

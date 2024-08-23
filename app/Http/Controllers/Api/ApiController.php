@@ -326,7 +326,7 @@ class ApiController extends Controller
     /**
      * Generate a presigned URL for avatar upload
      */
-    public function generatePresignedUrlForAvatarUpload(Request $request, User $user): JsonResponse
+    public function generatePresignedUrlForAvatarUpload(Request $request): JsonResponse
     {
         $request->validate([
             'avatar' => 'required|image',
@@ -334,7 +334,6 @@ class ApiController extends Controller
 
         $uuid = Str::uuid()->toString();
         $fileName = $uuid . '.' . $request->avatar->extension();
-        //$path = 'avatars/' . $user->id . '/' . $fileName;
         $path = 'avatars/' . $fileName;
         $presignedUrl = Storage::disk('s3')->temporaryUploadUrl(
             $path,
