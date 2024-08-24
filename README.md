@@ -151,7 +151,7 @@ If you want information about creating the kubernetes cluster, see [deploy infor
 
 👤 **Titus Kirch (main author)**
 
-- Website: https://tkirch.dev/
+- Website: https://kirch.dev/
 - LinkedIn: [Titus Kirch](https://www.linkedin.com/in/tituskirch/)
 - Twitter: [@TitusKirch](https://twitter.com/TitusKirch)
 - GitHub: [@TitusKirch](https://github.com/TitusKirch)
