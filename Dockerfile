@@ -3,7 +3,7 @@
 # --------------------------------------------
 
 FROM ghcr.io/roadrunner-server/roadrunner:2023.3.2 AS roadrunner
-FROM node:16-alpine as node
+FROM node:20-alpine as node
 WORKDIR /app
 
 # install dependencies (only copy package lock here to use docker caching)
@@ -26,7 +26,7 @@ RUN npm run build
 #    STAGE 1.2: Setup PHP and Dependencies
 # --------------------------------------------
 
-FROM php:8.1-cli-alpine as php
+FROM php:8.3-cli-alpine as php
 LABEL maintainer="FSR5 FH-Aachen"
 WORKDIR /var/www/html
 
