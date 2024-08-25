@@ -14,7 +14,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->redirectGuestsTo(fn () => route('app.login'));
+        $middleware->redirectUsersTo(RouteServiceProvider::HOME);
+
+        $middleware->web(\App\Http\Middleware\HandleInertiaRequests::class);
+
+        $middleware->alias([
+            'isAdmin' => \App\Http\Middleware\IsAdmin::class,
+            'isStudent' => \App\Http\Middleware\IsStudent::class,
+            'isTutor' => \App\Http\Middleware\IsTutor::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

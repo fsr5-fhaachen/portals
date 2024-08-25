@@ -9,9 +9,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
 use App\Http\Middleware\ActiveModule;
-use App\Http\Middleware\Authenticate;
+use Illuminate\Auth\Middleware\Authenticate;
 use App\Http\Middleware\IsLoggedInTutor;
-use App\Http\Middleware\RedirectIfAuthenticated;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RedirectIfTutor;
 use Illuminate\Support\Facades\Route;
 
