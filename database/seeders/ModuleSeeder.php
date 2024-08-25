@@ -35,7 +35,7 @@ class ModuleSeeder extends Seeder
             }
 
             // create a new module
-            $newModule = new Module();
+            $newModule = new Module;
             $newModule->key = $module['key'];
             $newModule->active = $module['active'];
 

@@ -32,7 +32,7 @@ class EventsGerolsteinSeeder extends Seeder
 
         // create registration
         foreach ($students as $student) {
-            $registration = new Registration();
+            $registration = new Registration;
             $registration->user_id = $student->id;
             $registration->event_id = $event->id;
             $registration->save();
@@ -51,7 +51,7 @@ class EventsGerolsteinSeeder extends Seeder
         }
 
         // create a new event
-        $event = new Event();
+        $event = new Event;
         $event->name = 'Spieleolympiade';
         $event->type = 'group_phase';
         $event->registration_from = new DateTime('2023-11-01 8:00:00');
@@ -81,7 +81,7 @@ class EventsGerolsteinSeeder extends Seeder
             'Die ehrenhaften Erdbeeren',
         ];
         foreach ($groupNames as $groupName) {
-            $group = new Group();
+            $group = new Group;
             $group->name = $groupName;
             $group->event_id = $event->id;
             $group->save();
@@ -103,7 +103,7 @@ class EventsGerolsteinSeeder extends Seeder
         }
 
         // create a new event
-        $event = new Event();
+        $event = new Event;
         $event->name = 'Gruppenphase';
         $event->type = 'group_phase';
         $event->registration_from = new DateTime('2023-11-01 8:00:00');
@@ -126,7 +126,7 @@ class EventsGerolsteinSeeder extends Seeder
 
         // save groups
         foreach ($groups as $groupData) {
-            $group = new Group();
+            $group = new Group;
             $group->name = $groupData['name'];
             $group->event_id = $event->id;
             $group->save();
@@ -148,7 +148,7 @@ class EventsGerolsteinSeeder extends Seeder
         }
 
         // create a new event
-        $event = new Event();
+        $event = new Event;
         $event->name = 'Tanzen & Gesang';
         $event->type = 'slot_booking';
         $event->registration_from = new DateTime('2023-11-01 8:00:00');
@@ -175,7 +175,7 @@ class EventsGerolsteinSeeder extends Seeder
         ];
 
         foreach ($slots as $slotData) {
-            $slot = new Slot();
+            $slot = new Slot;
             $slot->name = $slotData['name'];
             $slot->event_id = $event->id;
             $slot->has_requirements = $slotData['has_requirements'];

@@ -52,7 +52,7 @@ class TutorSeeder extends Seeder
 
             // create a new user
             echo 'Creating tutor '.$tutor[0].' '.$tutor[1].' ('.$tutor[3].')'.PHP_EOL;
-            $user = new User();
+            $user = new User;
             $user->lastname = $tutor[0];
             $user->firstname = $tutor[1];
             $user->course_id = $courseByKey[$tutor[2]]->id;

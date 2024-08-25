@@ -21,7 +21,7 @@ class DivisionLogger
     /**
      * Logs current state of specified event
      *
-     * @param  Event  $event The event that will be logged
+     * @param  Event  $event  The event that will be logged
      * @return void
      */
     public function logEvent(Event $event)
@@ -57,7 +57,7 @@ class DivisionLogger
     /**
      * Logs current state of specified group
      *
-     * @param  Group  $group The group that will be logged
+     * @param  Group  $group  The group that will be logged
      * @return void
      */
     public function logGroup(Group $group)

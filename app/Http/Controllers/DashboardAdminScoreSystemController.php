@@ -18,7 +18,7 @@ class DashboardAdminScoreSystemController extends Controller
         // check if a state exists or we need to create a new one
         $state = State::where('key', 'scoreSystem')->first();
         if (! $state) {
-            $state = new State();
+            $state = new State;
             $state->key = 'scoreSystem';
         }
 
@@ -41,7 +41,7 @@ class DashboardAdminScoreSystemController extends Controller
         // check if a state exists or we need to create a new one
         $state = State::where('key', 'scoreSystem')->first();
         if (! $state) {
-            $state = new State();
+            $state = new State;
             $state->key = 'scoreSystem';
         }
 
