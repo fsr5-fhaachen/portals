@@ -3,6 +3,7 @@
   "description": "Group allocation tool for the first week of the Department of Electrical Engineering and Information Technology at the FH Aachen - University of Applied Sciences.",
   "version": "2.0.0",
   "license": "MIT",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/fsr5-fhaachen/portals"
@@ -15,18 +16,18 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.14",
-    "@vitejs/plugin-vue": "^3.2.0",
+    "@vitejs/plugin-vue": "^5.1.2",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.5",
-    "laravel-vite-plugin": "^0.8.1",
+    "laravel-vite-plugin": "^1.0.5",
     "lodash": "^4.17.21",
     "postcss": "^8.4.41",
-    "prettier": "^2.8.8",
-    "prettier-plugin-tailwindcss": "^0.2.8",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.6",
     "tailwindcss": "^3.4.10",
-    "unplugin-auto-import": "^0.16.7",
-    "unplugin-vue-components": "^0.25.2",
-    "vite": "^3.2.10",
+    "unplugin-auto-import": "^0.18.2",
+    "unplugin-vue-components": "^0.27.4",
+    "vite": "^5.4.2",
     "vue-loader": "^17.4.2",
     "vue-template-compiler": "^2.7.16"
   },

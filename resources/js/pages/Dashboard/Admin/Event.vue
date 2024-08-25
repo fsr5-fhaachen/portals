@@ -115,7 +115,7 @@ const fetchCourses = async () => {
     // map the data to the courses
     coursesData.value = courses.map((course) => {
       const courseData = data.find(
-        (courseData: any) => courseData.id == course.id
+        (courseData: any) => courseData.id == course.id,
       );
 
       return {

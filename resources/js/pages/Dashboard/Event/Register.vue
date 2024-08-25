@@ -120,7 +120,7 @@ const { event } = defineProps({
 });
 
 const selectFormSlotOptions = useSelectFormSlotOptions(
-  event.slots as App.Models.Slot[]
+  event.slots as App.Models.Slot[],
 );
 
 const form = ref({

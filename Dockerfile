@@ -15,8 +15,8 @@ COPY ["vite.config.js", "./"]
 COPY ["./resources/js/", "./resources/js/"]
 COPY ["./resources/css/", "./resources/css/"]
 COPY ["./resources/views/", "./resources/view/"]
-COPY ["postcss.config.js", "./"]
-COPY ["tailwind.config.js", "./"]
+COPY ["postcss.config.cjs", "./"]
+COPY ["tailwind.config.cjs", "./"]
 COPY ["./database", "./database"]
 
 # build project
