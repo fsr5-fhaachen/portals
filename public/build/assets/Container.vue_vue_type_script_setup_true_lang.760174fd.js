@@ -1,0 +1,1 @@
+import{f as o,o as r,c as l,r as a,n as c}from"./app.b834e386.js";const i=o({__name:"Container",props:{cols:{type:Number,default:3,validator:s=>[1,2,3].includes(s)}},setup(s){return(e,n)=>(r(),l("div",{class:c([{"sm:grid-cols-2 ":s.cols===2,"sm:grid-cols-2 lg:grid-cols-3":s.cols===3},"grid grid-cols-1 gap-6"])},[a(e.$slots,"default")],2))}});export{i as _};

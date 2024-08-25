@@ -1,0 +1,1 @@
+import{_ as o}from"./_plugin-vue_export-helper.cdc0426e.js";import{o as c,c as r}from"./app.b834e386.js";const _={},e={class:"h-[1px] bg-gray-200 dark:bg-gray-700"};function n(s,t){return c(),r("div",e)}const i=o(_,[["render",n]]);export{i as _};
