@@ -9,10 +9,10 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
 use App\Http\Middleware\ActiveModule;
-use Illuminate\Auth\Middleware\Authenticate;
 use App\Http\Middleware\IsLoggedInTutor;
-use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RedirectIfTutor;
+use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -84,13 +84,13 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
             Route::post('/event/{event}/submit', [DashboardAdminController::class, 'eventExecuteSubmit'])->name('dashboard.admin.event.executeSubmit');
         });
 
-        Route::middleware(ActiveModule::class . ':randomGenerator', 'can:manage random generator')->group(function () {
+        Route::middleware(ActiveModule::class.':randomGenerator', 'can:manage random generator')->group(function () {
             Route::get('/random-generator', [DashboardAdminRandomGeneratorController::class, 'index'])->name('dashboard.admin.randomGenerator.index');
             Route::post('/random-generator', [DashboardAdminRandomGeneratorController::class, 'indexExecuteSubmit'])->name('dashboard.admin.randomGenerator.indexExecuteSubmit');
             Route::get('/random-generator/display', [DashboardAdminRandomGeneratorController::class, 'display'])->name('dashboard.admin.randomGenerator.display');
         });
 
-        Route::middleware(ActiveModule::class . ':scoreSystem', 'can:manage score system')->group(function () {
+        Route::middleware(ActiveModule::class.':scoreSystem', 'can:manage score system')->group(function () {
             Route::get('/score-system', [DashboardAdminScoreSystemController::class, 'index'])->name('dashboard.admin.scoreSystem.index');
             Route::post('/score-system', [DashboardAdminScoreSystemController::class, 'indexExecuteSubmit'])->name('dashboard.admin.scoreSystem.indexExecuteSubmit');
             Route::get('/score-system/display', [DashboardAdminScoreSystemController::class, 'display'])->name('dashboard.admin.scoreSystem.display');
@@ -128,11 +128,11 @@ Route::prefix('api')->middleware(Authenticate::class)->group(function () {
 
     Route::get('/registrations/{registration}', [ApiController::class, 'registrationsShow'])->name('api.registrations.show');
 
-    Route::middleware(ActiveModule::class . ':randomGenerator', 'can:manage random generator')->group(function () {
+    Route::middleware(ActiveModule::class.':randomGenerator', 'can:manage random generator')->group(function () {
         Route::get('/random-generator/state', [ApiController::class, 'randomGeneratorState'])->name('api.randomGeneratorState');
     });
 
-    Route::middleware(ActiveModule::class . ':scoreSystem', 'can:manage score system')->group(function () {
+    Route::middleware(ActiveModule::class.':scoreSystem', 'can:manage score system')->group(function () {
         Route::get('/score-system/state', [ApiController::class, 'scoreSystemState'])->name('api.scoreSystemState');
     });
 });

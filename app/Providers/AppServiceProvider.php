@@ -50,6 +50,5 @@ class AppServiceProvider extends ServiceProvider
             });
         }
 
-
     }
 }
