@@ -62,16 +62,14 @@ jobs:
           DB_DATABASE: database/database.sqlite
         run: |
           php artisan db:seed
-      - name: Execute tests (Unit and Feature tests) via PHPUnit
+      - name: Execute tests (Unit and Feature tests) via Pest
         env:
           APP_ENV: testing
           BCRYPT_ROUNDS: 4
-          CACHE_DRIVER: array
           DB_CONNECTION: sqlite
           DB_DATABASE: ":memory:"
           MAIL_MAILER: array
           QUEUE_CONNECTION: sync
-          SESSION_DRIVER: array
           TELESCOPE_ENABLED: false
         run: |
           php artisan test

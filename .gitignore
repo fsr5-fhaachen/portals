@@ -336,10 +336,6 @@ dist
 # Generated files
 .phpunit.cache
 
-# PHPUnit
-/app/phpunit.xml
-/phpunit.xml
-
 # Build data
 /build/
 
