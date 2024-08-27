@@ -85,6 +85,6 @@ const appEventType = useAppEventType(props.appEventType);
 const title = computed(() =>
   appEventType.titleArticle
     ? `${appEventType.titleArticle} ${appEventType.title}`
-    : appEventType.title
+    : appEventType.title,
 );
 </script>

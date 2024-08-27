@@ -42,7 +42,7 @@ class PageErstiwocheSeeder extends Seeder
                 $page->save();
             } else {
                 // create a new page
-                $page = new Page();
+                $page = new Page;
                 $page->title = $pageData['title'];
                 $page->slug = $pageData['slug'];
                 $page->sort_order = $pageData['sort_order'];

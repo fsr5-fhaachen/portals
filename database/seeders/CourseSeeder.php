@@ -72,7 +72,7 @@ class CourseSeeder extends Seeder
             }
 
             // create a new course
-            $newCourse = new Course();
+            $newCourse = new Course;
             $newCourse->name = $course['name'];
             $newCourse->abbreviation = $course['abbreviation'];
             $newCourse->icon = $course['icon'];

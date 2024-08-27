@@ -20,13 +20,16 @@ class Registration extends Model implements Auditable
     protected $guarded = [];
 
     /**
-     * The attributes that should be cast.
+     * Get the attributes that should be cast.
      *
-     * @var array
+     * @return array<string, string>
      */
-    protected $casts = [
-        'form_responses' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'form_responses' => 'array',
+        ];
+    }
 
     /**
      * Get event for the registration.

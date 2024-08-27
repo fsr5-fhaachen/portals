@@ -1,6 +1,6 @@
 export default (
   courses: App.Models.Course[],
-  showAll = false
+  showAll = false,
 ): Form.SelectOption[] => {
   const options: Form.SelectOption[] = [];
 

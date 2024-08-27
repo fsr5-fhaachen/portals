@@ -3,7 +3,7 @@
 # --------------------------------------------
 
 FROM ghcr.io/roadrunner-server/roadrunner:2023.3.2 AS roadrunner
-FROM node:16-alpine as node
+FROM node:20-alpine as node
 WORKDIR /app
 
 # install dependencies (only copy package lock here to use docker caching)
@@ -15,8 +15,8 @@ COPY ["vite.config.js", "./"]
 COPY ["./resources/js/", "./resources/js/"]
 COPY ["./resources/css/", "./resources/css/"]
 COPY ["./resources/views/", "./resources/view/"]
-COPY ["postcss.config.js", "./"]
-COPY ["tailwind.config.js", "./"]
+COPY ["postcss.config.cjs", "./"]
+COPY ["tailwind.config.cjs", "./"]
 COPY ["./database", "./database"]
 
 # build project
@@ -26,12 +26,12 @@ RUN npm run build
 #    STAGE 1.2: Setup PHP and Dependencies
 # --------------------------------------------
 
-FROM php:8.1-cli-alpine as php
+FROM php:8.3-cli-alpine as php
 LABEL maintainer="FSR5 FH-Aachen"
 WORKDIR /var/www/html
 
 # install php extensions
-RUN apk add libpq-dev
+RUN apk add libpq-dev linux-headers
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
 RUN docker-php-ext-install bcmath pdo_mysql pdo pdo_pgsql pgsql pcntl sockets
 RUN apk add --no-cache pcre-dev $PHPIZE_DEPS && pecl install redis && docker-php-ext-enable redis.so

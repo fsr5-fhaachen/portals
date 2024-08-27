@@ -59,7 +59,7 @@ class DashboardAdminController extends Controller
     {
         $user = User::find($request->user);
 
-        if (!$user) {
+        if (! $user) {
             Session::flash('error', 'Der angegebene User existiert nicht');
 
             return Redirect::back();
@@ -80,9 +80,9 @@ class DashboardAdminController extends Controller
 
         // check if all roles exists and not super admin if so add to roles array
         $roles = [];
-        if (array_key_exists('role_id', $validated) && !$user->hasRole('super admin')) {
+        if (array_key_exists('role_id', $validated) && ! $user->hasRole('super admin')) {
             foreach ($validated['role_id'] as $role) {
-                if (!Role::find($role)) {
+                if (! Role::find($role)) {
                     Session::flash('error', 'Die angegebene Rolle existiert nicht');
 
                     return Redirect::back();
@@ -117,7 +117,7 @@ class DashboardAdminController extends Controller
         $user->update($validated);
 
         // sync roles
-        if (!$user->hasRole('super admin')) {
+        if (! $user->hasRole('super admin')) {
             $user->syncRoles($roles);
         }
 
@@ -133,7 +133,7 @@ class DashboardAdminController extends Controller
     {
         $user = User::find($request->user);
 
-        if (!$user) {
+        if (! $user) {
             Session::flash('error', 'Der angegebene User existiert nicht');
 
             return Redirect::back();
@@ -169,7 +169,7 @@ class DashboardAdminController extends Controller
     public function registrations(IlluminateRequest $request): Response
     {
         $event = Event::with('groups')->with('slots')->find($request->event);
-        if (!$event) {
+        if (! $event) {
             return Inertia::render('Dashboard/404');
         }
         $event->registrations = $event->registrations()->with('user')->get();
@@ -188,7 +188,7 @@ class DashboardAdminController extends Controller
     public function event(IlluminateRequest $request): Response
     {
         $event = Event::find($request->event);
-        if (!$event) {
+        if (! $event) {
             return Inertia::render('Dashboard/404');
         }
         $event->slots = $event->slots()->with('registrations')->get();
@@ -209,7 +209,7 @@ class DashboardAdminController extends Controller
     public function eventSubmit(IlluminateRequest $request): Response
     {
         $event = Event::find($request->event);
-        if (!$event) {
+        if (! $event) {
             return Inertia::render('Dashboard/404');
         }
 
@@ -237,7 +237,7 @@ class DashboardAdminController extends Controller
     public function eventExecuteSubmit(IlluminateRequest $request): RedirectResponse
     {
         $event = Event::find($request->event);
-        if (!$event) {
+        if (! $event) {
             Session::flash('error', 'Das angegebene Event existiert nicht');
 
             return Redirect::back();
@@ -361,7 +361,7 @@ class DashboardAdminController extends Controller
     {
         // check if user with email not exists
         $user = User::where('email', Request::input('email'))->first();
-        if (!$user) {
+        if (! $user) {
             Session::flash('error', 'Der Account existiert nicht.');
 
             return Redirect::back();
@@ -369,7 +369,7 @@ class DashboardAdminController extends Controller
 
         // get event
         $event = Event::find(Request::input('event_id'));
-        if (!$event) {
+        if (! $event) {
             Session::flash('error', 'Das Event existiert nicht.');
 
             return Redirect::back();
@@ -404,7 +404,7 @@ class DashboardAdminController extends Controller
             $slot = Slot::find($userRegistration['slot_id']);
 
             // check if slot exists
-            if (!$slot) {
+            if (! $slot) {
                 Session::flash('error', 'Das Slot existiert nicht.');
 
                 return Redirect::back();
@@ -414,7 +414,7 @@ class DashboardAdminController extends Controller
             if ($slot->maximum_participants) {
                 $queuePosition = Registration::where('event_id', $event->id)->where('slot_id', $userRegistration['slot_id'])->max('queue_position');
 
-                if (!$queuePosition || $queuePosition == -1) {
+                if (! $queuePosition || $queuePosition == -1) {
                     $queuePosition = -1;
                 } else {
                     $queuePosition++;

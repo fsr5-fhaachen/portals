@@ -3,11 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Event;
-use App\Models\Group;
 use App\Models\Registration;
-use App\Models\Slot;
 use App\Models\User;
-use DateTime;
 use Illuminate\Database\Seeder;
 
 class FixEventsGerolsteinSeeder extends Seeder
@@ -40,7 +37,7 @@ class FixEventsGerolsteinSeeder extends Seeder
 
         // create registration
         foreach ($students as $student) {
-            $registration = new Registration();
+            $registration = new Registration;
             $registration->user_id = $student->id;
             $registration->event_id = $event->id;
             $registration->save();
