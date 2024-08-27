@@ -231,7 +231,7 @@ const editSubmitHandler = async () => {
     try {
       await uploadFileByPresignedUrl(
         formData.get("avatar"),
-        data.presignedUrl.url
+        data.presignedUrl.url,
       );
       avatarPath.value = data.path;
     } catch (error) {
