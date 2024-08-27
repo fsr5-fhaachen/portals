@@ -9,7 +9,7 @@
     <template
       v-if="
         user.rolesArray.some((role) =>
-          ['admin', 'esa', 'stage tutor', 'tutor'].includes(role)
+          ['admin', 'esa', 'stage tutor', 'tutor'].includes(role),
         )
       "
     >
@@ -85,7 +85,7 @@ const submitTutorPasswordFormHandler = async () => {
 
 const getUserRegistrationForEvent = (event: App.Models.Event) => {
   return registrations.find(
-    (registration) => registration.event_id === event.id
+    (registration) => registration.event_id === event.id,
   );
 };
 </script>

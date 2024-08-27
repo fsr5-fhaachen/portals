@@ -43,7 +43,7 @@ abstract class GroupDivision
     /**
      * Enables detailed logging for this division to a specified file path. Use before calling "assign()"
      *
-     * @param  string  $logFilePath Path where the logs will be written
+     * @param  string  $logFilePath  Path where the logs will be written
      * @return void
      */
     public function enableLogging(string $logFilePath = '')
@@ -57,7 +57,7 @@ abstract class GroupDivision
     /**
      * Logs current state of this division (meaning groups with info on their assigned registrations) if logging is enabled
      *
-     * @param  string  $statename Describes what state the division is in at the time of logging
+     * @param  string  $statename  Describes what state the division is in at the time of logging
      * @return void
      */
     public function logCurrState(string $statename)

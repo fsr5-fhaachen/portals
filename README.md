@@ -84,8 +84,12 @@ if you want to setup the devcontainer without installing tools to your host syst
 
 To generate the typescript types for the frontend, run:
 
+> [!WARNING]
+> The command output changed with update to Laravel 11.x.
+> Please verify the output before using.
+
 ```sh
-php artisan typescript:generate
+php artisan types:generate --namespace="App.Models" --outputDir="./resources/js/types/"
 ```
 
 ### linting

@@ -60,7 +60,7 @@ class DashboardAdminController extends Controller
     {
         $user = User::find($request->user);
 
-        if (!$user) {
+        if (! $user) {
             Session::flash('error', 'Der angegebene User existiert nicht');
 
             return Redirect::back();
@@ -70,7 +70,7 @@ class DashboardAdminController extends Controller
         $validated = Request::validate([
             'firstname' => ['required', 'string', 'min:2', 'max:255'],
             'lastname' => ['required', 'string', 'min:2', 'max:255'],
-            'email' => ['required', 'string', 'email', 'min:3', 'max:255', 'unique:users,email,' . $user->id],
+            'email' => ['required', 'string', 'email', 'min:3', 'max:255', 'unique:users,email,'.$user->id],
             'email_confirm' => ['required', 'string', 'email', 'min:3', 'max:255', 'same:email'],
             'course_id' => ['required', 'integer', 'exists:courses,id'],
             'role_id' => ['array'],
@@ -81,9 +81,9 @@ class DashboardAdminController extends Controller
 
         // check if all roles exists and not super admin if so add to roles array
         $roles = [];
-        if (array_key_exists('role_id', $validated) && !$user->hasRole('super admin')) {
+        if (array_key_exists('role_id', $validated) && ! $user->hasRole('super admin')) {
             foreach ($validated['role_id'] as $role) {
-                if (!Role::find($role)) {
+                if (! Role::find($role)) {
                     Session::flash('error', 'Die angegebene Rolle existiert nicht');
 
                     return Redirect::back();
@@ -115,7 +115,7 @@ class DashboardAdminController extends Controller
             $uuid = Str::uuid()->toString();
 
             // store file in s3 bucket
-            $path = Storage::disk('s3')->put('/avatars/' . $uuid, $avatarFile);
+            $path = Storage::disk('s3')->put('/avatars/'.$uuid, $avatarFile);
 
             // add avatar to validated array
             $validated['avatar'] = $path;
@@ -130,11 +130,11 @@ class DashboardAdminController extends Controller
         $user->update($validated);
 
         // sync roles
-        if (!$user->hasRole('super admin')) {
+        if (! $user->hasRole('super admin')) {
             $user->syncRoles($roles);
         }
 
-        Session::flash('success', 'Der Account <strong>' . $user->email . '</strong> wurde erfolgreich bearbeitet. Die Tabelle aktualisiert sich in wenigen Sekunden automatisch.');
+        Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich bearbeitet. Die Tabelle aktualisiert sich in wenigen Sekunden automatisch.');
 
         return Redirect::back();
     }
@@ -146,7 +146,7 @@ class DashboardAdminController extends Controller
     {
         $user = User::find($request->user);
 
-        if (!$user) {
+        if (! $user) {
             Session::flash('error', 'Der angegebene User existiert nicht');
 
             return Redirect::back();
@@ -171,7 +171,7 @@ class DashboardAdminController extends Controller
             Storage::disk('s3')->delete($userTemp->avatar);
         }
 
-        Session::flash('success', 'Der Account <strong>' . $userTemp->email . '</strong> wurde erfolgreich gelöscht. Die Tabelle aktualisiert sich in wenigen Sekunden automatisch.');
+        Session::flash('success', 'Der Account <strong>'.$userTemp->email.'</strong> wurde erfolgreich gelöscht. Die Tabelle aktualisiert sich in wenigen Sekunden automatisch.');
 
         return Redirect::back();
     }
@@ -182,7 +182,7 @@ class DashboardAdminController extends Controller
     public function registrations(IlluminateRequest $request): Response
     {
         $event = Event::with('groups')->with('slots')->find($request->event);
-        if (!$event) {
+        if (! $event) {
             return Inertia::render('Dashboard/404');
         }
         $event->registrations = $event->registrations()->with('user')->get();
@@ -201,7 +201,7 @@ class DashboardAdminController extends Controller
     public function event(IlluminateRequest $request): Response
     {
         $event = Event::find($request->event);
-        if (!$event) {
+        if (! $event) {
             return Inertia::render('Dashboard/404');
         }
         $event->slots = $event->slots()->with('registrations')->get();
@@ -222,7 +222,7 @@ class DashboardAdminController extends Controller
     public function eventSubmit(IlluminateRequest $request): Response
     {
         $event = Event::find($request->event);
-        if (!$event) {
+        if (! $event) {
             return Inertia::render('Dashboard/404');
         }
 
@@ -250,7 +250,7 @@ class DashboardAdminController extends Controller
     public function eventExecuteSubmit(IlluminateRequest $request): RedirectResponse
     {
         $event = Event::find($request->event);
-        if (!$event) {
+        if (! $event) {
             Session::flash('error', 'Das angegebene Event existiert nicht');
 
             return Redirect::back();
@@ -277,8 +277,8 @@ class DashboardAdminController extends Controller
 
                     if (count($groups) > 0) {
                         // get max_groups and max_participants for course by request
-                        $maxGroups = $request->input('max_groups_' . $course->id);
-                        $maxParticipants = $request->input('max_participants_' . $course->id);
+                        $maxGroups = $request->input('max_groups_'.$course->id);
+                        $maxParticipants = $request->input('max_participants_'.$course->id);
 
                         $groupCourseDivision = new GroupCourseDivision($event, $course, $event->consider_alcohol, (int) $maxGroups, (int) $maxParticipants);
                         $groupCourseDivision->assign();
@@ -367,7 +367,7 @@ class DashboardAdminController extends Controller
             $uuid = Str::uuid()->toString();
 
             // store file in s3 bucket
-            $path = Storage::disk('s3')->put('/avatars/' . $uuid, $avatarFile);
+            $path = Storage::disk('s3')->put('/avatars/'.$uuid, $avatarFile);
 
             // add avatar to validated array
             $validated['avatar'] = $path;
@@ -376,7 +376,7 @@ class DashboardAdminController extends Controller
         // create the user
         $user = User::create($validated);
 
-        Session::flash('success', 'Der Account <strong>' . $user->email . '</strong> wurde erfolgreich erstellt.');
+        Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich erstellt.');
 
         return Redirect::back();
     }
@@ -389,7 +389,7 @@ class DashboardAdminController extends Controller
     {
         // check if user with email not exists
         $user = User::where('email', Request::input('email'))->first();
-        if (!$user) {
+        if (! $user) {
             Session::flash('error', 'Der Account existiert nicht.');
 
             return Redirect::back();
@@ -397,7 +397,7 @@ class DashboardAdminController extends Controller
 
         // get event
         $event = Event::find(Request::input('event_id'));
-        if (!$event) {
+        if (! $event) {
             Session::flash('error', 'Das Event existiert nicht.');
 
             return Redirect::back();
@@ -432,7 +432,7 @@ class DashboardAdminController extends Controller
             $slot = Slot::find($userRegistration['slot_id']);
 
             // check if slot exists
-            if (!$slot) {
+            if (! $slot) {
                 Session::flash('error', 'Das Slot existiert nicht.');
 
                 return Redirect::back();
@@ -442,7 +442,7 @@ class DashboardAdminController extends Controller
             if ($slot->maximum_participants) {
                 $queuePosition = Registration::where('event_id', $event->id)->where('slot_id', $userRegistration['slot_id'])->max('queue_position');
 
-                if (!$queuePosition || $queuePosition == -1) {
+                if (! $queuePosition || $queuePosition == -1) {
                     $queuePosition = -1;
                 } else {
                     $queuePosition++;
@@ -469,7 +469,7 @@ class DashboardAdminController extends Controller
             'queue_position' => $queuePosition,
         ]);
 
-        Session::flash('success', 'Der Account <strong>' . $user->email . '</strong> wurde erfolgreich für das Event <strong>' . $event->name . '</strong>' . (array_key_exists('slot_id', $userRegistration) ? ' zu dem Slot <strong>' . $slot->name . '</strong>' : '') . ' zugewiesen.');
+        Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich für das Event <strong>'.$event->name.'</strong>'.(array_key_exists('slot_id', $userRegistration) ? ' zu dem Slot <strong>'.$slot->name.'</strong>' : '').' zugewiesen.');
 
         return Redirect::back();
     }

@@ -105,7 +105,7 @@ const selectedDebugUser = (userId: number) => {
 };
 
 const updateStateAndSubmit = (
-  newState: "setup" | "idle" | "running" | "stopped"
+  newState: "setup" | "idle" | "running" | "stopped",
 ) => {
   state.value.state = newState;
 

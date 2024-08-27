@@ -63,7 +63,7 @@ class DashboardAdminRandomGeneratorController extends Controller
         // check if a state exists or we need to create a new one
         $state = State::where('key', 'randomGenerator')->first();
         if (! $state) {
-            $state = new State();
+            $state = new State;
             $state->key = 'randomGenerator';
         }
 

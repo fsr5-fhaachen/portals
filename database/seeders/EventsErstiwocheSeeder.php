@@ -37,7 +37,7 @@ class EventsErstiwocheSeeder extends Seeder
         }
 
         // create a new event
-        $event = new Event();
+        $event = new Event;
         $event->name = 'Gruppenphase';
         $event->description = '<p>Während der Gruppenphase erhältst du von deinen Tutoren und Tutorinnen wichtige Informationen rund um das Studium. Außerdem ist die Gruppenphase dazu da, um direkt die anderen Erstis kennenzulernen und erste Freundschaften zu schließen.</p>';
         $event->type = 'group_phase';
@@ -74,7 +74,7 @@ class EventsErstiwocheSeeder extends Seeder
             'Die erfahrenen Enten',
         ];
         foreach ($groupNames as $groupName) {
-            $group = new Group();
+            $group = new Group;
             $group->name = $groupName;
             $group->event_id = $event->id;
             $group->save();
@@ -93,7 +93,7 @@ class EventsErstiwocheSeeder extends Seeder
         }
 
         // create a new event
-        $event = new Event();
+        $event = new Event;
         $event->name = 'Stadtrallye';
         $event->description = '<p>Die Stadtrallye ist ein Event, bei dem du in Gruppen die Stadt erkundest. Dabei gibt es verschiedene Aufgaben, die ihr lösen müsst. Dabei könnt ihr euch gegenseitig unterstützen und euch so besser kennenlernen.</p><p><strong>Treffpunkt: </strong> 9:00 Uhr Campus Eupener Straße</p>';
         $event->type = 'group_phase';
@@ -117,7 +117,7 @@ class EventsErstiwocheSeeder extends Seeder
 
         // save groups
         foreach ($groups as $groupData) {
-            $group = new Group();
+            $group = new Group;
             $group->name = $groupData['name'];
             $group->event_id = $event->id;
             $group->save();
@@ -136,7 +136,7 @@ class EventsErstiwocheSeeder extends Seeder
         }
 
         // create a new event
-        $event = new Event();
+        $event = new Event;
         $event->name = 'Hausführung';
         $event->description = '<p>Nachdem ihr nun die Stadt erkundet habt, ist es Zeit auch mal eure Hochschule von innen zu sehen. In der Hausführung erwarten euch sowohl Informationen über wichtige Stationen am Campus, die ihr während eurer Studienzeit sicherlich das ein oder andere Mal aufsuchen werdet, als auch die Möglichkeit, einige eurer Professoren und ein paar ihrer Projekte kennenzulernen. Durch die Aufteilung nach Studiengang ist es auch eine gute Möglichkeit, schonmal Bekanntschaft mit euren Sitznachbarn in den Vorlesungen zu machen.</p>';
         $event->type = 'group_phase';
@@ -188,7 +188,7 @@ class EventsErstiwocheSeeder extends Seeder
 
         // save groups
         foreach ($groups as $groupData) {
-            $group = new Group();
+            $group = new Group;
             $group->name = $groupData['name'];
             $group->event_id = $event->id;
             $group->course_id = $groupData['course_id'];
@@ -208,7 +208,7 @@ class EventsErstiwocheSeeder extends Seeder
         }
 
         // create a new event
-        $event = new Event();
+        $event = new Event;
         $event->name = 'Kneipentour';
         $event->description = '<p>Sei Teil unserer Kneipentour, um die besten Bars zu entdecken, unterhaltsame Spiele zu genießen und deine Kommilitonen kennenzulernen.</p>';
         $event->type = 'group_phase';
@@ -232,7 +232,7 @@ class EventsErstiwocheSeeder extends Seeder
 
         // save groups
         foreach ($groups as $groupData) {
-            $group = new Group();
+            $group = new Group;
             $group->name = $groupData['name'];
             $group->event_id = $event->id;
             $group->save();
@@ -251,7 +251,7 @@ class EventsErstiwocheSeeder extends Seeder
         }
 
         // create a new event
-        $event = new Event();
+        $event = new Event;
         $event->name = 'Katerbrunch';
         $event->description = '<p>Nachdem wir alle nach der Kneipentour am Mittwoch Abend etwas verkatert sind, gibt es doch nichts besseres als zusammen bei einem guten Fr&uuml;hst&uuml;ck auszukatern 😊 <br />Hierf&uuml;r bitte wir euch die 2&euro; Anmeldegeb&uuml;hr am Montag zwischen 14:15 und 15:00 Uhr oder Mittwoch zwischen 09:30 und 13:00 Uhr im FSR zu bezahlen, sonst k&ouml;nnt ihr leider nicht teilnehmen.</p>
         <p><strong>Wann:</strong> 28.09 ab 12:30 Uhr <br /><strong>Wo:</strong> FH, am D Geb&auml;ude <br /><strong>Was mitbringen:</strong> Tasse/ Becher und Teller ggf, Picknickdecke bei gutem Wetter.</p>
@@ -288,7 +288,7 @@ class EventsErstiwocheSeeder extends Seeder
     public function runSport(): void
     {
         // create a new event
-        $event = new Event();
+        $event = new Event;
         $event->name = 'Sport';
         $event->description = '<p>Auch sportliche Aktivitäten kommen bei uns nicht zu kurz. Für eine Anmeldegebühr von <strong>5€</strong> könnt ihr euch am Freitag auspowern.</p>
             <p>Bitte bezahlt die Anmeldegebühr am Montag oder Mittwoch im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben.</p>
@@ -333,7 +333,7 @@ class EventsErstiwocheSeeder extends Seeder
         ];
 
         foreach ($slots as $slotData) {
-            $slot = new Slot();
+            $slot = new Slot;
             $slot->name = $slotData['name'];
             $slot->event_id = $event->id;
             $slot->has_requirements = $slotData['has_requirements'];
@@ -355,7 +355,7 @@ class EventsErstiwocheSeeder extends Seeder
         }
 
         // create a new event
-        $event = new Event();
+        $event = new Event;
         $event->name = 'Kultur';
         $event->description = '<p>Die Stadt Aachen von einer etwas anderen Seite besser kennenlernen, Ziegen streicheln oder sich einfach den Bauch richtig voll schlagen?
             Auch das ist am Freitag in der Erstiwoche möglich.</p>
@@ -399,7 +399,7 @@ class EventsErstiwocheSeeder extends Seeder
         ];
 
         foreach ($slots as $slotData) {
-            $slot = new Slot();
+            $slot = new Slot;
             $slot->name = $slotData['name'];
             $slot->event_id = $event->id;
             $slot->has_requirements = $slotData['has_requirements'];

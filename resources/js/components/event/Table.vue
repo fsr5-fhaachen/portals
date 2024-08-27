@@ -22,7 +22,7 @@
                   <th
                     v-if="
                       user.permissionsArray.includes(
-                        'view hidden event details'
+                        'view hidden event details',
                       )
                     "
                     scope="col"
@@ -33,7 +33,7 @@
                   <th
                     v-if="
                       user.permissionsArray.includes(
-                        'view hidden event details'
+                        'view hidden event details',
                       )
                     "
                     scope="col"
@@ -86,7 +86,7 @@
                   <td
                     v-if="
                       user.permissionsArray.includes(
-                        'view hidden event details'
+                        'view hidden event details',
                       )
                     "
                     :class="[
@@ -101,7 +101,7 @@
                   <td
                     v-if="
                       user.permissionsArray.includes(
-                        'view hidden event details'
+                        'view hidden event details',
                       )
                     "
                     :class="[

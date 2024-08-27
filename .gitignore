@@ -5,6 +5,9 @@ students.csv
 # deployment
 deployOwn/
 
+# build files
+public/build/*
+
 # dev files
 laravel.sql
 .php-cs-fixer.cache

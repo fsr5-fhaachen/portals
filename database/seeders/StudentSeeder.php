@@ -51,7 +51,7 @@ class StudentSeeder extends Seeder
             }
 
             // create a new user
-            $user = new User();
+            $user = new User;
             $user->lastname = $student[0];
             $user->firstname = $student[1];
             $user->course_id = $courseByKey[$student[2]]->id;

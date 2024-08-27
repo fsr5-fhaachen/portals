@@ -144,7 +144,7 @@ const fetchRandomGeneratorState = async () => {
       data.state == "stopped"
     ) {
       const runningSound = document.getElementById(
-        "running-sound"
+        "running-sound",
       ) as HTMLAudioElement;
 
       if (runningSound) {

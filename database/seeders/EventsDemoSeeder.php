@@ -41,7 +41,7 @@ class EventsDemoSeeder extends Seeder
         $registration_to->modify('+7 days');
 
         // create a new event
-        $event = new Event();
+        $event = new Event;
         $event->name = 'group_phase';
         $event->description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae eros vitae nisl ultrices ult.';
         $event->type = 'group_phase';
@@ -64,7 +64,7 @@ class EventsDemoSeeder extends Seeder
 
         // save groups
         foreach ($groups as $groupData) {
-            $group = new Group();
+            $group = new Group;
             $group->name = $groupData['name'];
             $group->event_id = $event->id;
             $group->save();
@@ -100,7 +100,7 @@ class EventsDemoSeeder extends Seeder
         $registration_to->modify('+7 days');
 
         // create a new event
-        $event = new Event();
+        $event = new Event;
         $event->name = 'group_phase_by_course';
         $event->description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae eros vitae nisl ultrices ult.';
         $event->type = 'group_phase';
@@ -137,7 +137,7 @@ class EventsDemoSeeder extends Seeder
 
         // save groups
         foreach ($groups as $groupData) {
-            $group = new Group();
+            $group = new Group;
             $group->name = $groupData['name'];
             $group->course_id = $groupData['course_id'];
             $group->event_id = $event->id;
@@ -173,7 +173,7 @@ class EventsDemoSeeder extends Seeder
         $registration_to->modify('+7 days');
 
         // create a new event
-        $event = new Event();
+        $event = new Event;
         $event->name = 'event_registration';
         $event->description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae eros vitae nisl ultrices ult.';
         $event->type = 'event_registration';
@@ -232,7 +232,7 @@ class EventsDemoSeeder extends Seeder
         $registration_to->modify('+7 days');
 
         // create a new event
-        $event = new Event();
+        $event = new Event;
         $event->name = 'slot_booking';
         $event->description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae eros vitae nisl ultrices ult.';
         $event->type = 'slot_booking';
@@ -286,7 +286,7 @@ class EventsDemoSeeder extends Seeder
 
         // save slots
         foreach ($slots as $slotData) {
-            $slot = new Slot();
+            $slot = new Slot;
             $slot->name = $slotData['name'];
             $slot->event_id = $event->id;
             $slot->has_requirements = $slotData['has_requirements'];
