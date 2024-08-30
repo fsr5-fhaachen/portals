@@ -144,5 +144,5 @@ test('unequal div nondrinkers', function () {
     }
 
     // check average course balance (with allowed deviation due to priority for assigning non drinkers)
-    expect($balance / $checks)->toBeLessThanOrEqual(1);
+    expect($balance / $checks)->toBeLessThanOrEqual(0.5);
 });

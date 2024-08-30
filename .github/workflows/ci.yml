@@ -63,13 +63,5 @@ jobs:
         run: |
           php artisan db:seed
       - name: Execute tests (Unit and Feature tests) via Pest
-        env:
-          APP_ENV: testing
-          BCRYPT_ROUNDS: 4
-          DB_CONNECTION: sqlite
-          DB_DATABASE: ":memory:"
-          MAIL_MAILER: array
-          QUEUE_CONNECTION: sync
-          TELESCOPE_ENABLED: false
         run: |
-          php artisan test
+          ./vendor/bin/pest
