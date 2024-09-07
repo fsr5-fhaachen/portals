@@ -20,7 +20,7 @@
       </div>
       <div class="mt-6 px-2 text-sm text-gray-500">
         <AppLink
-          href="https://www.hetzner.com/"
+          href="https://www.hetzner.com/de?mtm_campaign=fh_aachen24_sponsoring&mtm_med/"
           theme="none"
           class="flex flex-col items-center justify-center gap-2"
         >
