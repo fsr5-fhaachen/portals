@@ -41,8 +41,8 @@ class EventsErstiwocheSeeder extends Seeder
         $event->name = 'Gruppenphase';
         $event->description = '<p>Während der Gruppenphase erhältst du von deinen Tutoren und Tutorinnen wichtige Informationen rund um das Studium. Außerdem ist die Gruppenphase dazu da, um direkt die anderen Erstis kennenzulernen und erste Freundschaften zu schließen.</p>';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2023-09-25 8:00:00');
-        $event->registration_to = new DateTime('2023-09-25 12:30:00');
+        $event->registration_from = new DateTime('2024-09-23 8:00:00');
+        $event->registration_to = new DateTime('2024-09-23 12:30:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 100;
@@ -97,8 +97,8 @@ class EventsErstiwocheSeeder extends Seeder
         $event->name = 'Stadtrallye';
         $event->description = '<p>Die Stadtrallye ist ein Event, bei dem du in Gruppen die Stadt erkundest. Dabei gibt es verschiedene Aufgaben, die ihr lösen müsst. Dabei könnt ihr euch gegenseitig unterstützen und euch so besser kennenlernen.</p><p><strong>Treffpunkt: </strong> 9:00 Uhr Campus Eupener Straße</p>';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2023-09-25 8:00:00');
-        $event->registration_to = new DateTime('2023-09-26 10:00:00');
+        $event->registration_from = new DateTime('2024-09-23 8:00:00');
+        $event->registration_to = new DateTime('2024-09-24 10:00:00');
         $event->has_requirements = false;
         $event->consider_alcohol = true;
         $event->sort_order = 110;
@@ -109,7 +109,7 @@ class EventsErstiwocheSeeder extends Seeder
         // create event groups
         $groups = [];
 
-        for ($i = 1; $i <= 14; $i++) {
+        for ($i = 1; $i <= 16; $i++) {
             $groups[] = [
                 'name' => "Gruppe $i",
             ];
@@ -140,8 +140,8 @@ class EventsErstiwocheSeeder extends Seeder
         $event->name = 'Hausführung';
         $event->description = '<p>Nachdem ihr nun die Stadt erkundet habt, ist es Zeit auch mal eure Hochschule von innen zu sehen. In der Hausführung erwarten euch sowohl Informationen über wichtige Stationen am Campus, die ihr während eurer Studienzeit sicherlich das ein oder andere Mal aufsuchen werdet, als auch die Möglichkeit, einige eurer Professoren und ein paar ihrer Projekte kennenzulernen. Durch die Aufteilung nach Studiengang ist es auch eine gute Möglichkeit, schonmal Bekanntschaft mit euren Sitznachbarn in den Vorlesungen zu machen.</p>';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2023-09-25 8:00:00');
-        $event->registration_to = new DateTime('2023-09-27 9:30:00');
+        $event->registration_from = new DateTime('2024-09-23 8:00:00');
+        $event->registration_to = new DateTime('2024-09-25 9:30:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 120;
@@ -161,13 +161,13 @@ class EventsErstiwocheSeeder extends Seeder
         // create event groups
         $groups = [];
 
-        for ($i = 1; $i <= 8; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
             $groups[] = [
                 'name' => "INF Hausführung $i",
                 'course_id' => $coursesByAbbreviation['INF']->id,
             ];
         }
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             $groups[] = [
                 'name' => "ET Hausführung $i",
                 'course_id' => $coursesByAbbreviation['ET']->id,
@@ -212,8 +212,8 @@ class EventsErstiwocheSeeder extends Seeder
         $event->name = 'Kneipentour';
         $event->description = '<p>Sei Teil unserer Kneipentour, um die besten Bars zu entdecken, unterhaltsame Spiele zu genießen und deine Kommilitonen kennenzulernen.</p>';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2023-09-26 8:00:00');
-        $event->registration_to = new DateTime('2023-09-27 17:00:00');
+        $event->registration_from = new DateTime('2024-09-23 8:00:00');
+        $event->registration_to = new DateTime('2024-09-25 17:00:00');
         $event->has_requirements = false;
         $event->consider_alcohol = true;
         $event->sort_order = 130;
@@ -224,7 +224,7 @@ class EventsErstiwocheSeeder extends Seeder
         // create event groups
         $groups = [];
 
-        for ($i = 1; $i <= 30; $i++) {
+        for ($i = 1; $i <= 24; $i++) {
             $groups[] = [
                 'name' => "Gruppe $i",
             ];
@@ -258,8 +258,8 @@ class EventsErstiwocheSeeder extends Seeder
         <p>Im Anschluss k&ouml;nnen wir noch gemeinsam in den Park gehen und den Tag bei ein paar runden Flunkyball ausklingen lassen 😊</p>
         <p>Wir freuen uns auf euch</p>';
         $event->type = 'event_registration';
-        $event->registration_from = new DateTime('2023-09-25 8:00:00');
-        $event->registration_to = new DateTime('2023-09-26 23:59:59');
+        $event->registration_from = new DateTime('2024-09-23 8:00:00');
+        $event->registration_to = new DateTime('2024-09-25 23:59:59');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 140;
@@ -299,8 +299,8 @@ class EventsErstiwocheSeeder extends Seeder
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
             <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
-        $event->registration_from = new DateTime('2023-09-25 08:00:00');
-        $event->registration_to = new DateTime('2023-09-26 23:59:00');
+        $event->registration_from = new DateTime('2024-09-25 08:00:00');
+        $event->registration_to = new DateTime('2024-09-26 23:59:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 150;
@@ -366,8 +366,8 @@ class EventsErstiwocheSeeder extends Seeder
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
             <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
-        $event->registration_from = new DateTime('2023-09-25 08:00:00');
-        $event->registration_to = new DateTime('2023-09-26 23:59:00');
+        $event->registration_from = new DateTime('2024-09-23 08:00:00');
+        $event->registration_to = new DateTime('2024-09-26 23:59:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 151;
