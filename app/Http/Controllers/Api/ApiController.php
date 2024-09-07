@@ -10,6 +10,8 @@ use App\Models\State;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ApiController extends Controller
 {
@@ -318,6 +320,29 @@ class ApiController extends Controller
 
         return response()->json([
             'users' => $users,
+        ]);
+    }
+
+    /**
+     * Generate a presigned URL for avatar upload
+     */
+    public function generatePresignedUrlForAvatarUpload(Request $request): JsonResponse
+    {
+        $request->validate([
+            'avatar' => 'required|image',
+        ]);
+
+        $uuid = Str::uuid()->toString();
+        $fileName = $uuid . '.' . $request->avatar->extension();
+        $path = 'avatars/' . $fileName;
+        $presignedUrl = Storage::disk('s3')->temporaryUploadUrl(
+            $path,
+            now()->addMinutes(5)
+        );
+
+        return response()->json([
+            'presignedUrl' => $presignedUrl,
+            'path' => $path,
         ]);
     }
 }

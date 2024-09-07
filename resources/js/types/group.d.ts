@@ -4,7 +4,6 @@ declare namespace App.Models {
     created_at: string /* Date */ | null;
     updated_at: string /* Date */ | null;
     event_id: number;
-    course_id: number | null;
     name: string;
     group_tutors?: GroupTutor[] | null;
     registrations?: Registration[] | null;
