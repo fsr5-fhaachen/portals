@@ -24,6 +24,8 @@ import {
   faSun,
   faMoon,
   faBriefcase,
+  faCodeBranch,
+  faMoneyBillWave,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
@@ -56,14 +58,16 @@ library.add(
   faBug,
   faSun,
   faMoon,
-  faBriefcase
+  faBriefcase,
+  faCodeBranch,
+  faMoneyBillWave,
 );
 
 createInertiaApp({
   resolve: (name) => {
     const page = resolvePageComponent(
       `./pages/${name}.vue`,
-      import.meta.glob("./pages/**/*.vue")
+      import.meta.glob("./pages/**/*.vue"),
     );
 
     page.then((module) => {

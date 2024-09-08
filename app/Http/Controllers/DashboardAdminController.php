@@ -10,6 +10,7 @@ use App\Models\Event;
 use App\Models\Registration;
 use App\Models\Slot;
 use App\Models\User;
+use App\Models\Group;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request as IlluminateRequest;
 use Illuminate\Support\Facades\Redirect;
@@ -59,7 +60,7 @@ class DashboardAdminController extends Controller
     {
         $user = User::find($request->user);
 
-        if (! $user) {
+        if (!$user) {
             Session::flash('error', 'Der angegebene User existiert nicht');
 
             return Redirect::back();
@@ -80,9 +81,9 @@ class DashboardAdminController extends Controller
 
         // check if all roles exists and not super admin if so add to roles array
         $roles = [];
-        if (array_key_exists('role_id', $validated) && ! $user->hasRole('super admin')) {
+        if (array_key_exists('role_id', $validated) && !$user->hasRole('super admin')) {
             foreach ($validated['role_id'] as $role) {
-                if (! Role::find($role)) {
+                if (!Role::find($role)) {
                     Session::flash('error', 'Die angegebene Rolle existiert nicht');
 
                     return Redirect::back();
@@ -117,7 +118,7 @@ class DashboardAdminController extends Controller
         $user->update($validated);
 
         // sync roles
-        if (! $user->hasRole('super admin')) {
+        if (!$user->hasRole('super admin')) {
             $user->syncRoles($roles);
         }
 
@@ -133,7 +134,7 @@ class DashboardAdminController extends Controller
     {
         $user = User::find($request->user);
 
-        if (! $user) {
+        if (!$user) {
             Session::flash('error', 'Der angegebene User existiert nicht');
 
             return Redirect::back();
@@ -169,7 +170,7 @@ class DashboardAdminController extends Controller
     public function registrations(IlluminateRequest $request): Response
     {
         $event = Event::with('groups')->with('slots')->find($request->event);
-        if (! $event) {
+        if (!$event) {
             return Inertia::render('Dashboard/404');
         }
         $event->registrations = $event->registrations()->with('user')->get();
@@ -188,7 +189,7 @@ class DashboardAdminController extends Controller
     public function event(IlluminateRequest $request): Response
     {
         $event = Event::find($request->event);
-        if (! $event) {
+        if (!$event) {
             return Inertia::render('Dashboard/404');
         }
         $event->slots = $event->slots()->with('registrations')->get();
@@ -209,7 +210,7 @@ class DashboardAdminController extends Controller
     public function eventSubmit(IlluminateRequest $request): Response
     {
         $event = Event::find($request->event);
-        if (! $event) {
+        if (!$event) {
             return Inertia::render('Dashboard/404');
         }
 
@@ -237,7 +238,7 @@ class DashboardAdminController extends Controller
     public function eventExecuteSubmit(IlluminateRequest $request): RedirectResponse
     {
         $event = Event::find($request->event);
-        if (! $event) {
+        if (!$event) {
             Session::flash('error', 'Das angegebene Event existiert nicht');
 
             return Redirect::back();
@@ -311,7 +312,7 @@ class DashboardAdminController extends Controller
         $courses = Course::orderBy('name')->get();
 
         // get all events with slots
-        $events = Event::with('slots')->get();
+        $events = Event::with('slots', 'groups')->get();
 
         return Inertia::render('Dashboard/Admin/Register', [
             'courses' => $courses,
@@ -361,7 +362,7 @@ class DashboardAdminController extends Controller
     {
         // check if user with email not exists
         $user = User::where('email', Request::input('email'))->first();
-        if (! $user) {
+        if (!$user) {
             Session::flash('error', 'Der Account existiert nicht.');
 
             return Redirect::back();
@@ -369,7 +370,7 @@ class DashboardAdminController extends Controller
 
         // get event
         $event = Event::find(Request::input('event_id'));
-        if (! $event) {
+        if (!$event) {
             Session::flash('error', 'Das Event existiert nicht.');
 
             return Redirect::back();
@@ -380,6 +381,7 @@ class DashboardAdminController extends Controller
             'email' => ['required', 'string', 'email', 'min:3', 'max:255', 'exists:users,email'],
             'event_id' => ['required', 'integer', 'exists:events,id'],
             'slot_id' => ['integer', 'exists:slots,id'],
+            'group_id' => ['integer', 'exists:groups,id']
         ]);
 
         // check for existing registration for this event and user
@@ -398,13 +400,26 @@ class DashboardAdminController extends Controller
         // set default queue position
         $queuePosition = null;
 
+        // check if group is set
+        if (array_key_exists('group_id', $userRegistration)) {
+          // get group
+          $group = Group::find($userRegistration['group_id']);
+
+          // check if group exists
+          if (! $group) {
+            Session::flash('error', 'Die Gruppe existiert nicht.');
+
+            return Redirect::back();
+          }
+        }
+
         // check if slot is set
         if (array_key_exists('slot_id', $userRegistration)) {
             // get slot
             $slot = Slot::find($userRegistration['slot_id']);
 
             // check if slot exists
-            if (! $slot) {
+            if (!$slot) {
                 Session::flash('error', 'Das Slot existiert nicht.');
 
                 return Redirect::back();
@@ -414,7 +429,7 @@ class DashboardAdminController extends Controller
             if ($slot->maximum_participants) {
                 $queuePosition = Registration::where('event_id', $event->id)->where('slot_id', $userRegistration['slot_id'])->max('queue_position');
 
-                if (! $queuePosition || $queuePosition == -1) {
+                if (!$queuePosition || $queuePosition == -1) {
                     $queuePosition = -1;
                 } else {
                     $queuePosition++;
@@ -437,11 +452,12 @@ class DashboardAdminController extends Controller
             'user_id' => $user->id,
             'event_id' => $userRegistration['event_id'],
             'slot_id' => (array_key_exists('slot_id', $userRegistration) ? $userRegistration['slot_id'] : null),
+            'group_id' => (array_key_exists('group_id', $userRegistration) ? $userRegistration['group_id'] : null),
             'drinks_alcohol' => (array_key_exists('drinks_alcohol', $userRegistration) ? $userRegistration['drinks_alcohol'] : null),
             'queue_position' => $queuePosition,
         ]);
 
-        Session::flash('success', 'Der Account <strong>' . $user->email . '</strong> wurde erfolgreich für das Event <strong>' . $event->name . '</strong>' . (array_key_exists('slot_id', $userRegistration) ? ' zu dem Slot <strong>' . $slot->name . '</strong>' : '') . ' zugewiesen.');
+        Session::flash('success', 'Der Account <strong>' . $user->email . '</strong> wurde erfolgreich für das Event <strong>' . $event->name . '</strong>' . (array_key_exists('slot_id', $userRegistration) ? ' zu dem Slot <strong>' . $slot->name . '</strong>' : '') . (array_key_exists('group_id', $userRegistration) ? ' zu der Gruppe <strong>' . $group->name . '</strong>' : '') . ' zugewiesen.');
 
         return Redirect::back();
     }
