@@ -293,7 +293,7 @@ class EventsErstiwocheSeeder extends Seeder
         $event->description = '<p>Auch sportliche Aktivitäten kommen bei uns nicht zu kurz. Für eine Anmeldegebühr von <strong>5€</strong> könnt ihr euch am Freitag auspowern.</p>
             <p>Bitte bezahlt die Anmeldegebühr am Montag oder Mittwoch im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben.</p>
             <p>Bitte beachtet auch die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
-            <p><strong>Fußball, Volleyball, Basketball:</strong> Die Anmeldegebühr bekommt ihr zurückerstattet, wenn es wegen schlechtem Wetter ausfällt.</p>
+            <p><strong>Hochschulsport:</strong>Bitte bringt 5€ an Pfand mit</p>
             <p><strong>Yoga:</strong> Bitte bringt eine eigene Yogamatte mit.</p>
             <p><strong>Allgemein:</strong> Anschließende Teilnahme an den Kulturprogrammpunkten ist nur die “Kebabtour” zeitlich möglich.</p>
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
@@ -311,19 +311,19 @@ class EventsErstiwocheSeeder extends Seeder
         // create event slots
         $slots = [
             [
-                'name' => 'Fußball, Volleyball, Basketball',
+                'name' => 'Hochschulsport',
                 'has_requirements' => true,
                 'maximum_participants' => 50,
             ],
             [
-                'name' => 'Yoga',
-                'has_requirements' => true,
-                'maximum_participants' => 30,
-            ],
-            [
                 'name' => 'Bouldern',
                 'has_requirements' => true,
-                'maximum_participants' => 30,
+                'maximum_participants' => 43,
+            ],
+            [
+                'name' => 'Yoga',
+                'has_requirements' => true,
+                'maximum_participants' => 50,
             ],
             [
                 'name' => 'Lasertag',
@@ -361,7 +361,7 @@ class EventsErstiwocheSeeder extends Seeder
             Auch das ist am Freitag in der Erstiwoche möglich.</p>
             <p>Bitte beachtet die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
             <p><strong>Stadtführung, Tierpark, Tour durch das Alemaniastadion:</strong> Für eine Anmeldegebühr von <strong>5€</strong> ist eine Teilnahme an diesen Angeboten möglich. Bitte bezahlt die Anmeldegebühr am Montag oder Mittwoch im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben. Die Anmeldegebühr fungiert als Pfand, welches ihr beim Erscheinen der Kulturangebote wieder zurückbekommt.</p>
-            <p><strong>Kebabtour:</strong> Ihr müsst eure Döner/ Falafel-Taschen selber zahlen.</p>
+            <p><strong>Kebabtour:</strong> Ihr müsst eure Döner / Falafel-Taschen selber zahlen.</p>
             <p><strong>Allgemein:</strong> Anschließende Teilnahme an weiteren Programmpunkten ist nur die “Kebabtour” zeitlich möglich.</p>
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
             <p>Wir freuen uns auf euch!</p>';
@@ -377,14 +377,9 @@ class EventsErstiwocheSeeder extends Seeder
         // create event slots
         $slots = [
             [
-                'name' => 'Tour durch das Alemaniastadion',
-                'has_requirements' => false,
-                'maximum_participants' => 200,
-            ],
-            [
                 'name' => 'Kebabtour',
                 'has_requirements' => false,
-                'maximum_participants' => null,
+                'maximum_participants' => 50,
             ],
             [
                 'name' => 'Stadtführung',
@@ -392,9 +387,9 @@ class EventsErstiwocheSeeder extends Seeder
                 'maximum_participants' => 20,
             ],
             [
-                'name' => 'Zoo',
+                'name' => 'Tierpark',
                 'has_requirements' => false,
-                'maximum_participants' => 15,
+                'maximum_participants' => 50,
             ],
         ];
 
