@@ -299,8 +299,8 @@ class EventsErstiwocheSeeder extends Seeder
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
             <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
-        $event->registration_from = new DateTime('2024-09-25 08:00:00');
-        $event->registration_to = new DateTime('2024-09-26 23:59:00');
+        $event->registration_from = new DateTime('2024-09-23 08:00:00');
+        $event->registration_to = new DateTime('2024-09-25 23:59:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 150;
@@ -367,7 +367,7 @@ class EventsErstiwocheSeeder extends Seeder
             <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
         $event->registration_from = new DateTime('2024-09-23 08:00:00');
-        $event->registration_to = new DateTime('2024-09-26 23:59:00');
+        $event->registration_to = new DateTime('2024-09-25 23:59:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 151;
