@@ -4,8 +4,10 @@
     <CardContainer>
       <CardBase v-if="group.telegram_group_link">
         <UiH2>Telegram Gruppe</UiH2>
-        Für diese Gruppe wurde eine Telegram Gruppe erstellt. Diesen Link sehen
-        nur Gruppenmitglieder und Tutoren.
+        <div class="text-gray-900 dark:text-gray-100">
+          Für diese Gruppe wurde eine Telegram Gruppe erstellt. Diesen Link
+          sehen nur Gruppenmitglieder und Tutoren.
+        </div>
         <AppLink :href="group.telegram_group_link">
           {{ group.telegram_group_link }}
         </AppLink>

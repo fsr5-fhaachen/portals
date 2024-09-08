@@ -12,17 +12,58 @@ use Illuminate\Database\Seeder;
 class EventsErstiwocheSeeder extends Seeder
 {
     /**
+     * Set path to the file with telegram data.
+     *
+     * @var string
+     */
+    private const TELEGRAM_CSV_PATH = __DIR__ . '/telegram.csv';
+
+    /**
      * Run the events seeds.
      */
     public function run(): void
     {
+        $telegram_links = $this->parseTelegramCsv();
         $this->runGruppenphase();
-        $this->runStadtrallye();
+        $this->runStadtrallye($telegram_links);
         $this->runHausfuehrung();
-        $this->runKneipentour();
+        $this->runKneipentour($telegram_links);
         $this->runKaterbrunch();
         $this->runKultur();
         $this->runSport();
+    }
+
+    /**
+     * Parse the 'telegram.csv' file.
+     */
+    private function parseTelegramCsv(): array
+    {
+        // check if the telegram file exists
+        if (! file_exists(self::TELEGRAM_CSV_PATH)) {
+            return [];
+        }
+
+        // read the telegram.csv file
+        $data = array_map('str_getcsv', file(self::TELEGRAM_CSV_PATH));
+
+        // remove the header row
+        array_shift($data);
+
+        // save telegram links
+        $telegram_links = [];
+
+        // loop through the data
+        foreach ($data as $row) {
+            $telegram_link = explode(';', $row[0]);
+
+            $event_name = $telegram_link[0];
+            $group_or_slot_name = $telegram_link[1];
+            $link = $telegram_link[2];
+
+            $telegram_links[$event_name][$group_or_slot_name] = $link;
+        }
+
+        return $telegram_links;
     }
 
     /**
@@ -84,7 +125,7 @@ class EventsErstiwocheSeeder extends Seeder
     /**
      * Run the "Stadtrallye" event seeds.
      */
-    public function runStadtrallye(): void
+    public function runStadtrallye(array $telegram_links): void
     {
         // check if event with name "Stadtrallye" exists
         $event = Event::where('name', 'Stadtrallye')->first();
@@ -112,6 +153,7 @@ class EventsErstiwocheSeeder extends Seeder
         for ($i = 1; $i <= 16; $i++) {
             $groups[] = [
                 'name' => "Gruppe $i",
+                'telegram_group_link' => $telegram_links[$event->name]["Gruppe $i"] ?? null,
             ];
         }
 
@@ -200,7 +242,7 @@ class EventsErstiwocheSeeder extends Seeder
     /**
      * Run the "Kneipentour" event seeds.
      */
-    public function runKneipentour(): void
+    public function runKneipentour(array $telegram_links): void
     {
         // check if event with name "Kneipentour" exists
         $event = Event::where('name', 'Kneipentour')->first();
@@ -228,6 +270,7 @@ class EventsErstiwocheSeeder extends Seeder
         for ($i = 1; $i <= 24; $i++) {
             $groups[] = [
                 'name' => "Gruppe $i",
+                'telegram_group_link' => $telegram_links[$event->name]["Gruppe $i"] ?? null,
             ];
         }
 
@@ -236,6 +279,7 @@ class EventsErstiwocheSeeder extends Seeder
             $group = new Group;
             $group->name = $groupData['name'];
             $group->event_id = $event->id;
+            $group->telegram_group_link = array_key_exists('telegram_group_link', $groupData) ? $groupData['telegram_group_link'] : null;
             $group->save();
         }
     }
@@ -330,7 +374,6 @@ class EventsErstiwocheSeeder extends Seeder
                 'name' => 'Lasertag',
                 'has_requirements' => true,
                 'maximum_participants' => 57,
-                'telegram_group_link' => "https://example.com/invalid-telegram-link"
             ],
         ];
 
@@ -340,7 +383,6 @@ class EventsErstiwocheSeeder extends Seeder
             $slot->event_id = $event->id;
             $slot->has_requirements = $slotData['has_requirements'];
             $slot->maximum_participants = $slotData['maximum_participants'];
-            $slot->telegram_group_link = array_key_exists('telegram_group_link', $slotData) ? $slotData['telegram_group_link'] : null;
 
             $slot->save();
         }
@@ -383,11 +425,6 @@ class EventsErstiwocheSeeder extends Seeder
                 'name' => 'Kebabtour',
                 'has_requirements' => false,
                 'maximum_participants' => 50,
-            ],
-            [
-                'name' => 'Stadtführung',
-                'has_requirements' => false,
-                'maximum_participants' => 20,
             ],
             [
                 'name' => 'Tierpark',
