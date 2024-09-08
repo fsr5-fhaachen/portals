@@ -2,8 +2,7 @@
 #       STAGE 1.1: Build JS with node
 # --------------------------------------------
 
-FROM ghcr.io/roadrunner-server/roadrunner:2023.3.2 AS roadrunner
-FROM node:20-alpine as node
+FROM node:20-alpine AS node
 WORKDIR /app
 
 # install dependencies (only copy package lock here to use docker caching)
@@ -26,9 +25,11 @@ RUN npm run build
 #    STAGE 1.2: Setup PHP and Dependencies
 # --------------------------------------------
 
-FROM php:8.3-cli-alpine as php
+FROM dunglas/frankenphp:1-php8.3-alpine AS frankenphp
 LABEL maintainer="FSR5 FH-Aachen"
-WORKDIR /var/www/html
+
+# use workfir from frankenphp container
+WORKDIR /app
 
 # install php extensions
 RUN apk add libpq-dev linux-headers
@@ -63,15 +64,14 @@ COPY --from=node ["/app/public/css/", "./public/css/"]
 RUN mkdir -p /app/storage/logs
 RUN chmod -R 777 ./storage
 
-# install and configure roadrunner
-COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
-RUN php artisan octane:install --server=roadrunner
+# install and configure frankenphp
+#COPY --from=frankenphp /usr/local/bin/frankenphp /usr/local/bin/frankenphp
 
-ENV ROADRUNNER_MAX_REQUESTS=512
-ENV ROADRUNNER_WORKERS="auto"
+ENV FRANKENPHP_MAX_REQUESTS=512
+ENV FRANKENPHP_WORKERS="auto"
 
 EXPOSE 8000
 
-CMD php artisan octane:start 2>&1 /dev/null || php artisan octane:start --server="roadrunner" --host="0.0.0.0" --workers=${ROADRUNNER_WORKERS} --max-requests=${ROADRUNNER_MAX_REQUESTS}
+CMD php artisan octane:frankenphp --host="0.0.0.0" --workers=${FRANKENPHP_WORKERS} --max-requests=${FRANKENPHP_MAX_REQUESTS}
 
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD php artisan octane:status --server="roadrunner"
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD php artisan octane:status
