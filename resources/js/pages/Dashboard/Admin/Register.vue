@@ -129,6 +129,15 @@
                 :options="selectFormSlotOptions"
               />
             </FormRow>
+            <FormRow v-if="getEventById(assignForm.event_id)?.groups?.length">
+              <FormKit
+                type="select"
+                name="group_id"
+                label="Gruppe"
+                placeholder="Wähle eine Gruppe aus"
+                :options="selectFormGroupOptions"
+              />
+            </FormRow>
 
             <template
               v-if="
@@ -212,6 +221,15 @@ const selectFormSlotOptions = computed(() => {
   }
 
   return useSelectFormSlotOptions(event.slots);
+});
+const selectFormGroupOptions = computed(() => {
+  const event = getEventById(assignForm.value.event_id);
+
+  if (!event || !event.groups) {
+    return [];
+  }
+
+  return useSelectFormGroupOptions(event.groups);
 });
 const randomPlaceholderPerson = usePlaceholderPerson();
 

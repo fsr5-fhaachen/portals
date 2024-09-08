@@ -12,6 +12,7 @@ declare global {
   const useS3: (typeof import("../composables/useS3"))["default"];
   const useSelectFormCourseOptions: (typeof import("../composables/useSelectFormCourseOptions"))["default"];
   const useSelectFormEventOptions: (typeof import("../composables/useSelectFormEventOptions"))["default"];
+  const useSelectFormGroupOptions: (typeof import("../composables/useSelectFormGroupOptions"))["default"];
   const useSelectFormRoleOptions: (typeof import("../composables/useSelectFormRoleOptions"))["default"];
   const useSelectFormSlotOptions: (typeof import("../composables/useSelectFormSlotOptions"))["default"];
 }
