@@ -120,6 +120,7 @@ class EventsErstiwocheSeeder extends Seeder
             $group = new Group;
             $group->name = $groupData['name'];
             $group->event_id = $event->id;
+            $group->telegram_group_link = array_key_exists('telegram_group_link', $groupData) ? $groupData['telegram_group_link'] : null;
             $group->save();
         }
     }
@@ -329,6 +330,7 @@ class EventsErstiwocheSeeder extends Seeder
                 'name' => 'Lasertag',
                 'has_requirements' => true,
                 'maximum_participants' => 57,
+                'telegram_group_link' => "https://example.com/invalid-telegram-link"
             ],
         ];
 
@@ -338,6 +340,7 @@ class EventsErstiwocheSeeder extends Seeder
             $slot->event_id = $event->id;
             $slot->has_requirements = $slotData['has_requirements'];
             $slot->maximum_participants = $slotData['maximum_participants'];
+            $slot->telegram_group_link = array_key_exists('telegram_group_link', $slotData) ? $slotData['telegram_group_link'] : null;
 
             $slot->save();
         }

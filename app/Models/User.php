@@ -62,11 +62,13 @@ class User extends Authenticatable implements Auditable
      */
     public function avatarUrl(): ?string
     {
-        // check if avatar is set
-        if ($this->avatar) {
-
-            // get immage from S3
-            return Storage::disk('s3')->url($this->avatar);
+        // check if avatar is set and file exists
+        if ($this->avatar && Storage::disk('s3')->exists($this->avatar)) {
+            // create presigned url
+            return Storage::disk('s3')->temporaryUrl(
+                $this->avatar,
+                now()->addMinutes(60)
+            );
         }
 
         return null;
