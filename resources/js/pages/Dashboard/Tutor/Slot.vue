@@ -2,6 +2,14 @@
   <LayoutDashboardContent>
     <template #title>{{ slot.name }}</template>
     <CardContainer>
+      <CardBase v-if="slot.telegram_group_link">
+        <UiH2>Telegram Gruppe</UiH2>
+        Für diesen Slot wurde eine Telegram Gruppe erstellt. Diesen Link sehen
+        nur Slotmitglieder und Tutoren.
+        <AppLink :href="slot.telegram_group_link">
+          {{ slot.telegram_group_link }}
+        </AppLink>
+      </CardBase>
       <CardBase>
         <FormKit type="form" id="assign" :actions="false" v-model="form">
           <FormContainer>

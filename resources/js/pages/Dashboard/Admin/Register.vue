@@ -210,6 +210,9 @@ const getEventById = (id: number) => {
 
 const selectFormCourseOptions = useSelectFormCourseOptions(courses, true);
 const selectFormEventOptions = useSelectFormEventOptions(events);
+
+const { uploadFileByPresignedUrl } = useS3();
+
 const selectFormSlotOptions = computed(() => {
   const event = getEventById(assignForm.value.event_id);
 
@@ -231,7 +234,47 @@ const selectFormGroupOptions = computed(() => {
 const randomPlaceholderPerson = usePlaceholderPerson();
 
 const registerSubmitHandler = async () => {
-  Inertia.post("/dashboard/admin/register", registerForm.value);
+  const avatarPath = ref<string | undefinded>();
+
+  if (registerForm.value.avatar?.length) {
+    const formData = new FormData();
+    formData.append("avatar", registerForm.value.avatar[0].file);
+
+    const response = await fetch(`/api/user/presigned-avatar-url`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "X-CSRF-TOKEN":
+          document
+            .querySelector("meta[name='csrf-token']")
+            ?.getAttribute("content") || "",
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      console.error("Failed to get presigned URL for avatar upload");
+      return;
+    }
+
+    const data = await response.json();
+
+    try {
+      await uploadFileByPresignedUrl(
+        formData.get("avatar"),
+        data.presignedUrl.url,
+      );
+      avatarPath.value = data.path;
+    } catch (error) {
+      console.error("Failed to upload avatar", error);
+      return;
+    }
+  }
+
+  Inertia.post("/dashboard/admin/register", {
+    ...registerForm.value,
+    avatar: avatarPath.value,
+  });
 };
 
 const assignSubmitHandler = async () => {

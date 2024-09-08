@@ -9,6 +9,7 @@ declare global {
   const useColorMode: (typeof import("../composables/useColorMode"))["default"];
   const usePagesAsNavigation: (typeof import("../composables/usePagesAsNavigation"))["default"];
   const usePlaceholderPerson: (typeof import("../composables/usePlaceholderPerson"))["default"];
+  const useS3: (typeof import("../composables/useS3"))["default"];
   const useSelectFormCourseOptions: (typeof import("../composables/useSelectFormCourseOptions"))["default"];
   const useSelectFormEventOptions: (typeof import("../composables/useSelectFormEventOptions"))["default"];
   const useSelectFormGroupOptions: (typeof import("../composables/useSelectFormGroupOptions"))["default"];

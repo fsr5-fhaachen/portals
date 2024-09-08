@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Role;
@@ -77,7 +76,7 @@ class DashboardAdminController extends Controller
             'role_id' => ['array'],
             'is_disabled' => ['boolean'],
             'remove_avatar' => ['boolean'],
-            'avatar.*.file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif'],
+            'avatar' => ['nullable', 'string'],
         ]);
 
         // check if all roles exists and not super admin if so add to roles array
@@ -108,18 +107,6 @@ class DashboardAdminController extends Controller
 
             // set avatar to null
             $validated['avatar'] = null;
-        } elseif (array_key_exists('avatar', $validated) && $validated['avatar'][0]) {
-            // get avatar file
-            $avatarFile = Request::file('avatar')[0]['file'];
-
-            // generate a uuid
-            $uuid = Str::uuid()->toString();
-
-            // store file in s3 bucket
-            $path = Storage::disk('s3')->put('/avatars/' . $uuid, $avatarFile);
-
-            // add avatar to validated array
-            $validated['avatar'] = $path;
         }
 
         // remove email_confirm, role_id and remove_avatar from array
@@ -353,26 +340,11 @@ class DashboardAdminController extends Controller
             'email' => ['required', 'string', 'email', 'min:3', 'max:255', 'unique:users'],
             'email_confirm' => ['required', 'string', 'email', 'min:3', 'max:255', 'same:email'],
             'course_id' => ['required', 'integer', 'exists:courses,id'],
-            'avatar.*.file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif'],
+            'avatar' => ['nullable', 'string'],
         ]);
 
         // remove email_confirm from array
         unset($validated['email_confirm']);
-
-        // check if avatar is set
-        if (array_key_exists('avatar', $validated) && $validated['avatar'][0]) {
-            // get avatar file
-            $avatarFile = Request::file('avatar')[0]['file'];
-
-            // generate a uuid
-            $uuid = Str::uuid()->toString();
-
-            // store file in s3 bucket
-            $path = Storage::disk('s3')->put('/avatars/' . $uuid, $avatarFile);
-
-            // add avatar to validated array
-            $validated['avatar'] = $path;
-        }
 
         // create the user
         $user = User::create($validated);
