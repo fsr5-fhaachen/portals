@@ -50,7 +50,7 @@ class Group extends Model implements Auditable
      */
     public function course(): BelongsToMany
     {
-        return $this->belongsToMany(Course::class);
+        return $this->belongsToMany(Course::class, 'course_group')->using(CourseGroup::class);
     }
 
     /**

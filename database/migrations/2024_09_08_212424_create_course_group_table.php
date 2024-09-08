@@ -31,9 +31,11 @@ return new class extends Migration
         });
 
         // third, remove the old column
-        Schema::table('groups', function (Blueprint $table) {
-            $table->dropColumn('course_id');
-        });
+        if (!Schema::hasColumn('groups', 'course_id')) {
+            Schema::table('groups', function (Blueprint $table) {
+                $table->dropColumn('course_id');
+            });
+        }
     }
 
     /**
