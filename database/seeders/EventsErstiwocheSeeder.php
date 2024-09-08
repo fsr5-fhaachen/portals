@@ -98,7 +98,7 @@ class EventsErstiwocheSeeder extends Seeder
         $event->description = '<p>Die Stadtrallye ist ein Event, bei dem du in Gruppen die Stadt erkundest. Dabei gibt es verschiedene Aufgaben, die ihr lösen müsst. Dabei könnt ihr euch gegenseitig unterstützen und euch so besser kennenlernen.</p><p><strong>Treffpunkt: </strong> 9:00 Uhr Campus Eupener Straße</p>';
         $event->type = 'group_phase';
         $event->registration_from = new DateTime('2023-09-25 8:00:00');
-        $event->registration_to = new DateTime('2023-09-26 10:00:00');
+        $event->registration_to = new DateTime('2024-09-26 10:00:00');
         $event->has_requirements = false;
         $event->consider_alcohol = true;
         $event->sort_order = 110;
@@ -107,19 +107,71 @@ class EventsErstiwocheSeeder extends Seeder
         $event->save();
 
         // create event groups
-        $groups = [];
-
-        for ($i = 1; $i <= 14; $i++) {
-            $groups[] = [
-                'name' => "Gruppe $i",
-            ];
-        }
+        $groups = [
+            [
+                'name' => "Gruppe 1",
+                'telegram_group_link' => "https://example.com/invalid-telegram-link"
+            ],
+            [
+                'name' => "Gruppe 2",
+                'telegram_group_link' => "https://example.com/invalid-telegram-link"
+            ],
+            [
+                'name' => "Gruppe 3",
+                'telegram_group_link' => "https://example.com/invalid-telegram-link"
+            ],
+            [
+                'name' => "Gruppe 4",
+                'telegram_group_link' => "https://example.com/invalid-telegram-link"
+            ],
+            [
+                'name' => "Gruppe 5",
+                'telegram_group_link' => "https://example.com/invalid-telegram-link"
+            ],
+            [
+                'name' => "Gruppe 6",
+                'telegram_group_link' => "https://example.com/invalid-telegram-link"
+            ],
+            [
+                'name' => "Gruppe 7",
+                'telegram_group_link' => "https://example.com/invalid-telegram-link"
+            ],
+            [
+                'name' => "Gruppe 8",
+                'telegram_group_link' => "https://example.com/invalid-telegram-link"
+            ],
+            [
+                'name' => "Gruppe 9",
+                'telegram_group_link' => "https://example.com/invalid-telegram-link"
+            ],
+            [
+                'name' => "Gruppe 10",
+                'telegram_group_link' => "https://example.com/invalid-telegram-link"
+            ],
+            [
+                'name' => "Gruppe 11",
+                'telegram_group_link' => "https://example.com/invalid-telegram-link"
+            ],
+            [
+                'name' => "Gruppe 12",
+                'telegram_group_link' => "https://example.com/invalid-telegram-link"
+            ],
+            [
+                'name' => "Gruppe 13",
+                'telegram_group_link' => "https://example.com/invalid-telegram-link"
+            ],
+            [
+                'name' => "Gruppe 14",
+                'telegram_group_link' => "https://example.com/invalid-telegram-link"
+            ]
+        ];
 
         // save groups
         foreach ($groups as $groupData) {
             $group = new Group;
             $group->name = $groupData['name'];
             $group->event_id = $event->id;
+            $group->telegram_group_link = array_key_exists('telegram_group_link', $groupData) ? $groupData['telegram_group_link'] : null;
             $group->save();
         }
     }
@@ -329,6 +381,7 @@ class EventsErstiwocheSeeder extends Seeder
                 'name' => 'Lasertag',
                 'has_requirements' => true,
                 'maximum_participants' => 57,
+                'telegram_group_link' => "https://example.com/invalid-telegram-link"
             ],
         ];
 
@@ -338,6 +391,7 @@ class EventsErstiwocheSeeder extends Seeder
             $slot->event_id = $event->id;
             $slot->has_requirements = $slotData['has_requirements'];
             $slot->maximum_participants = $slotData['maximum_participants'];
+            $slot->telegram_group_link = array_key_exists('telegram_group_link', $slotData) ? $slotData['telegram_group_link'] : null;
 
             $slot->save();
         }

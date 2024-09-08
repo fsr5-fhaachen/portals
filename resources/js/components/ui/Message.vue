@@ -43,7 +43,9 @@
           }"
           class="text-sm font-medium"
         >
-          <div v-html="message"></div>
+          <slot name="message">
+            <div v-html="message"></div>
+          </slot>
         </div>
       </div>
     </div>
@@ -56,7 +58,6 @@ import { computed } from "vue";
 const { type } = defineProps({
   message: {
     type: String,
-    required: true,
   },
   type: {
     type: String,
@@ -65,6 +66,10 @@ const { type } = defineProps({
       ["info", "success", "error", "warning"].includes(value),
   },
 });
+
+defineSlots<{
+  message?: HTMLElement;
+}>();
 
 const icon = computed(() => {
   if (type === "success") return "circle-check";
