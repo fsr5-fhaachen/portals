@@ -171,7 +171,7 @@ class EventsErstiwocheSeeder extends Seeder
             $group = new Group;
             $group->name = $groupData['name'];
             $group->event_id = $event->id;
-            $group->telegram_group_link = $groupData['telegram_group_link'];
+            $group->telegram_group_link = array_key_exists('telegram_group_link', $groupData) ? $groupData['telegram_group_link'] : null;
             $group->save();
         }
     }
@@ -391,7 +391,7 @@ class EventsErstiwocheSeeder extends Seeder
             $slot->event_id = $event->id;
             $slot->has_requirements = $slotData['has_requirements'];
             $slot->maximum_participants = $slotData['maximum_participants'];
-            $slot->telegram_group_link = in_array('telegram_group_link', $slotData) ? $slotData['telegram_group_link'] : null;
+            $slot->telegram_group_link = array_key_exists('telegram_group_link', $slotData) ? $slotData['telegram_group_link'] : null;
 
             $slot->save();
         }
