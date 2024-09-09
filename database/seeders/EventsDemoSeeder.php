@@ -59,6 +59,7 @@ class EventsDemoSeeder extends Seeder
         for ($i = 1; $i <= 14; $i++) {
             $groups[] = [
                 'name' => "Gruppe $i",
+                'telegram_group_link' => "https://example.com/invalid-telegram-link",
             ];
         }
 
@@ -67,6 +68,7 @@ class EventsDemoSeeder extends Seeder
             $group = new Group;
             $group->name = $groupData['name'];
             $group->event_id = $event->id;
+            $group->telegram_group_link = $groupData['telegram_group_link'];
             $group->save();
         }
 
@@ -251,21 +253,25 @@ class EventsDemoSeeder extends Seeder
                 'name' => 'Lorem ipsum',
                 'has_requirements' => true,
                 'maximum_participants' => 10,
+                'telegram_group_link' => "https://example.com/invalid-telegram-link",
             ],
             [
                 'name' => 'Dolor sit',
                 'has_requirements' => true,
                 'maximum_participants' => 20,
+                'telegram_group_link' => "https://example.com/invalid-telegram-link",
             ],
             [
                 'name' => 'Amet consectetur',
                 'has_requirements' => true,
                 'maximum_participants' => 30,
+                'telegram_group_link' => "https://example.com/invalid-telegram-link",
             ],
             [
                 'name' => 'Adipiscing elit',
                 'has_requirements' => true,
                 'maximum_participants' => 40,
+                'telegram_group_link' => "https://example.com/invalid-telegram-link",
             ],
             [
                 'name' => 'Sed vitae eros',
@@ -291,6 +297,7 @@ class EventsDemoSeeder extends Seeder
             $slot->event_id = $event->id;
             $slot->has_requirements = $slotData['has_requirements'];
             $slot->maximum_participants = $slotData['maximum_participants'];
+            $slot->telegram_group_link = in_array('telegram_group_link', $slotData) ? $slotData['telegram_group_link'] : null;
 
             $slot->save();
         }

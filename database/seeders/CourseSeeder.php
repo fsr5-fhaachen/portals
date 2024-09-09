@@ -19,47 +19,68 @@ class CourseSeeder extends Seeder
                 'icon' => 'fa-plug',
                 'classes' => 'bg-yellow-500 text-white dark:bg-yellow-600',
                 'show_on_registration' => true,
-            ], [
+            ],
+            [
                 'name' => 'B. Sc. Informatik',
                 'abbreviation' => 'INF',
                 'icon' => 'fa-laptop-code',
                 'classes' => 'bg-blue-700 text-white dark:bg-blue-800',
                 'show_on_registration' => true,
-            ], [
+            ],
+            [
                 'name' => 'B. Sc. Media and Communications for Digital Business',
                 'abbreviation' => 'MCD',
                 'icon' => 'fa-paint-brush',
                 'classes' => 'bg-violet-800 text-white dark:bg-violet-900',
                 'show_on_registration' => false,
-            ], [
+            ],
+            [
                 'name' => 'B. Sc. Digital Innovation & Business',
                 'abbreviation' => 'DIB',
                 'icon' => 'fa-briefcase',
                 'classes' => 'bg-fuchsia-700 text-white dark:bg-fuchsia-800',
                 'show_on_registration' => true,
-            ], [
+            ],
+            [
                 'name' => 'B. Sc. Wirtschaftsinformatik',
                 'abbreviation' => 'WI',
                 'icon' => 'fa-sack-dollar',
                 'classes' => 'bg-green-800 text-white dark:bg-green-900',
                 'show_on_registration' => true,
-            ], [
+            ],
+            [
                 'name' => 'B. Eng. Smart Building Engineering',
                 'abbreviation' => 'SBE',
                 'icon' => 'fa-house-signal',
                 'classes' => 'bg-stone-800 text-white dark:bg-stone-900',
                 'show_on_registration' => false,
-            ], [
+            ],
+            [
                 'name' => 'M. Eng. Elektrotechnik',
                 'abbreviation' => 'ET-Master',
                 'icon' => 'fa-person-through-window',
-                'classes' => 'bg-red-500 text-white dark:bg-red-600',
+                'classes' => 'bg-orange-400 text-white dark:bg-orange-500',
                 'show_on_registration' => true,
-            ], [
+            ],
+            [
                 'name' => 'M. Eng. Information Systems Engineering',
                 'abbreviation' => 'ISE-Master',
                 'icon' => 'fa-bug',
                 'classes' => 'bg-cyan-700 text-white dark:bg-cyan-800',
+                'show_on_registration' => false,
+            ],
+            [
+                'name' => 'M. Sc. Informatik',
+                'abbreviation' => 'INF-Master',
+                'icon' => 'fa-code-branch',
+                'classes' => 'bg-blue-300 text-white dark:bg-blue-400',
+                'show_on_registration' => true,
+            ],
+            [
+                'name' => 'M. Sc. Information Systems',
+                'abbreviation' => 'IS-Master',
+                'icon' => 'fa-money-bill-wave',
+                'classes' => 'bg-red-500 text-white dark:bg-red-600',
                 'show_on_registration' => true,
             ],
         ];

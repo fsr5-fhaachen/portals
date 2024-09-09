@@ -393,3 +393,6 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/node,phpunit,laravel,visualstudiocode,jetbrains+all,windows,macos,linux,gitrr
 .rr.yaml
 rr
+/caddy
+frankenphp
+frankenphp-worker.php
