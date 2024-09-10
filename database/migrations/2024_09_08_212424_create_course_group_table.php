@@ -46,14 +46,20 @@ return new class extends Migration
     {
         // restore old column
         Schema::table('groups', function (Blueprint $table) {
-            $table->foreignId('course_id')->nullable(false)->constrained()->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('course_id')->nullable(true)->constrained()->onUpdate('cascade')->onDelete('cascade');
         });
 
         // migrate data back
         DB::table('course_group')->orderBy('id')->each(function ($groupCourse) {
-            DB::table('groups')->where('id', $groupCourse->group_id)->update([
-                'course_id' => $groupCourse->course_id,
-            ]);
+            // Check if the group already has a course_id assigned
+            $group = DB::table('groups')->where('id', $groupCourse->group_id)->first();
+
+            if (is_null($group->course_id)) {
+                // Update the group with the course_id only if it hasn't been assigned yet
+                DB::table('groups')->where('id', $groupCourse->group_id)->update([
+                    'course_id' => $groupCourse->course_id,
+                ]);
+            }
         });
 
         // delete new table
