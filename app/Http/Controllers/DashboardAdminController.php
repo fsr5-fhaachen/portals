@@ -6,6 +6,7 @@ use App\Helpers\GroupBalancedDivision;
 use App\Helpers\GroupCourseDivision;
 use App\Helpers\SlotAssignment;
 use App\Models\Course;
+use App\Models\CourseGroup;
 use App\Models\Event;
 use App\Models\Registration;
 use App\Models\Slot;
@@ -194,6 +195,9 @@ class DashboardAdminController extends Controller
         }
         $event->slots = $event->slots()->with('registrations')->get();
         $event->groups = $event->groups()->with('registrations')->get();
+        foreach ($event->groups as $group) {
+            $group->courses = $group->courses()->get();
+        }
         $event->registrations = $event->registrations()->with('user')->get();
 
         $courses = Course::all();
@@ -214,23 +218,13 @@ class DashboardAdminController extends Controller
             return Inertia::render('Dashboard/404');
         }
 
-        $courses = Course::all();
-
         // check if any groups has a course
         $hasCourse = false;
-        /*
-        foreach ($event->groups as $group) {
-            if ($group->course_id) {
-                $hasCourse = true;
-                break;
-            }
-        }
-        */
         if ($event->groups->first()->courses()->exists()) $hasCourse = true;
 
         return Inertia::render('Dashboard/Admin/Submit', [
             'event' => $event,
-            'courses' => $courses,
+            'course_collections' => $this->getCourseCollections($event),
             'hasCourse' => $hasCourse,
         ]);
     }
@@ -266,23 +260,16 @@ class DashboardAdminController extends Controller
 
                 //$courses = Course::all();
 
-                // TODO: Replace with smarter, dynamic way to retrieve the collection of courses
-                // collect similar courses
-                $courseGroupings = [
-                    ['ET', 'ET-Master'],
-                    ['INF', 'ISE-Master', 'INF-Master', 'IS-Master'],
-                    ['WI', 'SBE'],
-                    ['MCD', 'DIB']
-                ];
+                $courseModelCollections = [];
 
-                $courseCollection = [];
-                foreach ($courseGroupings as $grouping){
-                    $collection = Course::whereIn('abbreviation', $grouping)->get();
-                    $courseCollection[] = $collection;
+                $courseCollections = $this->getCourseCollections($event);
+                foreach ($courseCollections as $courseCollection) {
+                    $collection = Course::whereIn('abbreviation', $courseCollection)->get();
+                    $courseModelCollections[] = $collection;
                 }
 
                 //foreach ($courses as $course) {
-                foreach ($courseCollection as $collection){
+                foreach ($courseModelCollections as $index => $collection) {
                     // check if groups is
                     //$groups = $event->groups()->where('course_id', $course->id)->get();
 
@@ -296,8 +283,8 @@ class DashboardAdminController extends Controller
                         $groupCourseDivision->assign();
                     }
                     */
-                    $maxGroups = $request->input('max_groups_' . $collection[0]->id);
-                    $maxParticipants = $request->input('max_participants_' . $collection[0]->id);
+                    $maxGroups = $request->input('max_groups_' . $index);
+                    $maxParticipants = $request->input('max_participants_' . $index);
                     $groupCourseDivision = new GroupCourseDivision($event, $collection, $event->consider_alcohol, (int) $maxGroups, (int) $maxParticipants);
                     $groupCourseDivision->assign();
                 }
@@ -431,15 +418,15 @@ class DashboardAdminController extends Controller
 
         // check if group is set
         if (array_key_exists('group_id', $userRegistration)) {
-          // get group
-          $group = Group::find($userRegistration['group_id']);
+            // get group
+            $group = Group::find($userRegistration['group_id']);
 
-          // check if group exists
-          if (! $group) {
-            Session::flash('error', 'Die Gruppe existiert nicht.');
+            // check if group exists
+            if (! $group) {
+                Session::flash('error', 'Die Gruppe existiert nicht.');
 
-            return Redirect::back();
-          }
+                return Redirect::back();
+            }
         }
 
         // check if slot is set
@@ -489,5 +476,28 @@ class DashboardAdminController extends Controller
         Session::flash('success', 'Der Account <strong>' . $user->email . '</strong> wurde erfolgreich für das Event <strong>' . $event->name . '</strong>' . (array_key_exists('slot_id', $userRegistration) ? ' zu dem Slot <strong>' . $slot->name . '</strong>' : '') . (array_key_exists('group_id', $userRegistration) ? ' zu der Gruppe <strong>' . $group->name . '</strong>' : '') . ' zugewiesen.');
 
         return Redirect::back();
+    }
+
+    private function getCourseCollections(Event $event): array
+    {
+        // save all course collections that occur in all groups of this event
+        $courseCollections = [];
+
+        // loop through all groups
+        foreach ($event->groups()->orderBy('id')->get() as $group) {
+            // check if group has a course
+            if ($group->courses()->exists()) {
+                $courseCollection = [];
+                foreach ($group->courses()->orderBy('id')->get() as $course) {
+                    $courseCollection[] = $course->abbreviation;
+                }
+                // add course abbreviations to collection only if not already in collection
+                if (!in_array($courseCollection, $courseCollections)) {
+                    $courseCollections[] = $courseCollection;
+                }
+            }
+        }
+
+        return $courseCollections;
     }
 }

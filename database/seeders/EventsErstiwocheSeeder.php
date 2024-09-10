@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Course;
+use App\Models\CourseGroup;
 use App\Models\Event;
 use App\Models\Group;
 use App\Models\Slot;
@@ -216,25 +217,39 @@ class EventsErstiwocheSeeder extends Seeder
         for ($i = 1; $i <= 8; $i++) {
             $groups[] = [
                 'name' => "INF Hausführung $i",
-                'course_id' => $coursesByAbbreviation['INF']->id,
+                'course_ids' => [
+                    $coursesByAbbreviation['INF']->id,
+                    $coursesByAbbreviation['INF-Master']->id,
+                    $coursesByAbbreviation['ISE-Master']->id,
+                    $coursesByAbbreviation['SBE']->id
+                ],
             ];
         }
         for ($i = 1; $i <= 3; $i++) {
             $groups[] = [
                 'name' => "ET Hausführung $i",
-                'course_id' => $coursesByAbbreviation['ET']->id,
+                'course_ids' => [
+                    $coursesByAbbreviation['ET']->id,
+                    $coursesByAbbreviation['ET-Master']->id
+                ],
             ];
         }
         for ($i = 1; $i <= 3; $i++) {
             $groups[] = [
                 'name' => "DIB Hausführung $i",
-                'course_id' => $coursesByAbbreviation['DIB']->id,
+                'course_ids' => [
+                    $coursesByAbbreviation['DIB']->id,
+                    $coursesByAbbreviation['MCD']->id
+                ],
             ];
         }
         for ($i = 1; $i <= 3; $i++) {
             $groups[] = [
                 'name' => "WI Hausführung $i",
-                'course_id' => $coursesByAbbreviation['WI']->id,
+                'course_ids' => [
+                    $coursesByAbbreviation['WI']->id,
+                    $coursesByAbbreviation['IS-Master']->id
+                ],
             ];
         }
 
@@ -243,8 +258,15 @@ class EventsErstiwocheSeeder extends Seeder
             $group = new Group;
             $group->name = $groupData['name'];
             $group->event_id = $event->id;
-            $group->course_id = $groupData['course_id'];
             $group->save();
+
+            // save course_group collections
+            foreach ($group->course_ids as $course_id) {
+                $course_group = new CourseGroup;
+                $course_group->course_id = $course_id;
+                $course_group->group_id = $group->id;
+                $course_group->save();
+            }
         }
     }
 

@@ -13,26 +13,33 @@
         <FormContainer>
           <template v-if="event.type == 'group_phase'">
             <template v-if="hasCourse">
-              <template v-for="(course, index) in courses" :key="course.id">
+              <template
+                v-for="(course_collection, index) in course_collections"
+                :key="index"
+              >
                 <FormRow>
-                  <UiH2>{{ course.name }}</UiH2>
+                  <UiH2>
+                    <template v-for="course in course_collection.join(' | ')">
+                      {{ course }}
+                    </template>
+                  </UiH2>
                 </FormRow>
                 <FormRow>
                   <FormKit
                     type="number"
-                    :name="'max_groups_' + course.id"
+                    :name="'max_groups_' + index"
                     label="Maximale Gruppenanzahl"
                     placeholder="Leer lassen für die voreingestellte Anzahl"
                   />
                   <FormKit
                     type="number"
-                    :name="'max_participants_' + course.id"
+                    :name="'max_participants_' + index"
                     label="Maximale Teilnehmeranzahl pro Gruppe"
                     placeholder="Leer lassen für keine Begrenzung"
                   />
                 </FormRow>
 
-                <FormDivider v-if="index < courses.length - 1" />
+                <FormDivider v-if="index < course_collections.length - 1" />
               </template>
             </template>
 
@@ -66,8 +73,8 @@ import { ref, PropType } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 
 const { event } = defineProps({
-  courses: {
-    type: Object as PropType<App.Models.Course[]>,
+  course_collections: {
+    type: Object,
     required: true,
   },
   event: {
