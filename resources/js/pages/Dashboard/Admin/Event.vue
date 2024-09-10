@@ -42,7 +42,6 @@
 
     <GroupTable
       v-if="event.type == 'group_phase' && event.groups"
-      :courses="courses"
       :event="event"
       :groups="event.groups"
     />
