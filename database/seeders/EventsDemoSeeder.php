@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Course;
+use App\Models\CourseGroup;
 use App\Models\Event;
 use App\Models\Group;
 use App\Models\Registration;
@@ -128,6 +129,7 @@ class EventsDemoSeeder extends Seeder
         $groups = [];
 
         // create groups for each course
+        /*
         foreach ($coursesByAbbreviation as $abbreviation => $course) {
             for ($i = 1; $i <= rand(3, 10); $i++) {
                 $groups[] = [
@@ -136,14 +138,42 @@ class EventsDemoSeeder extends Seeder
                 ];
             }
         }
+        */
+
+        // collect similar courses
+        $coursesCollection = [
+            ['ET', 'ET-Master'],
+            ['INF', 'ISE-Master', 'INF-Master', 'IS-Master'],
+            ['WI', 'SBE'],
+            ['MCD', 'DIB']
+        ];
+
+        // create groups for each course collection
+        $index = 0;
+        foreach ($coursesCollection as $collection) {
+            for ($i = 1; $i <= rand(3, 10); $i++) {
+                $groups[] = [
+                    'name' => "$collection[0]-Gruppe $i",
+                    'collection' => $index
+                ];
+            }
+            $index++;
+        }
 
         // save groups
         foreach ($groups as $groupData) {
             $group = new Group;
             $group->name = $groupData['name'];
-            $group->course_id = $groupData['course_id'];
+            //$group->course_id = $groupData['course_id'];
             $group->event_id = $event->id;
             $group->save();
+
+            foreach ( $coursesCollection[$groupData['collection']] as $course){
+                $coursegroup = new CourseGroup;
+                $coursegroup->course_id = $coursesByAbbreviation[$course]->id;
+                $coursegroup->group_id = $group->id;
+                $coursegroup->save();
+            }
         }
 
         // get all users without roles

@@ -4,17 +4,33 @@ namespace App\Helpers;
 
 use App\Models\Course;
 use App\Models\Event;
+use Illuminate\Database\Eloquent\Collection;
 
 class GroupCourseDivision extends GroupDivision
 {
-    protected Course $course;
+    protected Collection $courses;
 
-    public function __construct(Event $event, Course $course, bool $assignByAlc, int $maxGroups = 0, int $maxGroupSize = 0, int $minNonDrinkers = 3)
+    public function __construct(Event $event, Collection $courses, bool $assignByAlc, int $maxGroups = 0, int $maxGroupSize = 0, int $minNonDrinkers = 3)
     {
         parent::__construct($event, $assignByAlc, $maxGroups, $maxGroupSize, $minNonDrinkers);
-        $this->course = $course;
-        $this->registrations = $event->registrations()->with('user')->whereRelation('user', 'course_id', '=', $course->id)->get();
-        $this->groups = $this->groups->where('course_id', '=', $course->id);
+        $this->courses = $courses;
+
+        //$this->registrations = $event->registrations()->with('user')->whereRelation('user', 'course_id', '=', $course->id)->get();
+        $courseIds = $courses->pluck('id')->toArray();
+        $this->registrations = $event->registrations()
+            ->with('user')
+            ->whereHas('user', function ($query) use ($courseIds) {
+                $query->whereIn('course_id', $courseIds);
+            })
+            ->get();
+
+        //$this->groups = $this->groups->where('course_id', '=', $course->id);
+        $this->groups = $this->event->groups()
+            ->whereHas('courses', function ($query) use ($courseIds) {
+            $query->whereIn('courses.id', $courseIds);
+        })
+        ->get();
+
         if ($maxGroups) {
             $this->groups = $this->groups->take($maxGroups);
         }
