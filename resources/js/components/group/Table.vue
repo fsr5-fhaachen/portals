@@ -55,11 +55,11 @@
                       'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
                     ]"
                   >
-                    <template
-                      v-if="group.course_id && getCourseById(group.course_id)"
-                    >
-                      {{ getCourseById(group.course_id)?.name }}
-                    </template>
+                    {{
+                      group.courses
+                        .map((course) => course.abbreviation)
+                        .join(" | ")
+                    }}
                   </td>
 
                   <td
@@ -98,24 +98,15 @@
 <script setup lang="ts">
 import { computed, ref, PropType, onBeforeUnmount } from "vue";
 
-const { courses, groups } = defineProps({
+const { groups } = defineProps({
   groups: {
     type: Object as PropType<App.Models.Group[]>,
     required: true,
   },
-  courses: {
-    type: Array as PropType<App.Models.Course[]>,
-    required: false,
-  },
 });
 
-const getCourseById = (id: number) => {
-  if (!courses) return null;
-  return courses.find((course) => course.id === id);
-};
 const showCourses = computed(() => {
-  if (!courses) return false;
-  return groups.some((group) => group.course_id);
+  return groups.some((group) => group.courses.length > 0);
 });
 
 const registrations = ref({});

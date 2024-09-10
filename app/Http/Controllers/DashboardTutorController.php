@@ -36,6 +36,9 @@ class DashboardTutorController extends Controller
         }
         $event->slots = $event->slots()->with('registrations')->get();
         $event->groups = $event->groups()->with('registrations')->get();
+        foreach ($event->groups as $group) {
+            $group->courses = $group->courses()->get();
+        }
         $event->registrations = $event->registrations()->with('user')->get();
 
         $courses = Course::all();
