@@ -218,12 +218,15 @@ class DashboardAdminController extends Controller
 
         // check if any groups has a course
         $hasCourse = false;
+        /*
         foreach ($event->groups as $group) {
             if ($group->course_id) {
                 $hasCourse = true;
                 break;
             }
         }
+        */
+        if ($event->groups->first()->courses()->exists()) $hasCourse = true;
 
         return Inertia::render('Dashboard/Admin/Submit', [
             'event' => $event,
@@ -248,21 +251,42 @@ class DashboardAdminController extends Controller
         if ($event->type == 'group_phase') {
             // check if any groups has a course
             $hasCourse = false;
+            /*
             foreach ($event->groups as $group) {
                 if ($group->course_id) {
                     $hasCourse = true;
                     break;
                 }
             }
+            */
+            if ($event->groups->first()->courses()->exists()) $hasCourse = true;
 
             // check which division method to use
             if ($hasCourse) {
-                $courses = Course::all();
 
-                foreach ($courses as $course) {
+                //$courses = Course::all();
+
+                // TODO: Replace with smarter, dynamic way to retrieve the collection of courses
+                // collect similar courses
+                $courseGroupings = [
+                    ['ET', 'ET-Master'],
+                    ['INF', 'ISE-Master', 'INF-Master', 'IS-Master'],
+                    ['WI', 'SBE'],
+                    ['MCD', 'DIB']
+                ];
+
+                $courseCollection = [];
+                foreach ($courseGroupings as $grouping){
+                    $collection = Course::whereIn('abbreviation', $grouping)->get();
+                    $courseCollection[] = $collection;
+                }
+
+                //foreach ($courses as $course) {
+                foreach ($courseCollection as $collection){
                     // check if groups is
-                    $groups = $event->groups()->where('course_id', $course->id)->get();
+                    //$groups = $event->groups()->where('course_id', $course->id)->get();
 
+                    /*
                     if (count($groups) > 0) {
                         // get max_groups and max_participants for course by request
                         $maxGroups = $request->input('max_groups_' . $course->id);
@@ -271,6 +295,11 @@ class DashboardAdminController extends Controller
                         $groupCourseDivision = new GroupCourseDivision($event, $course, $event->consider_alcohol, (int) $maxGroups, (int) $maxParticipants);
                         $groupCourseDivision->assign();
                     }
+                    */
+                    $maxGroups = $request->input('max_groups_' . $collection[0]->id);
+                    $maxParticipants = $request->input('max_participants_' . $collection[0]->id);
+                    $groupCourseDivision = new GroupCourseDivision($event, $collection, $event->consider_alcohol, (int) $maxGroups, (int) $maxParticipants);
+                    $groupCourseDivision->assign();
                 }
 
                 Session::flash('success', 'Die Gruppen wurden erfolgreich nach Studiengängen aufgeteilt');
