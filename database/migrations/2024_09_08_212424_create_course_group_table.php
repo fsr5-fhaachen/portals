@@ -31,8 +31,9 @@ return new class extends Migration
         });
 
         // third, remove the old column
-        if (!Schema::hasColumn('groups', 'course_id')) {
+        if (Schema::hasColumn('groups', 'course_id')) {
             Schema::table('groups', function (Blueprint $table) {
+                $table->dropForeign('groups_course_id_foreign');
                 $table->dropColumn('course_id');
             });
         }
@@ -49,7 +50,7 @@ return new class extends Migration
         });
 
         // migrate data back
-        DB::table('course_group')->each(function ($groupCourse) {
+        DB::table('course_group')->orderBy('id')->each(function ($groupCourse) {
             DB::table('groups')->where('id', $groupCourse->group_id)->update([
                 'course_id' => $groupCourse->course_id,
             ]);
