@@ -6,6 +6,8 @@ use App\Models\Course;
 use App\Models\Registration;
 use App\Models\Group;
 use App\Helpers\GroupCourseDivision;
+use App\Models\CourseGroup;
+use Illuminate\Database\Eloquent\Collection;
 
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
@@ -13,7 +15,14 @@ uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 beforeEach(function () {
     $this->event = Event::factory()->create(['consider_alcohol' => true])->first();
     $this->course = Course::factory()->count(1)->create()->first();
-    $this->groups = Group::factory()->count(15)->create(['course_id' => $this->course->id, 'event_id' => $this->event->id]);
+    $this->groups = Group::factory()->count(15)->create(['event_id' => $this->event->id]);
+
+    foreach ($this->groups as $group) {
+        $courseGroup = new CourseGroup();
+        $courseGroup->group_id = $group->id;
+        $courseGroup->course_id = $this->course->id;
+        $courseGroup->save();
+    }
 
     User::factory()->count(150)->create(['course_id' => $this->course->id]);
 });
@@ -29,7 +38,7 @@ test('assign without non drinkers', function () {
         ]);
     }
 
-    $division = new GroupCourseDivision($this->event, $this->course, true);
+    $division = new GroupCourseDivision($this->event, new Collection([$this->course]), true);
     $division->assign();
 
     foreach ($this->groups as $group) {
@@ -58,7 +67,7 @@ test('assign with few non drinkers', function () {
         ]);
     }
 
-    $division = new GroupCourseDivision($this->event, $this->course, true);
+    $division = new GroupCourseDivision($this->event, new Collection([$this->course]), true);
     $division->assign();
 
     foreach ($this->groups as $group) {
@@ -98,7 +107,7 @@ test('assign with more non drinkers', function () {
         ]);
     }
 
-    $division = new GroupCourseDivision($this->event, $this->course, true);
+    $division = new GroupCourseDivision($this->event, new Collection([$this->course]), true);
     $division->assign();
 
     foreach ($this->groups as $group) {

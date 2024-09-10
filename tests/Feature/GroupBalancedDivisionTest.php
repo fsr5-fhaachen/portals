@@ -13,7 +13,7 @@ uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 test('equal div only drinkers', function () {
     $event = Event::factory()->create(['consider_alcohol' => true])->first();
     $courses = Course::factory()->count(10)->create();
-    $groups = Group::factory()->count(10)->create(['course_id' => null, 'event_id' => $event->id]);
+    $groups = Group::factory()->count(10)->create(['event_id' => $event->id]);
 
     foreach ($courses as $course) {
         User::factory()->count(20)->create(['course_id' => $course->id]);
@@ -46,7 +46,7 @@ test('equal div only drinkers', function () {
 test('unequal div only drinkers', function () {
     $event = Event::factory()->create(['consider_alcohol' => true])->first();
     $courses = Course::factory()->count(10)->create();
-    $groups = Group::factory()->count(10)->create(['course_id' => null, 'event_id' => $event->id]);
+    $groups = Group::factory()->count(10)->create(['event_id' => $event->id]);
 
     $i = 10;
 
@@ -83,7 +83,7 @@ test('unequal div only drinkers', function () {
 test('unequal div nondrinkers', function () {
     $event = Event::factory()->create(['consider_alcohol' => true])->first();
     $courses = Course::factory()->count(10)->create();
-    $groups = Group::factory()->count(10)->create(['course_id' => null, 'event_id' => $event->id]);
+    $groups = Group::factory()->count(10)->create(['event_id' => $event->id]);
 
     $i = 10;
 
