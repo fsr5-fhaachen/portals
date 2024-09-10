@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, PropType, onBeforeUnmount } from "vue";
+import { computed, ref, PropType } from "vue";
 
 const form = ref({
   query: "",
@@ -82,25 +82,25 @@ const filteredRegistrations = computed(() => {
   });
 });
 
-const fetchRegistrations = async () => {
-  const response = await fetch(
-    "/api/events/" + group.event_id + "/registrations",
-    {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  );
+// const fetchRegistrations = async () => {
+//   const response = await fetch(
+//     "/api/events/" + group.event_id + "/registrations",
+//     {
+//       method: "GET",
+//       credentials: "include",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//     },
+//   );
 
-  if (response.ok) {
-    const data = await response.json();
-    registrations.value = data.groups[group.id];
-  }
-};
-const registrationsInterval = setInterval(fetchRegistrations, 5000);
-onBeforeUnmount(() => {
-  clearInterval(registrationsInterval);
-});
+//   if (response.ok) {
+//     const data = await response.json();
+//     registrations.value = data.groups[group.id];
+//   }
+// };
+// const registrationsInterval = setInterval(fetchRegistrations, 5000);
+// onBeforeUnmount(() => {
+//   clearInterval(registrationsInterval);
+// });
 </script>

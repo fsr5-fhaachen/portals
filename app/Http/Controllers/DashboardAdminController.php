@@ -245,21 +245,10 @@ class DashboardAdminController extends Controller
         if ($event->type == 'group_phase') {
             // check if any groups has a course
             $hasCourse = false;
-            /*
-            foreach ($event->groups as $group) {
-                if ($group->course_id) {
-                    $hasCourse = true;
-                    break;
-                }
-            }
-            */
             if ($event->groups->first()->courses()->exists()) $hasCourse = true;
 
             // check which division method to use
             if ($hasCourse) {
-
-                //$courses = Course::all();
-
                 $courseModelCollections = [];
 
                 $courseCollections = $this->getCourseCollections($event);
@@ -268,21 +257,7 @@ class DashboardAdminController extends Controller
                     $courseModelCollections[] = $collection;
                 }
 
-                //foreach ($courses as $course) {
                 foreach ($courseModelCollections as $index => $collection) {
-                    // check if groups is
-                    //$groups = $event->groups()->where('course_id', $course->id)->get();
-
-                    /*
-                    if (count($groups) > 0) {
-                        // get max_groups and max_participants for course by request
-                        $maxGroups = $request->input('max_groups_' . $course->id);
-                        $maxParticipants = $request->input('max_participants_' . $course->id);
-
-                        $groupCourseDivision = new GroupCourseDivision($event, $course, $event->consider_alcohol, (int) $maxGroups, (int) $maxParticipants);
-                        $groupCourseDivision->assign();
-                    }
-                    */
                     $maxGroups = $request->input('max_groups_' . $index);
                     $maxParticipants = $request->input('max_participants_' . $index);
                     $groupCourseDivision = new GroupCourseDivision($event, $collection, $event->consider_alcohol, (int) $maxGroups, (int) $maxParticipants);
