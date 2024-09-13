@@ -53,7 +53,7 @@ test("equal users per course only drinkers", function () {
         expect($group->registrations()->count())->toEqual(10);
 
         // get course_id for the group
-        $groupCourseId = CourseGroup::where('group_id', $group->id)->get('course_id');
+        $groupCourseId = CourseGroup::where('group_id', $group->id)->first()->course_id;
 
         // there should only be registrations from users with this course_id
         expect($group->registrations()
