@@ -7,7 +7,6 @@ use App\Models\Registration;
 use App\Models\Group;
 use App\Helpers\GroupCourseDivision;
 use App\Models\CourseGroup;
-use Illuminate\Database\Eloquent\Collection;
 
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
@@ -59,8 +58,8 @@ test("equal users per course only drinkers", function () {
         // there should only be registrations from users with this course_id
         expect($group->registrations()
             ->join('users', 'registrations.user_id', '=', 'users.id')
-            ->where('users.course_id', '<>', $groupCourseId)
-            ->count())->toEqual(0);
+            ->where('users.course_id', '=', $groupCourseId)
+            ->count())->toEqual(10);
     }
 });
 
@@ -98,10 +97,11 @@ test("random users per course only drinkers", function () {
             expect($regCount)->toBeGreaterThanOrEqual($minCourseGroupRegs);
             expect($regCount)->toBeLessThanOrEqual($maxCourseGroupRegs);
 
+            // all registrations are from this course
             expect($courseGroup->registrations()
                 ->join('users', 'registrations.user_id', '=', 'users.id')
-                ->where('users.course_id', '<>', $course->id)
-                ->count())->toEqual(0);
+                ->where('users.course_id', '=', $course->id)
+                ->count())->toEqual($regCount);
         }
     }
 });
@@ -130,8 +130,8 @@ test("random users per course drinkers and non drinkers", function () {
         if ($courseUserCount < 40) {
             // each course has 2 groups with a limit of 20 users.
             // If there are 40 or more registrations from one course, then both groups for this course need to have 20 registrations.
-            // Otherwise, the users should be divided equally among the 2 groups
-            // tolerate small deviation because assigning non-drinkers takes priority
+            // Otherwise, the users should be divided equally among the 2 groups.
+            // Tolerate small deviation because assigning non-drinkers takes priority
             $minCourseGroupRegs = (int)floor($courseUserCount / 2) - 1;
             $maxCourseGroupRegs = (int)ceil($courseUserCount / 2) + 1;
         }
@@ -153,10 +153,11 @@ test("random users per course drinkers and non drinkers", function () {
             expect($regCount)->toBeGreaterThanOrEqual($minCourseGroupRegs);
             expect($regCount)->toBeLessThanOrEqual($maxCourseGroupRegs);
 
+            // all registrations are from this course
             expect($courseGroup->registrations()
                 ->join('users', 'registrations.user_id', '=', 'users.id')
-                ->where('users.course_id', '<>', $course->id)
-                ->count())->toEqual(0);
+                ->where('users.course_id', '=', $course->id)
+                ->count())->toEqual($regCount);
         }
     }
 });
