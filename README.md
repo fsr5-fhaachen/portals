@@ -113,7 +113,7 @@ npm run lint:fix
 You can run the tests with:
 
 ```sh
-vendor/bin/phpunit
+php artisan test
 ```
 
 ### build
