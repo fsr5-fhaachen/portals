@@ -16,18 +16,18 @@ beforeEach(function () {
     $this->event->description = 'Lorem ipsum';
     $this->event->type = 'slot_booking';
 
-    $registration_from = new DateTime(NOW());
-    $registration_to = new DateTime(NOW());
-    $registration_to->modify('+7 days');
+    $registrationFrom = new DateTime(NOW());
+    $registrationTo = new DateTime(NOW());
+    $registrationTo->modify('+7 days');
 
-    $this->event->registration_from = $registration_from;
-    $this->event->registration_to = $registration_to;
+    $this->event->registration_from = $registrationFrom;
+    $this->event->registration_to = $registrationTo;
     $this->event->has_requirements = false;
     $this->event->consider_alcohol = false;
     $this->event->sort_order = 300;
     $this->event->save();
 
-    // cerate a new slot
+    // create a new slot
     $this->slot = new Slot();
     $this->slot->name = "small_test";
     $this->slot->event_id = $this->event->id;
@@ -62,12 +62,12 @@ function createUsers(int $amount)
 }
 
 test('assign with more registrations than free slots', function () {
-    $reg_amount = 50;
+    $regAmount = 50;
 
-    createUsers($reg_amount);
+    createUsers($regAmount);
 
     // queue position should be equal to -1 before assignment                 
-    expect($this->slot->registrations()->where('queue_position', -1)->get()->count())->toEqual($reg_amount);
+    expect($this->slot->registrations()->where('queue_position', -1)->get()->count())->toEqual($regAmount);
 
     $this->assignment->assign();
 
@@ -85,43 +85,43 @@ test('assign with more registrations than free slots', function () {
 });
 
 test('assign with less registrations than slots', function () {
-    $reg_amount = 5;
+    $regAmount = 5;
 
-    createUsers($reg_amount);
+    createUsers($regAmount);
 
     $this->assignment->assign();
 
     expect($this->slot->registrations()->where('queue_position', -1)->get()->count())->toEqual(0);
 
     // queue position should be null for all registrations
-    expect($this->slot->registrations()->where('queue_position', null)->get()->count())->toEqual($reg_amount);
+    expect($this->slot->registrations()->where('queue_position', null)->get()->count())->toEqual($regAmount);
 });
 
 test('assign with exact registrations', function () {
-    $reg_amount = 10;
+    $regAmount = 10;
 
-    createUsers($reg_amount);
+    createUsers($regAmount);
 
     $this->assignment->assign();
 
     expect($this->slot->registrations()->where('queue_position', -1)->get()->count())->toEqual(0);
 
     // queue position should be null for all registrations
-    expect($this->slot->registrations()->where('queue_position', null)->get()->count())->toEqual($reg_amount);
+    expect($this->slot->registrations()->where('queue_position', null)->get()->count())->toEqual($regAmount);
 });
 
 test('reassign after new registrations', function () {
-    $reg_amount = 5;
-    $reg_amount_later = 12;
+    $regAmount = 5;
+    $regAmountLater = 12;
 
-    createUsers($reg_amount);
+    createUsers($regAmount);
 
     $this->assignment->assign();
 
     // queue position should be null for all registrations
-    expect($this->slot->registrations()->where('queue_position', null)->get()->count())->toEqual($reg_amount);
+    expect($this->slot->registrations()->where('queue_position', null)->get()->count())->toEqual($regAmount);
 
-    createUsers($reg_amount_later);
+    createUsers($regAmountLater);
     $this->assignment->assign();
     expect($this->slot->registrations()->where('queue_position', -1)->get()->count())->toEqual(0);
 

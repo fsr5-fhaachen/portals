@@ -10,31 +10,38 @@ use App\Models\Group;
 
 uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
 
-test('equal div only drinkers', function () {
-    $event = Event::factory()->create(['consider_alcohol' => true])->first();
-    $courses = Course::factory()->count(10)->create();
-    $groups = Group::factory()->count(10)->create(['event_id' => $event->id]);
+beforeEach(function () {
+    $this->event = Event::factory()->create(['consider_alcohol' => true])->first();
+    $this->courses = Course::factory()->count(10)->create();
+    $this->groups = Group::factory()->count(10)->create(['event_id' => $this->event->id]);
+});
 
-    foreach ($courses as $course) {
+// most basic test for division algorithm. If this fails, then everything does
+test('equal division only drinkers', function () {
+
+    foreach ($this->courses as $course) {
         User::factory()->count(20)->create(['course_id' => $course->id]);
     }
 
     foreach (User::all() as $user) {
-        Registration::factory()->create([
-            'event_id' => $event->id,
-            'user_id' => $user->id,
-            'drinks_alcohol' => true,
-            'fulfils_requirements' => true,
-            'queue_position' => null
-        ]);
+        $reg = new Registration();
+        $reg->event_id = $this->event->id;
+        $reg->user_id = $user->id;
+        $reg->drinks_alcohol = true;
+        $reg->fulfils_requirements = true;
+        $reg->queue_position = null;
+        $reg->save();
     }
 
-    $div = new GroupBalancedDivision($event, true);
+    $div = new GroupBalancedDivision($this->event, false, 10, 20);
     $div->assign();
 
-    // each group should contain 2 users per course
-    foreach ($groups as $group) {
-        foreach ($courses as $course) {
+    foreach ($this->groups as $group) {
+        // 20 registrations per group
+        expect($group->registrations()->count())->toEqual(20);
+
+        foreach ($this->courses as $course) {
+            // each group should contain 2 users per course
             expect($group->registrations()
                 ->join('users', 'registrations.user_id', '=', 'users.id')
                 ->where('users.course_id', '=', $course->id)
@@ -43,106 +50,103 @@ test('equal div only drinkers', function () {
     }
 });
 
-test('unequal div only drinkers', function () {
-    $event = Event::factory()->create(['consider_alcohol' => true])->first();
-    $courses = Course::factory()->count(10)->create();
-    $groups = Group::factory()->count(10)->create(['event_id' => $event->id]);
-
-    $i = 10;
-
-    foreach ($courses as $course) {
-        User::factory()->count($i)->create(['course_id' => $course->id]);
-        $i += 10;
-    }
+test('random courses only drinkers', function () {
+    User::factory()->count(200)->create();
 
     foreach (User::all() as $user) {
+        $reg = new Registration();
+        $reg->event_id = $this->event->id;
+        $reg->user_id = $user->id;
+        $reg->drinks_alcohol = true;
+        $reg->fulfils_requirements = true;
+        $reg->queue_position = null;
+        $reg->save();
+    }
+
+    $div = new GroupBalancedDivision($this->event, false, 10, 20);
+    $div->assign();
+
+    foreach ($this->groups as $group) {
+        // 20 registrations per group
+        expect($group->registrations()->count())->toEqual(20);
+    }
+
+    // per course: count users with this course (courseUserCount).
+    // each group must have at least courseUserCount divided by group count (floored) registrations from this course, and at most one more
+    // furthermore, a number of (courseUserCount modulo group count) groups must have 1 additional registration from this course
+    foreach ($this->courses as $course) {
+        $courseUserCount = $course->users()->count();
+        $minRegsPerGroup = (int)floor($courseUserCount / 10);
+        $maxRegsPerGroup = $minRegsPerGroup + 1;
+        $groupsWithOneMoreExpected = $courseUserCount % 10;
+        $groupsWithOneMoreActual = 0;
+
+        foreach ($this->groups as $group) {
+            $courseCount = $group->registrations()
+                ->join('users', 'registrations.user_id', '=', 'users.id')
+                ->where('users.course_id', '=', $course->id)
+                ->count();
+
+            expect($courseCount)->toBeGreaterThanOrEqual($minRegsPerGroup);
+            expect($courseCount)->toBeLessThanOrEqual($maxRegsPerGroup);
+            if ($courseCount > $minRegsPerGroup) {
+                $groupsWithOneMoreActual++;
+            }
+        }
+
+        expect($groupsWithOneMoreActual)->toEqual($groupsWithOneMoreExpected);
+    }
+});
+
+test('random courses drinkers and nondrinkers', function () {
+    User::factory()->count(200)->create();
+
+    // drinks alcohol is now random
+    foreach (User::all() as $user) {
         Registration::factory()->create([
-            'event_id' => $event->id,
+            'event_id' => $this->event->id,
             'user_id' => $user->id,
-            'drinks_alcohol' => true,
             'fulfils_requirements' => true,
             'queue_position' => null
         ]);
     }
 
-    $div = new GroupBalancedDivision($event, true);
+    $div = new GroupBalancedDivision($this->event, true, 10, 20, 3);
     $div->assign();
 
-    foreach ($groups as $group) {
-        $i = 1;
-        foreach ($courses as $course) {
-            expect($group->registrations()
+    foreach ($this->groups as $group) {
+        // 20 registrations per group
+        expect($group->registrations()->count())->toEqual(20);
+
+        // check non drinker count
+        $nondrinkerCount = $group->registrations()
+            ->where('drinks_alcohol', '=', false)
+            ->count();
+
+        // either only drinkers or at least 3 non drinkers
+        if ($nondrinkerCount > 0) {
+            expect($nondrinkerCount)->toBeGreaterThanOrEqual(3);
+        } else {
+            expect($nondrinkerCount)->toEqual(0);
+        }
+    }
+
+    // per course: count users with this course (courseUserCount).
+    // each group must have at least courseUserCount divided by 10 (floored) registrations from this course, and at most one more
+    // now with allowed deviation, and without modulo check, because assigning non drinkers takes priority and optimal division may not be possible
+    foreach ($this->courses as $course) {
+        $courseUserCount = $course->users()->count();
+        $minRegsPerGroup = (int)floor($courseUserCount / 10) - 2;
+        $maxRegsPerGroup = $minRegsPerGroup + 4;
+
+        foreach ($this->groups as $group) {
+            $courseCount = $group->registrations()
                 ->join('users', 'registrations.user_id', '=', 'users.id')
                 ->where('users.course_id', '=', $course->id)
-                ->count())->toEqual($i);
-            $i += 1;
-        }
-    }
-});
-
-test('unequal div nondrinkers', function () {
-    $event = Event::factory()->create(['consider_alcohol' => true])->first();
-    $courses = Course::factory()->count(10)->create();
-    $groups = Group::factory()->count(10)->create(['event_id' => $event->id]);
-
-    $i = 10;
-
-    foreach ($courses as $course) {
-        User::factory()->count($i)->create(['course_id' => $course->id]);
-        $i += 10;
-    }
-
-    $checks = 0;
-    $balance = 0.0;
-
-    for ($n = 0; $n < 10; $n++) {
-        // drinks_alocohol not set, so it becomes random
-        foreach (User::all() as $user) {
-            Registration::factory()->create([
-                'event_id' => $event->id,
-                'user_id' => $user->id,
-                'fulfils_requirements' => true,
-                'queue_position' => null
-            ]);
-        }
-
-        $div = new GroupBalancedDivision($event, true, 0, 0, 3);
-        $div->assign();
-
-        foreach ($groups as $group) {
-            // check non drinker count
-            $nondrinker_count = $group->registrations()
-                ->where('drinks_alcohol', '=', false)
                 ->count();
 
-            // either only drinkers or at least 3 non drinkers
-            if ($nondrinker_count > 0) {
-                expect($nondrinker_count)->toBeGreaterThanOrEqual(3);
-            } else {
-                expect($nondrinker_count)->toEqual(0);
-            }
-
-            $i = 1;
-            foreach ($courses as $course) {
-                $course_count = $group->registrations()
-                    ->join('users', 'registrations.user_id', '=', 'users.id')
-                    ->where('users.course_id', '=', $course->id)
-                    ->count();
-
-                if ($course_count > $i) {
-                    $balance += $course_count - $i;
-                } else if ($course_count < $i) {
-                    $balance += $i - $course_count;
-                }
-
-                $i++;
-                $checks++;
-            }
+            expect($courseCount)->toBeGreaterThanOrEqual($minRegsPerGroup);
+            expect($courseCount)->toBeLessThanOrEqual($maxRegsPerGroup);
         }
-
-        Registration::truncate();
     }
-
-    // check average course balance (with allowed deviation due to priority for assigning non drinkers)
-    expect($balance / $checks)->toBeLessThanOrEqual(0.5);
 });
