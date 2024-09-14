@@ -140,7 +140,7 @@ class EventsErstiwocheSeeder extends Seeder
         $event->description = '<p>Die Stadtrallye ist ein Event, bei dem du in Gruppen die Stadt erkundest. Dabei gibt es verschiedene Aufgaben, die ihr lösen müsst. Dabei könnt ihr euch gegenseitig unterstützen und euch so besser kennenlernen.</p><p><strong>Treffpunkt: </strong> 9:00 Uhr Campus Eupener Straße</p>';
         $event->type = 'group_phase';
         $event->registration_from = new DateTime('2024-09-23 8:00:00');
-        $event->registration_to = new DateTime('2024-09-24 10:00:00');
+        $event->registration_to = new DateTime('2024-09-24 09:45:00');
         $event->has_requirements = false;
         $event->consider_alcohol = true;
         $event->sort_order = 110;
@@ -151,7 +151,7 @@ class EventsErstiwocheSeeder extends Seeder
         // create event groups
         $groups = [];
 
-        for ($i = 1; $i <= 16; $i++) {
+        for ($i = 1; $i <= 14; $i++) {
             $groups[] = [
                 'name' => "Gruppe $i",
                 'telegram_group_link' => $telegram_links[$event->name]["Gruppe $i"] ?? null,
@@ -239,9 +239,17 @@ class EventsErstiwocheSeeder extends Seeder
                 'name' => "WI Hausführung $i",
                 'course_ids' => [
                     $coursesByAbbreviation['WI']->id,
-                    $coursesByAbbreviation['IS-Master']->id
                 ],
             ];
+        }
+
+        for ($i = 1; $i <= 1; $i++) {
+          $groups[] = [
+            'name' => "IS Master Hausführung $i",
+            'course_ids' => [
+              $coursesByAbbreviation['IS-Master']->id
+            ],
+          ];
         }
 
         // save groups
@@ -322,7 +330,7 @@ class EventsErstiwocheSeeder extends Seeder
         $event->name = 'Katerbrunch';
         $event->description = '<p>Nachdem wir alle nach der Kneipentour am Mittwoch Abend etwas verkatert sind, gibt es doch nichts besseres als zusammen bei einem guten Fr&uuml;hst&uuml;ck auszukatern 😊 <br />Hierf&uuml;r bitte wir euch die 2&euro; Anmeldegeb&uuml;hr am Montag zwischen 14:15 und 15:00 Uhr oder Mittwoch zwischen 09:30 und 13:00 Uhr im FSR zu bezahlen, sonst k&ouml;nnt ihr leider nicht teilnehmen.</p>
         <p><strong>Wann:</strong> 28.09 ab 12:30 Uhr <br /><strong>Wo:</strong> FH, am D Geb&auml;ude <br /><strong>Was mitbringen:</strong> Tasse/ Becher und Teller ggf, Picknickdecke bei gutem Wetter.</p>
-        <p>Im Anschluss k&ouml;nnen wir noch gemeinsam in den Park gehen und den Tag bei ein paar runden Flunkyball ausklingen lassen 😊</p>
+        <p>Im Anschluss findet noch ein spannender Spieleabend mit Brettspielen und Quizshow statt.</p> <br/>
         <p>Wir freuen uns auf euch</p>';
         $event->type = 'event_registration';
         $event->registration_from = new DateTime('2024-09-23 8:00:00');
@@ -360,8 +368,9 @@ class EventsErstiwocheSeeder extends Seeder
         $event->description = '<p>Auch sportliche Aktivitäten kommen bei uns nicht zu kurz. Für eine Anmeldegebühr von <strong>5€</strong> könnt ihr euch am Freitag auspowern.</p>
             <p>Bitte bezahlt die Anmeldegebühr am Montag oder Mittwoch im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben.</p>
             <p>Bitte beachtet auch die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
-            <p><strong>Hochschulsport:</strong>Bitte bringt 5€ an Pfand mit</p>
+            <p><strong>Fu0ball:</strong>Bitte bringt 5€ an Pfand mit</p>
             <p><strong>Yoga:</strong> Bitte bringt eine eigene Yogamatte mit.</p>
+            <p><strong>Bouldern;</strong> Falls nicht vorhanden, können Stoppersocken vor Ort für 3€ erworben werden.</p>
             <p><strong>Allgemein:</strong> Anschließende Teilnahme an den Kulturprogrammpunkten ist nur die “Kebabtour” zeitlich möglich.</p>
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
             <p>Wir freuen uns auf euch!</p>';
@@ -378,7 +387,7 @@ class EventsErstiwocheSeeder extends Seeder
         // create event slots
         $slots = [
             [
-                'name' => 'Hochschulsport',
+                'name' => 'Fu0ball, Volleyball',
                 'has_requirements' => true,
                 'maximum_participants' => 50,
             ],
@@ -427,8 +436,8 @@ class EventsErstiwocheSeeder extends Seeder
         $event->description = '<p>Die Stadt Aachen von einer etwas anderen Seite besser kennenlernen, Ziegen streicheln oder sich einfach den Bauch richtig voll schlagen?
             Auch das ist am Freitag in der Erstiwoche möglich.</p>
             <p>Bitte beachtet die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
-            <p><strong>Stadtführung, Tierpark, Tour durch das Alemaniastadion:</strong> Für eine Anmeldegebühr von <strong>5€</strong> ist eine Teilnahme an diesen Angeboten möglich. Bitte bezahlt die Anmeldegebühr am Montag oder Mittwoch im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben. Die Anmeldegebühr fungiert als Pfand, welches ihr beim Erscheinen der Kulturangebote wieder zurückbekommt.</p>
-            <p><strong>Kebabtour:</strong> Ihr müsst eure Döner / Falafel-Taschen selber zahlen.</p>
+            <p><strong>Tierpark, Tour durch das Alemaniastadion:</strong> Für eine Anmeldegebühr von <strong>5€</strong> ist eine Teilnahme an diesen Angeboten möglich. Bitte bezahlt die Anmeldegebühr am Montag oder Mittwoch im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben. Die Anmeldegebühr fungiert als Pfand, welches ihr beim Erscheinen der Kulturangebote wieder zurückbekommt.</p>
+            <p><strong>Foodtour:</strong> Ihr müsst eure Döner / Falafel-Taschen selber zahlen.</p>
             <p><strong>Allgemein:</strong> Anschließende Teilnahme an weiteren Programmpunkten ist nur die “Kebabtour” zeitlich möglich.</p>
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
             <p>Wir freuen uns auf euch!</p>';
@@ -444,7 +453,7 @@ class EventsErstiwocheSeeder extends Seeder
         // create event slots
         $slots = [
             [
-                'name' => 'Kebabtour',
+                'name' => 'Foodtour',
                 'has_requirements' => false,
                 'maximum_participants' => 50,
             ],
