@@ -122,15 +122,16 @@ class EventsErstiwocheSeeder extends Seeder
     public function runGruppenphaseISMaster(): void
     {
         // check if event with name "Gruppenphase" exists
-        $event = Event::where('name', 'Gruppenphase IS-Master')->first();
+        $event = Event::where('name', 'Gruppenphase')->where('description', 'like', '%' . '<strong>M.Sc. Information Systems</strong>' . '%')->first();
         if ($event) {
             return;
         }
 
         // create a new event
         $event = new Event;
-        $event->name = 'Gruppenphase IS-Master';
-        $event->description = '<p>Während der Gruppenphase erhältst du von deinen Tutoren und Tutorinnen wichtige Informationen rund um das Studium. Außerdem ist die Gruppenphase dazu da, um direkt die anderen Erstis kennenzulernen und erste Freundschaften zu schließen.</p>';
+        $event->name = 'Gruppenphase';
+        $event->description = '<p>Während der Gruppenphase erhältst du von deinen Tutoren und Tutorinnen wichtige Informationen rund um das Studium. Außerdem ist die Gruppenphase dazu da, um direkt die anderen Erstis kennenzulernen und erste Freundschaften zu schließen.</p>
+        <p>Diese Gruppenphase ist speziell für Studierende des Studiengangs <strong>M.Sc. Information Systems</strong>, da dort einige Besonderheiten erklärt werden.</p>';
         $event->type = 'group_phase';
         $event->registration_from = new DateTime('2023-09-25 8:00:00');
         $event->registration_to = new DateTime('2023-09-25 12:30:00');
@@ -143,7 +144,7 @@ class EventsErstiwocheSeeder extends Seeder
 
         // create event groups
         $groupNames = [
-            'Gruppe 1',
+            'Die masterhaften Mammuts',
         ];
         foreach ($groupNames as $groupName) {
             $group = new Group;

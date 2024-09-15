@@ -42,7 +42,7 @@ class DashboardEventController extends Controller
      * Redirect to the event page for the given event if the registration is not possible
      *
      *
-     * @return \Illuminate\Http\RedirectResponse|void
+     * @return RedirectResponse|void
      */
     protected function redirectToEventIfNoRegistrationIsPossible(Event $event)
     {
@@ -74,7 +74,7 @@ class DashboardEventController extends Controller
      * Redirect to the event page for the given event if the unregistration is not possible
      *
      *
-     * @return \Illuminate\Http\RedirectResponse|void
+     * @return RedirectResponse|void
      */
     protected function redirectToEventIfNoUnregistrationIsPossible(Event $event)
     {
@@ -121,14 +121,14 @@ class DashboardEventController extends Controller
     /**
      * Display the event register page
      */
-    public function register(Request $request): Response
+    public function register(Request $request): Response|RedirectResponse
     {
         $event = $this->getEvent($request);
         if ($event instanceof \Inertia\Response) {
             return $event;
         }
         $registrationIsPossible = $this->redirectToEventIfNoRegistrationIsPossible($event);
-        if ($registrationIsPossible instanceof \Illuminate\Http\RedirectResponse) {
+        if ($registrationIsPossible instanceof RedirectResponse) {
             return $registrationIsPossible;
         }
         $event->slots = $event->slots()->get();
@@ -141,14 +141,14 @@ class DashboardEventController extends Controller
     /**
      * Display the event unregister page
      */
-    public function unregister(Request $request): Response
+    public function unregister(Request $request): Response|RedirectResponse
     {
         $event = $this->getEvent($request);
         if ($event instanceof \Inertia\Response) {
             return $event;
         }
         $unregistrationIsPossible = $this->redirectToEventIfNoUnregistrationIsPossible($event);
-        if ($unregistrationIsPossible instanceof \Illuminate\Http\RedirectResponse) {
+        if ($unregistrationIsPossible instanceof RedirectResponse) {
             return $unregistrationIsPossible;
         }
 
@@ -167,7 +167,7 @@ class DashboardEventController extends Controller
             return $event;
         }
         $registrationIsPossible = $this->redirectToEventIfNoRegistrationIsPossible($event);
-        if ($registrationIsPossible instanceof \Illuminate\Http\RedirectResponse) {
+        if ($registrationIsPossible instanceof RedirectResponse) {
             return $registrationIsPossible;
         }
 
@@ -255,7 +255,7 @@ class DashboardEventController extends Controller
             return $event;
         }
         $unregistrationIsPossible = $this->redirectToEventIfNoUnregistrationIsPossible($event);
-        if ($unregistrationIsPossible instanceof \Illuminate\Http\RedirectResponse) {
+        if ($unregistrationIsPossible instanceof RedirectResponse) {
             return $unregistrationIsPossible;
         }
 

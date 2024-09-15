@@ -28,6 +28,15 @@
 
             <FormRow>
               <FormKit
+                v-if="user.rolesArray.some((role) => ['admin'].includes(role))"
+                type="password"
+                name="password"
+                label="Adminpasswort"
+                placeholder="Passwort"
+                validation="required"
+              />
+              <FormKit
+                v-else
                 type="password"
                 name="password"
                 label="Tutorenpasswort"
