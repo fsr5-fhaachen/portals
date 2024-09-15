@@ -45,12 +45,14 @@
     </template>
     <template v-else>
       <GridContainer v-if="events.length">
-        <EventCard
-          v-for="event in events"
-          :key="event.id"
-          :event="event"
-          :registration="getUserRegistrationForEvent(event)"
-        />
+        <template v-for="event in events">
+          <EventCard
+            v-if="isUserAllowedToRegister(event, user)"
+            :key="event.id"
+            :event="event"
+            :registration="getUserRegistrationForEvent(event)"
+          />
+        </template>
       </GridContainer>
     </template>
   </LayoutDashboardContent>
@@ -86,6 +88,18 @@ const submitTutorPasswordFormHandler = async () => {
 const getUserRegistrationForEvent = (event: App.Models.Event) => {
   return registrations.find(
     (registration) => registration.event_id === event.id,
+  );
+};
+
+const isUserAllowedToRegister = (
+  event: App.Models.Event,
+  user: Models.User,
+) => {
+  return (
+    event.courses.length === 0 ||
+    event.courses.some((course) => {
+      return user.course_id === course.id;
+    })
   );
 };
 </script>

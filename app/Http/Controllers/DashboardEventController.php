@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\Registration;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
@@ -57,6 +58,15 @@ class DashboardEventController extends Controller
             Session::flash('error', 'Anmeldung ist nicht mehr möglich');
 
             return $this->redirectToEvent($event);
+        }
+
+        // check if the user has the right courses to register
+        if ($event->courses()->exists()) {
+            if (! $event->courses()->where('course_id', Auth::user()->course_id)->exists()) {
+                Session::flash('error', 'Du kannst dich mit deinem Studiengang zu diesem Event nicht anmelden.');
+
+                return $this->redirectToEvent($event);
+            }
         }
     }
 

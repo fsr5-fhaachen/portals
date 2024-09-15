@@ -19,6 +19,9 @@ class DashboardTutorController extends Controller
     {
         // get events ordered by sort_order
         $events = Event::orderBy('sort_order')->with('registrations')->get();
+        foreach ($events as $event) {
+            $event->courses = $event->courses()->get();
+        }
 
         return Inertia::render('Dashboard/Tutor/Index', [
             'events' => $events,

@@ -20,6 +20,9 @@ class DashboardController extends Controller
     {
         // get events ordered by sort_order
         $events = Event::orderBy('sort_order')->get();
+        foreach ($events as $event) {
+            $event->courses = $event->courses()->get();
+        }
 
         // get registrations of the user
         $registrations = Auth::user()->registrations;
