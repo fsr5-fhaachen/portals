@@ -245,7 +245,7 @@ class EventsErstiwocheSeeder extends Seeder
 
         for ($i = 1; $i <= 1; $i++) {
           $groups[] = [
-            'name' => "IS Master Hausführung $i",
+            'name' => "IS-Master Hausführung $i",
             'course_ids' => [
               $coursesByAbbreviation['IS-Master']->id
             ],
@@ -328,8 +328,8 @@ class EventsErstiwocheSeeder extends Seeder
         // create a new event
         $event = new Event;
         $event->name = 'Katerbrunch';
-        $event->description = '<p>Nachdem wir alle nach der Kneipentour am Mittwoch Abend etwas verkatert sind, gibt es doch nichts besseres als zusammen bei einem guten Fr&uuml;hst&uuml;ck auszukatern 😊 <br />Hierf&uuml;r bitte wir euch die 2&euro; Anmeldegeb&uuml;hr am Montag zwischen 14:15 und 15:00 Uhr oder Mittwoch zwischen 09:30 und 13:00 Uhr im FSR zu bezahlen, sonst k&ouml;nnt ihr leider nicht teilnehmen.</p>
-        <p><strong>Wann:</strong> 28.09 ab 12:30 Uhr <br /><strong>Wo:</strong> FH, am D Geb&auml;ude <br /><strong>Was mitbringen:</strong> Tasse/ Becher und Teller ggf, Picknickdecke bei gutem Wetter.</p>
+        $event->description = '<p>Nachdem wir alle nach der Kneipentour am Mittwoch Abend etwas verkatert sind, gibt es doch nichts besseres als zusammen bei einem guten Fr&uuml;hst&uuml;ck auszukatern 😊 <br />Hierf&uuml;r bitte wir euch die 2&euro; Anmeldegeb&uuml;hr am Montag zwischen 13:45 und 16:00 Uhr oder Mittwoch zwischen 12:00 und 14:30 Uhr im FSR zu bezahlen, sonst k&ouml;nnt ihr leider nicht teilnehmen.</p>
+        <p><strong>Wann:</strong> 28.09 ab 12:00 Uhr <br /><strong>Wo:</strong> FH, am D Geb&auml;ude <br /><strong>Was mitbringen:</strong> Tasse/ Becher und Teller ggf, Picknickdecke bei gutem Wetter.</p>
         <p>Im Anschluss findet noch ein spannender Spieleabend mit Brettspielen und Quizshow statt.</p> <br/>
         <p>Wir freuen uns auf euch</p>';
         $event->type = 'event_registration';
@@ -366,12 +366,12 @@ class EventsErstiwocheSeeder extends Seeder
         $event = new Event;
         $event->name = 'Sport';
         $event->description = '<p>Auch sportliche Aktivitäten kommen bei uns nicht zu kurz. Für eine Anmeldegebühr von <strong>5€</strong> könnt ihr euch am Freitag auspowern.</p>
-            <p>Bitte bezahlt die Anmeldegebühr am Montag oder Mittwoch im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben.</p>
+            <p>Bitte bezahlt die Anmeldegebühr am Montag zwischen 13:45 und 16:00 Uhr oder Mittwoch zwischen 12:00 und 14:30 Uhr im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben.</p>
             <p>Bitte beachtet auch die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
-            <p><strong>Fu0ball:</strong>Bitte bringt 5€ an Pfand mit</p>
+            <p><strong>Fußball, Volleyball:</strong>Die Anmeldegebühr fungiert als Pfand, welches ihr beim Erscheinen wieder zurückbekommt.</p>
             <p><strong>Yoga:</strong> Bitte bringt eine eigene Yogamatte mit.</p>
-            <p><strong>Bouldern;</strong> Falls nicht vorhanden, können Stoppersocken vor Ort für 3€ erworben werden.</p>
-            <p><strong>Allgemein:</strong> Anschließende Teilnahme an den Kulturprogrammpunkten ist nur die “Kebabtour” zeitlich möglich.</p>
+            <p><strong>Bouldern:</strong> Falls nicht vorhanden, können Stoppersocken vor Ort für 3€ erworben werden.</p>
+            <p><strong>Allgemein:</strong> Eine anschließende Teilnahme an weiteren Programmpunkten ist nur mit der “Foodtour” und dem "Tierpark Besuch" zeitlich möglich, und nicht für Teilnehmer der Boulder-Gruppe.</p>
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
             <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
@@ -387,7 +387,7 @@ class EventsErstiwocheSeeder extends Seeder
         // create event slots
         $slots = [
             [
-                'name' => 'Fu0ball, Volleyball',
+                'name' => 'Fußball, Volleyball',
                 'has_requirements' => true,
                 'maximum_participants' => 50,
             ],
@@ -436,9 +436,9 @@ class EventsErstiwocheSeeder extends Seeder
         $event->description = '<p>Die Stadt Aachen von einer etwas anderen Seite besser kennenlernen, Ziegen streicheln oder sich einfach den Bauch richtig voll schlagen?
             Auch das ist am Freitag in der Erstiwoche möglich.</p>
             <p>Bitte beachtet die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
-            <p><strong>Tierpark, Tour durch das Alemaniastadion:</strong> Für eine Anmeldegebühr von <strong>5€</strong> ist eine Teilnahme an diesen Angeboten möglich. Bitte bezahlt die Anmeldegebühr am Montag oder Mittwoch im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben. Die Anmeldegebühr fungiert als Pfand, welches ihr beim Erscheinen der Kulturangebote wieder zurückbekommt.</p>
+            <p><strong>Tierpark:</strong> Für eine Anmeldegebühr von <strong>5€</strong> ist eine Teilnahme möglich. Bitte bezahlt die Anmeldegebühr am Montag zwischen 13:45 und 16:00 Uhr oder Mittwoch zwischen 12:00 und 14:30 Uhr im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben. Die Anmeldegebühr fungiert als Pfand, welches ihr beim Erscheinen wieder zurückbekommt.</p>
             <p><strong>Foodtour:</strong> Ihr müsst eure Döner / Falafel-Taschen selber zahlen.</p>
-            <p><strong>Allgemein:</strong> Anschließende Teilnahme an weiteren Programmpunkten ist nur die “Kebabtour” zeitlich möglich.</p>
+            <p><strong>Allgemein:</strong> Eine anschließende Teilnahme an weiteren Programmpunkten ist nur mit der “Foodtour” zeitlich möglich.</p>
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
             <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
