@@ -5,7 +5,10 @@
     <BoxContainer class="mb-16">
       <CourseBox v-for="course in coursesData" :course="course">
         <p
-          v-if="course.users"
+          v-if="
+            typeof course.users == 'number' ||
+            (Array.isArray(course.users) && course.users.length)
+          "
           class="text-2xl font-semibold text-gray-900 dark:text-gray-100"
         >
           {{

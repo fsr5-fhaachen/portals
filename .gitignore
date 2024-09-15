@@ -1,6 +1,7 @@
 # app files
 tutors.csv
 students.csv
+telegram.csv
 
 # deployment
 deployOwn/
@@ -397,6 +398,7 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/node,phpunit,laravel,visualstudiocode,jetbrains+all,windows,macos,linux,gitrr
 .rr.yaml
 rr
-/caddy
+
+*/caddy
 frankenphp
 frankenphp-worker.php
