@@ -16,5 +16,6 @@ declare namespace App.Models {
     registrations?: Registration[] | null;
     slots?: Slot[] | null;
     stations?: Station[] | null;
+    courses?: Course[] | null;
   };
 }
