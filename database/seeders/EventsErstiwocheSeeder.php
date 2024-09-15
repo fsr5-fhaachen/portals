@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Course;
+use App\Models\CourseEvent;
 use App\Models\CourseGroup;
 use App\Models\Event;
 use App\Models\Group;
@@ -26,6 +27,7 @@ class EventsErstiwocheSeeder extends Seeder
     {
         $telegram_links = $this->parseTelegramCsv();
         $this->runGruppenphase();
+        $this->runGruppenphaseISMaster();
         $this->runStadtrallye($telegram_links);
         $this->runHausfuehrung();
         $this->runKneipentour($telegram_links);
@@ -120,6 +122,99 @@ class EventsErstiwocheSeeder extends Seeder
             $group->name = $groupName;
             $group->event_id = $event->id;
             $group->save();
+        }
+
+        // get all courses
+        $courses = Course::all();
+
+        // map courses by abbreviation
+        $coursesByAbbreviation = [];
+        foreach ($courses as $course) {
+            $coursesByAbbreviation[$course->abbreviation] = $course;
+        }
+
+        // allowed courses
+        $allowedCourses = [
+            'INF',
+            'ET',
+            'DIB',
+            'MCD',
+            'WI',
+            'SBE',
+            'ISE-Master',
+            'ET-Master',
+            'INF-Master',
+            // only 'IS-Master' is excluded here
+        ];
+
+        // save courses
+        foreach ($allowedCourses as $courseAbbreviation) {
+            $course = $coursesByAbbreviation[$courseAbbreviation];
+            $course_event = new CourseEvent;
+            $course_event->course_id = $course->id;
+            $course_event->event_id = $event->id;
+            $course_event->save();
+        }
+    }
+
+    /**
+     * Run the "Gruppenphase" event seeds.
+     */
+    public function runGruppenphaseISMaster(): void
+    {
+        // check if event with name "Gruppenphase" exists
+        $event = Event::where('name', 'Gruppenphase')->where('description', 'like', '%' . '<strong>M.Sc. Information Systems</strong>' . '%')->first();
+        if ($event) {
+            return;
+        }
+
+        // create a new event
+        $event = new Event;
+        $event->name = 'Gruppenphase';
+        $event->description = '<p>Während der Gruppenphase erhältst du von deinen Tutoren und Tutorinnen wichtige Informationen rund um das Studium. Außerdem ist die Gruppenphase dazu da, um direkt die anderen Erstis kennenzulernen und erste Freundschaften zu schließen.</p>
+        <p>Diese Gruppenphase ist speziell für Studierende des Studiengangs <strong>M.Sc. Information Systems</strong>, da dort einige Besonderheiten erklärt werden.</p>';
+        $event->type = 'group_phase';
+        $event->registration_from = new DateTime('2023-09-25 8:00:00');
+        $event->registration_to = new DateTime('2023-09-25 12:30:00');
+        $event->has_requirements = false;
+        $event->consider_alcohol = false;
+        $event->sort_order = 101;
+
+        // save the event
+        $event->save();
+
+        // create event groups
+        $groupNames = [
+            'Die masterhaften Mammuts',
+        ];
+        foreach ($groupNames as $groupName) {
+            $group = new Group;
+            $group->name = $groupName;
+            $group->event_id = $event->id;
+            $group->save();
+        }
+
+        // get all courses
+        $courses = Course::all();
+
+        // map courses by abbreviation
+        $coursesByAbbreviation = [];
+        foreach ($courses as $course) {
+            $coursesByAbbreviation[$course->abbreviation] = $course;
+        }
+
+        // allowed courses
+        $allowedCourses = [
+            'IS-Master',
+        ];
+
+        // save courses
+        foreach ($allowedCourses as $courseAbbreviation) {
+            $course = $coursesByAbbreviation[$courseAbbreviation];
+            $course_event = new CourseEvent;
+            $course_event->course_id = $course->id;
+            $course_event->event_id = $event->id;
+            $course_event->save();
         }
     }
 
@@ -260,7 +355,7 @@ class EventsErstiwocheSeeder extends Seeder
             $group->save();
 
             // save course_group collections
-            foreach ($group->course_ids as $course_id) {
+            foreach ($groupData['course_ids'] as $course_id) {
                 $course_group = new CourseGroup;
                 $course_group->course_id = $course_id;
                 $course_group->group_id = $group->id;

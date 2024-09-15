@@ -28,6 +28,17 @@
                     scope="col"
                     class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
                   >
+                    Studiengänge
+                  </th>
+                  <th
+                    v-if="
+                      user.permissionsArray.includes(
+                        'view hidden event details',
+                      )
+                    "
+                    scope="col"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
+                  >
                     Berücksichtigt Verzehr von Alkohol
                   </th>
                   <th
@@ -82,6 +93,27 @@
                     ]"
                   >
                     {{ event.type }}
+                  </td>
+                  <td
+                    v-if="
+                      user.permissionsArray.includes(
+                        'view hidden event details',
+                      )
+                    "
+                    :class="[
+                      index !== events.length - 1
+                        ? 'border-b border-gray-200 dark:border-gray-700'
+                        : '',
+                      'px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
+                    ]"
+                  >
+                    {{
+                      event.courses.length == 0
+                        ? "Alle"
+                        : event.courses
+                            .map((course) => course.abbreviation)
+                            .join(", ")
+                    }}
                   </td>
                   <td
                     v-if="

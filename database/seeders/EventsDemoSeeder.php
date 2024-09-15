@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Course;
+use App\Models\CourseEvent;
 use App\Models\CourseGroup;
 use App\Models\Event;
 use App\Models\Group;
@@ -20,6 +21,7 @@ class EventsDemoSeeder extends Seeder
     public function run(): void
     {
         $this->runGroupPhase();
+        $this->runGroupPhaseLimitedCourses();
         $this->runGroupPhaseByCourse();
         $this->runEventRegistration();
         $this->runSlotBooking();
@@ -71,6 +73,93 @@ class EventsDemoSeeder extends Seeder
             $group->event_id = $event->id;
             $group->telegram_group_link = $groupData['telegram_group_link'];
             $group->save();
+        }
+
+        // get all users without roles
+        $users = User::doesntHave('roles')->get();
+
+        // register users to event
+        foreach ($users as $user) {
+            // create registration
+            $event->registrations()->create([
+                'user_id' => $user->id,
+                'drinks_alcohol' => rand(0, 1) == 1,
+            ]);
+        }
+    }
+
+    /**
+     * Run the "groupPhaseLimitedCourses" event seeds.
+     */
+    public function runGroupPhaseLimitedCourses(): void
+    {
+        // check if event with name "group_phase-limited_courses" exists
+        $event = Event::where('name', 'group_phase-limited_courses')->first();
+        if ($event) {
+            return;
+        }
+
+        // set registration_from and registration_to
+        $registration_from = new DateTime(NOW());
+        $registration_to = new DateTime(NOW());
+        $registration_to->modify('+7 days');
+
+        // create a new event
+        $event = new Event;
+        $event->name = 'group_phase-limited_courses';
+        $event->description = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae eros vitae nisl ultrices ult.';
+        $event->type = 'group_phase';
+        $event->registration_from = $registration_from;
+        $event->registration_to = $registration_to;
+        $event->has_requirements = false;
+        $event->consider_alcohol = true;
+        $event->sort_order = 110;
+
+        // save the event
+        $event->save();
+
+        // create event groups
+        $groups = [];
+        for ($i = 1; $i <= 14; $i++) {
+            $groups[] = [
+                'name' => "Gruppe $i",
+                'telegram_group_link' => "https://example.com/invalid-telegram-link",
+            ];
+        }
+
+        // save groups
+        foreach ($groups as $groupData) {
+            $group = new Group;
+            $group->name = $groupData['name'];
+            $group->event_id = $event->id;
+            $group->telegram_group_link = $groupData['telegram_group_link'];
+            $group->save();
+        }
+
+        // get all courses
+        $courses = Course::all();
+
+        // map courses by abbreviation
+        $coursesByAbbreviation = [];
+        foreach ($courses as $course) {
+            $coursesByAbbreviation[$course->abbreviation] = $course;
+        }
+
+        // allowed courses
+        $allowedCourses = [
+            'ISE-Master',
+            'IS-Master',
+            'INF-Master',
+            'ET-Master',
+        ];
+
+        // save courses
+        foreach ($allowedCourses as $courseAbbreviation) {
+            $course = $coursesByAbbreviation[$courseAbbreviation];
+            $course_event = new CourseEvent;
+            $course_event->course_id = $course->id;
+            $course_event->event_id = $event->id;
+            $course_event->save();
         }
 
         // get all users without roles
@@ -168,7 +257,7 @@ class EventsDemoSeeder extends Seeder
             $group->event_id = $event->id;
             $group->save();
 
-            foreach ( $coursesCollection[$groupData['collection']] as $course){
+            foreach ($coursesCollection[$groupData['collection']] as $course) {
                 $coursegroup = new CourseGroup;
                 $coursegroup->course_id = $coursesByAbbreviation[$course]->id;
                 $coursegroup->group_id = $group->id;
