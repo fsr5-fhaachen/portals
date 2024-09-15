@@ -174,8 +174,8 @@ class EventsErstiwocheSeeder extends Seeder
         $event->description = '<p>Während der Gruppenphase erhältst du von deinen Tutoren und Tutorinnen wichtige Informationen rund um das Studium. Außerdem ist die Gruppenphase dazu da, um direkt die anderen Erstis kennenzulernen und erste Freundschaften zu schließen.</p>
         <p>Diese Gruppenphase ist speziell für Studierende des Studiengangs <strong>M.Sc. Information Systems</strong>, da dort einige Besonderheiten erklärt werden.</p>';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2023-09-25 8:00:00');
-        $event->registration_to = new DateTime('2023-09-25 12:30:00');
+        $event->registration_from = new DateTime('2024-09-23 8:00:00');
+        $event->registration_to = new DateTime('2024-09-23 12:30:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 101;
@@ -339,12 +339,12 @@ class EventsErstiwocheSeeder extends Seeder
         }
 
         for ($i = 1; $i <= 1; $i++) {
-          $groups[] = [
-            'name' => "IS-Master Hausführung $i",
-            'course_ids' => [
-              $coursesByAbbreviation['IS-Master']->id
-            ],
-          ];
+            $groups[] = [
+                'name' => "IS-Master Hausführung $i",
+                'course_ids' => [
+                    $coursesByAbbreviation['IS-Master']->id
+                ],
+            ];
         }
 
         // save groups
@@ -463,7 +463,7 @@ class EventsErstiwocheSeeder extends Seeder
         $event->description = '<p>Auch sportliche Aktivitäten kommen bei uns nicht zu kurz. Für eine Anmeldegebühr von <strong>5€</strong> könnt ihr euch am Freitag auspowern.</p>
             <p>Bitte bezahlt die Anmeldegebühr am Montag zwischen 13:45 und 16:00 Uhr oder Mittwoch zwischen 12:00 und 14:30 Uhr im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben.</p>
             <p>Bitte beachtet auch die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
-            <p><strong>Fußball, Volleyball:</strong>Die Anmeldegebühr fungiert als Pfand, welches ihr beim Erscheinen wieder zurückbekommt.</p>
+            <p><strong>Fußball, Volleyball:</strong> Die Anmeldegebühr fungiert als Pfand, welches ihr beim Erscheinen wieder zurückbekommt.</p>
             <p><strong>Yoga:</strong> Bitte bringt eine eigene Yogamatte mit.</p>
             <p><strong>Bouldern:</strong> Falls nicht vorhanden, können Stoppersocken vor Ort für 3€ erworben werden.</p>
             <p><strong>Allgemein:</strong> Eine anschließende Teilnahme an weiteren Programmpunkten ist nur mit der “Foodtour” und dem "Tierpark Besuch" zeitlich möglich, und nicht für Teilnehmer der Boulder-Gruppe.</p>
@@ -533,7 +533,7 @@ class EventsErstiwocheSeeder extends Seeder
             <p>Bitte beachtet die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
             <p><strong>Tierpark:</strong> Für eine Anmeldegebühr von <strong>5€</strong> ist eine Teilnahme möglich. Bitte bezahlt die Anmeldegebühr am Montag zwischen 13:45 und 16:00 Uhr oder Mittwoch zwischen 12:00 und 14:30 Uhr im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben. Die Anmeldegebühr fungiert als Pfand, welches ihr beim Erscheinen wieder zurückbekommt.</p>
             <p><strong>Foodtour:</strong> Ihr müsst eure Döner / Falafel-Taschen selber zahlen.</p>
-            <p><strong>Allgemein:</strong> Eine anschließende Teilnahme an weiteren Programmpunkten ist nur mit der “Foodtour” zeitlich möglich.</p>
+            <p><strong>Allgemein:</strong> Eine vorab Teilnahme an weiteren Programmpunkten ist nur in Kombination mit “Fußball, Volleyball”, “Yoga” und “Lasertag” zeitlich möglich.</p>
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
             <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
