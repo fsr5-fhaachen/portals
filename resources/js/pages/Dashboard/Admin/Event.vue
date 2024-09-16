@@ -4,13 +4,23 @@
 
     <BoxContainer class="mb-16">
       <CourseBox v-for="course in coursesData" :course="course">
-        <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+        <p
+          v-if="
+            typeof course.users == 'number' ||
+            (Array.isArray(course.users) && course.users.length)
+          "
+          class="text-2xl font-semibold text-gray-900 dark:text-gray-100"
+        >
           {{
             typeof course.users == "number"
               ? course.users
               : course.users?.length
           }}
         </p>
+        <div
+          v-else
+          class="h-8 w-10 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-900"
+        ></div>
       </CourseBox>
     </BoxContainer>
 
@@ -35,7 +45,6 @@
 
     <GroupTable
       v-if="event.type == 'group_phase' && event.groups"
-      :courses="courses"
       :event="event"
       :groups="event.groups"
     />
@@ -115,7 +124,7 @@ const fetchCourses = async () => {
     // map the data to the courses
     coursesData.value = courses.map((course) => {
       const courseData = data.find(
-        (courseData: any) => courseData.id == course.id
+        (courseData: any) => courseData.id == course.id,
       );
 
       return {

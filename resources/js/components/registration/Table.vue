@@ -244,7 +244,7 @@
                           v-if="
                             user &&
                             user.permissionsArray.includes(
-                              'view hidden event details'
+                              'view hidden event details',
                             )
                           "
                         >
@@ -377,7 +377,7 @@ const toggleIsPresent = async (registrationId: number) => {
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   if (response.ok) {
@@ -400,7 +400,7 @@ const toggleFulfilsRequirements = async (registrationId: number) => {
       headers: {
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   if (response.ok) {
@@ -430,7 +430,7 @@ const destory = async (registrationId: number) => {
 
   if (response.ok) {
     registrationsData.value = registrationsData.value.filter(
-      (registration) => registration.id !== registrationId
+      (registration) => registration.id !== registrationId,
     );
   }
 };

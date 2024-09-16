@@ -19,7 +19,7 @@ class DashboardController extends Controller
     public function index(): Response
     {
         // get events ordered by sort_order
-        $events = Event::orderBy('sort_order')->get();
+        $events = Event::orderBy('sort_order')->with('courses')->get();
 
         // get registrations of the user
         $registrations = Auth::user()->registrations;
@@ -36,12 +36,15 @@ class DashboardController extends Controller
     public function loginTutor(Request $request): RedirectResponse
     {
         $neededPassword = '';
+        $successMessage = '';
 
         // check we need a password
-        if (Auth::user()->hasRole(['admin'])) {
+        if (Auth::user()->hasRole(['admin', 'super admin'])) {
             $neededPassword = config('app.admin_password');
+            $successMessage = 'Du wurdest als Admin angemeldet.';
         } elseif (Auth::user()->hasRole(['esa', 'stage tutor', 'tutor'])) {
             $neededPassword = config('app.tutor_password');
+            $successMessage = 'Du wurdest als Tutor angemeldet.';
         }
 
         if ($neededPassword) {
@@ -49,7 +52,7 @@ class DashboardController extends Controller
                 // set the session variable
                 session(['tutor' => true]);
 
-                Session::flash('success', 'Du wurdest als Tutor angemeldet.');
+                Session::flash('success', $successMessage);
 
                 // redirect to dashboard
                 return redirect()->route('dashboard.tutor.index');

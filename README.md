@@ -71,12 +71,25 @@ npm run dev
 
 If you want to use the provided devcontainer via laravel sail you need vscode and the devcontainer extension.
 
+#### intial devcontainer setup
+
+if you want to setup the devcontainer without installing tools to your host system, you can use the following steps:
+
+1. Install sail with `docker run --rm -it -v $PWD:/app bitnami/laravel -- composer install`
+2. Start the devcontainer, if you get the error message `groupadd: invalid group ID 'sail'`, add `WWWGROUP=1000` and `WWWUSER=1000` to your `.env` file and restart the devcontainer
+3. Start the devcontainer, delete the `/vendor` folder (because the step before downloaded the dependencies with the root user. this can cause permission errors later) and rerun `composer install` with the "sail" user in the devcontainer
+4. Run the mandatory setup (set app key (see [install](#install)), add db host to `.env` (in this case use `DB_CONNECTION=pgsql, DB_HOST=pgsql, DB_PORT=5432` and insert your `DB_USERNAME` and `DB_PASSWORD`) and run `npm install`, `php artisan migrate:fresh --seed` and `npm run dev`).
+
 ### type generation
 
 To generate the typescript types for the frontend, run:
 
+> [!WARNING]
+> The command output changed with update to Laravel 11.x.
+> Please verify the output before using.
+
 ```sh
-php artisan typescript:generate
+php artisan types:generate --namespace="App.Models" --outputDir="./resources/js/types/"
 ```
 
 ### linting
@@ -113,9 +126,9 @@ npm run build
 
 ### production
 
-This project uses laravel octane with roadrunner as production server. You can install the server with:
+This project uses laravel octane with frankenphp (roadrunner in earlier releases) as production server. You can install the server with:
 
-This step will also ask you to download the roadrunner binary.
+This step will also ask you to download the frankenphp (roadrunner in earlier releases) binary.
 
 ```sh
 php artisan octane:install
@@ -151,7 +164,7 @@ If you want information about creating the kubernetes cluster, see [deploy infor
 
 👤 **Titus Kirch (main author)**
 
-- Website: https://tkirch.dev/
+- Website: https://kirch.dev/
 - LinkedIn: [Titus Kirch](https://www.linkedin.com/in/tituskirch/)
 - Twitter: [@TitusKirch](https://twitter.com/TitusKirch)
 - GitHub: [@TitusKirch](https://github.com/TitusKirch)
@@ -161,8 +174,9 @@ If you want information about creating the kubernetes cluster, see [deploy infor
 - LinkedIn: [Benedikt Haas](https://www.linkedin.com/in/benedikt-haas-ab698924a/)
 - GitHub: [@BenediktHaas96](https://github.com/BenediktHaas96)
 
-👤 **Simon Ostendorf**
+👤 **Simon Ostendorf (main author)**
 
+- Website: https://simon-ostendorf.de/
 - LinkedIn: [Simon Ostendorf](https://www.linkedin.com/in/simonostendorf/)
 - GitHub: [@simonostendorf](https://github.com/simonostendorf)
 

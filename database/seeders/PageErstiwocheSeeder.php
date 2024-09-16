@@ -23,11 +23,6 @@ class PageErstiwocheSeeder extends Seeder
                 'slug' => 'faq',
                 'sort_order' => 200,
             ],
-            [
-                'title' => 'Videos',
-                'slug' => 'videos',
-                'sort_order' => 300,
-            ],
         ];
 
         foreach ($pages as $pageData) {
@@ -36,17 +31,17 @@ class PageErstiwocheSeeder extends Seeder
 
             if ($page) {
                 // update content
-                $page->content = implode(PHP_EOL, file(__DIR__.'/pages/erstiwoche/'.$pageData['slug'].'.html'));
+                $page->content = implode(PHP_EOL, file(__DIR__ . '/pages/erstiwoche/' . $pageData['slug'] . '.html'));
 
                 // save the page
                 $page->save();
             } else {
                 // create a new page
-                $page = new Page();
+                $page = new Page;
                 $page->title = $pageData['title'];
                 $page->slug = $pageData['slug'];
                 $page->sort_order = $pageData['sort_order'];
-                $page->content = implode(PHP_EOL, file(__DIR__.'/pages/erstiwoche/'.$pageData['slug'].'.html'));
+                $page->content = implode(PHP_EOL, file(__DIR__ . '/pages/erstiwoche/' . $pageData['slug'] . '.html'));
 
                 // save the page
                 $page->save();

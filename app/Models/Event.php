@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use OwenIt\Auditing\Contracts\Auditable;
 
@@ -20,14 +21,17 @@ class Event extends Model implements Auditable
     protected $guarded = [];
 
     /**
-     * The attributes that should be cast.
+     * Get the attributes that should be cast.
      *
-     * @var array
+     * @return array<string, string>
      */
-    protected $casts = [
-        'registration_from' => 'datetime',
-        'registration_to' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'registration_from' => 'datetime',
+            'registration_to' => 'datetime',
+        ];
+    }
 
     /**
      * Get groups for the event.
@@ -59,5 +63,13 @@ class Event extends Model implements Auditable
     public function stations(): HasMany
     {
         return $this->hasMany(Station::class);
+    }
+
+    /**
+     * Get courses for the group.
+     */
+    public function courses(): BelongsToMany
+    {
+        return $this->belongsToMany(Course::class, 'course_event')->using(CourseEvent::class);
     }
 }
