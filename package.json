@@ -41,7 +41,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/vue-fontawesome": "^3.0.8",
-    "@headlessui/vue": "^1.7.22",
+    "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.1.5",
     "@inertiajs/inertia": "^0.11.1",
     "@inertiajs/inertia-vue3": "^0.6.0",
