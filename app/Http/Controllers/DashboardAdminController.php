@@ -220,7 +220,7 @@ class DashboardAdminController extends Controller
 
         // check if any groups has a course
         $hasCourse = false;
-        if ($event->groups->first()->courses()->exists()) $hasCourse = true;
+        if ($event->groups->first() != null && $event->groups->first()->courses()->exists()) $hasCourse = true;
 
         return Inertia::render('Dashboard/Admin/Submit', [
             'event' => $event,
