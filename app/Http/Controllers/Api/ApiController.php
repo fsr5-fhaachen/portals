@@ -308,6 +308,45 @@ class ApiController extends Controller
     }
 
     /**
+     * Return the current state of the countdown.
+     * The state is structured like this:
+     *   {
+     *     "state": string; // setup, running, stopped
+     *     "direction": string; // up, down
+     *     "time": {
+     *       "seconds": number;
+     *       "minutes": number;
+     *       "hours": number;
+     *     };
+     *   }
+     * 
+     * The definition of the states is as follows:
+     *   setup: The countdown is not set up yet
+     *   running: The countdown is running
+     *   stopped: The countdown is stopped
+     */
+    public function countdownState(): JsonResponse
+    {
+        // get state with key countdown
+        $state = State::where('key', 'countdown')->first();
+
+        // if state does not exist, return setup
+        if (! $state) {
+            return response()->json([
+                'state' => 'setup',
+                'time' => [
+                    'seconds' => 0,
+                    'minutes' => 0,
+                    'hours' => 0,
+                ],
+                'direction' => 'up',
+            ]);
+        }
+
+        return response()->json(json_decode($state->value));
+    }
+
+    /**
      * Fresh users data
      */
     public function users(): JsonResponse
