@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use OpenTelemetry\API\Globals;
 use Spatie\Permission\Models\Role;
 
 class DashboardAdminController extends Controller
@@ -29,11 +30,16 @@ class DashboardAdminController extends Controller
      */
     public function index(): Response
     {
+        $tracer = Globals::tracerProvider()->getTracer('local-test');
+        $span = $tracer->spanBuilder('manual-span')->startSpan();
+
         $courses = Course::all();
 
         foreach ($courses as $course) {
             $course->users = $course->users()->doesntHave('roles')->get();
         }
+
+        $span->addEvent('rolled dice', ['courses' => $courses])->end();
 
         return Inertia::render('Dashboard/Admin/Index', [
             'courses' => $courses,

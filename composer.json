@@ -12,6 +12,16 @@
     "laravel/octane": "^2.3",
     "laravel/tinker": "^2.9",
     "league/flysystem-aws-s3-v3": "^3.16",
+    "mismatch/opentelemetry-auto-redis": "^0.3.0",
+    "open-telemetry/exporter-otlp": "^1.0",
+    "open-telemetry/opentelemetry-auto-guzzle": "^1.0",
+    "open-telemetry/opentelemetry-auto-laravel": "^0.0.28",
+    "open-telemetry/opentelemetry-auto-pdo": "^0.0.15",
+    "open-telemetry/opentelemetry-auto-psr3": "^0.0.7",
+    "open-telemetry/opentelemetry-auto-psr15": "^1.0",
+    "open-telemetry/opentelemetry-auto-psr18": "^1.0",
+    "open-telemetry/sdk": "^1.0",
+    "open-telemetry/transport-grpc": "^1.0",
     "owen-it/laravel-auditing": "^13.6",
     "spatie/laravel-permission": "^6.9",
     "spiral/roadrunner": "^2024.2.0",
@@ -62,7 +72,10 @@
   "config": {
     "optimize-autoloader": true,
     "preferred-install": "dist",
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
   },
   "minimum-stability": "stable",
   "prefer-stable": true
