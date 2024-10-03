@@ -7,6 +7,10 @@
         <UiH2>Aktionen</UiH2>
 
         <FormRow>
+          <div>Aktueller Zustand: {{ state.state }}</div>
+        </FormRow>
+
+        <FormRow>
           <AppButton
             @click="updateStateAndSubmit('running')"
             class="flex-1 text-center"
@@ -21,6 +25,15 @@
             Countdown stoppen
           </AppButton>
         </FormRow>
+        <FormRow>
+          <AppButton
+            @click="updateStateAndSubmit('idle')"
+            theme="gray"
+            class="flex-1 text-center"
+          >
+            Countdown idle
+          </AppButton>
+        </FormRow>
       </CardBase>
       <CardBase>
         <FormKit
@@ -33,6 +46,17 @@
           <FormContainer>
             <FormRow>
               <UiH2>Einstellungen</UiH2>
+            </FormRow>
+            <FormRow>
+              <div>
+                Wenn der Countdown in Richtung "Aufwärts" zählt, wird die
+                festgelegte Zeit als Maximum gewertet. Wenn der Countdown in
+                Richtung "Abwärts" zählt, wird die festgelegte Zeit als
+                Startwert gewertet und der Countdown zählt bis 0. Wird der
+                Countdown auf "idle" gestellt, wird nichts mehr angezeigt und
+                die Zeit wird im Hintergrund zurückgesetzt. "Stopped" stoppt nur
+                die Anzeige, die Zeit wird nicht zurückgesetzt.
+              </div>
             </FormRow>
             <FormRow>
               <FormKit
@@ -90,53 +114,58 @@
 import { options } from "prettier-plugin-tailwindcss";
 import { computed, ref, PropType, onBeforeUnmount } from "vue";
 
+const { state } = defineProps({
+  state: {
+    type: Object as PropType<{
+      time: {
+        seconds: number;
+        minutes: number;
+        hours: number;
+      };
+      direction: "up" | "down";
+      state: "setup" | "idle" | "running" | "stopped";
+    }>,
+    required: true,
+  },
+});
+
+console.log("got state");
+console.log(state);
+console.log(state.time);
+console.log("---");
+
 const form = ref<{
   seconds: number;
   minutes: number;
   hours: number;
   direction: "up" | "down";
 }>({
-  seconds: 0,
-  minutes: 0,
-  hours: 0,
-  direction: "down",
+  seconds: state?.time.seconds || 0,
+  minutes: state?.time.minutes || 0,
+  hours: state?.time.hours || 0,
+  direction: state?.direction || "down",
 });
 
-const state = ref<{
-  state: "setup" | "running" | "stopped";
-  direction: "up" | "down";
-  time: {
-    seconds: number;
-    minutes: number;
-    hours: number;
-  };
-}>({
-  state: "setup",
-  direction: "down",
-  time: {
-    seconds: 0,
-    minutes: 0,
-    hours: 0,
-  },
-});
-
-const updateStateAndSubmit = (newState: "setup" | "running" | "stopped") => {
-  state.value.state = newState;
-  console.log(state.value);
+const updateStateAndSubmit = (
+  newState: "setup" | "idle" | "running" | "stopped",
+) => {
+  state.state = newState;
   submitCountdownHandler();
 };
 
 const updateTimeAndSubmit = () => {
-  state.value.time.seconds = form.value.seconds;
-  state.value.time.minutes = form.value.minutes;
-  state.value.time.hours = form.value.hours;
-  state.value.direction = form.value.direction;
-  console.log(state.value);
-  console.log(state.value.time);
+  state.time.seconds = form.value.seconds;
+  state.time.minutes = form.value.minutes;
+  state.time.hours = form.value.hours;
+  state.direction = form.value.direction;
   submitCountdownHandler();
 };
 
 const submitCountdownHandler = async () => {
+  console.log("send state");
+  console.log(state);
+  console.log(state.time);
+  console.log("---");
   const response = await fetch("/dashboard/admin/countdown", {
     method: "POST",
     credentials: "include",
@@ -147,7 +176,7 @@ const submitCountdownHandler = async () => {
           .querySelector("meta[name='csrf-token']")
           ?.getAttribute("content") || "",
     },
-    body: JSON.stringify(state.value),
+    body: JSON.stringify(state),
   });
 };
 </script>

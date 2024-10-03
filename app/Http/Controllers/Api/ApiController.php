@@ -322,6 +322,7 @@ class ApiController extends Controller
      * 
      * The definition of the states is as follows:
      *   setup: The countdown is not set up yet
+     *   idle: The countdown was resetted
      *   running: The countdown is running
      *   stopped: The countdown is stopped
      */
