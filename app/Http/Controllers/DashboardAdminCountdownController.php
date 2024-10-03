@@ -33,11 +33,9 @@ class DashboardAdminCountdownController extends Controller
      */
     public function indexExecuteSubmit(): JsonResponse
     {
-        dd(Request::all());
-
         // validate the request
         $request = Request::validate([
-            'state' => ['required', 'in:setup,running,stopped'],
+            'state' => ['required', 'in:setup,idle,running,stopped'],
             'time.seconds' => ['required', 'numeric', 'min:0', 'max:59'],
             'time.minutes' => ['required', 'numeric', 'min:0', 'max:59'],
             'time.hours' => ['required', 'numeric', 'min:0', 'max:23'],
@@ -53,6 +51,7 @@ class DashboardAdminCountdownController extends Controller
 
         // update the state
         $state->value = json_encode([
+            'state' => $request['state'],
             'time' => $request['time'],
             'direction' => $request['direction'],
         ]);
