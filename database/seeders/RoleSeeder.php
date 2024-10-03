@@ -15,15 +15,18 @@ class RoleSeeder extends Seeder
     {
         // create permissions if they don't exist
         $permissions = [];
-        foreach ([
-            'view statistics',
-            'view hidden event details',
-            'manage events',
-            'manage users',
-            'delete users',
-            'manage random generator',
-            'manage score system',
-        ] as $permission) {
+        foreach (
+            [
+                'view statistics',
+                'view hidden event details',
+                'manage events',
+                'manage users',
+                'delete users',
+                'manage random generator',
+                'manage score system',
+                'manage countdown',
+            ] as $permission
+        ) {
             if (! Permission::where('name', $permission)->exists()) {
                 Permission::create(['name' => $permission]);
             }
@@ -43,6 +46,7 @@ class RoleSeeder extends Seeder
         $stageTutorRole = Role::where('name', 'stage tutor')->first();
         $stageTutorRole->givePermissionTo($permissions['manage random generator']);
         $stageTutorRole->givePermissionTo($permissions['manage score system']);
+        $stageTutorRole->givePermissionTo($permissions['manage countdown']);
 
         // create esa role if it doesn't exist
         if (! Role::where('name', 'esa')->exists()) {
@@ -62,6 +66,7 @@ class RoleSeeder extends Seeder
         $adminRole->givePermissionTo($permissions['manage events']);
         $adminRole->givePermissionTo($permissions['manage random generator']);
         $adminRole->givePermissionTo($permissions['manage score system']);
+        $adminRole->givePermissionTo($permissions['manage countdown']);
         $adminRole->givePermissionTo($permissions['manage users']);
 
         // create super admin role if it doesn't exist
@@ -74,6 +79,7 @@ class RoleSeeder extends Seeder
         $superAdminRole->givePermissionTo($permissions['manage events']);
         $superAdminRole->givePermissionTo($permissions['manage random generator']);
         $superAdminRole->givePermissionTo($permissions['manage score system']);
+        $superAdminRole->givePermissionTo($permissions['manage countdown']);
         $superAdminRole->givePermissionTo($permissions['manage users']);
         $superAdminRole->givePermissionTo($permissions['delete users']);
 

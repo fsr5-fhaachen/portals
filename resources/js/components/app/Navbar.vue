@@ -93,6 +93,22 @@
               Punktesystem
             </InertiaLink>
             <InertiaLink
+              v-if="
+                modules['countdown']?.active &&
+                user.permissionsArray.includes('manage countdown')
+              "
+              href="/dashboard/admin/countdown"
+              :class="{
+                'border-red-500 text-red-900':
+                  $page.url == '/dashboard/admin/countdown',
+                'border-transparent text-red-500 hover:border-red-300 hover:text-red-700':
+                  $page.url != '/dashboard/admin/countdown',
+              }"
+              class="inline-flex items-center border-b-[3px] px-1 pt-1 text-sm font-medium"
+            >
+              Countdown
+            </InertiaLink>
+            <InertiaLink
               v-if="user.permissionsArray.includes('manage users')"
               href="/dashboard/admin/users"
               :class="{
@@ -209,6 +225,23 @@
           class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
         >
           Punktesystem
+        </DisclosureButton>
+        <DisclosureButton
+          v-if="
+            modules['countdown']?.active &&
+            user.permissionsArray.includes('manage countdown')
+          "
+          :as="InertiaLink"
+          href="/dashboard/admin/countdown"
+          :class="{
+            'border-red-500 bg-red-100 text-red-900 dark:bg-black dark:text-red-500':
+              $page.url == '/dashboard/admin/countdown',
+            'border-transparent text-red-600 hover:border-red-300 hover:bg-red-50 hover:text-red-800 dark:text-red-400 dark:hover:bg-gray-900 dark:hover:text-red-100':
+              $page.url != '/dashboard/admin/countdown',
+          }"
+          class="block border-l-4 py-2 pl-3 pr-4 text-base font-medium"
+        >
+          Countdown
         </DisclosureButton>
         <DisclosureButton
           v-if="user.permissionsArray.includes('manage users')"

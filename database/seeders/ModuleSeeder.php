@@ -25,6 +25,10 @@ class ModuleSeeder extends Seeder
                 'key' => 'scoreSystem',
                 'active' => false,
             ],
+            [
+                'key' => 'countdown',
+                'active' => false,
+            ],
         ];
 
         foreach ($modules as $module) {
