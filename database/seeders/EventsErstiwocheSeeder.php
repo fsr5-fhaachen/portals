@@ -430,7 +430,7 @@ class EventsErstiwocheSeeder extends Seeder
         $event->type = 'event_registration';
         $event->registration_from = new DateTime('2024-09-23 8:00:00');
         $event->registration_to = new DateTime('2024-09-25 23:59:59');
-        $event->has_requirements = false;
+        $event->has_requirements = true;
         $event->consider_alcohol = false;
         $event->sort_order = 140;
         $event->form = '[
@@ -554,7 +554,7 @@ class EventsErstiwocheSeeder extends Seeder
             ],
             [
                 'name' => 'Tierpark',
-                'has_requirements' => false,
+                'has_requirements' => true,
                 'maximum_participants' => 50,
             ],
         ];
