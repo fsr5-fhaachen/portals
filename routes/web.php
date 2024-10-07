@@ -5,6 +5,7 @@ use App\Http\Controllers\AppController;
 use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\DashboardAdminRandomGeneratorController;
 use App\Http\Controllers\DashboardAdminScoreSystemController;
+use App\Http\Controllers\DashboardAdminCountdownController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
@@ -95,6 +96,12 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
             Route::post('/score-system', [DashboardAdminScoreSystemController::class, 'indexExecuteSubmit'])->name('dashboard.admin.scoreSystem.indexExecuteSubmit');
             Route::get('/score-system/display', [DashboardAdminScoreSystemController::class, 'display'])->name('dashboard.admin.scoreSystem.display');
         });
+
+        Route::middleware(ActiveModule::class . ':countdown', 'can:manage countdown')->group(function () {
+            Route::get('/countdown', [DashboardAdminCountdownController::class, 'index'])->name('dashboard.admin.countdown.index');
+            Route::post('/countdown', [DashboardAdminCountdownController::class, 'indexExecuteSubmit'])->name('dashboard.admin.countdown.indexExecuteSubmit');
+            Route::get('/countdown/display', [DashboardAdminCountdownController::class, 'display'])->name('dashboard.admin.countdown.display');
+        });
     });
 
     Route::get('{slug?}', [DashboardController::class, 'cmsPage'])->where('slug', '.*');
@@ -135,6 +142,10 @@ Route::prefix('api')->middleware(Authenticate::class)->group(function () {
 
     Route::middleware(ActiveModule::class . ':scoreSystem', 'can:manage score system')->group(function () {
         Route::get('/score-system/state', [ApiController::class, 'scoreSystemState'])->name('api.scoreSystemState');
+    });
+
+    Route::middleware(ActiveModule::class . ':countdown', 'can:manage countdown')->group(function () {
+        Route::get('/countdown/state', [ApiController::class, 'countdownState'])->name('api.countdownState');
     });
 });
 
