@@ -16,14 +16,17 @@ class ModuleGerolsteinSeeder extends Seeder
             [
                 'key' => 'randomGenerator',
                 'active' => true,
+                'expose_public' => true,
             ],
             [
                 'key' => 'scoreSystem',
                 'active' => true,
+                'expose_public' => true,
             ],
             [
                 'key' => 'countdown',
                 'active' => true,
+                'expose_public' => true,
             ],
         ];
 
@@ -36,6 +39,7 @@ class ModuleGerolsteinSeeder extends Seeder
 
             // update module
             $existingModule->active = $module['active'];
+            $existingModule->expose_public = $module['expose_public'];
 
             // save module
             $existingModule->save();
