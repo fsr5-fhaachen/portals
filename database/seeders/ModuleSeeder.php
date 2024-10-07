@@ -16,18 +16,22 @@ class ModuleSeeder extends Seeder
             [
                 'key' => 'registration',
                 'active' => false,
+                'expose_public' => false,
             ],
             [
                 'key' => 'randomGenerator',
                 'active' => false,
+                'expose_public' => false,
             ],
             [
                 'key' => 'scoreSystem',
                 'active' => false,
+                'expose_public' => false,
             ],
             [
                 'key' => 'countdown',
                 'active' => false,
+                'expose_public' => false,
             ],
         ];
 
@@ -42,6 +46,7 @@ class ModuleSeeder extends Seeder
             $newModule = new Module;
             $newModule->key = $module['key'];
             $newModule->active = $module['active'];
+            $newModule->expose_public = $module['expose_public'];
 
             // save module
             $newModule->save();

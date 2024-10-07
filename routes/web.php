@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
 use App\Http\Middleware\ActiveModule;
+use App\Http\Middleware\ActivePublicModule;
 use App\Http\Middleware\IsLoggedInTutor;
 use App\Http\Middleware\RedirectIfTutor;
 use Illuminate\Auth\Middleware\Authenticate;
@@ -107,6 +108,20 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
     Route::get('{slug?}', [DashboardController::class, 'cmsPage'])->where('slug', '.*');
 });
 
+//public routes without authentication
+Route::prefix('public')->group(function () {
+    Route::middleware(ActivePublicModule::class . ':randomGenerator')->group(function () {
+        Route::get('/random-generator', [DashboardAdminRandomGeneratorController::class, 'display'])->name('dashboard.admin.randomGenerator.display');
+    });
+
+    Route::middleware(ActivePublicModule::class . ':scoreSystem')->group(function () {
+        Route::get('/score-system', [DashboardAdminScoreSystemController::class, 'display'])->name('dashboard.admin.scoreSystem.display');
+    });
+
+    Route::middleware(ActivePublicModule::class . ':countdown')->group(function () {
+        Route::get('/countdown', [DashboardAdminCountdownController::class, 'display'])->name('dashboard.admin.countdown.display');
+    });
+});
 // api routes with authentication
 Route::prefix('api')->middleware(Authenticate::class)->group(function () {
     Route::middleware(IsLoggedInTutor::class)->group(function () {
