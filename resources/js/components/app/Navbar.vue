@@ -280,6 +280,8 @@
 import { Link as InertiaLink } from "@inertiajs/inertia-vue3";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 
+console.log(page.props.user.permissionsArray);
+
 defineProps({
   navigation: {
     type: Array as () => NavbarLink[],
