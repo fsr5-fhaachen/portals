@@ -14,6 +14,12 @@
         </div>
       </div>
     </div>
+    <audio autoplay v-if="isRunningSound">
+      <source
+        :src="soundFileNames[Math.floor(Math.random() * soundFileNames.length)]"
+        type="audio/mpeg"
+      />
+    </audio>
   </div>
 </template>
 
@@ -40,6 +46,15 @@ const scoreSystemState = ref<{
 
 const isFetchingScoreSystem = ref(false);
 
+const isRunningSound = ref(false);
+
+const soundFileNames = ref<string[]>([
+  "/sounds/score-system/hp-level-up-mario-4253.mp3",
+  "/sounds/score-system/mc-level-up-13367.mp3",
+  "/sounds/score-system/final-fantasy-level-up-27603.mp3",
+  "/sounds/score-system/fire-emblem-level-up.mp3",
+]);
+
 // functions
 const fetchScoreSystemState = async () => {
   if (isFetchingScoreSystem.value) {
@@ -58,6 +73,17 @@ const fetchScoreSystemState = async () => {
 
   if (response.ok) {
     const data = await response.json();
+
+    if (
+      JSON.stringify(scoreSystemState.value.teams) !==
+      JSON.stringify(data.teams)
+    ) {
+      console.log("Score System State Updated!");
+      isRunningSound.value = true;
+      setTimeout(() => {
+        isRunningSound.value = false;
+      }, 5000);
+    }
 
     scoreSystemState.value = data;
   }
