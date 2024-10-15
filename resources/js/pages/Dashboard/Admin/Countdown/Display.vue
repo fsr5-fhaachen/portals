@@ -88,7 +88,7 @@ const fetchCountdownState = async () => {
 
   isFetchingCountdown.value = true;
 
-  const response = await fetch("/api/countdown/state", {
+  const response = await fetch("/public/api/countdown/state", {
     method: "GET",
     credentials: "include",
     headers: {

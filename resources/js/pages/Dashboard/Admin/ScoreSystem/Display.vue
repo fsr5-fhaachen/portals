@@ -63,7 +63,7 @@ const fetchScoreSystemState = async () => {
 
   isFetchingScoreSystem.value = true;
 
-  const response = await fetch("/api/score-system/state", {
+  const response = await fetch("/public/api/score-system/state", {
     method: "GET",
     credentials: "include",
     headers: {
