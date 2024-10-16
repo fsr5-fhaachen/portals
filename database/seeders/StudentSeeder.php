@@ -45,7 +45,7 @@ class StudentSeeder extends Seeder
             $student = explode(';', $studentRaw[0]);
 
             // check if student exists
-            $user = User::where('email', $student[3])->first();
+            $user = User::where('email', strtolower($student[3]))->first();
             if ($user && ! $courseByKey[$student[2]]) {
                 continue;
             }
@@ -55,7 +55,7 @@ class StudentSeeder extends Seeder
             $user->lastname = $student[0];
             $user->firstname = $student[1];
             $user->course_id = $courseByKey[$student[2]]->id;
-            $user->email = $student[3];
+            $user->email = strtolower($student[3]);
 
             // save the user
             $user->save();

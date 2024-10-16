@@ -45,7 +45,7 @@ class TutorSeeder extends Seeder
             $tutor = explode(';', $tutorRaw[0]);
 
             // check if tutor exists
-            $user = User::where('email', $tutor[3])->first();
+            $user = User::where('email', strtolower($tutor[3]))->first();
             if ($user) {
                 continue;
             }
@@ -56,7 +56,7 @@ class TutorSeeder extends Seeder
             $user->lastname = $tutor[0];
             $user->firstname = $tutor[1];
             $user->course_id = $courseByKey[$tutor[2]]->id;
-            $user->email = $tutor[3];
+            $user->email = strtolower($tutor[3]);
 
             //set user to disabled
             if (array_key_exists(5, $tutor) && $tutor[5] == '1') {
