@@ -52,17 +52,15 @@ class HandleInertiaRequests extends Middleware
             $user->permissionsArray = $user->getAllPermissions()->pluck('name')->toArray();
         }
 
-        echo "<script>console.log('test');</script>";
-
         return array_merge(parent::share($request), [
             'appEventType' => config('app.event_type'),
             'user' => $user,
             'modules' => $modulesArray,
             'message' => [
-                'success' => fn() => $request->session()->get('success'),
-                'error' => fn() => $request->session()->get('error'),
-                'warning' => fn() => $request->session()->get('warning'),
-                'info' => fn() => $request->session()->get('info'),
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+                'warning' => fn () => $request->session()->get('warning'),
+                'info' => fn () => $request->session()->get('info'),
             ],
             'pages' => Page::orderBy('sort_order')->get(),
         ]);
