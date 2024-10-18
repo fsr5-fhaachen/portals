@@ -7,7 +7,9 @@
         <UiH2>Aktionen</UiH2>
 
         <FormRow>
-          <div>Aktueller Zustand: {{ state.state }}</div>
+          <div class="text-gray-900 dark:text-gray-100">
+            Aktueller Zustand: {{ state.state }}
+          </div>
         </FormRow>
 
         <FormRow>
@@ -48,7 +50,7 @@
               <UiH2>Einstellungen</UiH2>
             </FormRow>
             <FormRow>
-              <div>
+              <div class="text-gray-900 dark:text-gray-100">
                 Wenn der Countdown in Richtung "Aufwärts" zählt, wird die
                 festgelegte Zeit als Maximum gewertet. Wenn der Countdown in
                 Richtung "Abwärts" zählt, wird die festgelegte Zeit als
