@@ -29,11 +29,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'isTutor' => \App\Http\Middleware\IsTutor::class,
         ]);
     })
-    ->withMiddleware(function (Middleware $middleware) {
-        $middleware->validateCsrfTokens(except: [
-            'public/*',
-        ]);
-    })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();

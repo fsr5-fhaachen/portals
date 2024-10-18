@@ -129,11 +129,6 @@ const { state } = defineProps({
   },
 });
 
-console.log("got state");
-console.log(state);
-console.log(state.time);
-console.log("---");
-
 const form = ref<{
   seconds: number;
   minutes: number;
@@ -162,10 +157,6 @@ const updateTimeAndSubmit = () => {
 };
 
 const submitCountdownHandler = async () => {
-  console.log("send state");
-  console.log(state);
-  console.log(state.time);
-  console.log("---");
   const response = await fetch("/dashboard/admin/countdown", {
     method: "POST",
     credentials: "include",

@@ -108,21 +108,21 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
     Route::get('{slug?}', [DashboardController::class, 'cmsPage'])->where('slug', '.*');
 });
 
-//public routes without authentication
+// public routes without authentication
 Route::prefix('public')->group(function () {
     Route::middleware(ActivePublicModule::class . ':randomGenerator')->group(function () {
         Route::get('/random-generator', [DashboardAdminRandomGeneratorController::class, 'display'])->name('public.randomGenerator');
-        Route::get('/public/api/random-generator/state', [ApiController::class, 'randomGeneratorState'])->name('public.api.randomGeneratorState');
+        Route::get('/api/random-generator/state', [ApiController::class, 'randomGeneratorState'])->name('public.api.randomGeneratorState');
     });
 
     Route::middleware(ActivePublicModule::class . ':scoreSystem')->group(function () {
         Route::get('/score-system', [DashboardAdminScoreSystemController::class, 'display'])->name('public.scoreSystem');
-        Route::get('/public/api/score-system/state', [ApiController::class, 'scoreSystemState'])->name('public.api.scoreSystemState');
+        Route::get('/api/score-system/state', [ApiController::class, 'scoreSystemState'])->name('public.api.scoreSystemState');
     });
 
     Route::middleware(ActivePublicModule::class . ':countdown')->group(function () {
         Route::get('/countdown', [DashboardAdminCountdownController::class, 'display'])->name('public.countdown');
-        Route::get('/public/api/countdown/state', [ApiController::class, 'countdownState'])->name('public.api.countdownState');
+        Route::get('/api/countdown/state', [ApiController::class, 'countdownState'])->name('public.api.countdownState');
     });
 });
 

@@ -63,7 +63,11 @@ const fetchScoreSystemState = async () => {
 
   isFetchingScoreSystem.value = true;
 
-  const response = await fetch("/public/api/score-system/state", {
+  const apiPath = window.location.pathname.startsWith("/public")
+    ? "/public/api/score-system/state"
+    : "/api/score-system/state";
+
+  const response = await fetch(apiPath, {
     method: "GET",
     credentials: "include",
     headers: {
@@ -78,7 +82,6 @@ const fetchScoreSystemState = async () => {
       JSON.stringify(scoreSystemState.value.teams) !==
       JSON.stringify(data.teams)
     ) {
-      console.log("Score System State Updated!");
       isRunningSound.value = true;
       setTimeout(() => {
         isRunningSound.value = false;
