@@ -6,7 +6,7 @@ import AutoImport from "unplugin-auto-import/vite";
 
 export default defineConfig({
   build: {
-    target: "exnext",
+    target: "esnext",
   },
   optimizeDeps: {
     esbuildOptions: {
