@@ -21,6 +21,15 @@ class DashboardAdminCountdownController extends Controller
         if (! $state) {
             $state = new State;
             $state->key = 'countdown';
+            $state->value = json_encode([
+                'state' => 'setup',
+                'time' => [
+                    'seconds' => 0,
+                    'minutes' => 0,
+                    'hours' => 0,
+                ],
+                'direction' => 'up',
+            ]);
         }
 
         return Inertia::render('Dashboard/Admin/Countdown/Index', [

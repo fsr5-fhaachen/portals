@@ -311,7 +311,7 @@ class ApiController extends Controller
      * Return the current state of the countdown.
      * The state is structured like this:
      *   {
-     *     "state": string; // setup, running, stopped
+     *     "state": string; // setup, idle, running, stopped
      *     "direction": string; // up, down
      *     "time": {
      *       "seconds": number;
