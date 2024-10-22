@@ -7,7 +7,9 @@
         <UiH2>Aktionen</UiH2>
 
         <FormRow>
-          <div>Aktueller Zustand: {{ state.state }}</div>
+          <div class="text-gray-900 dark:text-gray-100">
+            Aktueller Zustand: {{ state.state }}
+          </div>
         </FormRow>
 
         <FormRow>
@@ -48,7 +50,7 @@
               <UiH2>Einstellungen</UiH2>
             </FormRow>
             <FormRow>
-              <div>
+              <div class="text-gray-900 dark:text-gray-100">
                 Wenn der Countdown in Richtung "Aufwärts" zählt, wird die
                 festgelegte Zeit als Maximum gewertet. Wenn der Countdown in
                 Richtung "Abwärts" zählt, wird die festgelegte Zeit als
@@ -129,11 +131,6 @@ const { state } = defineProps({
   },
 });
 
-console.log("got state");
-console.log(state);
-console.log(state.time);
-console.log("---");
-
 const form = ref<{
   seconds: number;
   minutes: number;
@@ -162,10 +159,6 @@ const updateTimeAndSubmit = () => {
 };
 
 const submitCountdownHandler = async () => {
-  console.log("send state");
-  console.log(state);
-  console.log(state.time);
-  console.log("---");
   const response = await fetch("/dashboard/admin/countdown", {
     method: "POST",
     credentials: "include",
