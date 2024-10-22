@@ -122,7 +122,11 @@ const fetchRandomGeneratorState = async () => {
 
   isFetchingRandomGenerator.value = true;
 
-  const response = await fetch("/api/random-generator/state", {
+  const apiPath = window.location.pathname.startsWith("/public")
+    ? "/public/api/random-generator/state"
+    : "/api/random-generator/state";
+
+  const response = await fetch(apiPath, {
     method: "GET",
     credentials: "include",
     headers: {
