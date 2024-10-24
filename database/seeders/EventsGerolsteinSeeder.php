@@ -116,7 +116,7 @@ class EventsGerolsteinSeeder extends Seeder
         // create event groups
         $groups = [];
 
-        for ($i = 1; $i <= 7; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             $groups[] = [
                 'name' => "Gruppe $i",
             ];
