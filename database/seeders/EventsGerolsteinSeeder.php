@@ -65,7 +65,7 @@ class EventsGerolsteinSeeder extends Seeder
 
         // create event groups
         $groupNames = [
-            'Die feschen Flamingos',
+            'Die freshen Flamingos',
             'Die wilden Weihnachtsbäume',
             'Die rasanten Rasenmäher',
             'Die ehrenhaften Erdbeeren',
