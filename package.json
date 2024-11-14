@@ -35,7 +35,7 @@
     "@formkit/addons": "^1.6.5",
     "@formkit/core": "^1.6.5",
     "@formkit/themes": "^1.6.5",
-    "@formkit/vue": "^1.6.5",
+    "@formkit/vue": "^1.6.8",
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/free-brands-svg-icons": "^6.6.0",
     "@fortawesome/free-regular-svg-icons": "^6.6.0",
