@@ -5,6 +5,14 @@ import Components from "unplugin-vue-components/vite";
 import AutoImport from "unplugin-auto-import/vite";
 
 export default defineConfig({
+  build: {
+    target: "esnext",
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: "esnext",
+    },
+  },
   resolve: {
     alias: {
       "@": "/resources/js",
@@ -43,7 +51,7 @@ export default defineConfig({
   define: {
     __PACKAGE_NAME__: JSON.stringify(process.env.npm_package_name),
     __PACKAGE_REPOSITORY_URL__: JSON.stringify(
-      "https://github.com/fsr5-fhaachen/portals/"
+      "https://github.com/fsr5-fhaachen/portals/",
     ),
   },
 });

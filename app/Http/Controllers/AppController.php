@@ -63,7 +63,7 @@ class AppController extends Controller
     public function registerUser(): RedirectResponse
     {
         // check if user with email already exists and login
-        $user = User::where('email', Request::input('email'))->first();
+        $user = User::where('email', strtolower(Request::input('email')))->first();
         if ($user) {
             Session::flash('info', 'Wir haben dich bereits in unserer Datenbank gefunden und haben dich automatisch eingeloggt.');
 
@@ -82,6 +82,8 @@ class AppController extends Controller
         // remove email_confirm from array
         unset($validated['email_confirm']);
 
+        $validated['email'] = strtolower($validated['email']);
+
         // create the user
         $user = User::create($validated);
 
@@ -99,7 +101,7 @@ class AppController extends Controller
         ]);
 
         // check if user exists
-        $user = User::where('email', $validated['email'])->first();
+        $user = User::where('email', strtolower($validated['email']))->first();
         if (! $user) {
             Session::flash('error', 'Es konnte kein Benutzer mit dieser E-Mail-Adresse gefunden werden.');
 

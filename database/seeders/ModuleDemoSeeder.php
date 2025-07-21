@@ -16,14 +16,22 @@ class ModuleDemoSeeder extends Seeder
             [
                 'key' => 'registration',
                 'active' => true,
+                'expose_public' => false,
             ],
             [
                 'key' => 'randomGenerator',
                 'active' => true,
+                'expose_public' => false,
             ],
             [
                 'key' => 'scoreSystem',
                 'active' => true,
+                'expose_public' => false,
+            ],
+            [
+                'key' => 'countdown',
+                'active' => true,
+                'expose_public' => false,
             ],
         ];
 
@@ -31,11 +39,12 @@ class ModuleDemoSeeder extends Seeder
             // check if module with key already exists
             $existingModule = Module::where('key', $module['key'])->first();
             if (! $existingModule) {
-                throw new \Exception('Module with key "'.$module['key'].'" not found.');
+                throw new \Exception('Module with key "' . $module['key'] . '" not found.');
             }
 
             // update module
             $existingModule->active = $module['active'];
+            $existingModule->expose_public = $module['expose_public'];
 
             // save module
             $existingModule->save();
