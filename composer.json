@@ -24,7 +24,7 @@
     "laravel/sail": "^1.26",
     "mockery/mockery": "^1.6",
     "nunomaduro/collision": "^8.0",
-    "phpunit/phpunit": "^11.0.1",
+    "pestphp/pest": "^3.0",
     "scrumble-nl/laravel-model-ts-type": "^10.4"
   },
   "autoload": {
@@ -62,7 +62,10 @@
   "config": {
     "optimize-autoloader": true,
     "preferred-install": "dist",
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
   },
   "minimum-stability": "stable",
   "prefer-stable": true
