@@ -1,0 +1,4 @@
+site_name: Portals
+site_url: https://fsr-fhaachen.github.io/portals/
+theme:
+  name: material
