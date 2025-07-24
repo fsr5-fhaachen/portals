@@ -24,6 +24,8 @@
 
 ## Install
 
+First, you need a running database (i.e. MariaDB). Make sure you have written down connection string, host, port, database name, user name and password.
+
 Clone the repository and install the dependencies:
 
 ```sh
@@ -39,13 +41,22 @@ Copy .env.example to .env and fill in the database credentials.
 cp .env.example .env
 ```
 
+```
+DB_CONNECTION=<connection string>
+DB_HOST=<host (mostly localhost or 127.0.0.1)>
+DB_PORT=<port>
+DB_DATABASE=<database name>
+DB_USERNAME=<user name>
+DB_PASSWORD=<password>
+```
+
 Generate the application key:
 
 ```sh
 php artisan key:generate
 ```
 
-Run the migrations:
+Run the migrations to create database tables:
 
 ```sh
 php artisan migrate
@@ -54,6 +65,12 @@ php artisan migrate
 ## Usage
 
 ### development
+
+Before starting the server, seed the database first. This creates the necessary data for the application to work:
+
+```sh
+php artisan db:seed
+```
 
 For development, you can use the built-in PHP server:
 

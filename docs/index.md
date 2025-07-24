@@ -1,5 +1,9 @@
 # Welcome to Portals
 
+Portals is a web application for the Ersti-Woche and Ersti-Fahrt.<br>
+Users can register for events. Events are divided into groups, into which users get distributed.<br>
+Tutors can overview their groups and mark members as present or missing.
+
 ## Project layout
 
     .devcontainer/                          # DevContainer configuration files
@@ -79,3 +83,25 @@
 
     tailwind.config.cjs                     # Configuration for tailwind CSS (styling)
     vite.config.js                          # Configuration for vite (combining and minimizing javascript and CSS files)
+
+## How does portals work?
+
+### Laravel
+
+Portals is based on the Laravel web application framework. The framework makes common problems such as routing, security, authentication easy to handle. After you learn how Laravel works, it becomes very pleasant to work with. For a detailed documentation, view the [Laravel docs](https://laravel.com/docs/11.x).<br>
+Portals does not use every Laravel feature. The most important features are explained in this documentation.
+
+### MVC-Pattern
+
+Portals uses the widely used Model-View-Controller-Pattern. Models are used to read, store and change objects on the database. Views are used to display objects and let users interact with them. Interactions are sent as requests to controllers. Controllers handle these requests, access data via models and respond with a view or another fitting response (such as JSON).
+
+Models can be found in app/Models. The corresponding tables are defined in the migration files under database/migrations.<br>
+Views can be found in resources/js.<br>
+Controllers can be found in app/Http/Controllers.
+
+## Further information
+
+Refer to the [Readme "Install" section](../README.md#install) if you want to setup the project. To run the project, follow the "Usage" section below.<br>
+For more details on how requests are handled, read [Requests](requests.md).<br>
+To learn how models are accessed, read [Data Access](dataAccess.md).<br>
+Read [User Interaction](userInteraction.md) to learn how views work.
