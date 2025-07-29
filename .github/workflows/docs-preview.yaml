@@ -7,8 +7,8 @@ on:
 permissions:
   contents: write
 jobs:
-  gh-pages:
-    name: GitHub Pages
+  preview:
+    name: Preview
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
