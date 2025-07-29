@@ -1,10 +1,17 @@
 # General
 
+## Programming Language and Framework
+
 The application is written in [PHP](https://www.php.net/) and uses the [Laravel](https://laravel.com) framework.
 The framework makes common problems such as routing, security, authentication easy to handle. After you learn how Laravel works, it becomes very pleasant to work with. For a detailed documentation, view the [Laravel documentation](https://laravel.com/docs/11.x).
 The frontend is written in [Vue.js](https://vuejs.org/) using [TypeScript](https://www.typescriptlang.org/) and uses [Inertia.js](https://inertiajs.com/) as api-layer to connect the frontend and backend.
 The application is styled with [Tailwind CSS](https://tailwindcss.com/) and uses [Vite](https://vitejs.dev/) as build tool.
 We use [FormKit](https://formkit.com/) to create forms.
+
+## Language
+
+The code and documentation **should be written in English**.
+This ensures that all developers and external contributors can understand the code and documentation.
 
 ## MVC-Pattern
 
