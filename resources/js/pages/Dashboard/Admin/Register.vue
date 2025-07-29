@@ -141,8 +141,9 @@
 
             <template
               v-if="
-                getEventById(assignForm.event_id) &&
-                getEventById(assignForm.event_id)?.consider_alcohol
+                (getEventById(assignForm.event_id) &&
+                  getEventById(assignForm.event_id)?.consider_alcohol) ||
+                dynamicFormSchema.length
               "
             >
               <FormDivider />
@@ -160,6 +161,10 @@
                   label="Ich trinke keinen Alkohol"
                 />
               </FormRow>
+
+              <FormSchema v-if="dynamicFormSchema">
+                <FormKitSchema :schema="dynamicFormSchema" />
+              </FormSchema>
             </template>
             <FormRow>
               <FormKit type="submit" label="Zuweisen" />
@@ -185,6 +190,7 @@
 </template>
 
 <script setup lang="ts">
+import { FormKitSchemaNode } from "@formkit/core";
 import { Inertia } from "@inertiajs/inertia";
 import { computed, ref, PropType } from "vue";
 
@@ -232,6 +238,21 @@ const selectFormGroupOptions = computed(() => {
   return useSelectFormGroupOptions(event.groups);
 });
 const randomPlaceholderPerson = usePlaceholderPerson();
+
+/**
+ * Handle multiple forms for events
+ */
+const dynamicFormSchema = computed(() => {
+  const result: FormKitSchemaNode[] = [];
+  const event = getEventById(assignForm.value.event_id);
+
+  // get event form
+  if (event?.form) {
+    result.push(...(JSON.parse(event.form) as FormKitSchemaNode[]));
+  }
+
+  return result;
+});
 
 const registerSubmitHandler = async () => {
   const avatarPath = ref<string | undefinded>();

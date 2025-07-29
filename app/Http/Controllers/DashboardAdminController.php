@@ -438,6 +438,12 @@ class DashboardAdminController extends Controller
             }
         }
 
+        // get all other inputs
+        $form_responses = Request::except(['_token', 'email', 'event_id', 'drinks_no_alcohol', 'slot']);
+        if ($form_responses) {
+            $userRegistration['form_responses'] = $form_responses;
+        }
+
         // create registration
         Registration::create([
             'user_id' => $user->id,
@@ -445,6 +451,7 @@ class DashboardAdminController extends Controller
             'slot_id' => (array_key_exists('slot_id', $userRegistration) ? $userRegistration['slot_id'] : null),
             'group_id' => (array_key_exists('group_id', $userRegistration) ? $userRegistration['group_id'] : null),
             'drinks_alcohol' => (array_key_exists('drinks_alcohol', $userRegistration) ? $userRegistration['drinks_alcohol'] : null),
+            'form_responses' => (array_key_exists('form_responses', $userRegistration) ? $userRegistration['form_responses'] : null),
             'queue_position' => $queuePosition,
         ]);
 
