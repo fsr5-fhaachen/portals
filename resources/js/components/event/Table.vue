@@ -10,12 +10,14 @@
                   <th
                     scope="col"
                     class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pl-6 lg:pl-8"
+                    @click="orderEvents(Column.Name)"
                   >
                     Name
                   </th>
                   <th
                     scope="col"
                     class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
+                    @click="orderEvents(Column.Type)"
                   >
                     Type
                   </th>
@@ -62,10 +64,10 @@
                 </tr>
               </thead>
               <tbody class="bg-white dark:bg-gray-800">
-                <tr v-for="(event, index) in events" :key="event.id">
+                <tr v-for="(event, index) in eventsOrdered" :key="event.id">
                   <td
                     :class="[
-                      index !== events.length - 1
+                      index !== eventsOrdered.length - 1
                         ? 'border-b border-gray-200 dark:border-gray-700'
                         : '',
                       'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-gray-100 sm:pl-6 lg:pl-8',
@@ -75,7 +77,7 @@
                   </td>
                   <td
                     :class="[
-                      index !== events.length - 1
+                      index !== eventsOrdered.length - 1
                         ? 'border-b border-gray-200 dark:border-gray-700'
                         : '',
                       'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
@@ -90,7 +92,7 @@
                       )
                     "
                     :class="[
-                      index !== events.length - 1
+                      index !== eventsOrdered.length - 1
                         ? 'border-b border-gray-200 dark:border-gray-700'
                         : '',
                       'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
@@ -105,7 +107,7 @@
                       )
                     "
                     :class="[
-                      index !== events.length - 1
+                      index !== eventsOrdered.length - 1
                         ? 'border-b border-gray-200 dark:border-gray-700'
                         : '',
                       'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
@@ -115,7 +117,7 @@
                   </td>
                   <td
                     :class="[
-                      index !== events.length - 1
+                      index !== eventsOrdered.length - 1
                         ? 'border-b border-gray-200 dark:border-gray-700'
                         : '',
                       'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
@@ -139,7 +141,7 @@
 
                   <td
                     :class="[
-                      index !== events.length - 1
+                      index !== eventsOrdered.length - 1
                         ? 'border-b border-gray-200 dark:border-gray-700'
                         : '',
                       'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
@@ -149,7 +151,7 @@
                   </td>
                   <td
                     :class="[
-                      index !== events.length - 1
+                      index !== eventsOrdered.length - 1
                         ? 'border-b border-gray-200 dark:border-gray-700'
                         : '',
                       'relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8',
@@ -194,6 +196,8 @@ const { events } = defineProps({
   },
 });
 
+let eventsOrdered = events.slice();
+
 const registrations = ref({});
 const isFetchingRegistrations = ref(false);
 events.forEach((event) => {
@@ -229,4 +233,68 @@ const registrationsInterval = setInterval(fetchRegistrations, 5000);
 onBeforeUnmount(() => {
   clearInterval(registrationsInterval);
 });
+
+enum Column {
+  None,
+  Name,
+  Type,
+  Consider_Alcohol,
+  Has_Requirements,
+  Registration,
+  Participants,
+}
+
+enum SortDirection {
+  None,
+  Ascending,
+  Descending,
+}
+
+let orderedCol = Column.None;
+let sortDirection = SortDirection.None;
+
+function orderEvents(column: Column): void {
+  if (column == orderedCol) {
+    if (sortDirection == SortDirection.Descending) {
+      // undo ordering
+      eventsOrdered = events;
+      orderedCol = Column.None;
+      sortDirection = SortDirection.None;
+      return;
+    } else if (sortDirection == SortDirection.Ascending) {
+      sortDirection = SortDirection.Ascending;
+    }
+  }
+
+  orderedCol = column;
+
+  switch (column) {
+    case Column.None:
+      eventsOrdered = events;
+      sortDirection = SortDirection.None;
+      break;
+
+    case Column.Name:
+      eventsOrdered =
+        sortDirection == SortDirection.Ascending
+          ? events.sort((event1, event2) =>
+              event1.name.localeCompare(event2.name),
+            )
+          : events.sort((event1, event2) =>
+              event2.name.localeCompare(event1.name),
+            );
+      break;
+
+    case Column.Type:
+      eventsOrdered =
+        sortDirection == SortDirection.Ascending
+          ? events.sort((event1, event2) =>
+              event1.type.localeCompare(event2.type),
+            )
+          : events.sort((event1, event2) =>
+              event2.type.localeCompare(event1.type),
+            );
+      break;
+  }
+}
 </script>
