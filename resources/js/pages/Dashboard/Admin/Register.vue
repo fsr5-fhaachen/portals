@@ -95,10 +95,7 @@
         >
           <FormContainer>
             <FormRow>
-              <UiH2>
-                User zuweisen (Event & Slot Formulare werden nicht
-                berücksichtigt)
-              </UiH2>
+              <UiH2> User zuweisen </UiH2>
             </FormRow>
             <FormRow>
               <FormKit
@@ -174,6 +171,7 @@
                 @click="
                   assignForm = {
                     event_id: 0,
+                    slot_id: 0,
                   }
                 "
                 theme="danger"
