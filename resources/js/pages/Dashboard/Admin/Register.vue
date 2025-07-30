@@ -95,10 +95,7 @@
         >
           <FormContainer>
             <FormRow>
-              <UiH2>
-                User zuweisen (Event & Slot Formulare werden nicht
-                berücksichtigt)
-              </UiH2>
+              <UiH2> User zuweisen </UiH2>
             </FormRow>
             <FormRow>
               <FormKit
@@ -141,8 +138,9 @@
 
             <template
               v-if="
-                getEventById(assignForm.event_id) &&
-                getEventById(assignForm.event_id)?.consider_alcohol
+                (getEventById(assignForm.event_id) &&
+                  getEventById(assignForm.event_id)?.consider_alcohol) ||
+                dynamicFormSchema.length
               "
             >
               <FormDivider />
@@ -160,6 +158,10 @@
                   label="Ich trinke keinen Alkohol"
                 />
               </FormRow>
+
+              <FormSchema v-if="dynamicFormSchema">
+                <FormKitSchema :schema="dynamicFormSchema" />
+              </FormSchema>
             </template>
             <FormRow>
               <FormKit type="submit" label="Zuweisen" />
@@ -169,6 +171,7 @@
                 @click="
                   assignForm = {
                     event_id: 0,
+                    slot_id: 0,
                   }
                 "
                 theme="danger"
@@ -185,12 +188,14 @@
 </template>
 
 <script setup lang="ts">
+import { FormKitSchemaNode } from "@formkit/core";
 import { Inertia } from "@inertiajs/inertia";
 import { computed, ref, PropType } from "vue";
 
 const registerForm = ref({});
 const assignForm = ref({
   event_id: 0,
+  slot_id: 0,
 });
 
 const { courses, events } = defineProps({
@@ -232,6 +237,37 @@ const selectFormGroupOptions = computed(() => {
   return useSelectFormGroupOptions(event.groups);
 });
 const randomPlaceholderPerson = usePlaceholderPerson();
+
+/**
+ * Handle multiple forms for events
+ */
+const slotData = computed(() => {
+  const event = getEventById(assignForm.value.event_id);
+  if (event) {
+    if (event.slots?.length) {
+      return event.slots.find((s) => s.id === assignForm.value?.slot_id);
+    }
+  }
+
+  return null;
+});
+
+const dynamicFormSchema = computed(() => {
+  const result: FormKitSchemaNode[] = [];
+  const event = getEventById(assignForm.value.event_id);
+
+  // get event form
+  if (event?.form) {
+    result.push(...(JSON.parse(event.form) as FormKitSchemaNode[]));
+  }
+
+  // get slot form
+  if (slotData.value && slotData.value.form) {
+    result.push(...(JSON.parse(slotData.value.form) as FormKitSchemaNode[]));
+  }
+
+  return result;
+});
 
 const registerSubmitHandler = async () => {
   const avatarPath = ref<string | undefinded>();
