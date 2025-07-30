@@ -197,6 +197,7 @@ import { computed, ref, PropType } from "vue";
 const registerForm = ref({});
 const assignForm = ref({
   event_id: 0,
+  slot_id: 0,
 });
 
 const { courses, events } = defineProps({
@@ -242,6 +243,17 @@ const randomPlaceholderPerson = usePlaceholderPerson();
 /**
  * Handle multiple forms for events
  */
+const slotData = computed(() => {
+  const event = getEventById(assignForm.value.event_id);
+  if (event) {
+    if (event.slots?.length) {
+      return event.slots.find((s) => s.id === assignForm.value?.slot_id);
+    }
+  }
+
+  return null;
+});
+
 const dynamicFormSchema = computed(() => {
   const result: FormKitSchemaNode[] = [];
   const event = getEventById(assignForm.value.event_id);
@@ -249,6 +261,11 @@ const dynamicFormSchema = computed(() => {
   // get event form
   if (event?.form) {
     result.push(...(JSON.parse(event.form) as FormKitSchemaNode[]));
+  }
+
+  // get slot form
+  if (slotData.value && slotData.value.form) {
+    result.push(...(JSON.parse(slotData.value.form) as FormKitSchemaNode[]));
   }
 
   return result;

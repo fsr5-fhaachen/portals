@@ -439,7 +439,7 @@ class DashboardAdminController extends Controller
         }
 
         // get all other inputs
-        $form_responses = Request::except(['_token', 'email', 'event_id', 'drinks_no_alcohol', 'slot']);
+        $form_responses = Request::except(['_token', 'slot_id', 'email', 'event_id', 'drinks_no_alcohol']);
         if ($form_responses) {
             $userRegistration['form_responses'] = $form_responses;
         }
