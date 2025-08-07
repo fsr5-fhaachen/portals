@@ -141,6 +141,7 @@ Route::prefix('api')->middleware(Authenticate::class)->group(function () {
             Route::delete('/registrations/{registration}', [ApiController::class, 'registrationsDestroy'])->name('api.event.registrations.destroy');
 
             Route::get('/events/{event}/user-amount', [ApiController::class, 'coursesUserAmountPerEvent'])->name('api.event.coursesUserAmountPerEvent');
+            Route::get('/events/{event}/statistics', [ApiController::class, 'courseStatistics'])->name('api.event.courseStatistics');
         });
 
         Route::middleware('can:view statistics')->group(function () {
