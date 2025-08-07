@@ -136,9 +136,32 @@ const fetchCourses = async () => {
 
   isCoursesFetching.value = false;
 };
+const isStatisticsFetching = ref(false);
+const fetchStatistics = async () => {
+  if (isStatisticsFetching.value) {
+    return;
+  }
+
+  isStatisticsFetching.value = true;
+  const response = await fetch("/api/events/" + event.id + "/statistics", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    console.log(data);
+  }
+  isStatisticsFetching.value = false;
+}
 const coursesInterval = setInterval(fetchCourses, 2500);
+const statisticsInterval = setInterval(fetchStatistics, 5000);
 onBeforeUnmount(() => {
   clearInterval(coursesInterval);
+  clearInterval(statisticsInterval);
 });
 
 const submit = () => {
