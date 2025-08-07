@@ -254,6 +254,38 @@ class ApiController extends Controller
     }
 
     /**
+     * Return statistics for a given course
+     * The statistics are defined in the $statistics array.
+     * The statistics are counted by the registrations of the event.
+     * The statistics are returned as an array with the keys true and false.
+     *
+     * @param  Request  $request
+     */
+    public function courseStatistics(Request $request): JsonResponse
+    {
+      $statistics = [
+        'drinks_alcohol',
+        // add more statistics here as needed
+      ];
+
+      $event = Event::with(['registrations.user'])->find($request->event);
+
+      if (!$event) {
+        return response()->json(['message' => 'Event not found'], 404);
+      }
+
+      $result = [];
+      foreach ($statistics as $stat) {
+        $result[$stat] = [
+          'true' => $event->registrations->where($stat, true)->count(),
+          'false' => $event->registrations->where($stat, false)->count(),
+        ];
+      }
+
+      return response()->json($result);
+    }
+
+    /**
      * Return the current state of the random generator.
      * The state is structured like this:
      *   {
@@ -319,7 +351,7 @@ class ApiController extends Controller
      *       "hours": number;
      *     };
      *   }
-     * 
+     *
      * The definition of the states is as follows:
      *   setup: The countdown is not set up yet
      *   idle: The countdown was resetted
