@@ -23,7 +23,9 @@
         ></div>
       </CourseBox>
     </BoxContainer>
-
+    <div v-if="statistics" v-for="stats in statistics">
+      <ChartContainer :stats/>
+    </div>
     <div
       v-if="['group_phase', 'slot_booking'].includes(event.type)"
       class="mb-16"
@@ -63,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, PropType, onBeforeUnmount } from "vue";
+import { ref, PropType, onBeforeUnmount, onMounted } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 
 const { courses, event } = defineProps({
@@ -137,6 +139,8 @@ const fetchCourses = async () => {
   isCoursesFetching.value = false;
 };
 
+const statistics = ref([]);
+
 let statisticsTimer = setTimeout(() => {
   fetchStatistics();
 }, 2500);
@@ -152,7 +156,7 @@ const fetchStatistics = async () => {
 
   if (response.ok) {
     const data = await response.json();
-    console.log(data);
+    statistics.value = data;
   }
   statisticsTimer = setTimeout(() => {
     fetchStatistics();
