@@ -136,13 +136,12 @@ const fetchCourses = async () => {
 
   isCoursesFetching.value = false;
 };
-const isStatisticsFetching = ref(false);
-const fetchStatistics = async () => {
-  if (isStatisticsFetching.value) {
-    return;
-  }
 
-  isStatisticsFetching.value = true;
+let statisticsTimer = setTimeout(() => {
+  fetchStatistics();
+}, 2500);
+
+const fetchStatistics = async () => {
   const response = await fetch("/api/events/" + event.id + "/statistics", {
     method: "GET",
     credentials: "include",
@@ -155,13 +154,15 @@ const fetchStatistics = async () => {
     const data = await response.json();
     console.log(data);
   }
-  isStatisticsFetching.value = false;
-}
+  statisticsTimer = setTimeout(() => {
+    fetchStatistics();
+  }, 2500);
+};
+
 const coursesInterval = setInterval(fetchCourses, 2500);
-const statisticsInterval = setInterval(fetchStatistics, 5000);
 onBeforeUnmount(() => {
   clearInterval(coursesInterval);
-  clearInterval(statisticsInterval);
+  clearTimeout(statisticsTimer);
 });
 
 const submit = () => {
