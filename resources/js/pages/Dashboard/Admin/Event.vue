@@ -23,8 +23,8 @@
         ></div>
       </CourseBox>
     </BoxContainer>
-    <div v-if="statistics" v-for="stats in statistics">
-      <ChartContainer :stats/>
+    <div v-if="statistics" >
+      <ChartContainer v-for="stats in statistics" :stats />
     </div>
     <div
       v-if="['group_phase', 'slot_booking'].includes(event.type)"
