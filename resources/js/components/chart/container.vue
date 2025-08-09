@@ -2,10 +2,14 @@
 import { ref, onMounted } from "vue";
 import Chart from "primevue/chart";
 
-const { stats } = defineProps({
+const { stats, chartType } = defineProps({
   stats: {
     type: Object,
     required: true,
+  },
+  chartType: {
+    type: String,
+    default: "pie",
   },
 });
 
@@ -15,7 +19,6 @@ const chartOptions = ref();
 onMounted(() => {
   chartData.value = setChartData();
   chartOptions.value = setChartOptions();
-  console.log(stats);
 });
 
 const setChartData = () => {
@@ -67,16 +70,15 @@ const setChartOptions = () => {
     },
   };
 };
-
 //
 </script>
 
 <template>
   <chart
-    type="pie"
+    :type="chartType"
     :data="chartData"
     :options="chartOptions"
-    class="w-full md:w-[30rem]"
+    class="w-full md:w-[15rem]"
   ></chart>
 </template>
 
