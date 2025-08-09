@@ -264,8 +264,9 @@ class ApiController extends Controller
     public function courseStatistics(Request $request): JsonResponse
     {
       $statistics = [
-        'drinks_alcohol',
+        'drinks_alcohol' => 'Drinks Alcohol'
         // add more statistics here as needed
+        //Make a new relation for each statistic?
       ];
 
       $event = Event::with(['registrations.user'])->find($request->event);
@@ -275,10 +276,11 @@ class ApiController extends Controller
       }
 
       $result = [];
-      foreach ($statistics as $stat) {
+      foreach ($statistics as $stat => $statName) {
         $result[$stat] = [
           'true' => $event->registrations->where($stat, true)->count(),
           'false' => $event->registrations->where($stat, false)->count(),
+          'name' => $statName,
         ];
       }
 
