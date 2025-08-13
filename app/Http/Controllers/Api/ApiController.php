@@ -278,11 +278,13 @@ class ApiController extends Controller
       }
 
       $result = [];
-      $result['drinks_alcohol'] = [
-        'true' => $event->registrations->where('drinks_alcohol', true)->count(),
-        'false' => $event->registrations->where('drinks_alcohol', false)->count(),
-        'name' => 'Drinks Alcohol',
-      ];
+      if ($event->consider_alcohol === true) {
+        $result['drinks_alcohol'] = [
+          'true' => $event->registrations->where('drinks_alcohol', true)->count(),
+          'false' => $event->registrations->where('drinks_alcohol', false)->count(),
+          'name' => 'Drinks Alcohol',
+        ];
+      }
       $formData = $event->registrations()->pluck('form_responses')->map(function ($item) {
         return json_decode($item, true);
       });
