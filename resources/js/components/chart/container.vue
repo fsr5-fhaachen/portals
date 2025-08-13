@@ -82,7 +82,6 @@ const setChartOptions = () => {
     },
   };
 };
-//
 </script>
 
 <template>
