@@ -10,8 +10,10 @@ use App\Models\State;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Psy\Readline\Hoa\Console;
 
 class ApiController extends Controller
 {
@@ -276,14 +278,33 @@ class ApiController extends Controller
       }
 
       $result = [];
-      foreach ($statistics as $stat => $statName) {
-        $result[$stat] = [
-          'true' => $event->registrations->where($stat, true)->count(),
-          'false' => $event->registrations->where($stat, false)->count(),
-          'name' => $statName,
-        ];
+      $result['drinks_alcohol'] = [
+        'true' => $event->registrations->where('drinks_alcohol', true)->count(),
+        'false' => $event->registrations->where('drinks_alcohol', false)->count(),
+        'name' => 'Drinks Alcohol',
+      ];
+      $formData = $event->registrations()->pluck('form_responses')->map(function ($item) {
+        return json_decode($item, true);
+      });
+      // Count statistics from formData
+      foreach ($formData as $data) {
+        if (is_array($data)) {
+          foreach ($data as $key => $value) {
+            if (!isset($result[$key])) {
+              $result[$key] = [
+                $value => 1,
+                'name' => $key,
+              ];
+            } else {
+              if (isset($result[$key][$value])) {
+                $result[$key][$value]++;
+              } else {
+                $result[$key][$value] = 1;
+              }
+            }
+          }
+        }
       }
-
       return response()->json($result);
     }
 
