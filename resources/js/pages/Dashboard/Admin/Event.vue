@@ -23,9 +23,9 @@
         ></div>
       </CourseBox>
     </BoxContainer>
-    <div class="flex bg-white dark:bg-gray-900 mb-16 pb-5 justify-center rounded-lg flex-row flex-wrap flex-grow" >
-      <ChartContainer v-for="stats in statistics" :stats :chartType="'pie'" v-if="statistics.length != 0"  />
-      <p class="pt-5" v-else>Keine Daten erhoben</p>
+    <div class="flex bg-white dark:bg-gray-800 mb-16 pb-5 justify-center rounded-lg flex-row flex-wrap flex-grow" >
+      <ChartContainer v-for="stats in statistics" :stats :chartType="'pie'"/>
+      <ChartContainer :stats="courseTotal" chartType="total" />
     </div>
     <div
       v-if="['group_phase', 'slot_booking'].includes(event.type)"
@@ -123,6 +123,11 @@ const fetchCourses = async () => {
 
   if (response.ok) {
     const data = await response.json();
+    courseTotal.value = 0;
+
+    for (const course of data) {
+      courseTotal.value += course.amount;
+    }
 
     // map the data to the courses
     coursesData.value = courses.map((course) => {
