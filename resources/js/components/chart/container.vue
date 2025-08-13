@@ -21,13 +21,25 @@ onMounted(() => {
   chartOptions.value = setChartOptions();
 });
 
+const labels = ref(<String>[]);
+const data = ref(<Number>[]);
+
+for (let stat in stats) {
+  if (stat !== "name"){
+    labels.value.push(stat);
+    data.value.push(stats[stat]);
+  }
+}
+
 const setChartData = () => {
   return {
-    labels: ["true", "false"],
+    labels: labels,
     datasets: [
       {
-        data: [stats.true, stats.false],
-        backgroundColor:['#609ffc', '#fc6060'],
+        data: data,
+        backgroundColor:['#609ffc', '#fc6060','#77fc60',
+          '#60fcef','#e760fc','#f2fc60',
+          '#60eafc','#fc60cb','#fc9760'],
       },
     ],
   };
