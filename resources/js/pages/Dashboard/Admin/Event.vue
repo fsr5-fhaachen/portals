@@ -155,6 +155,10 @@ const fetchStatistics = async () => {
   });
 
   if (response.ok) {
+    if( response.status === 204) {
+      statistics.value = [];
+      return;
+    }
     const data = await response.json();
     statistics.value = data;
   }
