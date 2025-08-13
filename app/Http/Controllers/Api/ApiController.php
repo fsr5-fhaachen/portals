@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Psy\Readline\Hoa\Console;
 
 class ApiController extends Controller
 {
@@ -251,7 +250,6 @@ class ApiController extends Controller
                 'amount' => $course->users()->doesntHave('roles')->whereIn('id', $userIds)->count(),
             ];
         }
-
         return response()->json($result);
     }
 
