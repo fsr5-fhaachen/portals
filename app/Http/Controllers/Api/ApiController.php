@@ -285,9 +285,22 @@ class ApiController extends Controller
           'name' => 'Drinks Alcohol',
         ];
       }
-      $formData = $event->registrations()->pluck('form_responses')->map(function ($item) {
-        return json_decode($item, true);
+      $formData = $event->registrations()->pluck('form_responses')->map(function ($item){
+        if (is_null($item)) {
+          return null;
+        }
+        if (is_array($item) && isset($item[0]) && is_array($item[0])) {
+          return collect($item)->flatMap(function ($subItem) {
+            return $subItem;
+          })->all();
+        }
+        return $item;
       });
+
+      $formData = $formData->filter(function ($item) {
+        return !is_null($item);
+      });
+
       // Count statistics from formData
       foreach ($formData as $data) {
         if (is_array($data)) {
@@ -307,7 +320,10 @@ class ApiController extends Controller
           }
         }
       }
-      return response()->json($result);
+      if ($result === [])
+        return response()->json(['message' => 'No statistics found'], 204);
+      else
+        return response()->json($result);
     }
 
     /**
