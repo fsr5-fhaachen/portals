@@ -22,5 +22,5 @@ Interactions are sent as requests to controllers. Controllers handle these reque
 
 Models can be found in `app/Models`.
 The corresponding tables are defined in the migration files under `database/migrations`.
-Views can be found in `resources/js`.
+Views can be found in `resources/js/pages`.
 Controllers can be found in `app/Http/Controllers`.

@@ -5,7 +5,7 @@
 If you have completed your development on a branch, you have to create a pull request.
 The pull request must be pointed against the `dev` branch (see [Branches](./113-branch-structure.md)).
 
-The pull request title should be in the same pattern as the commit messages (see [Commits](./113-branch-structure.md#commits)), because the pull request title is used as the merge commit message.
+The pull request title should be in the same pattern as the commit messages (see [Commits](./116-commits.md)), because the pull request title is used as the merge commit message.
 
 Please update the labels of the PR accordingly.
 
