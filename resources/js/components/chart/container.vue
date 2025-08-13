@@ -85,12 +85,18 @@ const setChartOptions = () => {
 </script>
 
 <template>
-  <chart
+  <chart v-if="chartType != 'total'"
     :type="chartType"
     :data="chartData"
     :options="chartOptions"
     class="w-full md:w-[15rem]"
-  ></chart>
+  />
+  <div class="flex flex-col items-center justify-center" v-else>
+    <div class="border border-gray-400 border-solid p-2 rounded-lg bg-white dark:bg-gray-900">
+      <p class="dark:text-grey-400 text-gray-500">Total User Count:</p>
+      <p class="text-2xl font-bold text-center dark:text-white">{{ stats }}</p>
+    </div>
+  </div>
 </template>
 
 <style scoped></style>
