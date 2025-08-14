@@ -37,7 +37,7 @@ onBeforeUnmount(() => {
 
 const chartKey = ref(0);
 watch(isDarkMode, () => {
-  chartKey.value++;
+  chartKey.value++; // Force re-render when dark mode changes
 });
 
 const chartData = computed(() => {
