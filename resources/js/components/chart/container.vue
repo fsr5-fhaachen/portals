@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { computed, ref, onMounted, onBeforeUnmount, watch, PropType } from "vue";
 import Chart from "primevue/chart";
+import colors from "tailwindcss/colors";
 
-const { stats, chartType } = defineProps({
+
+const {stats, chartType} = defineProps({
   stats: {
-    type: Object,
+    type: [Object, Number] as PropType<object | number>,
     required: true,
   },
   chartType: {
@@ -13,79 +15,82 @@ const { stats, chartType } = defineProps({
   },
 });
 
-const chartData = ref();
-const chartOptions = ref();
+const backgroundColors = [
+  "#609ffc", "#fc6060", "#77fc60",
+  "#60fcef", "#e760fc", "#f2fc60",
+  "#60eafc", "#fc60cb", "#fc9760",
+];
+
+const isDarkMode = ref(document.documentElement.classList.contains("dark"));
+let observer: MutationObserver;
 
 onMounted(() => {
-  chartData.value = setChartData();
-  chartOptions.value = setChartOptions();
+  observer = new MutationObserver(() => {
+    isDarkMode.value = document.documentElement.classList.contains("dark");
+  });
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 });
 
-const labels = ref(<String>[]);
-const data = ref(<Number>[]);
+onBeforeUnmount(() => {
+  observer.disconnect();
+});
 
-for (let stat in stats) {
-  if (stat !== "name"){
-    labels.value.push(stat);
-    data.value.push(stats[stat]);
-  }
-}
+const chartKey = ref(0);
+watch(isDarkMode, () => {
+  chartKey.value++;
+});
 
-const setChartData = () => {
+const chartData = computed(() => {
+  const labels = Object.keys(stats).filter((key) => key !== "name");
+  const data = labels.map((key) => stats[key]);
   return {
-    labels: labels,
+    labels,
     datasets: [
       {
-        data: data,
-        backgroundColor:['#609ffc', '#fc6060','#77fc60',
-          '#60fcef','#e760fc','#f2fc60',
-          '#60eafc','#fc60cb','#fc9760'],
+        data,
+        backgroundColor: backgroundColors,
       },
     ],
   };
-};
+});
 
-const setChartOptions = () => {
-  const documentStyle = getComputedStyle(document.documentElement);
-  const textColor = documentStyle.getPropertyValue("--p-text-color");
-
-  return {
-    plugins: {
-      title: {
-        display: true,
-        text: stats.name,
-      },
-      legend: {
-        labels: {
-          usePointStyle: true,
-          color: textColor,
-          // Show value in legend label
-          generateLabels: (chart) => {
-            const data = chart.data;
-            return data.labels.map((label, i) => ({
-              text: `${label}: ${data.datasets[0].data[i]}`,
-              fillStyle: data.datasets[0].backgroundColor[i],
-              strokeStyle: data.datasets[0].backgroundColor[i],
-              index: i,
-            }));
-          },
-        },
-      },
-      tooltip: {
-        callbacks: {
-          label: (context) => {
-            // Only show label and value in tooltip
-            return `${context.label}: ${context.parsed}`;
-          },
+const chartOptions = computed(() => ({
+  animation: false,
+  plugins: {
+    title: {
+      display: true,
+      //@ts-ignore, when stats is a number, it doesn't have a name property, but we handle that in the template
+      text: stats.name,
+      color: isDarkMode.value?  colors.gray[400]: colors.gray[500] ,
+    },
+    legend: {
+      labels: {
+        usePointStyle: true,
+        generateLabels: (chart: any) => {
+          const data = chart.data;
+          return data.labels.map((label: string, i: number) => ({
+            text: `${label}: ${data.datasets[0].data[i]}`,
+            fillStyle: data.datasets[0].backgroundColor[i],
+            strokeStyle: data.datasets[0].backgroundColor[i],
+            fontColor: isDarkMode.value ? "#fff" : "#000",
+            index: i,
+          }));
         },
       },
     },
-  };
-};
+    tooltip: {
+      callbacks: {
+        label: (context: any) => `${context.label}: ${context.parsed}`,
+      },
+    },
+  },
+}));
 </script>
 
 <template>
-  <chart v-if="chartType != 'total'"
+  <Chart
+    v-if="chartType != 'total'"
+    :key="chartKey"
     :type="chartType"
     :data="chartData"
     :options="chartOptions"
@@ -98,5 +103,3 @@ const setChartOptions = () => {
     </div>
   </div>
 </template>
-
-<style scoped></style>
