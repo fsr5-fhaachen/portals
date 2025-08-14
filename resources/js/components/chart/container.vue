@@ -97,7 +97,7 @@ const chartOptions = computed(() => ({
     class="w-full md:w-[15rem]"
   />
   <div class="flex flex-col items-center justify-center" v-else>
-    <div class="border border-gray-400 border-solid p-2 rounded-lg bg-white dark:bg-gray-900">
+    <div class="border border-gray-400 border-solid p-2 rounded-lg bg-white dark:bg-gray-900 mt-5">
       <p class="dark:text-grey-400 text-gray-500">Total User Count:</p>
       <p class="text-2xl font-bold text-center dark:text-white">{{ stats }}</p>
     </div>
