@@ -51,6 +51,7 @@ class DashboardAdminController extends Controller
         return Inertia::render('Dashboard/Admin/Users', [
             'roles' => $roles,
             'courses' => $coures,
+            'authenticated' => Session::get('tutor'),
         ]);
     }
 
