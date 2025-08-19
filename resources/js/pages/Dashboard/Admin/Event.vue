@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, PropType, onBeforeUnmount, onMounted } from "vue";
+import { ref, PropType, onBeforeUnmount} from "vue";
 import { Inertia } from "@inertiajs/inertia";
 
 const { courses, event } = defineProps({
