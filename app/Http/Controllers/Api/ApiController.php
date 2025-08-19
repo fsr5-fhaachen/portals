@@ -10,7 +10,6 @@ use App\Models\State;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -255,20 +254,13 @@ class ApiController extends Controller
 
     /**
      * Return statistics for a given course
-     * The statistics are defined in the $statistics array.
      * The statistics are counted by the registrations of the event.
-     * The statistics are returned as an array with the keys true and false.
+     * Returns a JSON object, that containts amounts of each value and the name of the event of the form responses as well as the amount of users that drink alcohol.
      *
      * @param  Request  $request
      */
     public function courseStatistics(Request $request): JsonResponse
     {
-      $statistics = [
-        'drinks_alcohol' => 'Drinks Alcohol'
-        // add more statistics here as needed
-        //Make a new relation for each statistic?
-      ];
-
       $event = Event::with(['registrations.user'])->find($request->event);
 
       if (!$event) {
@@ -283,24 +275,16 @@ class ApiController extends Controller
           'name' => 'Drinks Alcohol',
         ];
       }
-      $formData = $event->registrations()->pluck('form_responses')->map(function ($item){
-        if (is_null($item)) {
-          return null;
-        }
-        if (is_array($item) && isset($item[0]) && is_array($item[0])) {
-          return collect($item)->flatMap(function ($subItem) {
-            return $subItem;
-          })->all();
-        }
-        return $item;
-      });
 
-      $formData = $formData->filter(function ($item) {
+      $formData = $event->registrations->pluck('form_responses')->filter(function ($item) {
         return !is_null($item);
       });
 
       // Count statistics from formData
       foreach ($formData as $data) {
+        if (is_string($data)) {
+          $data = json_decode($data, true);
+        }
         if (is_array($data)) {
           foreach ($data as $key => $value) {
             if (!isset($result[$key])) {
@@ -318,10 +302,7 @@ class ApiController extends Controller
           }
         }
       }
-      if ($result === [])
-        return response()->json(['message' => 'No statistics found'], 204);
-      else
-        return response()->json($result);
+      return response()->json($result);
     }
 
     /**
