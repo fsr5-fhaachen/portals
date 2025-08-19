@@ -2,62 +2,28 @@
   <LayoutDashboardContent>
     <template #title>User Verwaltung</template>
 
-    <template v-if="!authenticated">
+    <CardContainer>
       <CardBase>
-        <FormKit
-          type="form"
-          id="tutor-login"
-          @submit="submitAdminPasswordFormHandler"
-          :actions="false"
-          v-model="adminPasswordForm"
-        >
+        <FormKit type="form" id="assign" :actions="false" v-model="form">
           <FormContainer>
             <FormRow>
-              <UiH2>Anmeldung zum geschützten Bereich</UiH2>
+              <UiH2>Filter</UiH2>
             </FormRow>
-
             <FormRow>
-              <FormKit
-                type="password"
-                name="password"
-                label="Adminpasswort"
-                placeholder="Passwort"
-                validation="required"
-              />
-            </FormRow>
-
-            <FormRow>
-              <FormKit type="submit" label="Anmelden" />
+              <FormKit type="text" name="query" label="Suche" />
             </FormRow>
           </FormContainer>
         </FormKit>
       </CardBase>
-    </template>
 
-    <template v-else>
-      <CardContainer>
-        <CardBase>
-          <FormKit type="form" id="assign" :actions="false" v-model="form">
-            <FormContainer>
-              <FormRow>
-                <UiH2>Filter</UiH2>
-              </FormRow>
-              <FormRow>
-                <FormKit type="text" name="query" label="Suche" />
-              </FormRow>
-            </FormContainer>
-          </FormKit>
-        </CardBase>
-
-        <UserTable
-          v-if="filteredUsers"
-          :courses="courses"
-          :roles="roles"
-          :users="filteredUsers"
-          :user="user"
-        />
-      </CardContainer>
-    </template>
+      <UserTable
+        v-if="filteredUsers"
+        :courses="courses"
+        :roles="roles"
+        :users="filteredUsers"
+        :user="user"
+      />
+    </CardContainer>
   </LayoutDashboardContent>
 </template>
 
@@ -68,14 +34,6 @@ import { Inertia } from "@inertiajs/inertia";
 const form = ref({
   query: "",
 });
-
-const adminPasswordForm = ref({
-  password: "",
-});
-
-const submitAdminPasswordFormHandler = async () => {
-  Inertia.post("/dashboard/login-tutor", adminPasswordForm.value);
-};
 
 const props = defineProps({
   courses: {
@@ -88,10 +46,6 @@ const props = defineProps({
   },
   roles: {
     type: Array as PropType<Models.Role[]>,
-    required: true,
-  },
-  authenticated: {
-    type: Boolean,
     required: true,
   },
 });

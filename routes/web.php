@@ -11,6 +11,7 @@ use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
 use App\Http\Middleware\ActiveModule;
 use App\Http\Middleware\ActivePublicModule;
+use App\Http\Middleware\IsLoggedInAdmin;
 use App\Http\Middleware\IsLoggedInTutor;
 use App\Http\Middleware\RedirectIfTutor;
 use Illuminate\Auth\Middleware\Authenticate;
@@ -53,7 +54,11 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
         });
     });
 
-    Route::post('/login-tutor', [DashboardController::class, 'loginTutor'])->name('dashboard.loginTutor');
+    Route::prefix('tutor/')->group(function () {
+      Route::get('/login', [DashboardController::class, 'login'])->name('dashboard.tutor.login');
+      Route::post('/login', [DashboardController::class, 'loginTutor'])->name('dashboard.loginTutor');
+    });
+
     Route::prefix('tutor')->middleware(IsLoggedInTutor::class)->group(function () {
         Route::get('/', [DashboardTutorController::class, 'index'])->name('dashboard.tutor.index');
         Route::get('/event/{event}', [DashboardTutorController::class, 'event'])->name('dashboard.tutor.event.index');
@@ -61,7 +66,8 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
         Route::get('/group/{group}', [DashboardTutorController::class, 'group'])->name('dashboard.tutor.group.index');
     });
 
-    Route::prefix('admin')->group(function () {
+    Route::prefix('admin')->middleware(IsLoggedInAdmin::class)->group(function () {
+
         Route::middleware('can:view statistics')->group(function () {
             Route::get('/', [DashboardAdminController::class, 'index'])->name('dashboard.admin.index');
         });

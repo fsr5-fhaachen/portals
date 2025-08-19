@@ -6,7 +6,6 @@ use App\Helpers\GroupBalancedDivision;
 use App\Helpers\GroupCourseDivision;
 use App\Helpers\SlotAssignment;
 use App\Models\Course;
-use App\Models\CourseGroup;
 use App\Models\Event;
 use App\Models\Registration;
 use App\Models\Slot;
