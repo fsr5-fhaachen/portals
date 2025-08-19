@@ -1,15 +1,9 @@
 <template>
   <LayoutDashboardContent>
-    <template
-      v-if="user.rolesArray.some((role) => role === 'admin')"
-      #title>
+    <template v-if="user.rolesArray.some((role) => role === 'admin')" #title>
       Admin Login
     </template>
-    <template
-      v-else
-      #title>
-      Tutor Login
-    </template>
+    <template v-else #title> Tutor Login </template>
 
     <CardBase>
       <FormKit
@@ -64,7 +58,7 @@ const props = defineProps({
   user: {
     type: Object as PropType<Models.User>,
     required: true,
-  }
+  },
 });
 
 const submitTutorPasswordFormHandler = async () => {
