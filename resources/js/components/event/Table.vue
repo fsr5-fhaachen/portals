@@ -228,7 +228,7 @@ const { events } = defineProps({
   },
 });
 
-let eventsOrdered = events.slice();
+const eventsOrdered = ref<Event[]>(events.slice());
 
 const registrations = ref({});
 const isFetchingRegistrations = ref(false);
@@ -289,43 +289,47 @@ function orderEvents(column: Column): void {
   if (column == orderedCol) {
     if (sortDirection == SortDirection.Descending) {
       // undo ordering
-      eventsOrdered = events;
+      eventsOrdered.value = events.slice();
       orderedCol = Column.None;
       sortDirection = SortDirection.None;
       return;
     } else if (sortDirection == SortDirection.Ascending) {
+      sortDirection = SortDirection.Descending;
+    } else {
       sortDirection = SortDirection.Ascending;
     }
+  } else {
+    sortDirection = SortDirection.Ascending;
   }
 
   orderedCol = column;
 
   switch (column) {
     case Column.None:
-      eventsOrdered = events;
+      eventsOrdered.value = events.slice();
       sortDirection = SortDirection.None;
       break;
 
     case Column.Name:
-      eventsOrdered =
+      eventsOrdered.value =
         sortDirection == SortDirection.Ascending
-          ? events.sort((event1, event2) =>
-              event1.name.localeCompare(event2.name),
-            )
-          : events.sort((event1, event2) =>
-              event2.name.localeCompare(event1.name),
-            );
+          ? events
+              .slice()
+              .sort((event1, event2) => event1.name.localeCompare(event2.name))
+          : events
+              .slice()
+              .sort((event1, event2) => event2.name.localeCompare(event1.name));
       break;
 
     case Column.Type:
-      eventsOrdered =
+      eventsOrdered.value =
         sortDirection == SortDirection.Ascending
-          ? events.sort((event1, event2) =>
-              event1.type.localeCompare(event2.type),
-            )
-          : events.sort((event1, event2) =>
-              event2.type.localeCompare(event1.type),
-            );
+          ? events
+              .slice()
+              .sort((event1, event2) => event1.type.localeCompare(event2.type))
+          : events
+              .slice()
+              .sort((event1, event2) => event2.type.localeCompare(event1.type));
       break;
   }
 }
