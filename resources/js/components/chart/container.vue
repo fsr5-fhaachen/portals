@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, onBeforeUnmount, watch, PropType } from "vue";
+import {
+  computed,
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+  PropType,
+} from "vue";
 import Chart from "primevue/chart";
 import colors from "tailwindcss/colors";
 
-
-const {stats, chartType} = defineProps({
+const { stats, chartType } = defineProps({
   stats: {
     type: [Object, Number] as PropType<object | number>,
     required: true,
@@ -16,9 +22,15 @@ const {stats, chartType} = defineProps({
 });
 
 const backgroundColors = [
-  "#609ffc", "#fc6060", "#77fc60",
-  "#60fcef", "#e760fc", "#f2fc60",
-  "#60eafc", "#fc60cb", "#fc9760",
+  "#609ffc",
+  "#fc6060",
+  "#77fc60",
+  "#60fcef",
+  "#e760fc",
+  "#f2fc60",
+  "#60eafc",
+  "#fc60cb",
+  "#fc9760",
 ];
 
 const isDarkMode = ref(document.documentElement.classList.contains("dark"));
@@ -28,7 +40,10 @@ onMounted(() => {
   observer = new MutationObserver(() => {
     isDarkMode.value = document.documentElement.classList.contains("dark");
   });
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
 });
 
 onBeforeUnmount(() => {
@@ -61,7 +76,7 @@ const chartOptions = computed(() => ({
       display: true,
       //@ts-ignore, when stats is a number, it doesn't have a name property, but we handle that in the template
       text: stats.name,
-      color: isDarkMode.value?  colors.gray[400]: colors.gray[500] ,
+      color: isDarkMode.value ? colors.gray[400] : colors.gray[500],
     },
     legend: {
       labels: {
@@ -97,7 +112,9 @@ const chartOptions = computed(() => ({
     class="w-full md:w-[15rem]"
   />
   <div class="flex flex-col items-center justify-center" v-else>
-    <div class="border border-gray-400 border-solid p-2 rounded-lg bg-white dark:bg-gray-900 mt-5">
+    <div
+      class="border border-gray-400 border-solid p-2 rounded-lg bg-white dark:bg-gray-900 mt-5"
+    >
       <p class="dark:text-grey-400 text-gray-500">Total User Count:</p>
       <p class="text-2xl font-bold text-center dark:text-white">{{ stats }}</p>
     </div>

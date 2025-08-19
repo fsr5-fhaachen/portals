@@ -23,8 +23,10 @@
         ></div>
       </CourseBox>
     </BoxContainer>
-    <div class="flex bg-white dark:bg-gray-800 mb-16 pb-5 justify-center rounded-lg flex-row flex-wrap flex-grow" >
-      <ChartContainer v-for="stats in statistics" :stats :chartType="'pie'"/>
+    <div
+      class="flex bg-white dark:bg-gray-800 mb-16 pb-5 justify-center rounded-lg flex-row flex-wrap flex-grow"
+    >
+      <ChartContainer v-for="stats in statistics" :stats :chartType="'pie'" />
       <ChartContainer :stats="courseTotal" chartType="total" />
     </div>
     <div
@@ -66,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, PropType, onBeforeUnmount} from "vue";
+import { ref, PropType, onBeforeUnmount } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 
 const { courses, event } = defineProps({
