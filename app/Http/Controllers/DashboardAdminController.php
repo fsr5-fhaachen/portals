@@ -31,12 +31,16 @@ class DashboardAdminController extends Controller
     {
         $courses = Course::all();
 
+        $totalUsers = 0;
+
         foreach ($courses as $course) {
             $course->users = $course->users()->doesntHave('roles')->get();
+            $totalUsers += $course->users->count();
         }
 
         return Inertia::render('Dashboard/Admin/Index', [
             'courses' => $courses,
+            'totalUsers' => $totalUsers
         ]);
     }
 

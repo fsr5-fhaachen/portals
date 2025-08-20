@@ -13,19 +13,31 @@
         </p>
       </CourseBox>
     </BoxContainer>
+    <br />
+    <div
+      class="flex bg-white dark:bg-gray-800 mb-16 pb-5 justify-center rounded-lg flex-row flex-wrap flex-grow"
+    >
+      <ChartContainer :stats="totalUserCount" chartType="total" />
+    </div>
   </LayoutDashboardContent>
 </template>
 
 <script setup lang="ts">
 import { ref, PropType, onBeforeUnmount } from "vue";
 
-const { courses } = defineProps({
+const { courses, totalUsers } = defineProps({
   courses: {
     type: Array as PropType<App.Models.Course[]>,
     required: true,
   },
+  totalUsers: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
 });
 
+const totalUserCount = ref(totalUsers);
 const coursesData = ref(courses);
 const isFetchingCourses = ref(false);
 const fetchCourses = async () => {
@@ -45,6 +57,12 @@ const fetchCourses = async () => {
 
   if (response.ok) {
     const data = await response.json();
+
+    totalUserCount.value = 0;
+
+    for (const course of data) {
+      totalUserCount.value += course.amount;
+    }
 
     // map the data to the courses
     coursesData.value = courses.map((course) => {
