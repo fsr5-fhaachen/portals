@@ -26,6 +26,9 @@ import {
   faBriefcase,
   faCodeBranch,
   faMoneyBillWave,
+  faSort,
+  faArrowUpWideShort,
+  faArrowDownShortWide,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
@@ -61,6 +64,9 @@ library.add(
   faBriefcase,
   faCodeBranch,
   faMoneyBillWave,
+  faSort,
+  faArrowUpWideShort,
+  faArrowDownShortWide,
 );
 
 createInertiaApp({
