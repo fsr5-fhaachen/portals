@@ -9,17 +9,19 @@
                 <tr>
                   <th
                     scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pl-6 lg:pl-8"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pl-6 lg:pl-8 hover:cursor-pointer"
                     @click="orderEvents(Column.Name)"
                   >
-                    Name
+                    <span>Name&nbsp;</span>
+                    <FontAwesomeIcon :icon="getSortIcon(Column.Name)" />
                   </th>
                   <th
                     scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 hover:cursor-pointer"
                     @click="orderEvents(Column.Type)"
                   >
-                    Type
+                    <span>Type&nbsp;</span>
+                    <FontAwesomeIcon :icon="getSortIcon(Column.Type)" />
                   </th>
                   <th
                     v-if="
@@ -28,9 +30,12 @@
                       )
                     "
                     scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 hover:cursor-pointer"
                   >
-                    Berücksichtigt Verzehr von Alkohol
+                    <span>Berücksichtigt Verzehr von Alkohol&nbsp;</span>
+                    <FontAwesomeIcon
+                      :icon="getSortIcon(Column.Consider_Alcohol)"
+                    />
                   </th>
                   <th
                     v-if="
@@ -39,21 +44,26 @@
                       )
                     "
                     scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 hover:cursor-pointer"
                   >
-                    Hat Voraussetzungen
+                    <span>Hat Voraussetzungen&nbsp;</span>
+                    <FontAwesomeIcon
+                      :icon="getSortIcon(Column.Has_Requirements)"
+                    />
                   </th>
                   <th
                     scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 hover:cursor-pointer"
                   >
-                    Registrierung
+                    <span>Registrierung&nbsp;</span>
+                    <FontAwesomeIcon :icon="getSortIcon(Column.Registration)" />
                   </th>
                   <th
                     scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 hover:cursor-pointer"
                   >
-                    Teilnehmer
+                    <span>Teilnehmer&nbsp;</span>
+                    <FontAwesomeIcon :icon="getSortIcon(Column.Participants)" />
                   </th>
                   <th
                     scope="col"
@@ -300,5 +310,17 @@ function orderEvents(column: Column): void {
               .sort((event1, event2) => event2.type.localeCompare(event1.type));
       break;
   }
+}
+
+function getSortIcon(column: Column): Array<string> {
+  if (column === orderedCol) {
+    if (sortDirection === SortDirection.Ascending) {
+      return ["fas", "arrow-down-short-wide"];
+    } else if (sortDirection === SortDirection.Descending) {
+      return ["fas", "arrow-up-wide-short"];
+    }
+  }
+
+  return ["fas", "sort"];
 }
 </script>
