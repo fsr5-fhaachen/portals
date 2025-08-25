@@ -1,99 +1,16 @@
 <template>
-  <div class="px-4 sm:px-6 lg:px-8">
-    <div class="flex flex-col">
-      <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div class="inline-block min-w-full py-2 align-middle">
-          <div class="shadow-sm ring-1 ring-black ring-opacity-5">
-            <table class="min-w-full border-separate" style="border-spacing: 0">
-              <thead class="bg-gray-50 dark:bg-gray-900">
-                <tr>
-                  <th
-                    scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pl-6 lg:pl-8"
-                  >
-                    Name
-                  </th>
-                  <th
-                    scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
-                  >
-                    Hat Voraussetzungen
-                  </th>
-                  <th
-                    scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
-                  >
-                    Teilnehmer
-                  </th>
-                  <th
-                    scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-3 pr-4 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pr-6 lg:pr-8"
-                  >
-                    <span class="sr-only">Anzeigen</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="bg-white dark:bg-gray-800">
-                <tr v-for="(slot, index) in slots" :key="slot.id">
-                  <td
-                    :class="[
-                      index !== slots.length - 1
-                        ? 'border-b border-gray-200 dark:border-gray-700'
-                        : '',
-                      'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-gray-100 sm:pl-6 lg:pl-8',
-                    ]"
-                  >
-                    {{ slot.name }}
-                  </td>
-                  <td
-                    :class="[
-                      index !== slots.length - 1
-                        ? 'border-b border-gray-200 dark:border-gray-700'
-                        : '',
-                      'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
-                    ]"
-                  >
-                    {{ slot.has_requirements ? "Ja" : "Nein" }}
-                  </td>
-
-                  <td
-                    :class="[
-                      index !== slots.length - 1
-                        ? 'border-b border-gray-200 dark:border-gray-700'
-                        : '',
-                      'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
-                    ]"
-                  >
-                    <span>{{ registrations[slot.id] || 0 }}</span>
-                    <span v-if="slot.maximum_participants">
-                      / {{ slot.maximum_participants }}</span
-                    >
-                  </td>
-                  <td
-                    :class="[
-                      index !== slots.length - 1
-                        ? 'border-b border-gray-200 dark:border-gray-700'
-                        : '',
-                      'relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8',
-                    ]"
-                  >
-                    <AppLink :href="'/dashboard/tutor/slot/' + slot.id">
-                      Anzeigen
-                      <span class="sr-only">, {{ slot.name }}</span>
-                    </AppLink>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <AppTable
+    :columns="getColumns()"
+    :links="getLinks()"
+    :elements="slots"
+    :idFunction="(slot) => slot.id"
+  />
 </template>
 
 <script setup lang="ts">
-import { computed, ref, PropType, onBeforeUnmount } from "vue";
+import { ref, PropType, onBeforeUnmount } from "vue";
+import { TableColumn } from "../../types/table-column";
+import { TableLink } from "../../types/table-link";
 
 const { slots } = defineProps({
   slots: {
@@ -129,4 +46,63 @@ const registrationsInterval = setInterval(fetchRegistrations, 5000);
 onBeforeUnmount(() => {
   clearInterval(registrationsInterval);
 });
+
+function getColumns(): Array<TableColumn> {
+  let columns = Array<TableColumn>();
+
+  let nameCol = new TableColumn(
+    "name",
+    "Name",
+    (slot) => slot.name,
+    (slot1, slot2) => slot1.name.localeCompare(slot2.name),
+  );
+  columns.push(nameCol);
+
+  let requirementsCol = new TableColumn(
+    "has_requirements",
+    "Hat Voraussetzungen",
+    (slot) => (slot.has_requirements ? "Ja" : "Nein"),
+    (slot1, slot2) =>
+      slot1.has_requirements === slot2.has_requirements
+        ? 0
+        : slot1.has_requirements
+          ? 1
+          : -1,
+  );
+  columns.push(requirementsCol);
+
+  let participantsCol = new TableColumn(
+    "participants",
+    "Teilnehmer",
+    (slot) => {
+      let val = (registrations.value[slot.id] || 0).toString();
+
+      if (slot.maximum_participants) {
+        val += " / " + slot.maximum_participants;
+      }
+
+      return val;
+    },
+    (slot1, slot2) =>
+      (registrations.value[slot1.id] || 0) -
+      (registrations.value[slot2.id] || 0),
+  );
+  columns.push(participantsCol);
+
+  return columns;
+}
+
+function getLinks(): Array<TableLink> {
+  let links = Array<TableLink>();
+
+  let showLink = new TableLink(
+    "show",
+    "Anzeigen",
+    (slot) => "/dashboard/tutor/slot/" + slot.id,
+    "default",
+  );
+  links.push(showLink);
+
+  return links;
+}
 </script>
