@@ -11,11 +11,7 @@
                     v-for:="(column, index) in columns"
                     :key="column.name"
                     scope="col"
-                    :class="
-                      index == 0
-                        ? 'dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pl-6 lg:pl-8 hover:cursor-pointer'
-                        : 'dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 hover:cursor-pointer'
-                    "
+                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pl-6 lg:pl-8 hover:cursor-pointer"
                     @click="orderElements(index)"
                   >
                     <div class="flex items-center gap-2 w-full">
@@ -24,7 +20,7 @@
                     </div>
                   </th>
                   <th
-                    v-if="links.length > 0"
+                    v-if="functions.length > 0"
                     scope="col"
                     class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-3 pr-4 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pr-6 lg:pr-8"
                   >
@@ -47,10 +43,10 @@
                       'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-gray-100 sm:pl-6 lg:pl-8',
                     ]"
                   >
-                    <span v-html="column.valueFn(element)"></span>
+                    <span v-html="column.valueFunction(element)"></span>
                   </td>
                   <td
-                    v-if="links.length > 0"
+                    v-if="functions.length > 0"
                     :class="[
                       eIndex !== elementsOrdered.length - 1
                         ? 'border-b border-gray-200 dark:border-gray-700'
@@ -59,14 +55,48 @@
                     ]"
                   >
                     <div class="flex gap-4">
-                      <AppLink
-                        v-for="(link, lIndex) in links"
-                        :key="link.name"
-                        :href="link.linkFn(element)"
-                        :theme="link.theme"
+                      <template
+                        v-for="(func, fIndex) in functions"
+                        :key="func.name"
                       >
-                        {{ link.text }}
-                      </AppLink>
+                        <AppLink
+                          v-if="func instanceof TableLink"
+                          :href="(func as TableLink).linkFunction(element)"
+                          :theme="(func as TableLink).theme"
+                        >
+                          {{ (func as TableLink).text }}
+                        </AppLink>
+                        <AppButton
+                          v-if="func instanceof TableButton"
+                          :theme="(func as TableButton).theme"
+                          :disabled="(func as TableButton).disabled"
+                          @click="(func as TableButton).buttonFunction(element)"
+                        >
+                          {{ (func as TableButton).text }}
+                        </AppButton>
+                        <AppButton
+                          v-if="func instanceof TableStateButton"
+                          :theme="
+                            getButtonState(func as TableStateButton, element)
+                              .theme
+                          "
+                          :disabled="
+                            getButtonState(func as TableStateButton, element)
+                              .disabled
+                          "
+                          @click="
+                            getButtonState(
+                              func as TableStateButton,
+                              element,
+                            ).buttonFunction(element)
+                          "
+                        >
+                          {{
+                            getButtonState(func as TableStateButton, element)
+                              .text
+                          }}
+                        </AppButton>
+                      </template>
                     </div>
                   </td>
                 </tr>
@@ -82,16 +112,15 @@
 <script setup lang="ts">
 import { ref, PropType, onBeforeUnmount } from "vue";
 import { TableColumn } from "../../types/table-column";
+import { TableFunction } from "../../types/table-function";
 import { TableLink } from "../../types/table-link";
+import { TableButton } from "../../types/table-button";
+import { TableStateButton, ButtonState } from "../../types/table-state-button";
 
-const { columns, links, elements } = defineProps({
+const { columns, elements, idFunction, functions } = defineProps({
   columns: {
     type: Array<TableColumn>,
     required: true,
-  },
-  links: {
-    type: Array<TableLink>,
-    default: [],
   },
   elements: {
     type: Array<Object>,
@@ -100,6 +129,10 @@ const { columns, links, elements } = defineProps({
   idFunction: {
     type: Function,
     required: true,
+  },
+  functions: {
+    type: Array<TableFunction>,
+    default: [],
   },
 });
 
@@ -137,10 +170,10 @@ function orderElements(columnIndex: number): void {
     sortDirection == SortDirection.Ascending
       ? elements
           .slice()
-          .sort((e1, e2) => columns[columnIndex].compareFn(e1, e2))
+          .sort((e1, e2) => columns[columnIndex].compareFunction(e1, e2))
       : elements
           .slice()
-          .sort((e1, e2) => columns[columnIndex].compareFn(e2, e1));
+          .sort((e1, e2) => columns[columnIndex].compareFunction(e2, e1));
 }
 
 function getSortIcon(columnIndex: number): Array<string> {
@@ -153,5 +186,18 @@ function getSortIcon(columnIndex: number): Array<string> {
   }
 
   return ["fas", "sort"];
+}
+
+function getButtonState(
+  stateButton: TableStateButton,
+  element: any,
+): TableButton {
+  for (const state of stateButton.states) {
+    if (state.condition(element)) {
+      return state.button;
+    }
+  }
+
+  return stateButton.defaultState;
 }
 </script>

@@ -1,10 +1,11 @@
 import { TableFunction } from "./table-function";
 
-export class TableLink implements TableFunction {
+export class TableButton implements TableFunction {
   constructor(
     public name: string,
     public text: string,
-    public linkFunction: (element: any) => string,
+    public disabled: boolean,
+    public buttonFunction: (element: any) => void,
     public theme: string,
   ) {}
 }

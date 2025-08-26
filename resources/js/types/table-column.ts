@@ -5,7 +5,7 @@ export class TableColumn {
   constructor(
     public name: string,
     public text: string,
-    public valueFn: ValueFn,
-    public compareFn: CompareFn,
+    public valueFunction: (element: any) => string,
+    public compareFunction: (element1: any, element2: any) => number,
   ) {}
 }
