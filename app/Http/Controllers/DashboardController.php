@@ -31,6 +31,14 @@ class DashboardController extends Controller
     }
 
     /**
+     * Display the tutor login page
+     */
+    public function login(): Response
+    {
+      return Inertia::render('Dashboard/Tutor/Login');
+    }
+
+    /**
      * Login a tutor
      */
     public function loginTutor(Request $request): RedirectResponse
@@ -53,16 +61,11 @@ class DashboardController extends Controller
                 session(['tutor' => true]);
 
                 Session::flash('success', $successMessage);
-
-                // redirect to dashboard
-                return redirect()->route('dashboard.tutor.index');
             } else {
                 Session::flash('error', 'Das Passwort ist falsch.');
-
-                // redirect to dashboard
-                return redirect()->route('dashboard.index');
             }
         }
+        return redirect()->to(session('url.intended'));
     }
 
     /**
