@@ -32,6 +32,7 @@
                 <tr
                   v-for="(element, eIndex) in elementsOrdered"
                   :key="idFunction(element)"
+                  :class="rowClass(element)"
                 >
                   <td
                     v-for="(column, cIndex) in columns"
@@ -78,22 +79,22 @@
                           v-if="func instanceof TableStateButton"
                           :theme="
                             getButtonState(func as TableStateButton, element)
-                              .theme
+                              .value.theme
                           "
                           :disabled="
                             getButtonState(func as TableStateButton, element)
-                              .disabled
+                              .value.disabled
                           "
                           @click="
                             getButtonState(
                               func as TableStateButton,
                               element,
-                            ).buttonFunction(element)
+                            ).value.buttonFunction(element)
                           "
                         >
                           {{
                             getButtonState(func as TableStateButton, element)
-                              .text
+                              .value.text
                           }}
                         </AppButton>
                       </template>
@@ -110,14 +111,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, PropType, onBeforeUnmount } from "vue";
+import { ref, computed, watch } from "vue";
 import { TableColumn } from "../../types/table-column";
 import { TableFunction } from "../../types/table-function";
 import { TableLink } from "../../types/table-link";
 import { TableButton } from "../../types/table-button";
-import { TableStateButton, ButtonState } from "../../types/table-state-button";
+import { TableStateButton } from "../../types/table-state-button";
 
-const { columns, elements, idFunction, functions } = defineProps({
+const props = defineProps({
   columns: {
     type: Array<TableColumn>,
     required: true,
@@ -134,9 +135,38 @@ const { columns, elements, idFunction, functions } = defineProps({
     type: Array<TableFunction>,
     default: [],
   },
+  rowClass: {
+    type: Function,
+    default: (element) => {
+      return {};
+    },
+  },
 });
 
-const elementsOrdered = ref<Object[]>(elements.slice());
+const elementsOrdered = ref<Object[]>(props.elements.slice());
+
+watch(
+  () => props.elements,
+  (newElements) => {
+    if (orderedCol === -1 || sortDirection === SortDirection.None) {
+      elementsOrdered.value = newElements.slice();
+    } else {
+      // erneutes Sortieren mit den neuen Daten
+      elementsOrdered.value =
+        sortDirection === SortDirection.Ascending
+          ? newElements
+              .slice()
+              .sort((e1, e2) =>
+                props.columns[orderedCol].compareFunction(e1, e2),
+              )
+          : newElements
+              .slice()
+              .sort((e1, e2) =>
+                props.columns[orderedCol].compareFunction(e2, e1),
+              );
+    }
+  },
+);
 
 enum SortDirection {
   None,
@@ -151,7 +181,7 @@ function orderElements(columnIndex: number): void {
   if (columnIndex == orderedCol) {
     if (sortDirection == SortDirection.Descending) {
       // undo ordering
-      elementsOrdered.value = elements.slice();
+      elementsOrdered.value = props.elements.slice();
       orderedCol = -1;
       sortDirection = SortDirection.None;
       return;
@@ -168,12 +198,12 @@ function orderElements(columnIndex: number): void {
 
   elementsOrdered.value =
     sortDirection == SortDirection.Ascending
-      ? elements
+      ? props.elements
           .slice()
-          .sort((e1, e2) => columns[columnIndex].compareFunction(e1, e2))
-      : elements
+          .sort((e1, e2) => props.columns[columnIndex].compareFunction(e1, e2))
+      : props.elements
           .slice()
-          .sort((e1, e2) => columns[columnIndex].compareFunction(e2, e1));
+          .sort((e1, e2) => props.columns[columnIndex].compareFunction(e2, e1));
 }
 
 function getSortIcon(columnIndex: number): Array<string> {
@@ -188,16 +218,14 @@ function getSortIcon(columnIndex: number): Array<string> {
   return ["fas", "sort"];
 }
 
-function getButtonState(
-  stateButton: TableStateButton,
-  element: any,
-): TableButton {
-  for (const state of stateButton.states) {
-    if (state.condition(element)) {
-      return state.button;
+function getButtonState(stateButton: TableStateButton, element: any) {
+  return computed<TableButton>(() => {
+    for (const state of stateButton.states) {
+      if (state.condition(element)) {
+        return state.button;
+      }
     }
-  }
-
-  return stateButton.defaultState;
+    return stateButton.defaultState;
+  });
 }
 </script>

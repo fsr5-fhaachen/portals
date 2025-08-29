@@ -5,6 +5,6 @@ export class TableLink implements TableFunction {
     public name: string,
     public text: string,
     public linkFunction: (element: any) => string,
-    public theme: string,
+    public theme = "default",
   ) {}
 }

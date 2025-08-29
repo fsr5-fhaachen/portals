@@ -1,9 +1,9 @@
 <template>
   <AppTable
     :columns="getColumns()"
-    :links="getLinks()"
     :elements="slots"
     :idFunction="(slot) => slot.id"
+    :functions="getLinks()"
   />
 </template>
 

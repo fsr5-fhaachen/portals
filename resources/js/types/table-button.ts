@@ -4,8 +4,8 @@ export class TableButton implements TableFunction {
   constructor(
     public name: string,
     public text: string,
-    public disabled: boolean,
     public buttonFunction: (element: any) => void,
-    public theme: string,
+    public disabled = false,
+    public theme = "default",
   ) {}
 }

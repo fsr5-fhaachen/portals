@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-const { disabled, theme } = defineProps({
+const props = defineProps({
   disabled: {
     type: Boolean,
     default: false,
@@ -24,33 +24,33 @@ const { disabled, theme } = defineProps({
 const rootClasses = computed(() => {
   const classes: string[] = [];
 
-  if (theme === "default") {
+  if (props.theme === "default") {
     classes.push("bg-fhac-mint-dark");
 
-    if (!disabled) {
+    if (!props.disabled) {
       classes.push("hover:bg-fhac-mint");
     }
-  } else if (theme === "gray") {
+  } else if (props.theme === "gray") {
     classes.push("bg-gray-500");
 
-    if (!disabled) {
+    if (!props.disabled) {
       classes.push("hover:bg-gray-700");
     }
-  } else if (theme === "danger") {
+  } else if (props.theme === "danger") {
     classes.push("bg-red-500 dark:bg-red-700");
 
-    if (!disabled) {
+    if (!props.disabled) {
       classes.push("hover:bg-red-700 dark:hover:bg-red-900");
     }
-  } else if (theme === "warning") {
+  } else if (props.theme === "warning") {
     classes.push("bg-orange-500 dark:bg-orange-700");
 
-    if (!disabled) {
+    if (!props.disabled) {
       classes.push("hover:bg-orange-700 dark:hover:bg-orange-900");
     }
   }
 
-  if (disabled) {
+  if (props.disabled) {
     classes.push("opacity-50 hover:cursor-not-allowed");
   } else {
     classes.push("hover:cursor-pointer");

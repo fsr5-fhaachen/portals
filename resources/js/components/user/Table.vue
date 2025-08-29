@@ -215,6 +215,10 @@
 
 <script setup lang="ts">
 import { ref, PropType } from "vue";
+import { TableColumn } from "../../types/table-column";
+import { ButtonState, TableStateButton } from "../../types/table-state-button";
+import { TableFunction } from "../../types/table-function";
+import { TableButton } from "../../types/table-button";
 
 const props = defineProps({
   user: {
@@ -257,4 +261,173 @@ const selectUserToDelete = async (user: Models.User) => {
 const submitUserDelete = async () => {
   clearUserToDelete();
 };
+
+function getColumns(): Array<TableColumn> {
+  let columns = Array<TableColumn>();
+
+  let firstNameCol = new TableColumn(
+    "firstName",
+    "Vorname",
+    (user) => user.firstname,
+    (user1, user2) => user1.firstname.localeCompare(user2.firstname),
+  );
+  columns.push(firstNameCol);
+
+  let lastNameCol = new TableColumn(
+    "lastName",
+    "Nachname",
+    (user) => user.lastname,
+    (user1, user2) => user1.lastname.localeCompare(user2.lastname),
+  );
+  columns.push(lastNameCol);
+
+  let emailCol = new TableColumn(
+    "email",
+    "E-Mail",
+    (user) => user.email,
+    (user1, user2) => user1.email.localeCompare(user2.email),
+  );
+  columns.push(emailCol);
+
+  let courseCol = new TableColumn(
+    "course",
+    "Studiengang",
+    (user) => {
+      if (user.course?.id) {
+        return (
+          '<span class ="[' +
+          user.course.classes +
+          ', "rounded-md p-1 text-xs text-white"]">' +
+          user.course.abbreviation +
+          "</span>"
+        );
+      }
+
+      return "";
+    },
+    (user1, user2) => {
+      if (!user1.course?.id) {
+        return -1;
+      } else if (!user2.course?.id) {
+        return 1;
+      } else {
+        return user1.course.abbreviation.localeCompare(
+          user2.course.abbreviation,
+        );
+      }
+    },
+  );
+  columns.push(courseCol);
+
+  let roleCol = new TableColumn(
+    "role",
+    "Rollen",
+    (user) => {
+      let ret = "";
+      if (user.roles.length) {
+        ret += '<div class="flex flex-col gap-2">';
+        for (const role of user.roles) {
+          ret +=
+            '<span class="rounded-md bg-slate-900 p-1 text-xs text-white">' +
+            role.name +
+            "</span>";
+        }
+      }
+
+      return ret;
+    },
+    (user1, user2) => {
+      if (!user1.roles.length) {
+        return -1;
+      } else if (!user2.roles.length) {
+        return 1;
+      } else {
+        return user1.roles
+          .map((role) => role.name)
+          .join(" | ")
+          .localeCompare(user2.roles.map((role) => role.name).join(" | "));
+      }
+    },
+  );
+  columns.push(roleCol);
+
+  return columns;
+}
+
+function getFunctions(): Array<TableFunction> {
+  let functions = new Array<TableFunction>();
+
+  let presentButton = new TableStateButton(
+    "isPresent",
+    new TableButton(
+      "notPresent",
+      "ist nicht anwesend",
+      (registration) => toggleIsPresent(registration.id),
+      false,
+      "gray",
+    ),
+    [
+      new ButtonState(
+        (registration) => registration.is_present,
+        new TableButton("present", "ist anwesend", (registration) =>
+          toggleIsPresent(registration.id),
+        ),
+      ),
+    ],
+  );
+  functions.push(presentButton);
+
+  if (
+    props.user &&
+    props.user.permissionsArray.includes("view hidden event details")
+  ) {
+    let requirementsButton = new TableStateButton(
+      "fulfilsRequirements",
+      new TableButton(
+        "doesNotFulFill",
+        "erfüllt nicht die Anforderungen",
+        (registration) => toggleFulfilsRequirements(registration.id),
+        false,
+        "gray",
+      ),
+      [
+        new ButtonState(
+          (registration) => registration.fulfils_requirements,
+          new TableButton(
+            "fulfils",
+            "erfüllt die Anforderungen",
+            (registration) => toggleFulfilsRequirements(registration.id),
+          ),
+        ),
+      ],
+    );
+    functions.push(requirementsButton);
+
+    let deleteButton = new TableStateButton(
+      "delete",
+      new TableButton(
+        "doesNotFulFill",
+        "löschen",
+        (registration) => {},
+        true,
+        "gray",
+      ),
+      [
+        new ButtonState(
+          (registration) => !registration.fulfils_requirements,
+          new TableButton(
+            "fulfils",
+            "löschen",
+            (registration) => destroy(registration.id),
+            false,
+            "danger",
+          ),
+        ),
+      ],
+    );
+    functions.push(deleteButton);
+  }
+
+  return functions;
+}
 </script>
