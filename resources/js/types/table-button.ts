@@ -5,7 +5,7 @@ export class TableButton implements TableFunction {
     public name: string,
     public text: string,
     public buttonFunction: (element: any) => void,
-    public disabled = false,
+    public disabledFunction: (element: any) => boolean = (element) => false,
     public theme = "default",
   ) {}
 }

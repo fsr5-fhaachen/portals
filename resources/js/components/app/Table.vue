@@ -70,7 +70,9 @@
                         <AppButton
                           v-if="func instanceof TableButton"
                           :theme="(func as TableButton).theme"
-                          :disabled="(func as TableButton).disabled"
+                          :disabled="
+                            (func as TableButton).disabledFunction(element)
+                          "
                           @click="(func as TableButton).buttonFunction(element)"
                         >
                           {{ (func as TableButton).text }}
@@ -82,8 +84,10 @@
                               .value.theme
                           "
                           :disabled="
-                            getButtonState(func as TableStateButton, element)
-                              .value.disabled
+                            getButtonState(
+                              func as TableStateButton,
+                              element,
+                            ).value.disabledFunction(element)
                           "
                           @click="
                             getButtonState(

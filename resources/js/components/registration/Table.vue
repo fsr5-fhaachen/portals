@@ -292,7 +292,7 @@ function getFunctions(): Array<TableFunction> {
       "notPresent",
       "ist nicht anwesend",
       (registration) => toggleIsPresent(registration.id),
-      false,
+      () => false,
       "gray",
     ),
     [
@@ -316,7 +316,7 @@ function getFunctions(): Array<TableFunction> {
         "doesNotFulFill",
         "erfüllt nicht die Anforderungen",
         (registration) => toggleFulfilsRequirements(registration.id),
-        false,
+        () => false,
         "gray",
       ),
       [
@@ -337,8 +337,8 @@ function getFunctions(): Array<TableFunction> {
       new TableButton(
         "doesNotFulFill",
         "löschen",
-        (registration) => {},
-        true,
+        () => {},
+        () => true,
         "gray",
       ),
       [
@@ -348,7 +348,7 @@ function getFunctions(): Array<TableFunction> {
             "fulfils",
             "löschen",
             (registration) => destroy(registration.id),
-            false,
+            () => false,
             "danger",
           ),
         ),

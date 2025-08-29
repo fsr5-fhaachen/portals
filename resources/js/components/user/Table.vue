@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4 sm:px-6 lg:px-8">
+  <!--<div class="px-4 sm:px-6 lg:px-8">
     <div class="flex flex-col">
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle">
@@ -210,13 +210,44 @@
       @close="clearUserToDelete"
       @submit="submitUserDelete"
     />
-  </div>
+  </div>-->
+  <AppTable
+    :columns="getColumns()"
+    :elements="usersData"
+    :idFunction="(user) => user.id"
+    :functions="getFunctions()"
+    :rowClass="
+      (user) => {
+        return {
+          'bg-yellow-100 dark:bg-yellow-900':
+            user.roles.length &&
+            user.roles.map((role) => role.name).includes('super admin'),
+          'bg-red-100 dark:bg-red-900': user.is_disabled,
+        };
+      }
+    "
+  />
+
+  <UserEditModal
+    v-if="userToEdit"
+    :user="userToEdit"
+    :courses="courses"
+    :roles="roles"
+    @close="clearUserToEdit"
+    @submit="submitUserEdit"
+  />
+
+  <UserDeleteModal
+    v-if="userToDelete"
+    :user="userToDelete"
+    @close="clearUserToDelete"
+    @submit="submitUserDelete"
+  />
 </template>
 
 <script setup lang="ts">
-import { ref, PropType } from "vue";
+import { ref, PropType, watch } from "vue";
 import { TableColumn } from "../../types/table-column";
-import { ButtonState, TableStateButton } from "../../types/table-state-button";
 import { TableFunction } from "../../types/table-function";
 import { TableButton } from "../../types/table-button";
 
@@ -237,6 +268,11 @@ const props = defineProps({
     type: Array as PropType<Models.Role[]>,
     required: true,
   },
+});
+
+const usersData = ref(props.users);
+watch(props, (props) => {
+  usersData.value = props.users;
 });
 
 const userToEdit = ref<Models.User | null>(null);
@@ -295,9 +331,9 @@ function getColumns(): Array<TableColumn> {
     (user) => {
       if (user.course?.id) {
         return (
-          '<span class ="[' +
+          '<span class="' +
           user.course.classes +
-          ', "rounded-md p-1 text-xs text-white"]">' +
+          ', rounded-md p-1 text-xs text-white">' +
           user.course.abbreviation +
           "</span>"
         );
@@ -344,12 +380,21 @@ function getColumns(): Array<TableColumn> {
       } else {
         return user1.roles
           .map((role) => role.name)
-          .join(" | ")
-          .localeCompare(user2.roles.map((role) => role.name).join(" | "));
+          .join("")
+          .localeCompare(user2.roles.map((role) => role.name).join(""));
       }
     },
   );
   columns.push(roleCol);
+
+  let avatarCol = new TableColumn(
+    "avatar",
+    "Hat ein Bild",
+    (user) => (user.avatarUrl ? "Ja" : "Nein"),
+    (user1, user2) =>
+      user1.avatarUrl && user2.avatarUrl ? 0 : user1.avatarUrl ? 1 : -1,
+  );
+  columns.push(avatarCol);
 
   return columns;
 }
@@ -357,73 +402,24 @@ function getColumns(): Array<TableColumn> {
 function getFunctions(): Array<TableFunction> {
   let functions = new Array<TableFunction>();
 
-  let presentButton = new TableStateButton(
-    "isPresent",
-    new TableButton(
-      "notPresent",
-      "ist nicht anwesend",
-      (registration) => toggleIsPresent(registration.id),
-      false,
-      "gray",
-    ),
-    [
-      new ButtonState(
-        (registration) => registration.is_present,
-        new TableButton("present", "ist anwesend", (registration) =>
-          toggleIsPresent(registration.id),
-        ),
-      ),
-    ],
+  const editButton = new TableButton(
+    "edit",
+    "bearbeiten",
+    (user) => selectUserToEdit(user),
+    () => false,
+    "warning",
   );
-  functions.push(presentButton);
+  functions.push(editButton);
 
-  if (
-    props.user &&
-    props.user.permissionsArray.includes("view hidden event details")
-  ) {
-    let requirementsButton = new TableStateButton(
-      "fulfilsRequirements",
-      new TableButton(
-        "doesNotFulFill",
-        "erfüllt nicht die Anforderungen",
-        (registration) => toggleFulfilsRequirements(registration.id),
-        false,
-        "gray",
-      ),
-      [
-        new ButtonState(
-          (registration) => registration.fulfils_requirements,
-          new TableButton(
-            "fulfils",
-            "erfüllt die Anforderungen",
-            (registration) => toggleFulfilsRequirements(registration.id),
-          ),
-        ),
-      ],
-    );
-    functions.push(requirementsButton);
-
-    let deleteButton = new TableStateButton(
+  if (props.user.permissionsArray.includes("delete users")) {
+    const deleteButton = new TableButton(
       "delete",
-      new TableButton(
-        "doesNotFulFill",
-        "löschen",
-        (registration) => {},
-        true,
-        "gray",
-      ),
-      [
-        new ButtonState(
-          (registration) => !registration.fulfils_requirements,
-          new TableButton(
-            "fulfils",
-            "löschen",
-            (registration) => destroy(registration.id),
-            false,
-            "danger",
-          ),
-        ),
-      ],
+      "löschen",
+      (user) => selectUserToDelete(user),
+      (userData) =>
+        props.user.id === userData.id ||
+        userData.roles.map((role) => role.name).includes("super admin"),
+      "danger",
     );
     functions.push(deleteButton);
   }

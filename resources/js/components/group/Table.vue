@@ -70,9 +70,9 @@ function getColumns(): Array<TableColumn> {
       (group1, group2) =>
         group1.courses
           .map((course) => course.abbreviation)
-          .join(" | ")
+          .join("")
           .localeCompare(
-            group2.courses.map((course) => course.abbreviation).join(" | "),
+            group2.courses.map((course) => course.abbreviation).join(""),
           ),
     );
     columns.push(coursesCol);
