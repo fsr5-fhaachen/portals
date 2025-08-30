@@ -59,12 +59,12 @@
                   <strong>{{ userRegistration.group.name }}</strong
                   >.
                   <div v-if="userRegistration.group.telegram_group_link">
+                    Link zur Telegram-Gruppe:<br />
                     <AppLink
                       :href="userRegistration.group.telegram_group_link"
                       rootClass="inline"
-                      >Klicke hier</AppLink
+                      >{{ userRegistration.group.telegram_group_link }}</AppLink
                     >
-                    um der Telegram Gruppe beizutreten.
                   </div>
                 </template>
                 <template v-else>
@@ -72,12 +72,12 @@
                   <strong>Gruppe {{ userRegistration.group.id }}</strong
                   >.
                   <div v-if="userRegistration.group.telegram_group_link">
+                    Link zur Telegram-Gruppe:<br />
                     <AppLink
                       :href="userRegistration.group.telegram_group_link"
                       rootClass="inline"
-                      >Klicke hier</AppLink
+                      >{{ userRegistration.group.telegram_group_link }}</AppLink
                     >
-                    um der Telegram Gruppe beizutreten.
                   </div>
                 </template>
               </template>
@@ -123,12 +123,12 @@
                 <strong>{{ slotData.name }}</strong
                 >.
                 <div v-if="slotData.telegram_group_link">
+                  Link zur Telegram-Gruppe:<br />
                   <AppLink
                     :href="slotData.telegram_group_link"
                     rootClass="inline"
-                    >Klicke hier</AppLink
+                    >{{ slotData.telegram_group_link }}</AppLink
                   >
-                  um der Telegram Gruppe beizutreten.
                 </div>
               </template>
             </UiMessage>
