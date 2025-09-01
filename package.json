@@ -46,7 +46,10 @@
     "@inertiajs/inertia": "^0.11.1",
     "@inertiajs/inertia-vue3": "^0.6.0",
     "@inertiajs/progress": "^0.2.7",
+    "@primeuix/themes": "^1.2.3",
     "@tailwindcss/forms": "^0.5.9",
+    "chart.js": "^4.5.0",
+    "primevue": "^4.3.7",
     "vue": "^3.4.38"
   }
 }

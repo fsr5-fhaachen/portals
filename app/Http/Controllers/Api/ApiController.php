@@ -249,8 +249,60 @@ class ApiController extends Controller
                 'amount' => $course->users()->doesntHave('roles')->whereIn('id', $userIds)->count(),
             ];
         }
-
         return response()->json($result);
+    }
+
+    /**
+     * Return statistics for a given course
+     * The statistics are counted by the registrations of the event.
+     * Returns a JSON object, that containts amounts of each value and the name of the event of the form responses as well as the amount of users that drink alcohol.
+     *
+     * @param  Request  $request
+     */
+    public function courseStatistics(Request $request): JsonResponse
+    {
+      $event = Event::with(['registrations.user'])->find($request->event);
+
+      if (!$event) {
+        return response()->json(['message' => 'Event not found'], 404);
+      }
+
+      $result = [];
+      if ($event->consider_alcohol === true) {
+        $result['drinks_alcohol'] = [
+          'true' => $event->registrations->where('drinks_alcohol', true)->count(),
+          'false' => $event->registrations->where('drinks_alcohol', false)->count(),
+          'name' => 'Drinks Alcohol',
+        ];
+      }
+
+      $formData = $event->registrations->pluck('form_responses')->filter(function ($item) {
+        return !is_null($item);
+      });
+
+      // Count statistics from formData
+      foreach ($formData as $data) {
+        if (is_string($data)) {
+          $data = json_decode($data, true);
+        }
+        if (is_array($data)) {
+          foreach ($data as $key => $value) {
+            if (!isset($result[$key])) {
+              $result[$key] = [
+                $value => 1,
+                'name' => $key,
+              ];
+            } else {
+              if (isset($result[$key][$value])) {
+                $result[$key][$value]++;
+              } else {
+                $result[$key][$value] = 1;
+              }
+            }
+          }
+        }
+      }
+      return response()->json($result);
     }
 
     /**
@@ -319,7 +371,7 @@ class ApiController extends Controller
      *       "hours": number;
      *     };
      *   }
-     * 
+     *
      * The definition of the states is as follows:
      *   setup: The countdown is not set up yet
      *   idle: The countdown was resetted

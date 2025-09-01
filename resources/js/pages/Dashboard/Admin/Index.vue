@@ -13,16 +13,27 @@
         </p>
       </CourseBox>
     </BoxContainer>
+    <br />
+    <div
+      class="flex bg-white dark:bg-gray-800 mb-16 pb-5 justify-center rounded-lg flex-row flex-wrap flex-grow"
+    >
+      <ChartContainer :stats="totalUser" chartType="total" />
+    </div>
   </LayoutDashboardContent>
 </template>
 
 <script setup lang="ts">
 import { ref, PropType, onBeforeUnmount } from "vue";
 
-const { courses } = defineProps({
+const { courses, totalUser } = defineProps({
   courses: {
     type: Array as PropType<App.Models.Course[]>,
     required: true,
+  },
+  totalUser: {
+    type: Number,
+    required: false,
+    default: 0,
   },
 });
 
