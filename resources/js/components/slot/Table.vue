@@ -48,33 +48,33 @@ onBeforeUnmount(() => {
 });
 
 function getColumns(): Array<TableColumn> {
-  let columns = Array<TableColumn>();
+  let columns: Array<TableColumn> = [];
 
-  let nameCol = new TableColumn(
-    "name",
-    "Name",
-    (slot) => slot.name,
-    (slot1, slot2) => slot1.name.localeCompare(slot2.name),
-  );
+  let nameCol = new TableColumn({
+    name: "name",
+    text: "Name",
+    valueFunction: (slot) => slot.name,
+    compareFunction: (slot1, slot2) => slot1.name.localeCompare(slot2.name),
+  });
   columns.push(nameCol);
 
-  let requirementsCol = new TableColumn(
-    "has_requirements",
-    "Hat Voraussetzungen",
-    (slot) => (slot.has_requirements ? "Ja" : "Nein"),
-    (slot1, slot2) =>
+  let requirementsCol = new TableColumn({
+    name: "has_requirements",
+    text: "Hat Voraussetzungen",
+    valueFunction: (slot) => (slot.has_requirements ? "Ja" : "Nein"),
+    compareFunction: (slot1, slot2) =>
       slot1.has_requirements === slot2.has_requirements
         ? 0
         : slot1.has_requirements
           ? 1
           : -1,
-  );
+  });
   columns.push(requirementsCol);
 
-  let participantsCol = new TableColumn(
-    "participants",
-    "Teilnehmer",
-    (slot) => {
+  let participantsCol = new TableColumn({
+    name: "participants",
+    text: "Teilnehmer",
+    valueFunction: (slot) => {
       let val = (registrations.value[slot.id] || 0).toString();
 
       if (slot.maximum_participants) {
@@ -83,24 +83,24 @@ function getColumns(): Array<TableColumn> {
 
       return val;
     },
-    (slot1, slot2) =>
+    compareFunction: (slot1, slot2) =>
       (registrations.value[slot1.id] || 0) -
       (registrations.value[slot2.id] || 0),
-  );
+  });
   columns.push(participantsCol);
 
   return columns;
 }
 
 function getLinks(): Array<TableLink> {
-  let links = Array<TableLink>();
+  let links: Array<TableLink> = [];
 
-  let showLink = new TableLink(
-    "show",
-    "Anzeigen",
-    (slot) => "/dashboard/tutor/slot/" + slot.id,
-    "default",
-  );
+  let showLink = new TableLink({
+    name: "show",
+    text: "Anzeigen",
+    linkFunction: (slot) => "/dashboard/tutor/slot/" + slot.id,
+    theme: "default",
+  });
   links.push(showLink);
 
   return links;

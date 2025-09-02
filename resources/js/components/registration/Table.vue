@@ -163,81 +163,83 @@ const destroy = async (registrationId: number) => {
 function getColumns(): Array<TableColumn> {
   let columns = Array<TableColumn>();
 
-  let firstNameCol = new TableColumn(
-    "firstName",
-    "Vorname",
-    (registration) => registration.user.firstname,
-    (registration1, registration2) =>
+  let firstNameCol = new TableColumn({
+    name: "firstName",
+    text: "Vorname",
+    valueFunction: (registration) => registration.user.firstname,
+    compareFunction: (registration1, registration2) =>
       registration1.user.firstname.localeCompare(registration2.user.firstname),
-  );
+  });
   columns.push(firstNameCol);
 
-  let lastNameCol = new TableColumn(
-    "lastName",
-    "Nachname",
-    (registration) => registration.user.lastname,
-    (registration1, registration2) =>
+  let lastNameCol = new TableColumn({
+    name: "lastName",
+    text: "Nachname",
+    valueFunction: (registration) => registration.user.lastname,
+    compareFunction: (registration1, registration2) =>
       registration1.user.lastname.localeCompare(registration2.user.lastname),
-  );
+  });
   columns.push(lastNameCol);
 
-  let courseCol = new TableColumn(
-    "course",
-    "Studiengang",
-    (registration) => getCourseName(registration.user.course_id),
-    (registration1, registration2) =>
+  let courseCol = new TableColumn({
+    name: "course",
+    text: "Studiengang",
+    valueFunction: (registration) => getCourseName(registration.user.course_id),
+    compareFunction: (registration1, registration2) =>
       getCourseName(registration1.user.course_id).localeCompare(
         getCourseName(registration2.user.course_id),
       ),
-  );
+  });
   columns.push(courseCol);
 
   if (!props.hideSlots && props.event.type == "slot_booking") {
-    let slotCol = new TableColumn(
-      "slot",
-      "Slot",
-      (registration) => getSlotName(registration.user.course_id),
-      (registration1, registration2) =>
+    let slotCol = new TableColumn({
+      name: "slot",
+      text: "Slot",
+      valueFunction: (registration) => getSlotName(registration.user.course_id),
+      compareFunction: (registration1, registration2) =>
         getSlotName(registration1.user.course_id).localeCompare(
           getSlotName(registration2.user.course_id),
         ),
-    );
+    });
     columns.push(slotCol);
   }
 
   if (!props.hideGroups && props.event.type == "group_phase") {
-    let groupCol = new TableColumn(
-      "group",
-      "Gruppe",
-      (registration) => getGroupName(registration.user.course_id),
-      (registration1, registration2) =>
+    let groupCol = new TableColumn({
+      name: "group",
+      text: "Gruppe",
+      valueFunction: (registration) =>
+        getGroupName(registration.user.course_id),
+      compareFunction: (registration1, registration2) =>
         getGroupName(registration1.user.course_id).localeCompare(
           getGroupName(registration2.user.course_id),
         ),
-    );
+    });
     columns.push(groupCol);
   }
 
   if (props.event.consider_alcohol) {
-    let alcoholCol = new TableColumn(
-      "alcohol",
-      "Trinkt Alkohol",
-      (registration) => (registration.drinks_alcohol ? "Ja" : "Nein"),
-      (registration1, registration2) =>
+    let alcoholCol = new TableColumn({
+      name: "alcohol",
+      text: "Trinkt Alkohol",
+      valueFunction: (registration) =>
+        registration.drinks_alcohol ? "Ja" : "Nein",
+      compareFunction: (registration1, registration2) =>
         registration1.drinks_alcohol === registration2.drinks_alcohol
           ? 0
           : registration1.drinks_alcohol
             ? 1
             : -1,
-    );
+    });
     columns.push(alcoholCol);
   }
 
   if (props.event.type == "slot_booking") {
-    let queueCol = new TableColumn(
-      "queue",
-      "Warteschlangenpositiion",
-      (registration) => {
+    let queueCol = new TableColumn({
+      name: "queue",
+      text: "Warteschlangenpositiion",
+      valueFunction: (registration) => {
         if (registration.queue_position && registration.queue_position > 0) {
           return registration.queue_position;
         } else if (
@@ -249,34 +251,33 @@ function getColumns(): Array<TableColumn> {
           return "Angemeldet";
         }
       },
-      (registration1, registration2) =>
+      compareFunction: (registration1, registration2) =>
         registration1.queue_position === null ||
         registration1.queue_position === undefined
           ? -1
           : registration1.queue_position - registration2.queue_position,
-    );
+    });
     columns.push(queueCol);
   }
 
   if (showFormColomn) {
-    let formCol = new TableColumn(
-      "form",
-      "Rückmeldung",
-      (registration) => {
+    let formCol = new TableColumn({
+      name: "form",
+      text: "Rückmeldung",
+      valueFunction: (registration) => {
         if (registration.form_responses) {
           return "<code>" + registration.form_responses + "</code>";
         }
-
         return "";
       },
-      (registration1, registration2) =>
+      compareFunction: (registration1, registration2) =>
         registration1.form_responses === null ||
         registration1.form_responses === undefined
           ? -1
           : registration1.form_responses.localeCompare(
               registration2.form_responses,
             ),
-    );
+    });
     columns.push(formCol);
   }
 
@@ -286,74 +287,79 @@ function getColumns(): Array<TableColumn> {
 function getFunctions(): Array<TableFunction> {
   let functions = new Array<TableFunction>();
 
-  let presentButton = new TableStateButton(
-    "isPresent",
-    new TableButton(
-      "notPresent",
-      "ist nicht anwesend",
-      (registration) => toggleIsPresent(registration.id),
-      () => false,
-      "gray",
-    ),
-    [
-      new ButtonState(
-        (registration) => registration.is_present,
-        new TableButton("present", "ist anwesend", (registration) =>
-          toggleIsPresent(registration.id),
-        ),
-      ),
+  let presentButton = new TableStateButton({
+    name: "isPresent",
+    defaultState: new TableButton({
+      name: "notPresent",
+      text: "ist nicht anwesend",
+      buttonFunction: (registration) => toggleIsPresent(registration.id),
+      disabledFunction: () => false,
+      theme: "gray",
+    }),
+    states: [
+      new ButtonState({
+        condition: (registration) => registration.is_present,
+        button: new TableButton({
+          name: "present",
+          text: "ist anwesend",
+          buttonFunction: (registration) => toggleIsPresent(registration.id),
+        }),
+      }),
     ],
-  );
+  });
   functions.push(presentButton);
 
   if (
+    props.event.has_requirements &&
     props.user &&
     props.user.permissionsArray.includes("view hidden event details")
   ) {
-    let requirementsButton = new TableStateButton(
-      "fulfilsRequirements",
-      new TableButton(
-        "doesNotFulFill",
-        "erfüllt nicht die Anforderungen",
-        (registration) => toggleFulfilsRequirements(registration.id),
-        () => false,
-        "gray",
-      ),
-      [
-        new ButtonState(
-          (registration) => registration.fulfils_requirements,
-          new TableButton(
-            "fulfils",
-            "erfüllt die Anforderungen",
-            (registration) => toggleFulfilsRequirements(registration.id),
-          ),
-        ),
+    let requirementsButton = new TableStateButton({
+      name: "fulfilsRequirements",
+      defaultState: new TableButton({
+        name: "doesNotFulFill",
+        text: "erfüllt nicht die Anforderungen",
+        buttonFunction: (registration) =>
+          toggleFulfilsRequirements(registration.id),
+        disabledFunction: () => false,
+        theme: "gray",
+      }),
+      states: [
+        new ButtonState({
+          condition: (registration) => registration.fulfils_requirements,
+          button: new TableButton({
+            name: "fulfils",
+            text: "erfüllt die Anforderungen",
+            buttonFunction: (registration) =>
+              toggleFulfilsRequirements(registration.id),
+          }),
+        }),
       ],
-    );
+    });
     functions.push(requirementsButton);
 
-    let deleteButton = new TableStateButton(
-      "delete",
-      new TableButton(
-        "doesNotFulFill",
-        "löschen",
-        () => {},
-        () => true,
-        "gray",
-      ),
-      [
-        new ButtonState(
-          (registration) => !registration.fulfils_requirements,
-          new TableButton(
-            "fulfils",
-            "löschen",
-            (registration) => destroy(registration.id),
-            () => false,
-            "danger",
-          ),
-        ),
+    let deleteButton = new TableStateButton({
+      name: "delete",
+      defaultState: new TableButton({
+        name: "doesNotFulFill",
+        text: "löschen",
+        buttonFunction: () => {},
+        disabledFunction: () => true,
+        theme: "gray",
+      }),
+      states: [
+        new ButtonState({
+          condition: (registration) => !registration.fulfils_requirements,
+          button: new TableButton({
+            name: "fulfils",
+            text: "löschen",
+            buttonFunction: (registration) => destroy(registration.id),
+            disabledFunction: () => false,
+            theme: "danger",
+          }),
+        }),
       ],
-    );
+    });
     functions.push(deleteButton);
   }
 

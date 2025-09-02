@@ -15,7 +15,7 @@
                     @click="orderElements(index)"
                   >
                     <div class="flex items-center gap-2 w-full">
-                      <span class="break-words">{{ column.text }}</span>
+                      <span class="break-words">{{ column.header }}</span>
                       <FontAwesomeIcon :icon="getSortIcon(index)" />
                     </div>
                   </th>

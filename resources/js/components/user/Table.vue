@@ -87,36 +87,38 @@ const submitUserDelete = async () => {
 };
 
 function getColumns(): Array<TableColumn> {
-  let columns = Array<TableColumn>();
+  let columns: Array<TableColumn> = [];
 
-  let firstNameCol = new TableColumn(
-    "firstName",
-    "Vorname",
-    (user) => user.firstname,
-    (user1, user2) => user1.firstname.localeCompare(user2.firstname),
-  );
+  let firstNameCol = new TableColumn({
+    name: "firstName",
+    text: "Vorname",
+    valueFunction: (user) => user.firstname,
+    compareFunction: (user1, user2) =>
+      user1.firstname.localeCompare(user2.firstname),
+  });
   columns.push(firstNameCol);
 
-  let lastNameCol = new TableColumn(
-    "lastName",
-    "Nachname",
-    (user) => user.lastname,
-    (user1, user2) => user1.lastname.localeCompare(user2.lastname),
-  );
+  let lastNameCol = new TableColumn({
+    name: "lastName",
+    text: "Nachname",
+    valueFunction: (user) => user.lastname,
+    compareFunction: (user1, user2) =>
+      user1.lastname.localeCompare(user2.lastname),
+  });
   columns.push(lastNameCol);
 
-  let emailCol = new TableColumn(
-    "email",
-    "E-Mail",
-    (user) => user.email,
-    (user1, user2) => user1.email.localeCompare(user2.email),
-  );
+  let emailCol = new TableColumn({
+    name: "email",
+    text: "E-Mail",
+    valueFunction: (user) => user.email,
+    compareFunction: (user1, user2) => user1.email.localeCompare(user2.email),
+  });
   columns.push(emailCol);
 
-  let courseCol = new TableColumn(
-    "course",
-    "Studiengang",
-    (user) => {
+  let courseCol = new TableColumn({
+    name: "course",
+    text: "Studiengang",
+    valueFunction: (user) => {
       if (user.course?.id) {
         return (
           '<span class="' +
@@ -126,27 +128,20 @@ function getColumns(): Array<TableColumn> {
           "</span>"
         );
       }
-
       return "";
     },
-    (user1, user2) => {
-      if (!user1.course?.id) {
-        return -1;
-      } else if (!user2.course?.id) {
-        return 1;
-      } else {
-        return user1.course.abbreviation.localeCompare(
-          user2.course.abbreviation,
-        );
-      }
+    compareFunction: (user1, user2) => {
+      if (!user1.course?.id) return -1;
+      if (!user2.course?.id) return 1;
+      return user1.course.abbreviation.localeCompare(user2.course.abbreviation);
     },
-  );
+  });
   columns.push(courseCol);
 
-  let roleCol = new TableColumn(
-    "role",
-    "Rollen",
-    (user) => {
+  let roleCol = new TableColumn({
+    name: "role",
+    text: "Rollen",
+    valueFunction: (user) => {
       let ret = "";
       if (user.roles.length) {
         ret += '<div class="flex flex-col gap-2">';
@@ -157,58 +152,53 @@ function getColumns(): Array<TableColumn> {
             "</span>";
         }
       }
-
       return ret;
     },
-    (user1, user2) => {
-      if (!user1.roles.length) {
-        return -1;
-      } else if (!user2.roles.length) {
-        return 1;
-      } else {
-        return user1.roles
-          .map((role) => role.name)
-          .join("")
-          .localeCompare(user2.roles.map((role) => role.name).join(""));
-      }
+    compareFunction: (user1, user2) => {
+      if (!user1.roles.length) return -1;
+      if (!user2.roles.length) return 1;
+      return user1.roles
+        .map((role) => role.name)
+        .join("")
+        .localeCompare(user2.roles.map((role) => role.name).join(""));
     },
-  );
+  });
   columns.push(roleCol);
 
-  let avatarCol = new TableColumn(
-    "avatar",
-    "Hat ein Bild",
-    (user) => (user.avatarUrl ? "Ja" : "Nein"),
-    (user1, user2) =>
+  let avatarCol = new TableColumn({
+    name: "avatar",
+    text: "Hat ein Bild",
+    valueFunction: (user) => (user.avatarUrl ? "Ja" : "Nein"),
+    compareFunction: (user1, user2) =>
       user1.avatarUrl && user2.avatarUrl ? 0 : user1.avatarUrl ? 1 : -1,
-  );
+  });
   columns.push(avatarCol);
 
   return columns;
 }
 
 function getFunctions(): Array<TableFunction> {
-  let functions = new Array<TableFunction>();
+  let functions: Array<TableFunction> = [];
 
-  const editButton = new TableButton(
-    "edit",
-    "bearbeiten",
-    (user) => selectUserToEdit(user),
-    () => false,
-    "warning",
-  );
+  const editButton = new TableButton({
+    name: "edit",
+    text: "bearbeiten",
+    buttonFunction: (user) => selectUserToEdit(user),
+    disabledFunction: () => false,
+    theme: "warning",
+  });
   functions.push(editButton);
 
   if (props.user.permissionsArray.includes("delete users")) {
-    const deleteButton = new TableButton(
-      "delete",
-      "löschen",
-      (user) => selectUserToDelete(user),
-      (userData) =>
+    const deleteButton = new TableButton({
+      name: "delete",
+      text: "löschen",
+      buttonFunction: (user) => selectUserToDelete(user),
+      disabledFunction: (userData) =>
         props.user.id === userData.id ||
         userData.roles.map((role) => role.name).includes("super admin"),
-      "danger",
-    );
+      theme: "danger",
+    });
     functions.push(deleteButton);
   }
 

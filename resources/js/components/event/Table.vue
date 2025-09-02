@@ -60,46 +60,46 @@ onBeforeUnmount(() => {
 });
 
 function getColumns(): Array<TableColumn> {
-  let columns = Array<TableColumn>();
+  let columns: Array<TableColumn> = [];
 
-  let nameCol = new TableColumn(
-    "name",
-    "Name",
-    (event) => event.name,
-    (event1, event2) => event1.name.localeCompare(event2.name),
-  );
+  let nameCol = new TableColumn({
+    name: "name",
+    text: "Name",
+    valueFunction: (event) => event.name,
+    compareFunction: (event1, event2) => event1.name.localeCompare(event2.name),
+  });
   columns.push(nameCol);
 
-  let typeCol = new TableColumn(
-    "type",
-    "Typ",
-    (event) => event.type,
-    (event1, event2) => event1.type.localeCompare(event2.type),
-  );
+  let typeCol = new TableColumn({
+    name: "type",
+    text: "Typ",
+    valueFunction: (event) => event.type,
+    compareFunction: (event1, event2) => event1.type.localeCompare(event2.type),
+  });
   columns.push(typeCol);
 
   if (user.permissionsArray.includes("view hidden event details")) {
-    let alcoholCol = new TableColumn(
-      "consider_alcohol",
-      "Berücksichtigt Verzehr von Alkohol",
-      (event) => (event.consider_alcohol ? "Ja" : "Nein"),
-      (event1, event2) =>
+    let alcoholCol = new TableColumn({
+      name: "consider_alcohol",
+      text: "Berücksichtigt Verzehr von Alkohol",
+      valueFunction: (event) => (event.consider_alcohol ? "Ja" : "Nein"),
+      compareFunction: (event1, event2) =>
         event1.consider_alcohol === event2.consider_alcohol
           ? 0
           : event1.consider_alcohol
             ? 1
             : -1,
-    );
+    });
     columns.push(alcoholCol);
 
-    let coursesCol = new TableColumn(
-      "courses",
-      "Studiengänge",
-      (event) =>
+    let coursesCol = new TableColumn({
+      name: "courses",
+      text: "Studiengänge",
+      valueFunction: (event) =>
         event.courses.length == 0
           ? "Alle"
           : event.courses.map((course) => course.abbreviation).join(", "),
-      (event1, event2) =>
+      compareFunction: (event1, event2) =>
         event1.courses.length == 0 && event2.courses.length == 0
           ? 0
           : event1.courses
@@ -108,27 +108,27 @@ function getColumns(): Array<TableColumn> {
               .localeCompare(
                 event2.courses.map((course) => course.abbreviation).join(", "),
               ),
-    );
+    });
     columns.push(coursesCol);
 
-    let requirementsCol = new TableColumn(
-      "has_requirements",
-      "Hat Voraussetzungen",
-      (event) => (event.has_requirements ? "Ja" : "Nein"),
-      (event1, event2) =>
+    let requirementsCol = new TableColumn({
+      name: "has_requirements",
+      text: "Hat Voraussetzungen",
+      valueFunction: (event) => (event.has_requirements ? "Ja" : "Nein"),
+      compareFunction: (event1, event2) =>
         event1.has_requirements === event2.has_requirements
           ? 0
           : event1.has_requirements
             ? 1
             : -1,
-    );
+    });
     columns.push(requirementsCol);
   }
 
-  let registrationCol = new TableColumn(
-    "registration",
-    "Registrierung",
-    (event) => {
+  let registrationCol = new TableColumn({
+    name: "registration",
+    text: "Registrierung",
+    valueFunction: (event) => {
       let regString = "";
       if (event.registration_from) {
         regString +=
@@ -168,42 +168,42 @@ function getColumns(): Array<TableColumn> {
 
       return regString;
     },
-    (event1, event2) =>
+    compareFunction: (event1, event2) =>
       event1.registration_from.localeCompare(event2.registration_from),
-  );
+  });
   columns.push(registrationCol);
 
-  let participantsCol = new TableColumn(
-    "participants",
-    "Teilnehmer",
-    (event) => registrations.value[event.id].amount,
-    (event1, event2) =>
+  let participantsCol = new TableColumn({
+    name: "participants",
+    text: "Teilnehmer",
+    valueFunction: (event) => registrations.value[event.id].amount,
+    compareFunction: (event1, event2) =>
       registrations.value[event1.id].amount -
       registrations.value[event2.id].amount,
-  );
+  });
   columns.push(participantsCol);
 
   return columns;
 }
 
 function getLinks(): Array<TableLink> {
-  let links = Array<TableLink>();
+  let links: Array<TableLink> = [];
 
-  let showLink = new TableLink(
-    "show",
-    "Anzeigen",
-    (event) => "/dashboard/tutor/event/" + event.id,
-    "default",
-  );
+  let showLink = new TableLink({
+    name: "show",
+    text: "Anzeigen",
+    linkFunction: (event) => "/dashboard/tutor/event/" + event.id,
+    theme: "default",
+  });
   links.push(showLink);
 
   if (user.permissionsArray.includes("manage events")) {
-    let adminLink = new TableLink(
-      "admin",
-      "Admin",
-      (event) => "/dashboard/admin/event/" + event.id,
-      "danger",
-    );
+    let adminLink = new TableLink({
+      name: "admin",
+      text: "Admin",
+      linkFunction: (event) => "/dashboard/admin/event/" + event.id,
+      theme: "danger",
+    });
     links.push(adminLink);
   }
 

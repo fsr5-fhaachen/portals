@@ -52,54 +52,55 @@ onBeforeUnmount(() => {
 });
 
 function getColumns(): Array<TableColumn> {
-  let columns = Array<TableColumn>();
+  let columns: Array<TableColumn> = [];
 
-  let nameCol = new TableColumn(
-    "name",
-    "Name",
-    (group) => group.name,
-    (group1, group2) => group1.name.localeCompare(group2.name),
-  );
+  let nameCol = new TableColumn({
+    name: "name",
+    text: "Name",
+    valueFunction: (group) => group.name,
+    compareFunction: (group1, group2) => group1.name.localeCompare(group2.name),
+  });
   columns.push(nameCol);
 
   if (showCourses) {
-    let coursesCol = new TableColumn(
-      "courses",
-      "Studiengang",
-      (group) => group.courses.map((course) => course.abbreviation).join(" | "),
-      (group1, group2) =>
+    let coursesCol = new TableColumn({
+      name: "courses",
+      text: "Studiengang",
+      valueFunction: (group) =>
+        group.courses.map((course) => course.abbreviation).join(" | "),
+      compareFunction: (group1, group2) =>
         group1.courses
           .map((course) => course.abbreviation)
           .join("")
           .localeCompare(
             group2.courses.map((course) => course.abbreviation).join(""),
           ),
-    );
+    });
     columns.push(coursesCol);
   }
 
-  let participantsCol = new TableColumn(
-    "participants",
-    "Teilnehmer",
-    (group) => (registrations.value[group.id] || 0).toString(),
-    (group1, group2) =>
+  let participantsCol = new TableColumn({
+    name: "participants",
+    text: "Teilnehmer",
+    valueFunction: (group) => (registrations.value[group.id] || 0).toString(),
+    compareFunction: (group1, group2) =>
       (registrations.value[group1.id] || 0) -
       (registrations.value[group2.id] || 0),
-  );
+  });
   columns.push(participantsCol);
 
   return columns;
 }
 
 function getLinks(): Array<TableLink> {
-  let links = Array<TableLink>();
+  let links: Array<TableLink> = [];
 
-  let showLink = new TableLink(
-    "show",
-    "Anzeigen",
-    (group) => "/dashboard/tutor/group/" + group.id,
-    "default",
-  );
+  let showLink = new TableLink({
+    name: "show",
+    text: "Anzeigen",
+    linkFunction: (group) => "/dashboard/tutor/group/" + group.id,
+    theme: "default",
+  });
   links.push(showLink);
 
   return links;
