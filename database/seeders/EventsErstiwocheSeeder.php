@@ -279,8 +279,8 @@ class EventsErstiwocheSeeder extends Seeder
         $event->name = 'Hausführung';
         $event->description = '<p>Nachdem ihr nun die Stadt erkundet habt, ist es Zeit auch mal eure Hochschule von innen zu sehen. In der Hausführung erwarten euch sowohl Informationen über wichtige Stationen am Campus, die ihr während eurer Studienzeit sicherlich das ein oder andere Mal aufsuchen werdet, als auch die Möglichkeit, einige eurer Professoren und ein paar ihrer Projekte kennenzulernen. Durch die Aufteilung nach Studiengang ist es auch eine gute Möglichkeit, schonmal Bekanntschaft mit euren Sitznachbarn in den Vorlesungen zu machen.</p>';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2024-09-23 8:00:00');
-        $event->registration_to = new DateTime('2024-09-25 9:30:00');
+        $event->registration_from = new DateTime('2025-09-22 8:00:00');
+        $event->registration_to = new DateTime('2025-09-24 9:30:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 120;
@@ -305,13 +305,12 @@ class EventsErstiwocheSeeder extends Seeder
                 'name' => "INF Hausführung $i",
                 'course_ids' => [
                     $coursesByAbbreviation['INF']->id,
-                    $coursesByAbbreviation['INF-Master']->id,
                     $coursesByAbbreviation['ISE-Master']->id,
                     $coursesByAbbreviation['SBE']->id
                 ],
             ];
         }
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 4; $i++) {
             $groups[] = [
                 'name' => "ET Hausführung $i",
                 'course_ids' => [
@@ -343,6 +342,15 @@ class EventsErstiwocheSeeder extends Seeder
                 'name' => "IS-Master Hausführung $i",
                 'course_ids' => [
                     $coursesByAbbreviation['IS-Master']->id
+                ],
+            ];
+        }
+
+        for ($i = 1; $i <= 1; $i++) {
+            $groups[] = [
+                'name' => "INF-Master Hausführung $i",
+                'course_ids' => [
+                    $coursesByAbbreviation['INF-Master']->id
                 ],
             ];
         }
@@ -380,8 +388,8 @@ class EventsErstiwocheSeeder extends Seeder
         $event->name = 'Kneipentour';
         $event->description = '<p>Sei Teil unserer Kneipentour, um die besten Bars zu entdecken, unterhaltsame Spiele zu genießen und deine Kommilitonen kennenzulernen.</p>';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2024-09-23 8:00:00');
-        $event->registration_to = new DateTime('2024-09-25 17:00:00');
+        $event->registration_from = new DateTime('2025-09-22 8:00:00');
+        $event->registration_to = new DateTime('2025-09-24 17:00:00');
         $event->has_requirements = false;
         $event->consider_alcohol = true;
         $event->sort_order = 130;
