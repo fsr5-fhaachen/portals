@@ -5,18 +5,16 @@
     <template #subtitle>
       hier findest du eine Übersicht über alle Veranstaltungen.
     </template>
-    <template>
-      <GridContainer v-if="events.length">
-        <template v-for="event in events">
-          <EventCard
-            v-if="isUserAllowedToRegister(event, user)"
-            :key="event.id"
-            :event="event"
-            :registration="getUserRegistrationForEvent(event)"
-          />
-        </template>
-      </GridContainer>
-    </template>
+    <GridContainer v-if="events.length">
+      <template v-for="event in events">
+        <EventCard
+          v-if="isUserAllowedToRegister(event, user)"
+          :key="event.id"
+          :event="event"
+          :registration="getUserRegistrationForEvent(event)"
+        />
+      </template>
+    </GridContainer>
   </LayoutDashboardContent>
 </template>
 
