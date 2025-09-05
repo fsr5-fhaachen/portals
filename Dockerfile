@@ -25,17 +25,17 @@ RUN npm run build
 #    STAGE 1.2: Setup PHP and Dependencies
 # --------------------------------------------
 
-FROM dunglas/frankenphp:1-php8.3-alpine AS frankenphp
+FROM phpswoole/swoole:php8.3-alpine AS swoole
 LABEL maintainer="FSR5 FH-Aachen"
 
-# use workfir from frankenphp container
+# use workdir from swoole container
 WORKDIR /app
 
 # install php extensions
 RUN apk add libpq-dev linux-headers
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql
 RUN docker-php-ext-install bcmath pdo_mysql pdo pdo_pgsql pgsql pcntl sockets
-RUN apk add --no-cache pcre-dev $PHPIZE_DEPS && pecl install redis && docker-php-ext-enable redis.so
+# RUN apk add --no-cache pcre-dev $PHPIZE_DEPS && pecl install redis && docker-php-ext-enable redis.so
 
 # install composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
@@ -64,14 +64,12 @@ COPY --from=node ["/app/public/css/", "./public/css/"]
 RUN mkdir -p /app/storage/logs
 RUN chmod -R 777 ./storage
 
-# install and configure frankenphp
-#COPY --from=frankenphp /usr/local/bin/frankenphp /usr/local/bin/frankenphp
-
-ENV FRANKENPHP_MAX_REQUESTS=512
-ENV FRANKENPHP_WORKERS="auto"
+# both are the default values
+ENV OCTANE_MAX_REQUESTS=500
+ENV OCTANE_WORKERS="auto"
 
 EXPOSE 8000
 
-CMD php artisan octane:frankenphp --host="0.0.0.0" --workers=${FRANKENPHP_WORKERS} --max-requests=${FRANKENPHP_MAX_REQUESTS}
+CMD php artisan octane:start --server=swoole --host="0.0.0.0" --workers=${OCTANE_WORKERS} --max-requests=${OCTANE_MAX_REQUESTS}
 
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD php artisan octane:status
