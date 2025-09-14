@@ -28,6 +28,7 @@ class EventsErstiwocheSeeder extends Seeder
         $telegram_links = $this->parseTelegramCsv();
         $this->runGruppenphase();
         $this->runGruppenphaseISMaster();
+        $this->runMocktail();
         $this->runStadtrallye($telegram_links);
         $this->runHausfuehrung();
         $this->runKneipentour($telegram_links);
@@ -223,7 +224,7 @@ class EventsErstiwocheSeeder extends Seeder
      */
     public function runMocktail(): void
     {
-        // check if event with name "Stadtrallye" exists
+        // check if event with name "Mix and Mingle bei Mocktail und Bingo" exists
         $event = Event::where('name', 'Mix and Mingle bei Mocktail und Bingo')->first();
         if ($event) {
             return;
