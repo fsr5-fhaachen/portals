@@ -54,7 +54,7 @@ return [
             'connector_retry_delay' => env('REDIS_CONNECTOR_RETRY_DELAY'),
 
             'password' => env('REDIS_PASSWORD'),
-            'database' => (int) env('REDIS_DB', 1),
+            'database' => (int) env('REDIS_CACHE_DB', 1),
         ],
 
         // 'client' => env('REDIS_CLIENT', 'phpredis'),
