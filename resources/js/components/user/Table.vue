@@ -97,7 +97,7 @@ const submitUserDelete = async () => {
 
 const clearUserToView = () => {
   userToView.value = null;
-}
+};
 const selectUserToView = async (user: Models.User) => {
   userToView.value = user;
 };
@@ -202,7 +202,7 @@ function getFunctions(): Array<TableFunction> {
     buttonFunction: (user) => selectUserToView(user),
     disabledFunction: () => false,
     theme: "default",
-  })
+  });
   functions.push(viewInfoButton);
 
   const editButton = new TableButton({
