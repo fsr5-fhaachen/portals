@@ -219,6 +219,32 @@ class EventsErstiwocheSeeder extends Seeder
     }
 
     /**
+     * Run the "Mix and Mingle bei Mocktail und Bingo" event seeds.
+     */
+    public function runMocktail(): void
+    {
+        // check if event with name "Stadtrallye" exists
+        $event = Event::where('name', 'Mix and Mingle bei Mocktail und Bingo')->first();
+        if ($event) {
+            return;
+        }
+
+        // create a new event
+        $event = new Event;
+        $event->name = 'Mix and Mingle bei Mocktail und Bingo';
+        $event->description = '<p>Geselliges Beisammensein mit Mocktails und einem kleinen Programm.</p>';
+        $event->type = 'event_registration';
+        $event->registration_from = new DateTime('2025-09-22 8:00:00');
+        $event->registration_to = new DateTime('2025-09-22 16:00:00');
+        $event->has_requirements = false;
+        $event->consider_alcohol = false;
+        $event->sort_order = 105;
+
+        // save the event
+        $event->save();
+    }
+
+    /**
      * Run the "Stadtrallye" event seeds.
      */
     public function runStadtrallye(array $telegram_links): void
@@ -431,13 +457,13 @@ class EventsErstiwocheSeeder extends Seeder
         // create a new event
         $event = new Event;
         $event->name = 'Katerbrunch';
-        $event->description = '<p>Nachdem wir alle nach der Kneipentour am Mittwoch Abend etwas verkatert sind, gibt es doch nichts besseres als zusammen bei einem guten Fr&uuml;hst&uuml;ck auszukatern 😊 <br />Hierf&uuml;r bitte wir euch die 2&euro; Anmeldegeb&uuml;hr am Montag zwischen 13:45 und 16:00 Uhr oder Mittwoch zwischen 12:00 und 14:30 Uhr im FSR zu bezahlen, sonst k&ouml;nnt ihr leider nicht teilnehmen.</p>
-        <p><strong>Wann:</strong> 28.09 ab 12:00 Uhr <br /><strong>Wo:</strong> FH, am D Geb&auml;ude <br /><strong>Was mitbringen:</strong> Tasse/ Becher und Teller ggf, Picknickdecke bei gutem Wetter.</p>
+        $event->description = '<p>Nachdem wir alle nach der Kneipentour am Mittwoch Abend etwas verkatert sind, gibt es doch nichts besseres als zusammen bei einem guten Fr&uuml;hst&uuml;ck auszukatern 😊 <br />Hierf&uuml;r bitte wir euch die 3&euro; Anmeldegeb&uuml;hr am Montag zwischen 12:30 und 14:00 Uhr, Mittwoch zwischen 10:00 und 14:00 Uhr im FSR oder vor Ort zu bezahlen, sonst k&ouml;nnt ihr leider nicht teilnehmen.</p>
+        <p><strong>Wann:</strong> 25.09. ab 12:30 Uhr <br /><strong>Wo:</strong> FH, am D Geb&auml;ude <br /><strong>Was mitbringen:</strong> Tasse/ Becher und Teller ggf, Picknickdecke bei gutem Wetter.</p>
         <p>Im Anschluss findet noch ein spannender Spieleabend mit Brettspielen und Quizshow statt.</p> <br/>
         <p>Wir freuen uns auf euch</p>';
         $event->type = 'event_registration';
         $event->registration_from = new DateTime('2025-09-22 8:00:00');
-        $event->registration_to = new DateTime('2025-09-24 23:59:59');
+        $event->registration_to = new DateTime('2025-09-25 12:20:00');
         $event->has_requirements = true;
         $event->consider_alcohol = false;
         $event->sort_order = 140;
@@ -468,13 +494,18 @@ class EventsErstiwocheSeeder extends Seeder
         // create a new event
         $event = new Event;
         $event->name = 'Sport';
-        $event->description = '<p>Auch sportliche Aktivitäten kommen bei uns nicht zu kurz. Für eine Anmeldegebühr von <strong>5€</strong> könnt ihr euch am Freitag auspowern.</p>
-            <p>Bitte bezahlt die Anmeldegebühr am Montag zwischen 13:45 und 16:00 Uhr oder Mittwoch zwischen 12:00 und 14:30 Uhr im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben.</p>
+        $event->description = '<p>Auch sportliche Aktivitäten kommen bei uns nicht zu kurz. Ihr könnt euch am Freitag richtig auspowern.</p>
             <p>Bitte beachtet auch die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
-            <p><strong>Fußball, Volleyball:</strong> Die Anmeldegebühr fungiert als Pfand, welches ihr beim Erscheinen wieder zurückbekommt.</p>
-            <p><strong>Yoga:</strong> Bitte bringt eine eigene Yogamatte mit.</p>
-            <p><strong>Bouldern:</strong> Falls nicht vorhanden, können Stoppersocken vor Ort für 3€ erworben werden.</p>
-            <p><strong>Allgemein:</strong> Eine anschließende Teilnahme an weiteren Programmpunkten ist nur mit der “Foodtour” und dem "Tierpark Besuch" zeitlich möglich, und nicht für Teilnehmer der Boulder-Gruppe.</p>
+            <p><strong>Hochschulport:</strong> Hattet Ihr schon genug Saufsport diese Woche und wollt mal wieder richtigen Sport machen? Dann kommt mit uns zum Sportzentrum Königshügel! Egal ob Ihr Lust auf Fußball, Volleyball oder Basketball habt, dort gibt es alles. Nebenbei lernt Ihr den zentralen Ort für den Aachener Hochschulsport kennen und könnt euch über weitere Angebote und Events informieren.</p><br>
+            <p><strong>Yoga:</strong> Trinken oder nicht trinken, das ist hier nicht die Frage. Stelle deine Yogafähigkeiten beim herabschauenden Hund oder beim Krieger 2 unter Beweis. Mit oder ohne Spaßgetränk, hier kannst du zeigen, dass in dir mehr Beweglichkeit steckt, als in deinem Bürostuhl.</p><br>
+            <p><strong>Bouldern:</strong> Einfach losklettern! Bouldern ist Klettern in Absprunghöhe - keine Vorkenntnisse nötig, nur Neugier und ein bisschen Abenteuerlust. Gemeinsam tüfteln, Routen ausprobieren und Erfolge feiern macht dabei besonders viel Spaß. Perfekt, um dich auszupowern, Neues auszuprobieren und vielleicht deine neue Lieblingssportart zu entdecken.
+            <p>Was du brauchst: Getränk, Bussticket, Studentennachweis, Hallenschuhe oder Boulderschuhe.
+            Boulderschuhe können auch vor Ort auf eigene Kosten entliehen werden. 
+            <p><strong>Anmeldegebühr: 5€</strong></p></p></p><br>
+            <p><strong>Lasertag:</strong> Beim Lasertag kannst du dein Aim unter Beweis stellen und den anderen zeigen das du nicht nur Online zielen kannst.
+            <p><strong>Anmeldegebühr: 5€</strong></p></p><br>
+            <p><strong>Allgemein:</strong> Anmeldegebühren zahlt ihr bitte am Montag zwischen 12:30 und 14:00 Uhr oder am Mittwoch zwischen 10:00 und 14:00 Uhr im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben.</p>
+            <p>Wer bei Trinkyoga mitmacht, kann sich auch zur Foodtour unter "Kultur" anmelden. Andere Kombinationen sind zeitlich leider nicht möglich.</p>
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
             <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
@@ -490,24 +521,24 @@ class EventsErstiwocheSeeder extends Seeder
         // create event slots
         $slots = [
             [
-                'name' => 'Fußball, Volleyball',
-                'has_requirements' => true,
+                'name' => 'Hochschulsport',
+                'has_requirements' => false,
                 'maximum_participants' => 50,
             ],
             [
                 'name' => 'Bouldern',
                 'has_requirements' => true,
-                'maximum_participants' => 43,
+                'maximum_participants' => 57,
             ],
             [
-                'name' => 'Yoga',
-                'has_requirements' => true,
-                'maximum_participants' => 50,
+                'name' => 'Trinkyoga',
+                'has_requirements' => false,
+                'maximum_participants' => 30,
             ],
             [
                 'name' => 'Lasertag',
                 'has_requirements' => true,
-                'maximum_participants' => 57,
+                'maximum_participants' => 50,
             ],
         ];
 
@@ -536,12 +567,13 @@ class EventsErstiwocheSeeder extends Seeder
         // create a new event
         $event = new Event;
         $event->name = 'Kultur';
-        $event->description = '<p>Die Stadt Aachen von einer etwas anderen Seite besser kennenlernen, Ziegen streicheln oder sich einfach den Bauch richtig voll schlagen?
+        $event->description = '<p>Den Tivoli erkunden, Ziegen streicheln oder sich einfach den Bauch richtig voll schlagen?
             Auch das ist am Freitag in der Erstiwoche möglich.</p>
             <p>Bitte beachtet die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
-            <p><strong>Tierpark:</strong> Für eine Anmeldegebühr von <strong>5€</strong> ist eine Teilnahme möglich. Bitte bezahlt die Anmeldegebühr am Montag zwischen 13:45 und 16:00 Uhr oder Mittwoch zwischen 12:00 und 14:30 Uhr im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben. Die Anmeldegebühr fungiert als Pfand, welches ihr beim Erscheinen wieder zurückbekommt.</p>
-            <p><strong>Foodtour:</strong> Ihr müsst eure Döner / Falafel-Taschen selber zahlen.</p>
-            <p><strong>Allgemein:</strong> Eine vorab Teilnahme an weiteren Programmpunkten ist nur in Kombination mit “Fußball, Volleyball”, “Yoga” und “Lasertag” zeitlich möglich.</p>
+            <p><strong>Tivoli-Tour:</strong> Bei der Stadiontour durch das Alemannia Aachen Stadion hast du exklusiv die Möglichkeit, einen Blick hinter die Kulissen zu werfen. Du erlebst hautnah Bereiche, die sonst nur Spielern oder Sponsoren vorbehalten sind - und das sogar kostenlos! Am Ende der Tour erwartet alle Teilnehmer*innen noch eine Überraschung. Also, worauf wartest du noch?</p><br>
+            <p><strong>Tierpark:</strong> Egal, ob Aachener oder nicht, der Aachener Tierpark bietet euch ein tolles Erlebnis vor MensaBeats. Entspannt coole Tiere ansehen und Kindheitserinnerungen wecken oder einen weiteren Teil der Aachener Kultur entdecken. Sei dabei und lass den Aachener Tierpark das vorletzte Erlebnis deiner Ersti-Woche werden!</p><br>
+            <p><strong>Foodtour:</strong> Bist du neu in Aachen und willst wissen wo man nach den Vorlesungen etwas Leckeres zu Essen findet? Oder hast du einfach Lust dich durch die verschiedenen Restaurants und Buden Aachens zu probieren? Dann ist die Foodtour genau das Richtige für dich! Zieh mit uns los und lerne Aachener Spezialitäten und andere leckere und besondere Speisen kennen.</p><br>
+            <p><strong>Allgemein:</strong> Wer bei der Foodtour mitmacht, kann sich auch zum Trinkyoga unter "Sport" anmelden. Andere Kombinationen sind zeitlich leider nicht möglich.</p>
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
             <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
@@ -556,14 +588,19 @@ class EventsErstiwocheSeeder extends Seeder
         // create event slots
         $slots = [
             [
-                'name' => 'Foodtour',
+                'name' => 'Tivoli-Tour',
                 'has_requirements' => false,
-                'maximum_participants' => 50,
+                'maximum_participants' => 15,
             ],
             [
                 'name' => 'Tierpark',
-                'has_requirements' => true,
-                'maximum_participants' => 50,
+                'has_requirements' => false,
+                'maximum_participants' => 20,
+            ],
+            [
+                'name' => 'Foodtour',
+                'has_requirements' => false,
+                'maximum_participants' => 60,
             ],
         ];
 
