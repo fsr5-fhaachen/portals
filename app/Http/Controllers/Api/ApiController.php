@@ -416,6 +416,18 @@ class ApiController extends Controller
     }
 
     /**
+     * Registrations for a specific user
+     */
+    public function userRegistrations(User $user): JsonResponse
+    {
+      $registrations = $user->registrations()->with(['event', 'group'])->get();
+      return response()->json([
+        'registrations' => $registrations
+      ]);
+    }
+
+
+  /**
      * Generate a presigned URL for avatar upload
      */
     public function generatePresignedUrlForAvatarUpload(Request $request): JsonResponse

@@ -16,6 +16,7 @@ declare module 'vue' {
     CardBase: typeof import('./../components/card/Base.vue')['default']
     CardContainer: typeof import('./../components/card/Container.vue')['default']
     CardLayout: typeof import('./../layouts/CardLayout.vue')['default']
+    ChartContainer: typeof import('./../components/chart/container.vue')['default']
     ColorModeButton: typeof import('./../components/color/mode/Button.vue')['default']
     CourseBox: typeof import('./../components/course/Box.vue')['default']
     DashboardCardLayout: typeof import('./../layouts/DashboardCardLayout.vue')['default']
@@ -46,6 +47,7 @@ declare module 'vue' {
     UserBox: typeof import('./../components/user/Box.vue')['default']
     UserDeleteModal: typeof import('./../components/user/DeleteModal.vue')['default']
     UserEditModal: typeof import('./../components/user/EditModal.vue')['default']
+    UserInfoModal: typeof import('./../components/user/InfoModal.vue')['default']
     UserTable: typeof import('./../components/user/Table.vue')['default']
   }
 }
