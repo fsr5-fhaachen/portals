@@ -85,8 +85,8 @@ class EventsErstiwocheSeeder extends Seeder
         $event->name = 'Gruppenphase';
         $event->description = '<p>Während der Gruppenphase erhältst du von deinen Tutoren und Tutorinnen wichtige Informationen rund um das Studium. Außerdem ist die Gruppenphase dazu da, um direkt die anderen Erstis kennenzulernen und erste Freundschaften zu schließen.</p>';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2024-09-23 8:00:00');
-        $event->registration_to = new DateTime('2024-09-23 12:30:00');
+        $event->registration_from = new DateTime('2025-09-22 8:00:00');
+        $event->registration_to = new DateTime('2025-09-22 12:30:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 100;
@@ -174,8 +174,8 @@ class EventsErstiwocheSeeder extends Seeder
         $event->description = '<p>Während der Gruppenphase erhältst du von deinen Tutoren und Tutorinnen wichtige Informationen rund um das Studium. Außerdem ist die Gruppenphase dazu da, um direkt die anderen Erstis kennenzulernen und erste Freundschaften zu schließen.</p>
         <p>Diese Gruppenphase ist speziell für Studierende des Studiengangs <strong>M.Sc. Information Systems</strong>, da dort einige Besonderheiten erklärt werden.</p>';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2024-09-23 8:00:00');
-        $event->registration_to = new DateTime('2024-09-23 12:30:00');
+        $event->registration_from = new DateTime('2025-09-22 8:00:00');
+        $event->registration_to = new DateTime('2025-09-22 12:30:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 101;
@@ -234,8 +234,8 @@ class EventsErstiwocheSeeder extends Seeder
         $event->name = 'Stadtrallye';
         $event->description = '<p>Die Stadtrallye ist ein Event, bei dem du in Gruppen die Stadt erkundest. Dabei gibt es verschiedene Aufgaben, die ihr lösen müsst. Dabei könnt ihr euch gegenseitig unterstützen und euch so besser kennenlernen.</p><p><strong>Treffpunkt: </strong> 9:00 Uhr Campus Eupener Straße</p>';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2024-09-23 8:00:00');
-        $event->registration_to = new DateTime('2024-09-24 09:45:00');
+        $event->registration_from = new DateTime('2025-09-22 8:00:00');
+        $event->registration_to = new DateTime('2025-09-23 09:45:00');
         $event->has_requirements = false;
         $event->consider_alcohol = true;
         $event->sort_order = 110;
@@ -436,8 +436,8 @@ class EventsErstiwocheSeeder extends Seeder
         <p>Im Anschluss findet noch ein spannender Spieleabend mit Brettspielen und Quizshow statt.</p> <br/>
         <p>Wir freuen uns auf euch</p>';
         $event->type = 'event_registration';
-        $event->registration_from = new DateTime('2024-09-23 8:00:00');
-        $event->registration_to = new DateTime('2024-09-25 23:59:59');
+        $event->registration_from = new DateTime('2025-09-22 8:00:00');
+        $event->registration_to = new DateTime('2025-09-24 23:59:59');
         $event->has_requirements = true;
         $event->consider_alcohol = false;
         $event->sort_order = 140;
@@ -478,8 +478,8 @@ class EventsErstiwocheSeeder extends Seeder
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
             <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
-        $event->registration_from = new DateTime('2024-09-23 08:00:00');
-        $event->registration_to = new DateTime('2024-09-25 23:59:00');
+        $event->registration_from = new DateTime('2025-09-22 08:00:00');
+        $event->registration_to = new DateTime('2025-09-24 23:59:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 150;
@@ -545,8 +545,8 @@ class EventsErstiwocheSeeder extends Seeder
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
             <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
-        $event->registration_from = new DateTime('2024-09-23 08:00:00');
-        $event->registration_to = new DateTime('2024-09-25 23:59:00');
+        $event->registration_from = new DateTime('2025-09-22 08:00:00');
+        $event->registration_to = new DateTime('2025-09-24 23:59:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 151;
