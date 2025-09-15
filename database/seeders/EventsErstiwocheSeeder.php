@@ -497,14 +497,15 @@ class EventsErstiwocheSeeder extends Seeder
         $event->name = 'Sport';
         $event->description = '<p>Auch sportliche Aktivitäten kommen bei uns nicht zu kurz. Ihr könnt euch am Freitag richtig auspowern.</p>
             <p>Bitte beachtet auch die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
-            <p><strong>Hochschulport:</strong> Hattet Ihr schon genug Saufsport diese Woche und wollt mal wieder richtigen Sport machen? Dann kommt mit uns zum Sportzentrum Königshügel! Egal ob Ihr Lust auf Fußball, Volleyball oder Basketball habt, dort gibt es alles. Nebenbei lernt Ihr den zentralen Ort für den Aachener Hochschulsport kennen und könnt euch über weitere Angebote und Events informieren.</p><br>
+            <p><strong>Hochschulport:</strong> Hattet Ihr schon genug Saufsport diese Woche und wollt mal wieder richtigen Sport machen? Dann kommt mit uns zum Sportzentrum Königshügel! Egal ob Ihr Lust auf Fußball, Volleyball oder Basketball habt, dort gibt es alles. Nebenbei lernt Ihr den zentralen Ort für den Aachener Hochschulsport kennen und könnt euch über weitere Angebote und Events informieren. Bitte denkt an genügend zu trinken. Das Event findet outdoor statt.</p><br>
             <p><strong>Yoga:</strong> Trinken oder nicht trinken, das ist hier nicht die Frage. Stelle deine Yogafähigkeiten beim herabschauenden Hund oder beim Krieger 2 unter Beweis. Mit oder ohne Spaßgetränk, hier kannst du zeigen, dass in dir mehr Beweglichkeit steckt, als in deinem Bürostuhl.</p><br>
-            <p><strong>Bouldern:</strong> Einfach losklettern! Bouldern ist Klettern in Absprunghöhe - keine Vorkenntnisse nötig, nur Neugier und ein bisschen Abenteuerlust. Gemeinsam tüfteln, Routen ausprobieren und Erfolge feiern macht dabei besonders viel Spaß. Perfekt, um dich auszupowern, Neues auszuprobieren und vielleicht deine neue Lieblingssportart zu entdecken.
+            <p><strong>Bouldern:</strong> Einfach losklettern! Bouldern ist Klettern in Absprunghöhe - keine Vorkenntnisse nötig, nur Neugier und ein bisschen Abenteuerlust. Gemeinsam tüfteln, Routen ausprobieren und Erfolge feiern macht dabei besonders viel Spaß. Perfekt, um dich auszupowern, Neues auszuprobieren und vielleicht deine neue Lieblingssportart zu entdecken.</p>
             <p>Was du brauchst: Getränk, Bussticket, Studentennachweis, Hallenschuhe oder Boulderschuhe.
-            Boulderschuhe können auch vor Ort auf eigene Kosten entliehen werden. 
-            <p><strong>Anmeldegebühr: 5€</strong></p></p></p><br>
+            Boulderschuhe können auch vor Ort auf eigene Kosten entliehen werden. Allerdings sind nicht genügend Leihschuhe für alle da, also bringt wenn möglich eigene mit.</p>
+            <p><strong>Anmeldegebühr: 5€</strong></p>
+            <p><strong>Wichtig: </strong>Wer teilnehmen möchte, muss die AGBs unterschreiben: https://www.diehalle-aachen.de/agb.html. Wir drucken sie euch aus, ihr unterschreibt sie vor Ort.</p></p><br>
             <p><strong>Lasertag:</strong> Beim Lasertag kannst du dein Aim unter Beweis stellen und den anderen zeigen das du nicht nur Online zielen kannst.
-            <p><strong>Anmeldegebühr: 5€</strong></p></p><br>
+            <p><strong>Anmeldegebühr: 5€</strong></p><br>
             <p><strong>Allgemein:</strong> Anmeldegebühren zahlt ihr bitte am Montag zwischen 12:30 und 14:00 Uhr oder am Mittwoch zwischen 10:00 und 14:00 Uhr im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben.</p>
             <p>Wer bei Trinkyoga mitmacht, kann sich auch zur Foodtour unter "Kultur" anmelden. Andere Kombinationen sind zeitlich leider nicht möglich.</p>
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
@@ -522,7 +523,7 @@ class EventsErstiwocheSeeder extends Seeder
         // create event slots
         $slots = [
             [
-                'name' => 'Hochschulsport',
+                'name' => 'Hochschulsport (Fußball, Volleyball, Basketball)',
                 'has_requirements' => false,
                 'maximum_participants' => 50,
             ],
