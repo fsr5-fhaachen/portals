@@ -503,7 +503,7 @@ class EventsErstiwocheSeeder extends Seeder
             <p>Was du brauchst: Getränk, Bussticket, Studentennachweis, Hallenschuhe oder Boulderschuhe.
             Boulderschuhe können auch vor Ort auf eigene Kosten entliehen werden. Allerdings sind nicht genügend Leihschuhe für alle da, also bringt wenn möglich eigene mit.</p>
             <p><strong>Anmeldegebühr: 5€</strong></p>
-            <p><strong>Wichtig: </strong>Wer teilnehmen möchte, muss die AGB ausdrucken und unterschreiben: https://www.campusboulderhalle.de/wp-content/uploads/2025/06/AGB-High-Grade-UG.pdf.</p></p><br>
+            <p><strong>Wichtig: </strong>Wer teilnehmen möchte, muss die <a href="https://www.campusboulderhalle.de/info/agb-bouldern/">AGB</a> unterschreiben. Das Formular dafür holt ihr euch im FSR, wenn ihr die Gebühr bezahlt.</p></p><br>
             <p><strong>Lasertag:</strong> Beim Lasertag kannst du dein Aim unter Beweis stellen und den anderen zeigen das du nicht nur Online zielen kannst.
             <p><strong>Anmeldegebühr: 5€</strong></p><br>
             <p><strong>Allgemein:</strong> Anmeldegebühren zahlt ihr bitte am Montag zwischen 12:30 und 14:00 Uhr oder am Mittwoch zwischen 10:00 und 14:00 Uhr im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben.</p>
