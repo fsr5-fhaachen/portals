@@ -374,7 +374,7 @@ class DashboardAdminController extends Controller
         $userRegistration = Request::validate([
             'email' => ['required', 'string', 'email', 'min:3', 'max:255', 'exists:users,email'],
             'event_id' => ['required', 'integer', 'exists:events,id'],
-            'slot_id' => ['integer', 'exists:slots,id'],
+            'slot_id' => ['integer'],
             'group_id' => ['integer', 'exists:groups,id']
         ]);
 
@@ -409,35 +409,40 @@ class DashboardAdminController extends Controller
 
         // check if slot is set
         if (array_key_exists('slot_id', $userRegistration)) {
-            // get slot
-            $slot = Slot::find($userRegistration['slot_id']);
+            if ($userRegistration['slot_id'] > 0) {
 
-            // check if slot exists
-            if (!$slot) {
-                Session::flash('error', 'Das Slot existiert nicht.');
+                // get slot
+                $slot = Slot::find($userRegistration['slot_id']);
 
-                return Redirect::back();
-            }
+                // check if slot exists
+                if (!$slot) {
+                    Session::flash('error', 'Das Slot existiert nicht.');
 
-            // check if slot has maximum_participants
-            if ($slot->maximum_participants) {
-                $queuePosition = Registration::where('event_id', $event->id)->where('slot_id', $userRegistration['slot_id'])->max('queue_position');
-
-                if (!$queuePosition || $queuePosition == -1) {
-                    $queuePosition = -1;
-                } else {
-                    $queuePosition++;
+                    return Redirect::back();
                 }
 
-                $userRegistration['queue_position'] = $queuePosition;
-            }
-        } else {
-            $queuePosition = Registration::where('event_id', $event->id)->max('queue_position');
+                // check if slot has maximum_participants
+                if ($slot->maximum_participants) {
+                    $queuePosition = Registration::where('event_id', $event->id)->where('slot_id', $userRegistration['slot_id'])->max('queue_position');
 
-            if ($queuePosition == -1) {
-                $queuePosition = -1;
-            } elseif ($queuePosition > 0) {
-                $queuePosition++;
+                    if (!$queuePosition || $queuePosition == -1) {
+                        $queuePosition = -1;
+                    } else {
+                        $queuePosition++;
+                    }
+
+                    $userRegistration['queue_position'] = $queuePosition;
+                } else {
+                    $queuePosition = Registration::where('event_id', $event->id)->max('queue_position');
+
+                    if ($queuePosition == -1) {
+                        $queuePosition = -1;
+                    } elseif ($queuePosition > 0) {
+                        $queuePosition++;
+                    }
+                }
+            } else {
+                unset($userRegistration['slot_id']);
             }
         }
 
