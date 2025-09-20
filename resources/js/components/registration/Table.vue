@@ -196,10 +196,10 @@ function getColumns(): Array<TableColumn> {
     let slotCol = new TableColumn({
       name: "slot",
       text: "Slot",
-      valueFunction: (registration) => getSlotName(registration.user.course_id),
+      valueFunction: (registration) => getSlotName(registration.slot_id),
       compareFunction: (registration1, registration2) =>
-        getSlotName(registration1.user.course_id).localeCompare(
-          getSlotName(registration2.user.course_id),
+        getSlotName(registration1.slot_id).localeCompare(
+          getSlotName(registration2.slot_id),
         ),
     });
     columns.push(slotCol);
@@ -209,11 +209,10 @@ function getColumns(): Array<TableColumn> {
     let groupCol = new TableColumn({
       name: "group",
       text: "Gruppe",
-      valueFunction: (registration) =>
-        getGroupName(registration.user.course_id),
+      valueFunction: (registration) => getGroupName(registration.group_id),
       compareFunction: (registration1, registration2) =>
-        getGroupName(registration1.user.course_id).localeCompare(
-          getGroupName(registration2.user.course_id),
+        getGroupName(registration1.group_id).localeCompare(
+          getGroupName(registration2.group_id),
         ),
     });
     columns.push(groupCol);
@@ -238,7 +237,7 @@ function getColumns(): Array<TableColumn> {
   if (props.event.type == "slot_booking") {
     let queueCol = new TableColumn({
       name: "queue",
-      text: "Warteschlangenpositiion",
+      text: "Warteschlangenposition",
       valueFunction: (registration) => {
         if (registration.queue_position && registration.queue_position > 0) {
           return registration.queue_position;
@@ -255,7 +254,10 @@ function getColumns(): Array<TableColumn> {
         registration1.queue_position === null ||
         registration1.queue_position === undefined
           ? -1
-          : registration1.queue_position - registration2.queue_position,
+          : registration2.queue_position === null ||
+              registration2.queue_position === undefined
+            ? 1
+            : registration1.queue_position - registration2.queue_position,
     });
     columns.push(queueCol);
   }
