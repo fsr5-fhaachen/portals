@@ -35,7 +35,7 @@ class DashboardController extends Controller
      */
     public function login(): Response
     {
-      return Inertia::render('Dashboard/Tutor/Login');
+        return Inertia::render('Dashboard/Tutor/Login');
     }
 
     /**
@@ -65,7 +65,8 @@ class DashboardController extends Controller
                 Session::flash('error', 'Das Passwort ist falsch.');
             }
         }
-        return redirect()->to(session('url.intended'));
+        $intendedUrl = session('url.intended');
+        return redirect()->to($intendedUrl ? $intendedUrl : route('dashboard.index'));
     }
 
     /**

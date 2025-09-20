@@ -270,7 +270,7 @@ const dynamicFormSchema = computed(() => {
 });
 
 const registerSubmitHandler = async () => {
-  const avatarPath = ref<string | undefinded>();
+  const avatarPath = ref<string | undefined>();
 
   if (registerForm.value.avatar?.length) {
     const formData = new FormData();
