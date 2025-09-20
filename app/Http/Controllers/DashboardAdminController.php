@@ -6,7 +6,6 @@ use App\Helpers\GroupBalancedDivision;
 use App\Helpers\GroupCourseDivision;
 use App\Helpers\SlotAssignment;
 use App\Models\Course;
-use App\Models\CourseGroup;
 use App\Models\Event;
 use App\Models\Registration;
 use App\Models\Slot;
@@ -30,13 +29,16 @@ class DashboardAdminController extends Controller
     public function index(): Response
     {
         $courses = Course::all();
+        $totalUser = 0;
 
         foreach ($courses as $course) {
             $course->users = $course->users()->doesntHave('roles')->get();
+            $totalUser += $course->users->count();
         }
 
         return Inertia::render('Dashboard/Admin/Index', [
             'courses' => $courses,
+            'totalUser' => $totalUser,
         ]);
     }
 
@@ -51,6 +53,7 @@ class DashboardAdminController extends Controller
         return Inertia::render('Dashboard/Admin/Users', [
             'roles' => $roles,
             'courses' => $coures,
+            'authenticated' => Session::get('tutor'),
         ]);
     }
 
@@ -371,7 +374,7 @@ class DashboardAdminController extends Controller
         $userRegistration = Request::validate([
             'email' => ['required', 'string', 'email', 'min:3', 'max:255', 'exists:users,email'],
             'event_id' => ['required', 'integer', 'exists:events,id'],
-            'slot_id' => ['integer', 'exists:slots,id'],
+            'slot_id' => ['integer'],
             'group_id' => ['integer', 'exists:groups,id']
         ]);
 
@@ -406,36 +409,47 @@ class DashboardAdminController extends Controller
 
         // check if slot is set
         if (array_key_exists('slot_id', $userRegistration)) {
-            // get slot
-            $slot = Slot::find($userRegistration['slot_id']);
+            if ($userRegistration['slot_id'] > 0) {
 
-            // check if slot exists
-            if (!$slot) {
-                Session::flash('error', 'Das Slot existiert nicht.');
+                // get slot
+                $slot = Slot::find($userRegistration['slot_id']);
 
-                return Redirect::back();
-            }
+                // check if slot exists
+                if (!$slot) {
+                    Session::flash('error', 'Das Slot existiert nicht.');
 
-            // check if slot has maximum_participants
-            if ($slot->maximum_participants) {
-                $queuePosition = Registration::where('event_id', $event->id)->where('slot_id', $userRegistration['slot_id'])->max('queue_position');
-
-                if (!$queuePosition || $queuePosition == -1) {
-                    $queuePosition = -1;
-                } else {
-                    $queuePosition++;
+                    return Redirect::back();
                 }
 
-                $userRegistration['queue_position'] = $queuePosition;
-            }
-        } else {
-            $queuePosition = Registration::where('event_id', $event->id)->max('queue_position');
+                // check if slot has maximum_participants
+                if ($slot->maximum_participants) {
+                    $queuePosition = Registration::where('event_id', $event->id)->where('slot_id', $userRegistration['slot_id'])->max('queue_position');
 
-            if ($queuePosition == -1) {
-                $queuePosition = -1;
-            } elseif ($queuePosition > 0) {
-                $queuePosition++;
+                    if (!$queuePosition || $queuePosition == -1) {
+                        $queuePosition = -1;
+                    } else {
+                        $queuePosition++;
+                    }
+
+                    $userRegistration['queue_position'] = $queuePosition;
+                } else {
+                    $queuePosition = Registration::where('event_id', $event->id)->max('queue_position');
+
+                    if ($queuePosition == -1) {
+                        $queuePosition = -1;
+                    } elseif ($queuePosition > 0) {
+                        $queuePosition++;
+                    }
+                }
+            } else {
+                unset($userRegistration['slot_id']);
             }
+        }
+
+        // get all other inputs
+        $form_responses = Request::except(['_token', 'slot_id', 'email', 'event_id', 'drinks_no_alcohol']);
+        if ($form_responses) {
+            $userRegistration['form_responses'] = $form_responses;
         }
 
         // create registration
@@ -445,6 +459,7 @@ class DashboardAdminController extends Controller
             'slot_id' => (array_key_exists('slot_id', $userRegistration) ? $userRegistration['slot_id'] : null),
             'group_id' => (array_key_exists('group_id', $userRegistration) ? $userRegistration['group_id'] : null),
             'drinks_alcohol' => (array_key_exists('drinks_alcohol', $userRegistration) ? $userRegistration['drinks_alcohol'] : null),
+            'form_responses' => (array_key_exists('form_responses', $userRegistration) ? $userRegistration['form_responses'] : null),
             'queue_position' => $queuePosition,
         ]);
 

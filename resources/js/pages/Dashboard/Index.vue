@@ -5,65 +5,16 @@
     <template #subtitle>
       hier findest du eine Übersicht über alle Veranstaltungen.
     </template>
-
-    <template
-      v-if="
-        user.rolesArray.some((role) =>
-          ['admin', 'esa', 'stage tutor', 'tutor'].includes(role),
-        )
-      "
-    >
-      <CardBase>
-        <FormKit
-          type="form"
-          id="tutor-login"
-          @submit="submitTutorPasswordFormHandler"
-          :actions="false"
-          v-model="tutorPasswordForm"
-        >
-          <FormContainer>
-            <FormRow>
-              <UiH2>Anmeldung zum geschützten Bereich</UiH2>
-            </FormRow>
-
-            <FormRow>
-              <FormKit
-                v-if="user.rolesArray.some((role) => ['admin'].includes(role))"
-                type="password"
-                name="password"
-                label="Adminpasswort"
-                placeholder="Passwort"
-                validation="required"
-              />
-              <FormKit
-                v-else
-                type="password"
-                name="password"
-                label="Tutorenpasswort"
-                placeholder="Passwort"
-                validation="required"
-              />
-            </FormRow>
-
-            <FormRow>
-              <FormKit type="submit" label="Anmelden" />
-            </FormRow>
-          </FormContainer>
-        </FormKit>
-      </CardBase>
-    </template>
-    <template v-else>
-      <GridContainer v-if="events.length">
-        <template v-for="event in events">
-          <EventCard
-            v-if="isUserAllowedToRegister(event, user)"
-            :key="event.id"
-            :event="event"
-            :registration="getUserRegistrationForEvent(event)"
-          />
-        </template>
-      </GridContainer>
-    </template>
+    <GridContainer v-if="events.length">
+      <template v-for="event in events">
+        <EventCard
+          v-if="isUserAllowedToRegister(event, user)"
+          :key="event.id"
+          :event="event"
+          :registration="getUserRegistrationForEvent(event)"
+        />
+      </template>
+    </GridContainer>
   </LayoutDashboardContent>
 </template>
 

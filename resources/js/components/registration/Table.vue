@@ -1,321 +1,29 @@
 <template>
-  <div class="px-4 sm:px-6 lg:px-8">
-    <div class="flex flex-col">
-      <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div class="inline-block min-w-full py-2 align-middle">
-          <div class="shadow-sm ring-1 ring-black ring-opacity-5">
-            <table class="min-w-full border-separate" style="border-spacing: 0">
-              <thead class="bg-gray-50 dark:bg-gray-900">
-                <tr>
-                  <th
-                    scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pl-6 lg:pl-8"
-                  >
-                    Vorname
-                  </th>
-                  <th
-                    scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
-                  >
-                    Nachname
-                  </th>
-                  <th
-                    scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
-                  >
-                    Studiengang
-                  </th>
-                  <th
-                    v-if="!hideSlots && event.type == 'slot_booking'"
-                    scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
-                  >
-                    Slot
-                  </th>
-                  <th
-                    v-if="!hideGroups && event.type == 'group_phase'"
-                    scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
-                  >
-                    Gruppe
-                  </th>
-                  <th
-                    v-if="event.consider_alcohol"
-                    scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
-                  >
-                    Trinkt Alkohol
-                  </th>
-                  <th
-                    v-if="event.type == 'slot_booking'"
-                    scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
-                  >
-                    Warteschlangenposition
-                  </th>
-                  <th
-                    v-if="showFormColomn"
-                    scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300"
-                  >
-                    Rückmeldung
-                  </th>
-                  <th
-                    scope="col"
-                    class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-3 pr-4 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pr-6 lg:pr-8"
-                  >
-                    <span class="sr-only">Ist anwesend</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody v-if="registrationsData" class="bg-white dark:bg-gray-800">
-                <template
-                  v-for="(registration, index) in registrationsData"
-                  :key="registration.id"
-                >
-                  <tr
-                    v-if="registration.user"
-                    :class="{
-                      'bg-yellow-100 dark:bg-yellow-900':
-                        registration.queue_position &&
-                        registration.queue_position > 0,
-                      'bg-red-100 dark:bg-red-900':
-                        registration.queue_position &&
-                        registration.queue_position == -1,
-                      'bg-green-100 dark:bg-green-900':
-                        registration.fulfils_requirements,
-                    }"
-                  >
-                    <td
-                      :class="[
-                        index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200 dark:border-gray-700'
-                          : '',
-                        'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-gray-100 sm:pl-6 lg:pl-8',
-                      ]"
-                    >
-                      {{ registration.user.firstname }}
-                    </td>
-                    <td
-                      :class="[
-                        index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200 dark:border-gray-700'
-                          : '',
-                        'whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900 dark:text-gray-100',
-                      ]"
-                    >
-                      {{ registration.user.lastname }}
-                    </td>
-                    <td
-                      :class="[
-                        index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200 dark:border-gray-700'
-                          : '',
-                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
-                      ]"
-                    >
-                      <template
-                        v-if="getCourseById(registration.user.course_id)"
-                      >
-                        {{ getCourseById(registration.user.course_id)?.name }}
-                      </template>
-                    </td>
-                    <td
-                      v-if="!hideSlots && event.type == 'slot_booking'"
-                      :class="[
-                        index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200 dark:border-gray-700'
-                          : '',
-                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
-                      ]"
-                    >
-                      <template
-                        v-if="
-                          registration.slot_id &&
-                          getSlotById(registration.slot_id)
-                        "
-                      >
-                        {{ getSlotById(registration.slot_id)?.name }}
-                      </template>
-                    </td>
-                    <td
-                      v-if="!hideGroups && event.type == 'group_phase'"
-                      :class="[
-                        index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200 dark:border-gray-700'
-                          : '',
-                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
-                      ]"
-                    >
-                      <template
-                        v-if="
-                          registration.group_id &&
-                          getGroupById(registration.group_id)
-                        "
-                      >
-                        {{ getGroupById(registration.group_id)?.name }}
-                      </template>
-                    </td>
-
-                    <td
-                      v-if="event.consider_alcohol"
-                      :class="[
-                        index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200 dark:border-gray-700'
-                          : '',
-                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
-                      ]"
-                    >
-                      {{ registration.drinks_alcohol ? "Ja" : "Nein" }}
-                    </td>
-                    <td
-                      v-if="event.type == 'slot_booking'"
-                      :class="[
-                        index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200 dark:border-gray-700'
-                          : '',
-                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
-                      ]"
-                    >
-                      <span
-                        v-if="
-                          registration.queue_position &&
-                          registration.queue_position > 0
-                        "
-                      >
-                        {{ registration.queue_position }}
-                      </span>
-                      <span
-                        v-else-if="
-                          registration.queue_position &&
-                          registration.queue_position == -1
-                        "
-                      >
-                        Wartet auf Zuteilung
-                      </span>
-                      <span v-else>Angemeldet</span>
-                    </td>
-                    <td
-                      v-if="showFormColomn"
-                      :class="[
-                        index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200 dark:border-gray-700'
-                          : '',
-                        'whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-300',
-                      ]"
-                    >
-                      <code v-if="registration.form_responses">
-                        {{ registration.form_responses }}
-                      </code>
-                    </td>
-                    <td
-                      :class="[
-                        index !== registrationsData.length - 1
-                          ? 'border-b border-gray-200 dark:border-gray-700'
-                          : '',
-                        'relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8',
-                      ]"
-                    >
-                      <div class="flex gap-4">
-                        <div>
-                          <AppButton
-                            v-if="registration.is_present"
-                            @click="toggleIsPresent(registration.id)"
-                          >
-                            <span class="sr-only"
-                              >{{ registration.user.firstname }}
-                              {{ registration.user.lastname }}</span
-                            >
-                            ist anwesend
-                          </AppButton>
-                          <AppButton
-                            v-else
-                            theme="gray"
-                            @click="toggleIsPresent(registration.id)"
-                          >
-                            <span class="sr-only"
-                              >{{ registration.user.firstname }}
-                              {{ registration.user.lastname }}</span
-                            >
-                            ist nicht anwesend
-                          </AppButton>
-                        </div>
-                        <template
-                          v-if="
-                            user &&
-                            user.permissionsArray.includes(
-                              'view hidden event details',
-                            )
-                          "
-                        >
-                          <div>
-                            <AppButton
-                              v-if="registration.fulfils_requirements"
-                              @click="
-                                toggleFulfilsRequirements(registration.id)
-                              "
-                            >
-                              <span class="sr-only"
-                                >{{ registration.user.firstname }}
-                                {{ registration.user.lastname }}</span
-                              >
-                              erfüllt die Anforderungen
-                            </AppButton>
-                            <AppButton
-                              v-else
-                              theme="gray"
-                              @click="
-                                toggleFulfilsRequirements(registration.id)
-                              "
-                            >
-                              <span class="sr-only"
-                                >{{ registration.user.firstname }}
-                                {{ registration.user.lastname }}</span
-                              >
-                              erfüllt nicht die Anforderungen
-                            </AppButton>
-                          </div>
-                          <div>
-                            <AppButton
-                              v-if="!registration.fulfils_requirements"
-                              theme="danger"
-                              @click="destory(registration.id)"
-                            >
-                              <span class="sr-only"
-                                >{{ registration.user.firstname }}
-                                {{ registration.user.lastname }}</span
-                              >
-                              löschen
-                            </AppButton>
-                            <AppButton
-                              v-else
-                              theme="gray"
-                              :disabled="true"
-                              @click="destory(registration.id)"
-                            >
-                              <span class="sr-only"
-                                >{{ registration.user.firstname }}
-                                {{ registration.user.lastname }}</span
-                              >
-                              löschen
-                            </AppButton>
-                          </div>
-                        </template>
-                      </div>
-                    </td>
-                  </tr>
-                </template>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <AppTable
+    :columns="getColumns()"
+    :elements="registrationsData"
+    :idFunction="(registration) => registration.id"
+    :functions="getFunctions()"
+    :rowClass="
+      (registration) => {
+        return {
+          'bg-yellow-100 dark:bg-yellow-900':
+            registration.queue_position && registration.queue_position > 0,
+          'bg-red-100 dark:bg-red-900':
+            registration.queue_position && registration.queue_position == -1,
+          'bg-green-100 dark:bg-green-900': registration.fulfils_requirements,
+        };
+      }
+    "
+  />
 </template>
 
 <script setup lang="ts">
 import { computed, ref, PropType, watch } from "vue";
+import { TableColumn } from "../../types/table-column";
+import { ButtonState, TableStateButton } from "../../types/table-state-button";
+import { TableFunction } from "../../types/table-function";
+import { TableButton } from "../../types/table-button";
 
 const props = defineProps({
   courses: {
@@ -347,13 +55,30 @@ const props = defineProps({
 const getCourseById = (id: number) => {
   return props.courses.find((course) => course.id === id);
 };
+
+const getCourseName = (id: number) => {
+  const course = getCourseById(id);
+  return course !== undefined && course !== null ? course.name : "";
+};
+
 const getSlotById = (id: number) => {
   if (!props.event.slots) return null;
   return props.event.slots.find((slot) => slot.id === id);
 };
+
+const getSlotName = (id: number) => {
+  const slot = getSlotById(id);
+  return slot !== undefined && slot !== null ? slot.name : "";
+};
+
 const getGroupById = (id: number) => {
   if (!props.event.groups) return null;
   return props.event.groups.find((group) => group.id === id);
+};
+
+const getGroupName = (id: number) => {
+  const group = getGroupById(id);
+  return group !== undefined && group !== null ? group.name : "";
 };
 
 const registrationsData = ref(props.registrations);
@@ -415,7 +140,7 @@ const toggleFulfilsRequirements = async (registrationId: number) => {
   }
 };
 
-const destory = async (registrationId: number) => {
+const destroy = async (registrationId: number) => {
   const response = await fetch("/api/registrations/" + registrationId, {
     method: "DELETE",
     credentials: "include",
@@ -434,4 +159,212 @@ const destory = async (registrationId: number) => {
     );
   }
 };
+
+function getColumns(): Array<TableColumn> {
+  let columns = Array<TableColumn>();
+
+  let firstNameCol = new TableColumn({
+    name: "firstName",
+    text: "Vorname",
+    valueFunction: (registration) => registration.user.firstname,
+    compareFunction: (registration1, registration2) =>
+      registration1.user.firstname.localeCompare(registration2.user.firstname),
+  });
+  columns.push(firstNameCol);
+
+  let lastNameCol = new TableColumn({
+    name: "lastName",
+    text: "Nachname",
+    valueFunction: (registration) => registration.user.lastname,
+    compareFunction: (registration1, registration2) =>
+      registration1.user.lastname.localeCompare(registration2.user.lastname),
+  });
+  columns.push(lastNameCol);
+
+  let courseCol = new TableColumn({
+    name: "course",
+    text: "Studiengang",
+    valueFunction: (registration) => getCourseName(registration.user.course_id),
+    compareFunction: (registration1, registration2) =>
+      getCourseName(registration1.user.course_id).localeCompare(
+        getCourseName(registration2.user.course_id),
+      ),
+  });
+  columns.push(courseCol);
+
+  if (!props.hideSlots && props.event.type == "slot_booking") {
+    let slotCol = new TableColumn({
+      name: "slot",
+      text: "Slot",
+      valueFunction: (registration) => getSlotName(registration.slot_id),
+      compareFunction: (registration1, registration2) =>
+        getSlotName(registration1.slot_id).localeCompare(
+          getSlotName(registration2.slot_id),
+        ),
+    });
+    columns.push(slotCol);
+  }
+
+  if (!props.hideGroups && props.event.type == "group_phase") {
+    let groupCol = new TableColumn({
+      name: "group",
+      text: "Gruppe",
+      valueFunction: (registration) => getGroupName(registration.group_id),
+      compareFunction: (registration1, registration2) =>
+        getGroupName(registration1.group_id).localeCompare(
+          getGroupName(registration2.group_id),
+        ),
+    });
+    columns.push(groupCol);
+  }
+
+  if (props.event.consider_alcohol) {
+    let alcoholCol = new TableColumn({
+      name: "alcohol",
+      text: "Trinkt Alkohol",
+      valueFunction: (registration) =>
+        registration.drinks_alcohol ? "Ja" : "Nein",
+      compareFunction: (registration1, registration2) =>
+        registration1.drinks_alcohol === registration2.drinks_alcohol
+          ? 0
+          : registration1.drinks_alcohol
+            ? 1
+            : -1,
+    });
+    columns.push(alcoholCol);
+  }
+
+  if (props.event.type == "slot_booking") {
+    let queueCol = new TableColumn({
+      name: "queue",
+      text: "Warteschlangenposition",
+      valueFunction: (registration) => {
+        if (registration.queue_position && registration.queue_position > 0) {
+          return registration.queue_position;
+        } else if (
+          registration.queue_position &&
+          registration.queue_position == -1
+        ) {
+          return "Wartet auf Zuteilung";
+        } else {
+          return "Angemeldet";
+        }
+      },
+      compareFunction: (registration1, registration2) =>
+        registration1.queue_position === null ||
+        registration1.queue_position === undefined
+          ? -1
+          : registration2.queue_position === null ||
+              registration2.queue_position === undefined
+            ? 1
+            : registration1.queue_position - registration2.queue_position,
+    });
+    columns.push(queueCol);
+  }
+
+  if (showFormColomn) {
+    let formCol = new TableColumn({
+      name: "form",
+      text: "Rückmeldung",
+      valueFunction: (registration) => {
+        if (registration.form_responses) {
+          return "<code>" + registration.form_responses + "</code>";
+        }
+        return "";
+      },
+      compareFunction: (registration1, registration2) =>
+        registration1.form_responses === null ||
+        registration1.form_responses === undefined
+          ? -1
+          : registration1.form_responses.localeCompare(
+              registration2.form_responses,
+            ),
+    });
+    columns.push(formCol);
+  }
+
+  return columns;
+}
+
+function getFunctions(): Array<TableFunction> {
+  let functions = new Array<TableFunction>();
+
+  let presentButton = new TableStateButton({
+    name: "isPresent",
+    defaultState: new TableButton({
+      name: "notPresent",
+      text: "ist nicht anwesend",
+      buttonFunction: (registration) => toggleIsPresent(registration.id),
+      disabledFunction: () => false,
+      theme: "gray",
+    }),
+    states: [
+      new ButtonState({
+        condition: (registration) => registration.is_present,
+        button: new TableButton({
+          name: "present",
+          text: "ist anwesend",
+          buttonFunction: (registration) => toggleIsPresent(registration.id),
+        }),
+      }),
+    ],
+  });
+  functions.push(presentButton);
+
+  if (
+    props.event.has_requirements &&
+    props.user &&
+    props.user.permissionsArray.includes("view hidden event details")
+  ) {
+    let requirementsButton = new TableStateButton({
+      name: "fulfilsRequirements",
+      defaultState: new TableButton({
+        name: "doesNotFulFill",
+        text: "erfüllt nicht die Anforderungen",
+        buttonFunction: (registration) =>
+          toggleFulfilsRequirements(registration.id),
+        disabledFunction: () => false,
+        theme: "gray",
+      }),
+      states: [
+        new ButtonState({
+          condition: (registration) => registration.fulfils_requirements,
+          button: new TableButton({
+            name: "fulfils",
+            text: "erfüllt die Anforderungen",
+            buttonFunction: (registration) =>
+              toggleFulfilsRequirements(registration.id),
+          }),
+        }),
+      ],
+    });
+    functions.push(requirementsButton);
+
+    let deleteButton = new TableStateButton({
+      name: "delete",
+      defaultState: new TableButton({
+        name: "doesNotFulFill",
+        text: "löschen",
+        buttonFunction: () => {},
+        disabledFunction: () => true,
+        theme: "gray",
+      }),
+      states: [
+        new ButtonState({
+          condition: (registration) => !registration.fulfils_requirements,
+          button: new TableButton({
+            name: "fulfils",
+            text: "löschen",
+            buttonFunction: (registration) => destroy(registration.id),
+            disabledFunction: () => false,
+            theme: "danger",
+          }),
+        }),
+      ],
+    });
+    functions.push(deleteButton);
+  }
+
+  return functions;
+}
 </script>

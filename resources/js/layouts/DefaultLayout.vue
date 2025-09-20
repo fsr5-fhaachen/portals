@@ -12,9 +12,23 @@
           Powered by {{ packageName }}
         </AppLink>
       </div>
+      <div
+        class="mt-4 flex items-center justify-center px-2 text-sm text-gray-500"
+      >
+        <AppLink href="https://fsr5.de/impressum" theme="gray">
+          Impressum
+        </AppLink>
+      </div>
+      <div
+        class="mt-1 flex items-center justify-center px-2 text-sm text-gray-500"
+      >
+        <AppLink href="https://fsr5.de/datenschutzerklaerung" theme="gray">
+          Datenschutzerklärung
+        </AppLink>
+      </div>
       <div class="mt-6 px-2 text-sm text-gray-500">
         <AppLink
-          href="https://www.hetzner.com/de?mtm_campaign=fh_aachen24_sponsoring&mtm_med/"
+          href="https://hetzner.cloud/?ref=QVP9EsLHwtNY"
           theme="none"
           class="flex flex-col items-center justify-center gap-2"
         >

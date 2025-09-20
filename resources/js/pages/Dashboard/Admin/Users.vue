@@ -1,6 +1,7 @@
 <template>
   <LayoutDashboardContent>
     <template #title>User Verwaltung</template>
+
     <CardContainer>
       <CardBase>
         <FormKit type="form" id="assign" :actions="false" v-model="form">
@@ -28,6 +29,7 @@
 
 <script setup lang="ts">
 import { computed, ref, PropType, onBeforeUnmount } from "vue";
+import { Inertia } from "@inertiajs/inertia";
 
 const form = ref({
   query: "",
@@ -90,7 +92,6 @@ const fetchUsers = async () => {
 
       if (index === -1) {
         users.value.push(user);
-        continue;
       } else {
         users.value[index] = user;
       }

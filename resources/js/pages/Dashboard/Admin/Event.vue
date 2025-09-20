@@ -23,7 +23,12 @@
         ></div>
       </CourseBox>
     </BoxContainer>
-
+    <div
+      class="flex bg-white dark:bg-gray-800 mb-16 pb-5 justify-center rounded-lg flex-row flex-wrap flex-grow"
+    >
+      <ChartContainer v-for="stats in statistics" :stats :chartType="'pie'" />
+      <ChartContainer :stats="courseTotal" chartType="total" />
+    </div>
     <div
       v-if="['group_phase', 'slot_booking'].includes(event.type)"
       class="mb-16"
@@ -103,6 +108,7 @@ const fetchRegistrations = async () => {
 
 const coursesData = ref(courses);
 const isCoursesFetching = ref(false);
+const courseTotal = ref(0);
 const fetchCourses = async () => {
   if (isCoursesFetching.value) {
     return;
@@ -120,6 +126,11 @@ const fetchCourses = async () => {
 
   if (response.ok) {
     const data = await response.json();
+    courseTotal.value = 0;
+
+    for (const course of data) {
+      courseTotal.value += course.amount;
+    }
 
     // map the data to the courses
     coursesData.value = courses.map((course) => {
@@ -136,9 +147,35 @@ const fetchCourses = async () => {
 
   isCoursesFetching.value = false;
 };
+
+const statistics = ref([]);
+
+let statisticsTimer = setTimeout(() => {
+  fetchStatistics();
+}, 2500);
+
+const fetchStatistics = async () => {
+  const response = await fetch("/api/events/" + event.id + "/statistics", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    statistics.value = data;
+  }
+  statisticsTimer = setTimeout(() => {
+    fetchStatistics();
+  }, 2500);
+};
+
 const coursesInterval = setInterval(fetchCourses, 2500);
 onBeforeUnmount(() => {
   clearInterval(coursesInterval);
+  clearTimeout(statisticsTimer);
 });
 
 const submit = () => {

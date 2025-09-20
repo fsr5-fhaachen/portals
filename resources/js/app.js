@@ -26,6 +26,9 @@ import {
   faBriefcase,
   faCodeBranch,
   faMoneyBillWave,
+  faSort,
+  faArrowUpWideShort,
+  faArrowDownShortWide,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
@@ -35,6 +38,7 @@ import {
 import formkitConfig from "./formkit.config.ts";
 import DefaultLayout from "./layouts/DefaultLayout.vue";
 import DashboardLayout from "./layouts/DashboardLayout.vue";
+import PrimeVue from "primevue/config";
 
 InertiaProgress.init({
   color: "#22948C",
@@ -61,6 +65,9 @@ library.add(
   faBriefcase,
   faCodeBranch,
   faMoneyBillWave,
+  faSort,
+  faArrowUpWideShort,
+  faArrowDownShortWide,
 );
 
 createInertiaApp({
@@ -85,6 +92,10 @@ createInertiaApp({
     createApp({ render: () => h(App, props) })
       .use(plugin)
       .use(formkitPlugin, formkitDefaultConfig(formkitConfig))
+      .use(PrimeVue, {
+        inputStyle: "filled",
+        unstyled: true,
+      })
       .component("FontAwesomeIcon", FontAwesomeIcon)
       .mount(el);
   },
