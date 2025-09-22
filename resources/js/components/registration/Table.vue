@@ -268,7 +268,11 @@ function getColumns(): Array<TableColumn> {
       text: "Rückmeldung",
       valueFunction: (registration) => {
         if (registration.form_responses) {
-          return "<code>" + registration.form_responses + "</code>";
+          return (
+            "<code>" +
+            safeArrayToString(registration.form_responses) +
+            "</code>"
+          );
         }
         return "";
       },
@@ -312,7 +316,6 @@ function getFunctions(): Array<TableFunction> {
   functions.push(presentButton);
 
   if (
-    props.event.has_requirements &&
     props.user &&
     props.user.permissionsArray.includes("view hidden event details")
   ) {
@@ -366,5 +369,37 @@ function getFunctions(): Array<TableFunction> {
   }
 
   return functions;
+}
+
+function safeArrayToString(arr: any[]) {
+  if (Array.isArray(arr)) {
+    return arr
+      .map((item) => {
+        try {
+          if (typeof item === "string") {
+            return item;
+          }
+          if (item == null) {
+            return "";
+          }
+          return JSON.stringify(item);
+        } catch {
+          return String(item);
+        }
+      })
+      .join(", ");
+  } else {
+    try {
+      if (typeof arr === "string") {
+        return arr;
+      }
+      if (arr == null) {
+        return "";
+      }
+      return JSON.stringify(arr);
+    } catch {
+      return String(arr);
+    }
+  }
 }
 </script>
