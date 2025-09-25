@@ -3,6 +3,24 @@
     <div class="flex flex-col">
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle">
+          <div
+            v-if="sortValues.length > 0"
+            class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-3 pr-4 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pr-6 lg:pr-8 flex flex-col"
+          >
+            <span class="font-bold">Sortieren nach:</span>
+            <div class="flex gap-3">
+              <span
+                v-for="(sortValue, index) in sortValues"
+                @click="orderElementsByValue(index)"
+                class="dark:bg-border-gray-700 bg-gray-50 bg-opacity-75 pl-2 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 hover:cursor-pointer"
+              >
+                <div class="flex items-center gap-2 w-full">
+                  <span class="break-words">{{ sortValue.text }}</span>
+                  <FontAwesomeIcon :icon="getSortValueIcon(index)" />
+                </div>
+              </span>
+            </div>
+          </div>
           <div class="shadow-sm ring-1 ring-black ring-opacity-5">
             <table class="min-w-full border-separate" style="border-spacing: 0">
               <thead class="bg-gray-50 dark:bg-gray-900">
@@ -12,11 +30,11 @@
                     :key="column.name"
                     scope="col"
                     class="dark:bg-border-gray-700 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter dark:bg-gray-900 dark:text-gray-300 sm:pl-6 lg:pl-8 hover:cursor-pointer"
-                    @click="orderElements(index)"
+                    @click="orderElementsByColumn(index)"
                   >
                     <div class="flex items-center gap-2 w-full">
                       <span class="break-words">{{ column.header }}</span>
-                      <FontAwesomeIcon :icon="getSortIcon(index)" />
+                      <FontAwesomeIcon :icon="getColumnSortIcon(index)" />
                     </div>
                   </th>
                   <th
@@ -121,6 +139,7 @@ import { TableFunction } from "../../types/table-function";
 import { TableLink } from "../../types/table-link";
 import { TableButton } from "../../types/table-button";
 import { TableStateButton } from "../../types/table-state-button";
+import { TableSortValue } from "../../types/table-sort-value";
 
 const props = defineProps({
   columns: {
@@ -139,9 +158,13 @@ const props = defineProps({
     type: Array<TableFunction>,
     default: [],
   },
+  sortValues: {
+    type: Array<TableSortValue>,
+    default: [],
+  },
   rowClass: {
     type: Function,
-    default: (element) => {
+    default: (element: any) => {
       return {};
     },
   },
@@ -152,22 +175,39 @@ const elementsOrdered = ref<Object[]>(props.elements.slice());
 watch(
   () => props.elements,
   (newElements) => {
-    if (orderedCol === -1 || sortDirection === SortDirection.None) {
+    if (
+      (orderedColumn === -1 && orderedValue === -1) ||
+      sortDirection === SortDirection.None
+    ) {
       elementsOrdered.value = newElements.slice();
     } else {
-      // erneutes Sortieren mit den neuen Daten
-      elementsOrdered.value =
-        sortDirection === SortDirection.Ascending
-          ? newElements
-              .slice()
-              .sort((e1, e2) =>
-                props.columns[orderedCol].compareFunction(e1, e2),
-              )
-          : newElements
-              .slice()
-              .sort((e1, e2) =>
-                props.columns[orderedCol].compareFunction(e2, e1),
-              );
+      if (orderedColumn >= 0) {
+        elementsOrdered.value =
+          sortDirection === SortDirection.Ascending
+            ? newElements
+                .slice()
+                .sort((e1, e2) =>
+                  props.columns[orderedColumn].compareFunction(e1, e2),
+                )
+            : newElements
+                .slice()
+                .sort((e1, e2) =>
+                  props.columns[orderedColumn].compareFunction(e2, e1),
+                );
+      } else if (orderedValue >= 0) {
+        elementsOrdered.value =
+          sortDirection === SortDirection.Ascending
+            ? newElements
+                .slice()
+                .sort((e1, e2) =>
+                  props.sortValues[orderedValue].compareFunction(e1, e2),
+                )
+            : newElements
+                .slice()
+                .sort((e1, e2) =>
+                  props.sortValues[orderedValue].compareFunction(e2, e1),
+                );
+      }
     }
   },
 );
@@ -178,15 +218,16 @@ enum SortDirection {
   Descending,
 }
 
-let orderedCol = -1;
+let orderedColumn = -1;
+let orderedValue = -1;
 let sortDirection = SortDirection.None;
 
-function orderElements(columnIndex: number): void {
-  if (columnIndex == orderedCol) {
+function orderElementsByColumn(columnIndex: number): void {
+  if (columnIndex == orderedColumn) {
     if (sortDirection == SortDirection.Descending) {
       // undo ordering
       elementsOrdered.value = props.elements.slice();
-      orderedCol = -1;
+      orderedColumn = -1;
       sortDirection = SortDirection.None;
       return;
     } else if (sortDirection == SortDirection.Ascending) {
@@ -198,7 +239,8 @@ function orderElements(columnIndex: number): void {
     sortDirection = SortDirection.Ascending;
   }
 
-  orderedCol = columnIndex;
+  orderedColumn = columnIndex;
+  orderedValue = -1;
 
   elementsOrdered.value =
     sortDirection == SortDirection.Ascending
@@ -210,8 +252,54 @@ function orderElements(columnIndex: number): void {
           .sort((e1, e2) => props.columns[columnIndex].compareFunction(e2, e1));
 }
 
-function getSortIcon(columnIndex: number): Array<string> {
-  if (columnIndex === orderedCol) {
+function orderElementsByValue(sortValueIndex: number): void {
+  if (sortValueIndex == orderedValue) {
+    if (sortDirection == SortDirection.Descending) {
+      // undo ordering
+      elementsOrdered.value = props.elements.slice();
+      orderedValue = -1;
+      sortDirection = SortDirection.None;
+      return;
+    } else if (sortDirection == SortDirection.Ascending) {
+      sortDirection = SortDirection.Descending;
+    } else {
+      sortDirection = SortDirection.Ascending;
+    }
+  } else {
+    sortDirection = SortDirection.Ascending;
+  }
+
+  orderedValue = sortValueIndex;
+  orderedColumn = -1;
+
+  elementsOrdered.value =
+    sortDirection == SortDirection.Ascending
+      ? props.elements
+          .slice()
+          .sort((e1, e2) =>
+            props.sortValues[sortValueIndex].compareFunction(e1, e2),
+          )
+      : props.elements
+          .slice()
+          .sort((e1, e2) =>
+            props.sortValues[sortValueIndex].compareFunction(e2, e1),
+          );
+}
+
+function getColumnSortIcon(columnIndex: number): Array<string> {
+  if (columnIndex === orderedColumn) {
+    if (sortDirection === SortDirection.Ascending) {
+      return ["fas", "arrow-down-short-wide"];
+    } else if (sortDirection === SortDirection.Descending) {
+      return ["fas", "arrow-up-wide-short"];
+    }
+  }
+
+  return ["fas", "sort"];
+}
+
+function getSortValueIcon(sortValueIndex: number): Array<string> {
+  if (sortValueIndex === orderedValue) {
     if (sortDirection === SortDirection.Ascending) {
       return ["fas", "arrow-down-short-wide"];
     } else if (sortDirection === SortDirection.Descending) {
