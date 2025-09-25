@@ -277,12 +277,9 @@ function getColumns(): Array<TableColumn> {
         return "";
       },
       compareFunction: (registration1, registration2) =>
-        registration1.form_responses === null ||
-        registration1.form_responses === undefined
-          ? -1
-          : registration1.form_responses.localeCompare(
-              registration2.form_responses,
-            ),
+        safeArrayToString(registration1.form_responses).localeCompare(
+          safeArrayToString(registration2.form_responses),
+        ),
     });
     columns.push(formCol);
   }
