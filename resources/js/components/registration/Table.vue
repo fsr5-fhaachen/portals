@@ -2,10 +2,10 @@
   <AppTable
     :columns="getColumns()"
     :elements="registrationsData"
-    :idFunction="(registration) => registration.id"
+    :idFunction="(registration: any) => registration.id"
     :functions="getFunctions()"
     :rowClass="
-      (registration) => {
+      (registration: any) => {
         return {
           'bg-yellow-100 dark:bg-yellow-900':
             registration.queue_position && registration.queue_position > 0,
@@ -15,6 +15,7 @@
         };
       }
     "
+    :sortValues="getSortValues()"
   />
 </template>
 
@@ -24,6 +25,7 @@ import { TableColumn } from "../../types/table-column";
 import { ButtonState, TableStateButton } from "../../types/table-state-button";
 import { TableFunction } from "../../types/table-function";
 import { TableButton } from "../../types/table-button";
+import { TableSortValue } from "../../types/table-sort-value";
 
 const props = defineProps({
   courses: {
@@ -277,12 +279,9 @@ function getColumns(): Array<TableColumn> {
         return "";
       },
       compareFunction: (registration1, registration2) =>
-        registration1.form_responses === null ||
-        registration1.form_responses === undefined
-          ? -1
-          : registration1.form_responses.localeCompare(
-              registration2.form_responses,
-            ),
+        safeArrayToString(registration1.form_responses).localeCompare(
+          safeArrayToString(registration2.form_responses),
+        ),
     });
     columns.push(formCol);
   }
@@ -369,6 +368,44 @@ function getFunctions(): Array<TableFunction> {
   }
 
   return functions;
+}
+
+function getSortValues() {
+  let sortValues = new Array<TableSortValue>();
+
+  let sortByPresent = new TableSortValue({
+    name: "presence",
+    text: "Anwesenheit",
+    compareFunction: (registration1, registration2) =>
+      registration1.is_present === registration2.is_present
+        ? 0
+        : registration1.is_present
+          ? -1
+          : 1,
+  });
+
+  sortValues.push(sortByPresent);
+
+  if (
+    props.user &&
+    props.user.permissionsArray.includes("view hidden event details")
+  ) {
+    let sortByRequirements = new TableSortValue({
+      name: "requirements",
+      text: "Anforderungen",
+      compareFunction: (registration1, registration2) =>
+        registration1.fulfils_requirements ===
+        registration2.fulfils_requirements
+          ? 0
+          : registration1.fulfils_requirements
+            ? -1
+            : 1,
+    });
+
+    sortValues.push(sortByRequirements);
+  }
+
+  return sortValues;
 }
 
 function safeArrayToString(arr: any[]) {
