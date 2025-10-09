@@ -57,10 +57,10 @@ class HandleInertiaRequests extends Middleware
             'user' => $user,
             'modules' => $modulesArray,
             'message' => [
-                'success' => fn () => $request->session()->get('success'),
-                'error' => fn () => $request->session()->get('error'),
-                'warning' => fn () => $request->session()->get('warning'),
-                'info' => fn () => $request->session()->get('info'),
+                'success' => fn() => $request->session()->get('success'),
+                'error' => fn() => $request->session()->get('error'),
+                'warning' => fn() => $request->session()->get('warning'),
+                'info' => fn() => $request->session()->get('info'),
             ],
             'pages' => Page::orderBy('sort_order')->get(),
         ]);

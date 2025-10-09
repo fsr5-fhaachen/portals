@@ -1,9 +1,7 @@
 <template>
   <LayoutDashboardContent>
-    <template v-if="user.rolesArray.some((role) => role === 'admin')" #title>
-      Admin Login
-    </template>
-    <template v-else #title> Tutor Login </template>
+    <template v-if="isAdmin" #title>Admin Login</template>
+    <template v-else #title>Tutor Login</template>
 
     <CardBase>
       <FormKit
@@ -19,22 +17,21 @@
           </FormRow>
 
           <FormRow>
-            <FormKit
-              v-if="user.rolesArray.some((role) => ['admin'].includes(role))"
-              type="password"
-              name="password"
-              label="Adminpasswort"
-              placeholder="Passwort"
-              validation="required"
-            />
-            <FormKit
-              v-else
-              type="password"
-              name="password"
-              label="Tutorenpasswort"
-              placeholder="Passwort"
-              validation="required"
-            />
+            <div class="relative w-full">
+              <FormKit
+                :type="showPassword ? 'text' : 'password'"
+                name="password"
+                :label="isAdmin ? 'Adminpasswort' : 'Tutorenpasswort'"
+                placeholder="Passwort"
+                validation="required"
+                outer-class="!mb-0"
+              />
+              <FontAwesomeIcon
+                class="absolute right-4 top-1/2 text-gray-500 cursor-pointer h-5 w-5"
+                :icon="showPassword ? ['fas', 'eye-slash'] : ['fas', 'eye']"
+                @click="togglePassword"
+              />
+            </div>
           </FormRow>
 
           <FormRow>
@@ -47,12 +44,16 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref } from "vue";
+import { ref, computed, PropType } from "vue";
 import { Inertia } from "@inertiajs/inertia";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 const tutorPasswordForm = ref({
   password: "",
 });
+
+const showPassword = ref(false);
+const togglePassword = () => (showPassword.value = !showPassword.value);
 
 const props = defineProps({
   user: {
@@ -60,6 +61,10 @@ const props = defineProps({
     required: true,
   },
 });
+
+const isAdmin = computed(() =>
+  props.user.rolesArray.some((role) => role === "admin"),
+);
 
 const submitTutorPasswordFormHandler = async () => {
   Inertia.post("/dashboard/tutor/login", tutorPasswordForm.value);

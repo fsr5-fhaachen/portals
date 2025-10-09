@@ -57,16 +57,15 @@ class DashboardController extends Controller
 
         if ($neededPassword) {
             if ($request->input('password') == $neededPassword) {
-                // set the session variable
                 session(['tutor' => true]);
-
                 Session::flash('success', $successMessage);
+                $intendedUrl = session('url.intended');
+                return redirect()->to($intendedUrl ?: route('dashboard.index'));
             } else {
                 Session::flash('error', 'Das Passwort ist falsch.');
+                return redirect()->back();
             }
         }
-        $intendedUrl = session('url.intended');
-        return redirect()->to($intendedUrl ? $intendedUrl : route('dashboard.index'));
     }
 
     /**
