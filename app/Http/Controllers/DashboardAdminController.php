@@ -202,8 +202,8 @@ class DashboardAdminController extends Controller
                             $row['not_present_users'] = $slot->registrations()->where('is_present', false)->count();
                             $row['present_percentage'] = ($row['registered_users'] > 0 ? round(($row['present_users'] / $row['registered_users']) * 100, 2) . '%' : '0%');
 
-                            // add requirements stats if event has requirements
-                            if ($event->has_requirements) {
+                            // add requirements stats if slot has requirements
+                            if ($slot->has_requirements) {
                                 $row['fulfills_requirements'] = $slot->registrations()->where('fulfils_requirements', true)->count();
                                 $row['not_fulfills_requirements'] = $slot->registrations()->where('fulfils_requirements', false)->count();
                                 $row['fulfills_requirements_percentage'] = ($row['registered_users'] > 0 ? round(($row['fulfills_requirements'] / $row['registered_users']) * 100, 2) . '%' : '0%');
