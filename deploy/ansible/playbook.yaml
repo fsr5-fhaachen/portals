@@ -1,0 +1,25 @@
+- name: Portals
+  hosts: all
+  become: true
+  vars_files:
+    - vars.yaml
+    - vars_terraform.yaml
+  handlers:
+    - name: reload_nginx
+      become: yes
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+    - name: restart_redis
+      become: yes
+      ansible.builtin.service:
+        name: redis-server
+        state: restarted
+  roles:
+    - role: general
+    - role: nginx
+    - role: php
+    - role: node
+    - role: postgresql
+    - role: redis
+    - role: portals

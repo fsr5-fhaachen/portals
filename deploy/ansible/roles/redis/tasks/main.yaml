@@ -1,0 +1,41 @@
+- name: import gpg key
+  become: yes
+  ansible.builtin.shell: |
+    curl -fsSL https://packages.redis.io/gpg | gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+  args:
+    creates: /usr/share/keyrings/redis-archive-keyring.gpg
+- name: set permissions on gpg key
+  become: yes
+  ansible.builtin.file:
+    path: /usr/share/keyrings/redis-archive-keyring.gpg
+    mode: "0644"
+- name: add apt repository
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb {{ ansible_lsb.codename }} main"
+    filename: redis
+    state: present
+  register: redis_repo
+- name: update apt cache
+  become: yes
+  ansible.builtin.apt:
+    update_cache: yes
+  when: redis_repo.changed
+- name: install redis
+  become: yes
+  ansible.builtin.apt:
+    name: redis
+    state: present
+- name: set redis password
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/redis/redis.conf
+    regexp: "^# requirepass foobared"
+    line: "requirepass {{ redis_password }}"
+  notify: restart_redis
+- name: enable and start redis
+  become: yes
+  ansible.builtin.service:
+    name: redis-server
+    state: started
+    enabled: true

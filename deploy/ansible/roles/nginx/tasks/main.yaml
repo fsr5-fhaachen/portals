@@ -1,0 +1,31 @@
+- name: install packages
+  become: yes
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - nginx
+    - certbot
+    - python3-certbot-nginx
+- name: enable and start nginx
+  become: yes
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true
+- name: create nginx site
+  become: yes
+  ansible.builtin.template:
+    src: site.conf.j2
+    dest: /etc/nginx/sites-available/default
+    mode: "0644"
+  notify: reload_nginx
+- name: create certificate
+  become: yes
+  ansible.builtin.command: >
+    certbot --nginx --non-interactive --agree-tos --redirect
+    -m {{ letsencrypt_email }}
+    -d {{ domain_name }}
+  args:
+    creates: /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem
+  notify: reload_nginx

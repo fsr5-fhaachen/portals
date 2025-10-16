@@ -27,4 +27,5 @@
   },
   "php-cs-fixer.executablePath": "${workspaceFolder}/vendor/bin/php-cs-fixer",
   "php-cs-fixer.config": ".php-cs-fixer.php",
+  "ansible.python.interpreterPath": "/bin/python3",
 }

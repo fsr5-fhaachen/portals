@@ -1,0 +1,14 @@
+- name: install nvm
+  become: yes
+  ansible.builtin.shell: |
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+  args:
+    creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+- name: install node
+  become: yes
+  ansible.builtin.shell: |
+    export NVM_DIR="{{ ansible_env.HOME }}/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+    nvm install {{ node_version }}
+  args:
+    creates: "{{ ansible_env.HOME }}/.nvm/versions/node/v{{ node_version }}"
