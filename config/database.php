@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Str;
 
+$redis_mode = env('REDIS_MODE', 'single');
+
 return [
 
     'migrations' => [
@@ -17,71 +19,103 @@ return [
         'regs_nd' => env('SEEDER_NONDRINKERS', 1),
     ],
 
-    'redis' => [
+    'redis' => match ($redis_mode) {
 
-        'client' => env('REDIS_CLIENT', 'phpredis-sentinel'),
+        'sentinel' => [
 
-        'default' => [
-            'sentinel_host' => env('REDIS_SENTINEL_HOST', '127.0.0.1'),
-            'sentinel_port' => (int) env('REDIS_SENTINEL_PORT', 26379),
-            'sentinel_service' => env('REDIS_SENTINEL_SERVICE', 'mymaster'),
-            'sentinel_timeout' => (float) env('REDIS_SENTINEL_TIMEOUT', 0),
-            'sentinel_persistent' => env('REDIS_SENTINEL_PERSISTENT'),
-            'sentinel_retry_interval' => (int) env('REDIS_SENTINEL_RETRY_INTERVAL', 0),
-            'sentinel_read_timeout' => (float) env('REDIS_SENTINEL_READ_TIMEOUT', 0),
-            'sentinel_username' => env('REDIS_SENTINEL_USERNAME'),
-            'sentinel_password' => env('REDIS_SENTINEL_PASSWORD'),
+            'client' => env('REDIS_CLIENT', 'phpredis-sentinel'),
 
-            'connector_retry_attempts' => env('REDIS_CONNECTOR_RETRY_ATTEMPTS'),
-            'connector_retry_delay' => env('REDIS_CONNECTOR_RETRY_DELAY'),
+            'default' => [
+                'sentinel_host' => env('REDIS_SENTINEL_HOST', '127.0.0.1'),
+                'sentinel_port' => (int) env('REDIS_SENTINEL_PORT', 26379),
+                'sentinel_service' => env('REDIS_SENTINEL_SERVICE', 'mymaster'),
+                'sentinel_timeout' => (float) env('REDIS_SENTINEL_TIMEOUT', 0),
+                'sentinel_persistent' => env('REDIS_SENTINEL_PERSISTENT'),
+                'sentinel_retry_interval' => (int) env('REDIS_SENTINEL_RETRY_INTERVAL', 0),
+                'sentinel_read_timeout' => (float) env('REDIS_SENTINEL_READ_TIMEOUT', 0),
+                'sentinel_username' => env('REDIS_SENTINEL_USERNAME'),
+                'sentinel_password' => env('REDIS_SENTINEL_PASSWORD'),
 
-            'password' => env('REDIS_PASSWORD'),
-            'database' => (int) env('REDIS_DB', 0),
+                'connector_retry_attempts' => env('REDIS_CONNECTOR_RETRY_ATTEMPTS'),
+                'connector_retry_delay' => env('REDIS_CONNECTOR_RETRY_DELAY'),
+
+                'password' => env('REDIS_PASSWORD'),
+                'database' => (int) env('REDIS_DB', 0),
+            ],
+
+            'cache' => [
+                'sentinel_host' => env('REDIS_SENTINEL_HOST', '127.0.0.1'),
+                'sentinel_port' => (int) env('REDIS_SENTINEL_PORT', 26379),
+                'sentinel_service' => env('REDIS_SENTINEL_SERVICE', 'mymaster'),
+                'sentinel_timeout' => (float) env('REDIS_SENTINEL_TIMEOUT', 0),
+                'sentinel_persistent' => env('REDIS_SENTINEL_PERSISTENT'),
+                'sentinel_retry_interval' => (int) env('REDIS_SENTINEL_RETRY_INTERVAL', 0),
+                'sentinel_read_timeout' => (float) env('REDIS_SENTINEL_READ_TIMEOUT', 0),
+                'sentinel_username' => env('REDIS_SENTINEL_USERNAME'),
+                'sentinel_password' => env('REDIS_SENTINEL_PASSWORD'),
+
+                'connector_retry_attempts' => env('REDIS_CONNECTOR_RETRY_ATTEMPTS'),
+                'connector_retry_delay' => env('REDIS_CONNECTOR_RETRY_DELAY'),
+
+                'password' => env('REDIS_PASSWORD'),
+                'database' => (int) env('REDIS_CACHE_DB', 1),
+            ],
+
         ],
 
-        'cache' => [
-            'sentinel_host' => env('REDIS_SENTINEL_HOST', '127.0.0.1'),
-            'sentinel_port' => (int) env('REDIS_SENTINEL_PORT', 26379),
-            'sentinel_service' => env('REDIS_SENTINEL_SERVICE', 'mymaster'),
-            'sentinel_timeout' => (float) env('REDIS_SENTINEL_TIMEOUT', 0),
-            'sentinel_persistent' => env('REDIS_SENTINEL_PERSISTENT'),
-            'sentinel_retry_interval' => (int) env('REDIS_SENTINEL_RETRY_INTERVAL', 0),
-            'sentinel_read_timeout' => (float) env('REDIS_SENTINEL_READ_TIMEOUT', 0),
-            'sentinel_username' => env('REDIS_SENTINEL_USERNAME'),
-            'sentinel_password' => env('REDIS_SENTINEL_PASSWORD'),
+        'cluster' => [
 
-            'connector_retry_attempts' => env('REDIS_CONNECTOR_RETRY_ATTEMPTS'),
-            'connector_retry_delay' => env('REDIS_CONNECTOR_RETRY_DELAY'),
+            'client' => env('REDIS_CLIENT', 'phpredis'),
 
-            'password' => env('REDIS_PASSWORD'),
-            'database' => (int) env('REDIS_CACHE_DB', 1),
+            'options' => [
+                'cluster' => env('REDIS_CLUSTER', 'redis'),
+                'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
+            ],
+
+            'default' => [
+                'url' => env('REDIS_URL'),
+                'host' => env('REDIS_HOST', '127.0.0.1'),
+                'username' => env('REDIS_USERNAME'),
+                'password' => env('REDIS_PASSWORD'),
+                'port' => env('REDIS_PORT', '6379'),
+                'database' => env('REDIS_DB', '0'),
+            ],
+
+            'cache' => [
+                'url' => env('REDIS_URL'),
+                'host' => env('REDIS_HOST', '127.0.0.1'),
+                'username' => env('REDIS_USERNAME'),
+                'password' => env('REDIS_PASSWORD'),
+                'port' => env('REDIS_PORT', '6379'),
+                'database' => env('REDIS_CACHE_DB', '1'),
+            ],
+
+
         ],
 
-        // 'client' => env('REDIS_CLIENT', 'phpredis'),
+        'single' => [
 
-        // 'options' => [
-        //     'cluster' => env('REDIS_CLUSTER', 'redis'),
-        //     'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
-        // ],
+            'client' => env('REDIS_CLIENT', 'phpredis'),
 
-        // 'default' => [
-        //     'url' => env('REDIS_URL'),
-        //     'host' => env('REDIS_HOST', '127.0.0.1'),
-        //     'username' => env('REDIS_USERNAME'),
-        //     'password' => env('REDIS_PASSWORD'),
-        //     'port' => env('REDIS_PORT', '6379'),
-        //     'database' => env('REDIS_DB', '0'),
-        // ],
+            'default' => [
+                'url' => env('REDIS_URL'),
+                'host' => env('REDIS_HOST', '127.0.0.1'),
+                'username' => env('REDIS_USERNAME'),
+                'password' => env('REDIS_PASSWORD'),
+                'port' => env('REDIS_PORT', '6379'),
+                'database' => env('REDIS_DB', '0'),
+            ],
 
-        // 'cache' => [
-        //     'url' => env('REDIS_URL'),
-        //     'host' => env('REDIS_HOST', '127.0.0.1'),
-        //     'username' => env('REDIS_USERNAME'),
-        //     'password' => env('REDIS_PASSWORD'),
-        //     'port' => env('REDIS_PORT', '6379'),
-        //     'database' => env('REDIS_CACHE_DB', '1'),
-        // ],
+            'cache' => [
+                'url' => env('REDIS_URL'),
+                'host' => env('REDIS_HOST', '127.0.0.1'),
+                'username' => env('REDIS_USERNAME'),
+                'password' => env('REDIS_PASSWORD'),
+                'port' => env('REDIS_PORT', '6379'),
+                'database' => env('REDIS_CACHE_DB', '1'),
+            ],
 
-    ],
+        ],
+    }
 
 ];
