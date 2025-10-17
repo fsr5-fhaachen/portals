@@ -1,0 +1,14 @@
+[Unit]
+Description=Laravel Octane Server
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory={{ portals_local_path }}
+ExecStart=/usr/bin/php artisan octane:start
+StandardOutput=append:/var/log/octane.log
+StandardError=append:/var/log/octane-error.log
+
+[Install]
+WantedBy=multi-user.target

@@ -4,6 +4,12 @@
   "dockerComposeFile": ["../docker-compose.sail.yaml"],
   "service": "laravel.test",
   "workspaceFolder": "/var/www/html",
+  "features": {
+    "ghcr.io/robbert229/devcontainer-features/opentofu:1": {
+      "version": "1.10.5"
+    },
+    "ghcr.io/devcontainers-extra/features/ansible:2": {}
+  },
   "customizations": {
     "vscode": {
       "extensions": [
@@ -21,7 +27,9 @@
         "steoates.autoimport",
         "Vue.volar",
         "xdebug.php-debug",
-        "github.copilot"
+        "github.copilot",
+        "opentofu.vscode-opentofu",
+        "redhat.ansible"
       ],
       "settings": {}
     }

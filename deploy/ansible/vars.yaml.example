@@ -1,0 +1,25 @@
+portals_repo_url: "https://github.com/fsr5-fhaachen/portals.git"
+portals_local_path: "/opt/portals"
+portals_branch_or_tag: "main"
+portals_seed_database: false
+
+octane_workers: 2
+octane_max_requests: 512
+
+php_version: "8.4"
+node_version: "24.10.0"
+
+redis_password: "portals"
+db_name: "portals"
+db_user: "portals"
+db_password: "portals"
+
+letsencrypt_email: "your-mail@example.com"
+
+env_app_name: "Your Event Name"
+env_app_key: "base64:your-app-key"
+env_app_debug: false
+env_app_event_type: "demo"
+env_app_public_api_secret: "your-api-secret"
+env_app_tutor_password: "your-tutor-password"
+env_app_admin_password: "your-admin-password"

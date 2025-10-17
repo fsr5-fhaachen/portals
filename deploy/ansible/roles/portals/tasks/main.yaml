@@ -1,0 +1,78 @@
+# - name: clone repository
+#   ansible.builtin.git:
+#     repo: "{{ portals_repo_url }}"
+#     dest: "{{ portals_local_path }}"
+#     version: "{{ portals_branch_or_tag }}"
+#     force: yes
+#     update: yes
+- name: create .env
+  ansible.builtin.template:
+    src: .env.j2
+    dest: "{{ portals_local_path }}/.env"
+    owner: www-data
+    group: www-data
+    mode: "0644"
+- name: install php dependencies
+  ansible.builtin.shell:
+    cmd: composer install --no-dev --optimize-autoloader
+    chdir: "{{ portals_local_path }}"
+  environment:
+    COMPOSER_ALLOW_SUPERUSER: "1"
+- name: install node dependencies
+  ansible.builtin.shell:
+    cmd: npm install
+    chdir: "{{ portals_local_path }}"
+- name: build frontend
+  ansible.builtin.shell:
+    cmd: npm run build
+    chdir: "{{ portals_local_path }}"
+- name: migrate database
+  ansible.builtin.shell:
+    cmd: php artisan migrate
+    chdir: "{{ portals_local_path }}"
+- name: create tutors.csv
+  ansible.builtin.copy:
+    dest: "{{ portals_local_path }}/database/seeders/tutors.csv"
+    src: ../../../tutors.csv
+    owner: root
+    group: root
+    mode: "0644"
+- name: create students.csv
+  ansible.builtin.copy:
+    dest: "{{ portals_local_path }}/database/seeders/students.csv"
+    src: ../../../students.csv
+    owner: root
+    group: root
+    mode: "0644"
+- name: create telegram.csv
+  ansible.builtin.copy:
+    dest: "{{ portals_local_path }}/database/seeders/telegram.csv"
+    src: ../../../telegram.csv
+    owner: root
+    group: root
+    mode: "0644"
+- name: create avatars
+  ansible.builtin.copy:
+    dest: "{{ portals_local_path }}/database/seeders/avatars"
+    src: ../../../avatars
+    owner: root
+    group: root
+    mode: "0644"
+- name: seed database
+  ansible.builtin.shell:
+    cmd: php artisan db:seed
+    chdir: "{{ portals_local_path }}"
+  when: portals_seed_database | default(false)
+- name: create systemd unit
+  ansible.builtin.template:
+    src: octane.service.j2
+    dest: /etc/systemd/system/octane.service
+    mode: "0644"
+- name: reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+- name: enable and start octane service
+  ansible.builtin.systemd:
+    name: octane.service
+    enabled: yes
+    state: started

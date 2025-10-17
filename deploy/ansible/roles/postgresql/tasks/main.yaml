@@ -1,0 +1,27 @@
+- name: install packages
+  become: yes
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - postgresql
+    - python3-psycopg2
+- name: enable and start postgresql
+  become: yes
+  ansible.builtin.service:
+    name: postgresql
+    state: started
+    enabled: true
+- name: create user
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    encrypted: yes
+    state: present
+- name: create database
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: "{{ db_name }}"
+    owner: "{{ db_user }}"
+    state: present

@@ -1,0 +1,25 @@
+- name: update packages
+  become: yes
+  ansible.builtin.apt:
+    update_cache: yes
+    upgrade: dist
+    autoremove: yes
+    autoclean: yes
+- name: install packages
+  become: yes
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - git
+    - zip
+    - unzip
+    - wget
+    - gnupg
+    - nano
+    - htop
+    - lsb-release
+    - gpg
