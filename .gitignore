@@ -2,6 +2,7 @@
 tutors.csv
 students.csv
 telegram.csv
+database/seeders/images/
 
 # deployment
 deployOwn/

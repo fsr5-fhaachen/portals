@@ -261,48 +261,48 @@ class ApiController extends Controller
      */
     public function courseStatistics(Request $request): JsonResponse
     {
-      $event = Event::with(['registrations.user'])->find($request->event);
+        $event = Event::with(['registrations.user'])->find($request->event);
 
-      if (!$event) {
-        return response()->json(['message' => 'Event not found'], 404);
-      }
-
-      $result = [];
-      if ($event->consider_alcohol === true) {
-        $result['drinks_alcohol'] = [
-          'true' => $event->registrations->where('drinks_alcohol', true)->count(),
-          'false' => $event->registrations->where('drinks_alcohol', false)->count(),
-          'name' => 'Drinks Alcohol',
-        ];
-      }
-
-      $formData = $event->registrations->pluck('form_responses')->filter(function ($item) {
-        return !is_null($item);
-      });
-
-      // Count statistics from formData
-      foreach ($formData as $data) {
-        if (is_string($data)) {
-          $data = json_decode($data, true);
+        if (!$event) {
+            return response()->json(['message' => 'Event not found'], 404);
         }
-        if (is_array($data)) {
-          foreach ($data as $key => $value) {
-            if (!isset($result[$key])) {
-              $result[$key] = [
-                $value => 1,
-                'name' => $key,
-              ];
-            } else {
-              if (isset($result[$key][$value])) {
-                $result[$key][$value]++;
-              } else {
-                $result[$key][$value] = 1;
-              }
+
+        $result = [];
+        if ($event->consider_alcohol === true) {
+            $result['drinks_alcohol'] = [
+                'true' => $event->registrations->where('drinks_alcohol', true)->count(),
+                'false' => $event->registrations->where('drinks_alcohol', false)->count(),
+                'name' => 'Drinks Alcohol',
+            ];
+        }
+
+        $formData = $event->registrations->pluck('form_responses')->filter(function ($item) {
+            return !is_null($item);
+        });
+
+        // Count statistics from formData
+        foreach ($formData as $data) {
+            if (is_string($data)) {
+                $data = json_decode($data, true);
             }
-          }
+            if (is_array($data)) {
+                foreach ($data as $key => $value) {
+                    if (!isset($result[$key])) {
+                        $result[$key] = [
+                            $value => 1,
+                            'name' => $key,
+                        ];
+                    } else {
+                        if (isset($result[$key][$value])) {
+                            $result[$key][$value]++;
+                        } else {
+                            $result[$key][$value] = 1;
+                        }
+                    }
+                }
+            }
         }
-      }
-      return response()->json($result);
+        return response()->json($result);
     }
 
     /**
@@ -420,14 +420,14 @@ class ApiController extends Controller
      */
     public function userRegistrations(User $user): JsonResponse
     {
-      $registrations = $user->registrations()->with(['event', 'group'])->get();
-      return response()->json([
-        'registrations' => $registrations
-      ]);
+        $registrations = $user->registrations()->with(['event', 'group'])->get();
+        return response()->json([
+            'registrations' => $registrations
+        ]);
     }
 
 
-  /**
+    /**
      * Generate a presigned URL for avatar upload
      */
     public function generatePresignedUrlForAvatarUpload(Request $request): JsonResponse
