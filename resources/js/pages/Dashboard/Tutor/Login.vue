@@ -29,6 +29,9 @@
               <FontAwesomeIcon
                 class="absolute right-4 top-1/2 text-gray-500 cursor-pointer h-5 w-5"
                 :icon="showPassword ? ['fas', 'eye-slash'] : ['fas', 'eye']"
+                role="button"
+                tabindex="0"
+                aria-label="Passwort anzeigen"
                 @click="togglePassword"
               />
             </div>
