@@ -29,6 +29,8 @@ import {
   faSort,
   faArrowUpWideShort,
   faArrowDownShortWide,
+  faEye,
+  faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
@@ -68,6 +70,8 @@ library.add(
   faSort,
   faArrowUpWideShort,
   faArrowDownShortWide,
+  faEye,
+  faEyeSlash,
 );
 
 createInertiaApp({
