@@ -19,6 +19,13 @@
     >
       <ChartContainer :stats="totalUser" chartType="total" />
     </div>
+    <div
+      class="flex bg-white dark:bg-gray-800 mb-16 pb-5 justify-center rounded-lg flex-row flex-wrap flex-grow"
+    >
+      <AppButton class="m-5" @click="downloadStats" icon="download"
+        >Statistik herunterladen</AppButton
+      >
+    </div>
   </LayoutDashboardContent>
 </template>
 
@@ -76,4 +83,8 @@ const coursesInterval = setInterval(fetchCourses, 2500);
 onBeforeUnmount(() => {
   clearInterval(coursesInterval);
 });
+
+const downloadStats = () => {
+  window.open("/dashboard/admin/download-stats", "_blank");
+};
 </script>

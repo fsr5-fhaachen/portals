@@ -55,8 +55,8 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
     });
 
     Route::prefix('tutor/')->group(function () {
-      Route::get('/login', [DashboardController::class, 'login'])->name('dashboard.tutor.login');
-      Route::post('/login', [DashboardController::class, 'loginTutor'])->name('dashboard.loginTutor');
+        Route::get('/login', [DashboardController::class, 'login'])->name('dashboard.tutor.login');
+        Route::post('/login', [DashboardController::class, 'loginTutor'])->name('dashboard.loginTutor');
     });
 
     Route::prefix('tutor')->middleware(IsLoggedInTutor::class)->group(function () {
@@ -70,6 +70,7 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
 
         Route::middleware('can:view statistics')->group(function () {
             Route::get('/', [DashboardAdminController::class, 'index'])->name('dashboard.admin.index');
+            Route::get('/download-stats', [DashboardAdminController::class, 'downloadStatistics'])->name('dashboard.admin.downloadStatistics');
         });
 
         Route::middleware('can:manage users')->group(function () {

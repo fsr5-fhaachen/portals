@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Role;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DashboardAdminController extends Controller
 {
@@ -40,6 +41,207 @@ class DashboardAdminController extends Controller
             'courses' => $courses,
             'totalUser' => $totalUser,
         ]);
+    }
+
+    /**
+     * Download admin statistics as csv file.
+     */
+    public function downloadStatistics(): StreamedResponse
+    {
+        $fileName = 'portals_statistics.csv';
+
+        $headers = [
+            'Content-type' => 'text/csv; charset=UTF-8',
+            'Content-Encoding' => 'UTF-8',
+            'Content-Disposition' => "attachment; filename=$fileName",
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $columns = ['event_or_group', 'registered_users', 'present_users', 'not_present_users', 'present_percentage', 'fulfills_requirements', 'not_fulfills_requirements', 'fulfills_requirements_percentage', 'drinks_alcohol', 'drinks_no_alcohol', 'drinks_alcohol_percentage'];
+        $courses = Course::all();
+        foreach ($courses as $course) {
+            $columns[] = 'course_' . $course->abbreviation;
+        }
+
+        $events = Event::all();
+
+        $callback = function () use ($columns, $events, $courses) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns, ';');
+
+            $row = [];
+
+            // add global stats
+            $row['event_or_group'] = 'Global';
+            $row['registered_users'] = User::doesntHave('roles')->count();
+            $row['present_users'] = 'N/A';
+            $row['not_present_users'] = 'N/A';
+            $row['present_percentage'] = 'N/A';
+            $row['fulfills_requirements'] = 'N/A';
+            $row['not_fulfills_requirements'] = 'N/A';
+            $row['fulfills_requirements_percentage'] = 'N/A';
+            $row['drinks_alcohol'] = 'N/A';
+            $row['drinks_no_alcohol'] = 'N/A';
+            $row['drinks_alcohol_percentage'] = 'N/A';
+            foreach ($courses as $course) {
+                $row['course_' . $course->abbreviation] = $course->users()->doesntHave('roles')->count();
+            }
+
+            // write to file
+            $array = array_map('utf8_decode', array_values($row));
+            fputcsv($file, $array, ';');
+
+            foreach ($events as $event) {
+                $row = [];
+
+                $registrations = $event->registrations()->with('user')->get();
+
+                // add basic stats
+                $row['event_or_group'] = $event->name;
+                $row['registered_users'] = $registrations->count();
+                $row['present_users'] = $registrations->where('is_present', true)->count();
+                $row['not_present_users'] = $registrations->where('is_present', false)->count();
+                $row['present_percentage'] = ($row['registered_users'] > 0 ? round(($row['present_users'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+
+                // add requirements stats if event has requirements
+                if ($event->has_requirements) {
+                    $row['fulfills_requirements'] = $registrations->where('fulfils_requirements', true)->count();
+                    $row['not_fulfills_requirements'] = $registrations->where('fulfils_requirements', false)->count();
+                    $row['fulfills_requirements_percentage'] = ($row['registered_users'] > 0 ? round(($row['fulfills_requirements'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+                } else {
+                    $row['fulfills_requirements'] = 'N/A';
+                    $row['not_fulfills_requirements'] = 'N/A';
+                    $row['fulfills_requirements_percentage'] = 'N/A';
+                }
+
+                // add alcohol stats if event consider alcohol
+                if ($event->consider_alcohol) {
+                    $row['drinks_alcohol'] = $registrations->where('drinks_alcohol', true)->count();
+                    $row['drinks_no_alcohol'] = $registrations->where('drinks_alcohol', false)->count();
+                    $row['drinks_alcohol_percentage'] = ($row['registered_users'] > 0 ? round(($row['drinks_alcohol'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+                } else {
+                    $row['drinks_alcohol'] = 'N/A';
+                    $row['drinks_no_alcohol'] = 'N/A';
+                    $row['drinks_alcohol_percentage'] = 'N/A';
+                }
+
+                // add course stats
+                foreach ($courses as $course) {
+                    $row['course_' . $course->abbreviation] = $registrations->where('user.course_id', $course->id)->count();
+                }
+
+                // write to file
+                $array = array_map('utf8_decode', array_values($row));
+                fputcsv($file, $array, ';');
+
+                // add sub groups or slots stats
+                switch ($event->type) {
+                    case 'event_registration':
+                        continue; // no sub groups
+                    case 'group_phase':
+                        // event has subgroups
+
+                        $groups = $event->groups()->get();
+                        foreach ($groups as $group) {
+                            $row = [];
+
+                            // add basic stats
+                            $row['event_or_group'] = $event->name . ' - ' . $group->name;
+                            $row['registered_users'] = $group->registrations()->count();
+                            $row['present_users'] = $group->registrations()->where('is_present', true)->count();
+                            $row['not_present_users'] = $group->registrations()->where('is_present', false)->count();
+                            $row['present_percentage'] = ($row['registered_users'] > 0 ? round(($row['present_users'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+
+                            // add requirements stats if event has requirements
+                            if ($event->has_requirements) {
+                                $row['fulfills_requirements'] = $group->registrations()->where('fulfils_requirements', true)->count();
+                                $row['not_fulfills_requirements'] = $group->registrations()->where('fulfils_requirements', false)->count();
+                                $row['fulfills_requirements_percentage'] = ($row['registered_users'] > 0 ? round(($row['fulfills_requirements'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+                            } else {
+                                $row['fulfills_requirements'] = 'N/A';
+                                $row['not_fulfills_requirements'] = 'N/A';
+                                $row['fulfills_requirements_percentage'] = 'N/A';
+                            }
+
+                            // add alcohol stats if event consider alcohol
+                            if ($event->consider_alcohol) {
+                                $row['drinks_alcohol'] = $group->registrations()->where('drinks_alcohol', true)->count();
+                                $row['drinks_no_alcohol'] = $group->registrations()->where('drinks_alcohol', false)->count();
+                                $row['drinks_alcohol_percentage'] = ($row['registered_users'] > 0 ? round(($row['drinks_alcohol'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+                            } else {
+                                $row['drinks_alcohol'] = 'N/A';
+                                $row['drinks_no_alcohol'] = 'N/A';
+                                $row['drinks_alcohol_percentage'] = 'N/A';
+                            }
+
+                            // add course stats
+                            foreach ($courses as $course) {
+                                $row['course_' . $course->abbreviation] = $group->registrations()->whereHas('user', function ($query) use ($course) {
+                                    $query->where('course_id', $course->id);
+                                })->count();
+                            }
+
+                            // write to file
+                            $array = array_map('utf8_decode', array_values($row));
+                            fputcsv($file, $array, ';');
+                        }
+
+                    case 'slot_booking':
+                        // event has slots
+
+                        $slots = $event->slots()->get();
+                        foreach ($slots as $slot) {
+                            $row = [];
+
+                            // add basic stats
+                            $row['event_or_group'] = $event->name . ' - ' . $slot->name;
+                            $row['registered_users'] = $slot->registrations()->count();
+                            $row['present_users'] = $slot->registrations()->where('is_present', true)->count();
+                            $row['not_present_users'] = $slot->registrations()->where('is_present', false)->count();
+                            $row['present_percentage'] = ($row['registered_users'] > 0 ? round(($row['present_users'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+
+                            // add requirements stats if slot has requirements
+                            if ($slot->has_requirements) {
+                                $row['fulfills_requirements'] = $slot->registrations()->where('fulfils_requirements', true)->count();
+                                $row['not_fulfills_requirements'] = $slot->registrations()->where('fulfils_requirements', false)->count();
+                                $row['fulfills_requirements_percentage'] = ($row['registered_users'] > 0 ? round(($row['fulfills_requirements'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+                            } else {
+                                $row['fulfills_requirements'] = 'N/A';
+                                $row['not_fulfills_requirements'] = 'N/A';
+                                $row['fulfills_requirements_percentage'] = 'N/A';
+                            }
+
+                            // add alcohol stats if event consider alcohol
+                            if ($event->consider_alcohol) {
+                                $row['drinks_alcohol'] = $slot->registrations()->where('drinks_alcohol', true)->count();
+                                $row['drinks_no_alcohol'] = $slot->registrations()->where('drinks_alcohol', false)->count();
+                                $row['drinks_alcohol_percentage'] = ($row['registered_users'] > 0 ? round(($row['drinks_alcohol'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+                            } else {
+                                $row['drinks_alcohol'] = 'N/A';
+                                $row['drinks_no_alcohol'] = 'N/A';
+                                $row['drinks_alcohol_percentage'] = 'N/A';
+                            }
+
+                            // add course stats
+                            foreach ($courses as $course) {
+                                $row['course_' . $course->abbreviation] = $slot->registrations()->whereHas('user', function ($query) use ($course) {
+                                    $query->where('course_id', $course->id);
+                                })->count();
+                            }
+
+                            // write to file
+                            $array = array_map('utf8_decode', array_values($row));
+                            fputcsv($file, $array, ';');
+                        }
+                }
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     /**
