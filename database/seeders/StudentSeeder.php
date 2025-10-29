@@ -73,6 +73,7 @@ class StudentSeeder extends Seeder
             $user->firstname = $student[1];
             $user->course_id = $courseByKey[$student[2]]->id;
             $user->email = strtolower($student[3]);
+            $user->pin = $student[4];
 
             // check if an image with the name of the user in one of the possible extensions exists
             $imageBasePath = self::STUDENT_IMAGES_PATH . '/' . strtolower($user->firstname) . '_' . strtolower($user->lastname);

@@ -9,5 +9,6 @@ declare namespace App.Models {
     departure_at: string /* Date */ | null;
     group?: Group | null;
     station?: Station | null;
+    use_factory?: any | null;
   };
 }

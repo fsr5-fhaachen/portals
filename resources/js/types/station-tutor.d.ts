@@ -7,5 +7,6 @@ declare namespace App.Models {
     station_id: number;
     user?: User | null;
     station?: Station | null;
+    use_factory?: any | null;
   };
 }

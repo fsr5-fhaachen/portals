@@ -3,11 +3,12 @@ declare namespace App.Models {
     id: number;
     created_at: string /* Date */ | null;
     updated_at: string /* Date */ | null;
-    event_id: number;
     name: string;
+    event_id: number;
     stops?: Stop[] | null;
     event?: Event | null;
     tutors?: User[] | null;
     groups?: Group[] | null;
+    use_factory?: any | null;
   };
 }

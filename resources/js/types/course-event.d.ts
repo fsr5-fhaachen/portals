@@ -7,5 +7,6 @@ declare namespace App.Models {
     event_id: number;
     course?: Course | null;
     event?: Event | null;
+    use_factory?: any | null;
   };
 }
