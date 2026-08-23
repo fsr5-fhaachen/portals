@@ -1,0 +1,32 @@
+site_name: Portals
+site_url: https://fsr-fhaachen.github.io/portals/
+theme:
+  name: material
+  features:
+    - search.suggest
+    - search.highlight
+    - navigation.tabs
+    - navigation.footer
+    - content.action.view
+    - content.action.edit
+  palette:
+    primary: teal
+  icon:
+    repo: fontawesome/brands/github
+  language: en
+plugins:
+  - search
+  - awesome-pages
+  - git-revision-date-localized:
+      enable_creation_date: true
+  - git-committers:
+      repository: fsr-fhaachen/portals
+      branch: main
+repo_url: https://github.com/fsr-fhaachen/portals
+repo_name: fsr-fhaachen/portals
+edit_uri: edit/main/docs/
+copyright: Copyright &copy; 2025 Fachschaftsrat Elektro- und Informationstechnik der Fachhochschule Aachen
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
