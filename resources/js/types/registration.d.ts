@@ -7,14 +7,15 @@ declare namespace App.Models {
     user_id: number;
     slot_id: number | null;
     group_id: number | null;
-    drinks_alcohol: any | null; // NOT FOUND;
-    fulfils_requirements: any | null; // NOT FOUND;
-    is_present: any; // NOT FOUND;
+    drinks_alcohol: boolean | null;
+    fulfils_requirements: boolean | null;
+    is_present: boolean;
     form_responses: any[];
     queue_position: number | null;
     event?: Event | null;
     user?: User | null;
     slot?: Slot | null;
     group?: Group | null;
+    use_factory?: any | null;
   };
 }

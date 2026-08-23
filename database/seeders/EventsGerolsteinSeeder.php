@@ -54,8 +54,8 @@ class EventsGerolsteinSeeder extends Seeder
         $event = new Event;
         $event->name = 'Spieleolympiade';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2024-10-30 8:00:00');
-        $event->registration_to = new DateTime('2024-10-30 8:00:00');
+        $event->registration_from = new DateTime('2025-10-30 8:00:00');
+        $event->registration_to = new DateTime('2025-10-30 8:00:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 110;
@@ -65,18 +65,20 @@ class EventsGerolsteinSeeder extends Seeder
 
         // create event groups
         $groupNames = [
-            'Die freshen Flamingos',
-            'Die wilden Weihnachtsbäume',
-            'Die rasanten Rasenmäher',
-            'Die ehrenhaften Erdbeeren',
-            'Die ehrgeizigen Eisbären',
-            'Die pfiffigen Pfeilgiftfrösche',
-            'Die musikalischen Milkakühe',
-            'Die schicken Schlümpfe',
-            'Die putzigen Panther',
-            'Die bärenstarken Braunbären',
-            'Die originellen Orchideen',
-            'Die treuen Telekom-Kunden',
+            'Magenta',
+            'Violet',
+            'Türkis',
+            'Silber',
+            'Gold',
+            'Schwarz',
+            'Grasgrün',
+            'Neongelb',
+            'Minzgrün',
+            'Gelb',
+            'Weinrot',
+            'Senfgelb',
+            'Orange',
+            'Blau'
         ];
         foreach ($groupNames as $groupName) {
             $group = new Group;
@@ -94,18 +96,18 @@ class EventsGerolsteinSeeder extends Seeder
      */
     public function runSamstagabendGruppenphase(): void
     {
-        // check if event with name "Gruppenphase" exists
-        $event = Event::where('name', 'Gruppenphase')->first();
+        // check if event with name "Samstagabend" exists
+        $event = Event::where('name', 'Samstagabend')->first();
         if ($event) {
             return;
         }
 
         // create a new event
         $event = new Event;
-        $event->name = 'Gruppenphase';
+        $event->name = 'Samstagabend';
         $event->type = 'group_phase';
-        $event->registration_from = new DateTime('2024-10-30 8:00:00');
-        $event->registration_to = new DateTime('2024-10-30 8:00:00');
+        $event->registration_from = new DateTime('2025-10-30 8:00:00');
+        $event->registration_to = new DateTime('2025-10-30 8:00:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 210;
@@ -114,18 +116,16 @@ class EventsGerolsteinSeeder extends Seeder
         $event->save();
 
         // create event groups
-        $groups = [];
-
-        for ($i = 1; $i <= 5; $i++) {
-            $groups[] = [
-                'name' => "Gruppe $i",
-            ];
-        }
-
-        // save groups
-        foreach ($groups as $groupData) {
+        $groupNames = [
+            'Altersheim Alianz',
+            'Bingo Bande',
+            'Falten Fighters',
+            'Gebiss Gang',
+            'Rollator Rocker',
+        ];
+        foreach ($groupNames as $groupName) {
             $group = new Group;
-            $group->name = $groupData['name'];
+            $group->name = $groupName;
             $group->event_id = $event->id;
             $group->save();
         }
@@ -149,8 +149,8 @@ class EventsGerolsteinSeeder extends Seeder
         $event = new Event;
         $event->name = 'Tanzen';
         $event->type = 'slot_booking';
-        $event->registration_from = new DateTime('2024-10-30 8:00:00');
-        $event->registration_to = new DateTime('2024-11-02 10:00:00');
+        $event->registration_from = new DateTime('2025-10-30 8:00:00');
+        $event->registration_to = new DateTime('2025-11-01 10:00:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 220;

@@ -7,5 +7,6 @@ declare namespace App.Models {
     group_id: number;
     course?: Course | null;
     group?: Group | null;
+    use_factory?: any | null;
   };
 }

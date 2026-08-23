@@ -74,6 +74,7 @@ class TutorSeeder extends Seeder
             $user->firstname = $tutor[1];
             $user->course_id = $courseByKey[$tutor[2]]->id;
             $user->email = strtolower($tutor[3]);
+            $user->pin = $tutor[6];
 
             //set user to disabled
             if (array_key_exists(5, $tutor) && $tutor[5] == '1') {

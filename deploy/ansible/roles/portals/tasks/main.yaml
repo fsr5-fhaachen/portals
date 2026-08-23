@@ -1,10 +1,10 @@
-# - name: clone repository
-#   ansible.builtin.git:
-#     repo: "{{ portals_repo_url }}"
-#     dest: "{{ portals_local_path }}"
-#     version: "{{ portals_branch_or_tag }}"
-#     force: yes
-#     update: yes
+- name: clone repository
+  ansible.builtin.git:
+    repo: "{{ portals_repo_url }}"
+    dest: "{{ portals_local_path }}"
+    version: "{{ portals_branch_or_tag }}"
+    force: yes
+    update: yes
 - name: create .env
   ansible.builtin.template:
     src: .env.j2
@@ -71,8 +71,8 @@
 - name: reload systemd
   ansible.builtin.systemd:
     daemon_reload: yes
-- name: enable and start octane service
+- name: enable and restart octane service
   ansible.builtin.systemd:
     name: octane.service
     enabled: yes
-    state: started
+    state: restarted

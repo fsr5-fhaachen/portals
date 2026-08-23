@@ -40,10 +40,10 @@ class DatabaseSeeder extends Seeder
         } elseif (config('app.event_type') == 'gerolstein') {
             $seeders = [
                 ...$seeders,
+                StudentSeeder::class,
                 ModuleGerolsteinSeeder::class,
                 EventsGerolsteinSeeder::class,
                 PageGerolsteinSeeder::class,
-                StudentSeeder::class,
             ];
         }
 
