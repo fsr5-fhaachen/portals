@@ -49,7 +49,7 @@ jobs:
           OCTANE_SERVER=roadrunner
           EOF
       - name: Run Image
-        uses: isbang/compose-action@v2.0.1
+        uses: isbang/compose-action@v2.0.2
         with:
           compose-file: "docker-compose.yaml"
           down-flags: "--volumes"
