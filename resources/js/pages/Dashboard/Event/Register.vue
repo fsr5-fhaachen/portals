@@ -110,7 +110,7 @@ export default {
 <script setup lang="ts">
 import { computed, ref, PropType } from "vue";
 import { FormKitSchemaNode } from "@formkit/core";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 
 const { event } = defineProps({
   event: {
@@ -153,6 +153,6 @@ const dynamicFormSchema = computed(() => {
 });
 
 const submitHandler = async () => {
-  Inertia.post("/dashboard/event/" + event.id + "/register", form.value);
+  router.post("/dashboard/event/" + event.id + "/register", form.value);
 };
 </script>

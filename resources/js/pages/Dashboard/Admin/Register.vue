@@ -189,7 +189,7 @@
 
 <script setup lang="ts">
 import { FormKitSchemaNode } from "@formkit/core";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { computed, ref, PropType } from "vue";
 
 const registerForm = ref({});
@@ -307,13 +307,13 @@ const registerSubmitHandler = async () => {
     }
   }
 
-  Inertia.post("/dashboard/admin/register", {
+  router.post("/dashboard/admin/register", {
     ...registerForm.value,
     avatar: avatarPath.value,
   });
 };
 
 const assignSubmitHandler = async () => {
-  Inertia.post("/dashboard/admin/assign", assignForm.value);
+  router.post("/dashboard/admin/assign", assignForm.value);
 };
 </script>

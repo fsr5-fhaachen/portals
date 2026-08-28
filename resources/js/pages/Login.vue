@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts">
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import CardLayout from "@/layouts/CardLayout.vue";
 
 export default {
@@ -55,6 +55,6 @@ const form = ref({});
 const randomPlaceholderPerson = usePlaceholderPerson();
 
 const submitHandler = async () => {
-  Inertia.post("/login", form.value);
+  router.post("/login", form.value);
 };
 </script>
