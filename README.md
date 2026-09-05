@@ -39,7 +39,7 @@ Copy `.env.example` to `.env` and fill in the database credentials.
 cp .env.example .env
 ```
 
-For a quick setup: Change the Database connection details in the .env to only the following. Create the file `database.sqlite` in the `database` folder. 
+For a quick setup: Change the Database connection details in the .env to only the following. Create the file `database.sqlite` in the `database` folder.
 
 ```env
 DB_CONNECTION=sqlite
@@ -85,7 +85,7 @@ and the vite dev server:
 npm run dev
 ```
 
-Login to the demo system with  the email adress `superadmin@example.com`
+Login to the demo system with the email adress `superadmin@example.com`
 
 ### devcontainer
 
