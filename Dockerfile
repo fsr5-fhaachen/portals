@@ -2,7 +2,7 @@
 #       STAGE 1.1: Build JS with node
 # --------------------------------------------
 
-FROM node:20-alpine AS node
+FROM node:24-alpine AS node
 WORKDIR /app
 
 # install dependencies (only copy package lock here to use docker caching)
@@ -25,7 +25,7 @@ RUN npm run build
 #    STAGE 1.2: Setup PHP and Dependencies
 # --------------------------------------------
 
-FROM phpswoole/swoole:php8.3-alpine AS swoole
+FROM phpswoole/swoole:php8.4-alpine AS swoole
 LABEL maintainer="FSR5 FH-Aachen"
 
 # use workdir from swoole container

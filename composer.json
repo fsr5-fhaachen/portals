@@ -5,7 +5,7 @@
   "keywords": [],
   "license": "MIT",
   "require": {
-    "php": "^8.2",
+    "php": "^8.4",
     "aws/aws-sdk-php": "^3.283",
     "inertiajs/inertia-laravel": "^3.3",
     "laravel/framework": "^13.0",
