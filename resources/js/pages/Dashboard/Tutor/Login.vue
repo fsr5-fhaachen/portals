@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { ref, computed, PropType } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 const tutorPasswordForm = ref({
@@ -70,6 +70,6 @@ const isAdmin = computed(() =>
 );
 
 const submitTutorPasswordFormHandler = async () => {
-  Inertia.post("/dashboard/tutor/login", tutorPasswordForm.value);
+  router.post("/dashboard/tutor/login", tutorPasswordForm.value);
 };
 </script>

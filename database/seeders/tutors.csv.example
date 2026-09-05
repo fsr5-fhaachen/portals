@@ -1,2 +1,2 @@
-lastname;firstname;course;email;roles;disabled
-Mustermann;Max;INF;max.mustermann@alumni.fh-aachen.de;super admin|admin|stage tutor;0
+lastname;firstname;course;email;roles;disabled;pin
+Mustermann;Max;INF;max.mustermann@alumni.fh-aachen.de;super admin|admin|stage tutor;0;1234

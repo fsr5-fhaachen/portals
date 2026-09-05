@@ -70,7 +70,7 @@
 
 <script lang="ts">
 import CardLayout from "@/layouts/CardLayout.vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 
 export default {
   layout: CardLayout,
@@ -93,6 +93,6 @@ const selectFormCourseOptions = useSelectFormCourseOptions(courses);
 const randomPlaceholderPerson = usePlaceholderPerson();
 
 const submitHandler = async () => {
-  Inertia.post("/register", form.value);
+  router.post("/register", form.value);
 };
 </script>

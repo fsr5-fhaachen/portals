@@ -33,10 +33,16 @@ npm install
 composer install
 ```
 
-Copy .env.example to .env and fill in the database credentials.
+Copy `.env.example` to `.env` and fill in the database credentials.
 
 ```sh
 cp .env.example .env
+```
+
+For a quick setup: Change the Database connection details in the .env to only the following. Create the file `database.sqlite` in the `database` folder.
+
+```env
+DB_CONNECTION=sqlite
 ```
 
 Generate the application key:
@@ -49,6 +55,18 @@ Run the migrations:
 
 ```sh
 php artisan migrate
+```
+
+Run the seeders:
+
+```sh
+php artisan db:seed
+```
+
+If you need to reset the databse:
+
+```sh
+php artisan migrate:fresh --seed
 ```
 
 ## Usage
@@ -66,6 +84,8 @@ and the vite dev server:
 ```sh
 npm run dev
 ```
+
+Login to the demo system with the email adress `superadmin@example.com`
 
 ### devcontainer
 

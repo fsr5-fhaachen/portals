@@ -1,7 +1,6 @@
 import { createApp, h } from "vue";
 import "../css/app.css";
-import { createInertiaApp } from "@inertiajs/inertia-vue3";
-import { InertiaProgress } from "@inertiajs/progress";
+import { createInertiaApp } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faHandLizard } from "@fortawesome/free-regular-svg-icons";
@@ -42,9 +41,6 @@ import DefaultLayout from "./layouts/DefaultLayout.vue";
 import DashboardLayout from "./layouts/DashboardLayout.vue";
 import PrimeVue from "primevue/config";
 
-InertiaProgress.init({
-  color: "#22948C",
-});
 library.add(
   faBars,
   faCircleCheck,
@@ -91,6 +87,9 @@ createInertiaApp({
     });
 
     return page;
+  },
+  progress: {
+    color: "#22948C",
   },
   setup({ el, App, props, plugin }) {
     createApp({ render: () => h(App, props) })
