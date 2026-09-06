@@ -73,4 +73,22 @@ class User extends Authenticatable implements Auditable
 
         return null;
     }
+
+    /**
+     * Signed avatar URL without a live S3 existence check. Safe for bulk
+     * listings (avoids one S3 request per user); the app always clears the
+     * `avatar` column when it deletes the file from S3, so a stale reference
+     * should not occur in normal operation.
+     */
+    public function avatarUrlUnchecked(): ?string
+    {
+        if (! $this->avatar) {
+            return null;
+        }
+
+        return Storage::disk('s3')->temporaryUrl(
+            $this->avatar,
+            now()->addMinutes(60)
+        );
+    }
 }

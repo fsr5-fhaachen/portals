@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Collection;
 
 class GroupBalancedDivision extends GroupDivision
 {
+    private ?Collection $courses = null;
+
     public function __construct(Event $event, bool $assignByAlc, int $maxGroups = 0, int $maxGroupSize = 0, int $minNonDrinkers = 3)
     {
         parent::__construct($event, $assignByAlc, $maxGroups, $maxGroupSize, $minNonDrinkers);
@@ -17,16 +19,23 @@ class GroupBalancedDivision extends GroupDivision
         }
     }
 
+    /**
+     * Returns all courses, loaded once and cached for the lifetime of this division.
+     */
+    protected function courses(): Collection
+    {
+        return $this->courses ??= Course::all();
+    }
+
     // TODO calcOptFill doc
     protected function calcOptFill(Collection $registrations)
     {
         $optFill = [];
 
-        foreach (Course::all() as $course) {
-            $registrationsOfCourse = $registrations->toQuery()
-                ->join('users', 'registrations.user_id', '=', 'users.id')
-                ->where('users.course_id', '=', $course->id)
-                ->get();
+        foreach ($this->courses() as $course) {
+            $registrationsOfCourse = $registrations->filter(function (Registration $reg) use ($course) {
+                return $reg->user->course_id == $course->id;
+            });
 
             if ($this->maxGroupSize > 0) {
                 $courseFillPercentage = $registrationsOfCourse->count() / $this->registrations->count();
@@ -45,14 +54,10 @@ class GroupBalancedDivision extends GroupDivision
         $currFill = [];
 
         foreach ($this->groups as $group) {
-            foreach (Course::all() as $course) {
-                $registrationsOfGroupAndCourse = $this->registrations->toQuery()
-                    ->join('users', 'registrations.user_id', '=', 'users.id')
-                    ->where([
-                        ['users.course_id', '=', $course->id],
-                        ['registrations.group_id', '=', $group->id],
-                    ])
-                    ->get();
+            foreach ($this->courses() as $course) {
+                $registrationsOfGroupAndCourse = $this->registrations->filter(function (Registration $reg) use ($course, $group) {
+                    return $reg->user->course_id == $course->id && $reg->group_id == $group->id;
+                });
                 $currFill[$group->id][$course->id] = $registrationsOfGroupAndCourse->count();
             }
         }
@@ -67,7 +72,7 @@ class GroupBalancedDivision extends GroupDivision
         $optFill = $this->calcOptFill($registrations);
         $currFill = $this->calcCurrFill();
 
-        foreach (Course::all() as $course) {
+        foreach ($this->courses() as $course) {
             $optFillForCourse = $optFill[$course->id];
             foreach ($this->groups as $group) {
                 $fillRate[$group->id][$course->id] = $optFillForCourse - $currFill[$group->id][$course->id];
@@ -82,9 +87,9 @@ class GroupBalancedDivision extends GroupDivision
     {
         $fillRate = $this->calcFillRate($totalRegs);
 
-        foreach (Course::all() as $course) {
+        foreach ($this->courses() as $course) {
             $regsOfCourse = $toBeAssignedRegs->filter(function (Registration $reg) use ($course) {
-                return $reg->user()->first()->course_id == $course->id;
+                return $reg->user->course_id == $course->id;
             })
                 ->shuffle();
 

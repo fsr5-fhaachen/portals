@@ -46,12 +46,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function bootRoute(): void
     {
-        // check if app debug mode is not enabled and then apply rate limiter
-        if (! config('app.debug')) {
-            RateLimiter::for('api', function (Request $request) {
-                return Limit::perMinute(1200)->by($request->user()?->id ?: $request->ip());
-            });
-        }
-
+        RateLimiter::for('api', function (Request $request) {
+            return Limit::perMinute(1200)->by($request->user()?->id ?: $request->ip());
+        });
     }
 }

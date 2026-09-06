@@ -29,7 +29,7 @@ class ApiController extends Controller
     public function registrationsShow(Request $request): JsonResponse
     {
         // get registration
-        $registration = Registration::with('group', 'slot')->get()->find($request->registration);
+        $registration = Registration::with('group', 'slot')->find($request->registration);
         if (! $registration) {
             return response()->json(['message' => 'Registration not found'], 404);
         }
@@ -47,24 +47,28 @@ class ApiController extends Controller
      */
     public function eventRegistrationsAmount(Request $request): JsonResponse
     {
-        $event = Event::find($request->event);
+        $event = Event::with([
+            'registrations.user',
+            'slots' => fn ($query) => $query->withCount('registrations'),
+            'groups' => fn ($query) => $query->withCount('registrations'),
+        ])->find($request->event);
 
         if (! $event) {
             return response()->json(['message' => 'Event not found'], 404);
         }
 
         $result = [
-            'amount' => $event->registrations()->count(),
+            'amount' => $event->registrations->count(),
         ];
 
         // add slot amounts
         foreach ($event->slots as $slot) {
-            $result['slots'][$slot->id] = $slot->registrations()->count();
+            $result['slots'][$slot->id] = $slot->registrations_count;
         }
 
         // add group amounts
         foreach ($event->groups as $group) {
-            $result['groups'][$group->id] = $group->registrations()->count();
+            $result['groups'][$group->id] = $group->registrations_count;
         }
 
         // add course amounts of registrations for this event by user course
@@ -85,7 +89,8 @@ class ApiController extends Controller
      */
     public function eventsRegistrationsAmount(): JsonResponse
     {
-        $events = Event::all();
+        $events = Event::with('registrations.user')->get();
+        $courses = Course::all();
 
         $result = [];
         foreach ($events as $event) {
@@ -95,7 +100,7 @@ class ApiController extends Controller
             ];
 
             // add course amounts of registrations for this event by user course
-            foreach (Course::all() as $course) {
+            foreach ($courses as $course) {
                 $eventResult['courses'][$course->id] = 0;
             }
             foreach ($event->registrations as $registration) {
@@ -208,18 +213,14 @@ class ApiController extends Controller
      */
     public function coursesUserAmount(): JsonResponse
     {
-        $courses = Course::all();
+        $courses = Course::withCount(['users as amount' => function ($query) {
+            $query->doesntHave('roles');
+        }])->get(['id']);
 
-        $result = [];
-
-        foreach ($courses as $course) {
-            $result[] = [
-                'id' => $course->id,
-                'amount' => $course->users()->doesntHave('roles')->count(),
-            ];
-        }
-
-        return response()->json($result);
+        return response()->json($courses->map(fn ($course) => [
+            'id' => $course->id,
+            'amount' => $course->amount,
+        ]));
     }
 
     /**
@@ -233,37 +234,29 @@ class ApiController extends Controller
             return response()->json(['message' => 'Event not found'], 404);
         }
 
-        $courses = Course::all();
-
         // get all user ids of this event
-        $userIds = [];
-        foreach ($event->registrations as $registration) {
-            $userIds[] = $registration->user_id;
-        }
+        $userIds = $event->registrations()->pluck('user_id');
 
-        $result = [];
+        $courses = Course::withCount(['users as amount' => function ($query) use ($userIds) {
+            $query->doesntHave('roles')->whereIn('id', $userIds);
+        }])->get(['id']);
 
-        foreach ($courses as $course) {
-            $result[] = [
-                'id' => $course->id,
-                'amount' => $course->users()->doesntHave('roles')->whereIn('id', $userIds)->count(),
-            ];
-        }
-        return response()->json($result);
+        return response()->json($courses->map(fn ($course) => [
+            'id' => $course->id,
+            'amount' => $course->amount,
+        ]));
     }
 
     /**
      * Return statistics for a given course
      * The statistics are counted by the registrations of the event.
      * Returns a JSON object, that containts amounts of each value and the name of the event of the form responses as well as the amount of users that drink alcohol.
-     *
-     * @param  Request  $request
      */
     public function courseStatistics(Request $request): JsonResponse
     {
         $event = Event::with(['registrations.user'])->find($request->event);
 
-        if (!$event) {
+        if (! $event) {
             return response()->json(['message' => 'Event not found'], 404);
         }
 
@@ -277,7 +270,7 @@ class ApiController extends Controller
         }
 
         $formData = $event->registrations->pluck('form_responses')->filter(function ($item) {
-            return !is_null($item);
+            return ! is_null($item);
         });
 
         // Count statistics from formData
@@ -287,7 +280,7 @@ class ApiController extends Controller
             }
             if (is_array($data)) {
                 foreach ($data as $key => $value) {
-                    if (!isset($result[$key])) {
+                    if (! isset($result[$key])) {
                         $result[$key] = [
                             $value => 1,
                             'name' => $key,
@@ -302,6 +295,7 @@ class ApiController extends Controller
                 }
             }
         }
+
         return response()->json($result);
     }
 
@@ -405,7 +399,7 @@ class ApiController extends Controller
     public function users(): JsonResponse
     {
         $users = User::with('course', 'roles')->get()->map(function ($user) {
-            $user->avatarUrl = $user->avatarUrl();
+            $user->avatarUrl = $user->avatarUrlUnchecked();
 
             return $user;
         });
@@ -421,11 +415,11 @@ class ApiController extends Controller
     public function userRegistrations(User $user): JsonResponse
     {
         $registrations = $user->registrations()->with(['event', 'group'])->get();
+
         return response()->json([
-            'registrations' => $registrations
+            'registrations' => $registrations,
         ]);
     }
-
 
     /**
      * Generate a presigned URL for avatar upload
@@ -437,8 +431,8 @@ class ApiController extends Controller
         ]);
 
         $uuid = Str::uuid()->toString();
-        $fileName = $uuid . '.' . $request->avatar->extension();
-        $path = 'avatars/' . $fileName;
+        $fileName = $uuid.'.'.$request->avatar->extension();
+        $path = 'avatars/'.$fileName;
         $presignedUrl = Storage::disk('s3')->temporaryUploadUrl(
             $path,
             now()->addMinutes(5)
