@@ -3,7 +3,8 @@ portals_local_path: "/opt/portals"
 portals_branch_or_tag: "main"
 portals_seed_database: false
 
-octane_workers: 2
+# tune to the actual vCPU count of the target server
+octane_workers: 4
 octane_max_requests: 512
 
 php_version: "8.4"

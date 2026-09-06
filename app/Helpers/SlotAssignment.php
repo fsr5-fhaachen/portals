@@ -11,10 +11,13 @@ class SlotAssignment
 
     private int $maxParticipants;
 
+    private Collection $registrations;
+
     public function __construct(Slot $slot)
     {
         $this->slot = $slot;
         $this->maxParticipants = $slot->maximum_participants ? $slot->maximum_participants : PHP_INT_MAX; // If maxParticipants is null assign without limit
+        $this->registrations = $slot->registrations()->get();
     }
 
     /**
@@ -54,7 +57,7 @@ class SlotAssignment
      */
     private function assignInitial(): void
     {
-        $openRegistrations = $this->slot->registrations()->get()->shuffle();
+        $openRegistrations = $this->registrations->shuffle();
 
         $assignAmount = $this->maxParticipants - $openRegistrations->where('queue_position', '=', null)->count();
 
@@ -70,7 +73,7 @@ class SlotAssignment
      */
     private function assignQueue(): void
     {
-        $currParticipants = $this->slot->registrations()->get()
+        $currParticipants = $this->registrations
             ->where('queue_position', '=', null)
             ->count();
 
@@ -79,7 +82,7 @@ class SlotAssignment
         }
 
         $openSpots = $this->maxParticipants - $currParticipants;
-        $openRegistrations = $this->slot->registrations()->get()
+        $openRegistrations = $this->registrations
             ->where('queue_position', '>', 0)
             ->sortByDesc('queue_position');
 
@@ -98,7 +101,7 @@ class SlotAssignment
     public function assign(): void
     {
         // Checks if registrations have no queue_position higher than 0, which indicates that slot needs initial assignment
-        $slotNotAssigned = $this->slot->registrations()->get()
+        $slotNotAssigned = $this->registrations
             ->every(function ($val, $key) {
                 return $val->queue_position <= 0;
             });

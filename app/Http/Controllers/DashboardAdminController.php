@@ -7,10 +7,11 @@ use App\Helpers\GroupCourseDivision;
 use App\Helpers\SlotAssignment;
 use App\Models\Course;
 use App\Models\Event;
+use App\Models\Group;
 use App\Models\Registration;
 use App\Models\Slot;
 use App\Models\User;
-use App\Models\Group;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request as IlluminateRequest;
 use Illuminate\Support\Facades\Redirect;
@@ -29,13 +30,10 @@ class DashboardAdminController extends Controller
      */
     public function index(): Response
     {
-        $courses = Course::all();
-        $totalUser = 0;
-
-        foreach ($courses as $course) {
-            $course->users = $course->users()->doesntHave('roles')->get();
-            $totalUser += $course->users->count();
-        }
+        $courses = Course::with(['users' => function ($query) {
+            $query->doesntHave('roles');
+        }])->get();
+        $totalUser = $courses->sum(fn ($course) => $course->users->count());
 
         return Inertia::render('Dashboard/Admin/Index', [
             'courses' => $courses,
@@ -62,7 +60,7 @@ class DashboardAdminController extends Controller
         $columns = ['event_or_group', 'registered_users', 'present_users', 'not_present_users', 'present_percentage', 'fulfills_requirements', 'not_fulfills_requirements', 'fulfills_requirements_percentage', 'drinks_alcohol', 'drinks_no_alcohol', 'drinks_alcohol_percentage'];
         $courses = Course::all();
         foreach ($courses as $course) {
-            $columns[] = 'course_' . $course->abbreviation;
+            $columns[] = 'course_'.$course->abbreviation;
         }
 
         $events = Event::all();
@@ -86,7 +84,7 @@ class DashboardAdminController extends Controller
             $row['drinks_no_alcohol'] = 'N/A';
             $row['drinks_alcohol_percentage'] = 'N/A';
             foreach ($courses as $course) {
-                $row['course_' . $course->abbreviation] = $course->users()->doesntHave('roles')->count();
+                $row['course_'.$course->abbreviation] = $course->users()->doesntHave('roles')->count();
             }
 
             // write to file
@@ -103,13 +101,13 @@ class DashboardAdminController extends Controller
                 $row['registered_users'] = $registrations->count();
                 $row['present_users'] = $registrations->where('is_present', true)->count();
                 $row['not_present_users'] = $registrations->where('is_present', false)->count();
-                $row['present_percentage'] = ($row['registered_users'] > 0 ? round(($row['present_users'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+                $row['present_percentage'] = ($row['registered_users'] > 0 ? round(($row['present_users'] / $row['registered_users']) * 100, 2).'%' : '0%');
 
                 // add requirements stats if event has requirements
                 if ($event->has_requirements) {
                     $row['fulfills_requirements'] = $registrations->where('fulfils_requirements', true)->count();
                     $row['not_fulfills_requirements'] = $registrations->where('fulfils_requirements', false)->count();
-                    $row['fulfills_requirements_percentage'] = ($row['registered_users'] > 0 ? round(($row['fulfills_requirements'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+                    $row['fulfills_requirements_percentage'] = ($row['registered_users'] > 0 ? round(($row['fulfills_requirements'] / $row['registered_users']) * 100, 2).'%' : '0%');
                 } else {
                     $row['fulfills_requirements'] = 'N/A';
                     $row['not_fulfills_requirements'] = 'N/A';
@@ -120,7 +118,7 @@ class DashboardAdminController extends Controller
                 if ($event->consider_alcohol) {
                     $row['drinks_alcohol'] = $registrations->where('drinks_alcohol', true)->count();
                     $row['drinks_no_alcohol'] = $registrations->where('drinks_alcohol', false)->count();
-                    $row['drinks_alcohol_percentage'] = ($row['registered_users'] > 0 ? round(($row['drinks_alcohol'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+                    $row['drinks_alcohol_percentage'] = ($row['registered_users'] > 0 ? round(($row['drinks_alcohol'] / $row['registered_users']) * 100, 2).'%' : '0%');
                 } else {
                     $row['drinks_alcohol'] = 'N/A';
                     $row['drinks_no_alcohol'] = 'N/A';
@@ -129,7 +127,7 @@ class DashboardAdminController extends Controller
 
                 // add course stats
                 foreach ($courses as $course) {
-                    $row['course_' . $course->abbreviation] = $registrations->where('user.course_id', $course->id)->count();
+                    $row['course_'.$course->abbreviation] = $registrations->where('user.course_id', $course->id)->count();
                 }
 
                 // write to file
@@ -139,26 +137,27 @@ class DashboardAdminController extends Controller
                 // add sub groups or slots stats
                 switch ($event->type) {
                     case 'event_registration':
-                        continue; // no sub groups
+                        break; // no sub groups
                     case 'group_phase':
                         // event has subgroups
 
-                        $groups = $event->groups()->get();
+                        $groups = $event->groups()->with('registrations.user')->get();
                         foreach ($groups as $group) {
                             $row = [];
+                            $groupRegistrations = $group->registrations;
 
                             // add basic stats
-                            $row['event_or_group'] = $event->name . ' - ' . $group->name;
-                            $row['registered_users'] = $group->registrations()->count();
-                            $row['present_users'] = $group->registrations()->where('is_present', true)->count();
-                            $row['not_present_users'] = $group->registrations()->where('is_present', false)->count();
-                            $row['present_percentage'] = ($row['registered_users'] > 0 ? round(($row['present_users'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+                            $row['event_or_group'] = $event->name.' - '.$group->name;
+                            $row['registered_users'] = $groupRegistrations->count();
+                            $row['present_users'] = $groupRegistrations->where('is_present', true)->count();
+                            $row['not_present_users'] = $groupRegistrations->where('is_present', false)->count();
+                            $row['present_percentage'] = ($row['registered_users'] > 0 ? round(($row['present_users'] / $row['registered_users']) * 100, 2).'%' : '0%');
 
                             // add requirements stats if event has requirements
                             if ($event->has_requirements) {
-                                $row['fulfills_requirements'] = $group->registrations()->where('fulfils_requirements', true)->count();
-                                $row['not_fulfills_requirements'] = $group->registrations()->where('fulfils_requirements', false)->count();
-                                $row['fulfills_requirements_percentage'] = ($row['registered_users'] > 0 ? round(($row['fulfills_requirements'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+                                $row['fulfills_requirements'] = $groupRegistrations->where('fulfils_requirements', true)->count();
+                                $row['not_fulfills_requirements'] = $groupRegistrations->where('fulfils_requirements', false)->count();
+                                $row['fulfills_requirements_percentage'] = ($row['registered_users'] > 0 ? round(($row['fulfills_requirements'] / $row['registered_users']) * 100, 2).'%' : '0%');
                             } else {
                                 $row['fulfills_requirements'] = 'N/A';
                                 $row['not_fulfills_requirements'] = 'N/A';
@@ -167,9 +166,9 @@ class DashboardAdminController extends Controller
 
                             // add alcohol stats if event consider alcohol
                             if ($event->consider_alcohol) {
-                                $row['drinks_alcohol'] = $group->registrations()->where('drinks_alcohol', true)->count();
-                                $row['drinks_no_alcohol'] = $group->registrations()->where('drinks_alcohol', false)->count();
-                                $row['drinks_alcohol_percentage'] = ($row['registered_users'] > 0 ? round(($row['drinks_alcohol'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+                                $row['drinks_alcohol'] = $groupRegistrations->where('drinks_alcohol', true)->count();
+                                $row['drinks_no_alcohol'] = $groupRegistrations->where('drinks_alcohol', false)->count();
+                                $row['drinks_alcohol_percentage'] = ($row['registered_users'] > 0 ? round(($row['drinks_alcohol'] / $row['registered_users']) * 100, 2).'%' : '0%');
                             } else {
                                 $row['drinks_alcohol'] = 'N/A';
                                 $row['drinks_no_alcohol'] = 'N/A';
@@ -178,9 +177,7 @@ class DashboardAdminController extends Controller
 
                             // add course stats
                             foreach ($courses as $course) {
-                                $row['course_' . $course->abbreviation] = $group->registrations()->whereHas('user', function ($query) use ($course) {
-                                    $query->where('course_id', $course->id);
-                                })->count();
+                                $row['course_'.$course->abbreviation] = $groupRegistrations->where('user.course_id', $course->id)->count();
                             }
 
                             // write to file
@@ -188,25 +185,27 @@ class DashboardAdminController extends Controller
                             fputcsv($file, $array, ';');
                         }
 
+                        break;
                     case 'slot_booking':
                         // event has slots
 
-                        $slots = $event->slots()->get();
+                        $slots = $event->slots()->with('registrations.user')->get();
                         foreach ($slots as $slot) {
                             $row = [];
+                            $slotRegistrations = $slot->registrations;
 
                             // add basic stats
-                            $row['event_or_group'] = $event->name . ' - ' . $slot->name;
-                            $row['registered_users'] = $slot->registrations()->count();
-                            $row['present_users'] = $slot->registrations()->where('is_present', true)->count();
-                            $row['not_present_users'] = $slot->registrations()->where('is_present', false)->count();
-                            $row['present_percentage'] = ($row['registered_users'] > 0 ? round(($row['present_users'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+                            $row['event_or_group'] = $event->name.' - '.$slot->name;
+                            $row['registered_users'] = $slotRegistrations->count();
+                            $row['present_users'] = $slotRegistrations->where('is_present', true)->count();
+                            $row['not_present_users'] = $slotRegistrations->where('is_present', false)->count();
+                            $row['present_percentage'] = ($row['registered_users'] > 0 ? round(($row['present_users'] / $row['registered_users']) * 100, 2).'%' : '0%');
 
                             // add requirements stats if slot has requirements
                             if ($slot->has_requirements) {
-                                $row['fulfills_requirements'] = $slot->registrations()->where('fulfils_requirements', true)->count();
-                                $row['not_fulfills_requirements'] = $slot->registrations()->where('fulfils_requirements', false)->count();
-                                $row['fulfills_requirements_percentage'] = ($row['registered_users'] > 0 ? round(($row['fulfills_requirements'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+                                $row['fulfills_requirements'] = $slotRegistrations->where('fulfils_requirements', true)->count();
+                                $row['not_fulfills_requirements'] = $slotRegistrations->where('fulfils_requirements', false)->count();
+                                $row['fulfills_requirements_percentage'] = ($row['registered_users'] > 0 ? round(($row['fulfills_requirements'] / $row['registered_users']) * 100, 2).'%' : '0%');
                             } else {
                                 $row['fulfills_requirements'] = 'N/A';
                                 $row['not_fulfills_requirements'] = 'N/A';
@@ -215,9 +214,9 @@ class DashboardAdminController extends Controller
 
                             // add alcohol stats if event consider alcohol
                             if ($event->consider_alcohol) {
-                                $row['drinks_alcohol'] = $slot->registrations()->where('drinks_alcohol', true)->count();
-                                $row['drinks_no_alcohol'] = $slot->registrations()->where('drinks_alcohol', false)->count();
-                                $row['drinks_alcohol_percentage'] = ($row['registered_users'] > 0 ? round(($row['drinks_alcohol'] / $row['registered_users']) * 100, 2) . '%' : '0%');
+                                $row['drinks_alcohol'] = $slotRegistrations->where('drinks_alcohol', true)->count();
+                                $row['drinks_no_alcohol'] = $slotRegistrations->where('drinks_alcohol', false)->count();
+                                $row['drinks_alcohol_percentage'] = ($row['registered_users'] > 0 ? round(($row['drinks_alcohol'] / $row['registered_users']) * 100, 2).'%' : '0%');
                             } else {
                                 $row['drinks_alcohol'] = 'N/A';
                                 $row['drinks_no_alcohol'] = 'N/A';
@@ -226,9 +225,7 @@ class DashboardAdminController extends Controller
 
                             // add course stats
                             foreach ($courses as $course) {
-                                $row['course_' . $course->abbreviation] = $slot->registrations()->whereHas('user', function ($query) use ($course) {
-                                    $query->where('course_id', $course->id);
-                                })->count();
+                                $row['course_'.$course->abbreviation] = $slotRegistrations->where('user.course_id', $course->id)->count();
                             }
 
                             // write to file
@@ -266,7 +263,7 @@ class DashboardAdminController extends Controller
     {
         $user = User::find($request->user);
 
-        if (!$user) {
+        if (! $user) {
             Session::flash('error', 'Der angegebene User existiert nicht');
 
             return Redirect::back();
@@ -276,7 +273,7 @@ class DashboardAdminController extends Controller
         $validated = Request::validate([
             'firstname' => ['required', 'string', 'min:2', 'max:255'],
             'lastname' => ['required', 'string', 'min:2', 'max:255'],
-            'email' => ['required', 'string', 'email', 'min:3', 'max:255', 'unique:users,email,' . $user->id],
+            'email' => ['required', 'string', 'email', 'min:3', 'max:255', 'unique:users,email,'.$user->id],
             'email_confirm' => ['required', 'string', 'email', 'min:3', 'max:255', 'same:email'],
             'course_id' => ['required', 'integer', 'exists:courses,id'],
             'role_id' => ['array'],
@@ -287,9 +284,9 @@ class DashboardAdminController extends Controller
 
         // check if all roles exists and not super admin if so add to roles array
         $roles = [];
-        if (array_key_exists('role_id', $validated) && !$user->hasRole('super admin')) {
+        if (array_key_exists('role_id', $validated) && ! $user->hasRole('super admin')) {
             foreach ($validated['role_id'] as $role) {
-                if (!Role::find($role)) {
+                if (! Role::find($role)) {
                     Session::flash('error', 'Die angegebene Rolle existiert nicht');
 
                     return Redirect::back();
@@ -324,11 +321,11 @@ class DashboardAdminController extends Controller
         $user->update($validated);
 
         // sync roles
-        if (!$user->hasRole('super admin')) {
+        if (! $user->hasRole('super admin')) {
             $user->syncRoles($roles);
         }
 
-        Session::flash('success', 'Der Account <strong>' . $user->email . '</strong> wurde erfolgreich bearbeitet. Die Tabelle aktualisiert sich in wenigen Sekunden automatisch.');
+        Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich bearbeitet. Die Tabelle aktualisiert sich in wenigen Sekunden automatisch.');
 
         return Redirect::back();
     }
@@ -340,7 +337,7 @@ class DashboardAdminController extends Controller
     {
         $user = User::find($request->user);
 
-        if (!$user) {
+        if (! $user) {
             Session::flash('error', 'Der angegebene User existiert nicht');
 
             return Redirect::back();
@@ -365,7 +362,7 @@ class DashboardAdminController extends Controller
             Storage::disk('s3')->delete($userTemp->avatar);
         }
 
-        Session::flash('success', 'Der Account <strong>' . $userTemp->email . '</strong> wurde erfolgreich gelöscht. Die Tabelle aktualisiert sich in wenigen Sekunden automatisch.');
+        Session::flash('success', 'Der Account <strong>'.$userTemp->email.'</strong> wurde erfolgreich gelöscht. Die Tabelle aktualisiert sich in wenigen Sekunden automatisch.');
 
         return Redirect::back();
     }
@@ -376,7 +373,7 @@ class DashboardAdminController extends Controller
     public function registrations(IlluminateRequest $request): Response
     {
         $event = Event::with('groups')->with('slots')->find($request->event);
-        if (!$event) {
+        if (! $event) {
             return Inertia::render('Dashboard/404');
         }
         $event->registrations = $event->registrations()->with('user')->get();
@@ -395,14 +392,11 @@ class DashboardAdminController extends Controller
     public function event(IlluminateRequest $request): Response
     {
         $event = Event::find($request->event);
-        if (!$event) {
+        if (! $event) {
             return Inertia::render('Dashboard/404');
         }
         $event->slots = $event->slots()->with('registrations')->get();
-        $event->groups = $event->groups()->with('registrations')->get();
-        foreach ($event->groups as $group) {
-            $group->courses = $group->courses()->get();
-        }
+        $event->groups = $event->groups()->with(['registrations', 'courses'])->get();
         $event->registrations = $event->registrations()->with('user')->get();
 
         $courses = Course::all();
@@ -419,13 +413,15 @@ class DashboardAdminController extends Controller
     public function eventSubmit(IlluminateRequest $request): Response
     {
         $event = Event::find($request->event);
-        if (!$event) {
+        if (! $event) {
             return Inertia::render('Dashboard/404');
         }
 
         // check if any groups has a course
         $hasCourse = false;
-        if ($event->groups->first()?->courses()->exists()) $hasCourse = true;
+        if ($event->groups->first()?->courses()->exists()) {
+            $hasCourse = true;
+        }
 
         return Inertia::render('Dashboard/Admin/Submit', [
             'event' => $event,
@@ -440,7 +436,7 @@ class DashboardAdminController extends Controller
     public function eventExecuteSubmit(IlluminateRequest $request): RedirectResponse
     {
         $event = Event::find($request->event);
-        if (!$event) {
+        if (! $event) {
             Session::flash('error', 'Das angegebene Event existiert nicht');
 
             return Redirect::back();
@@ -450,7 +446,9 @@ class DashboardAdminController extends Controller
         if ($event->type == 'group_phase') {
             // check if any groups has a course
             $hasCourse = false;
-            if ($event->groups->first()->courses()->exists()) $hasCourse = true;
+            if ($event->groups->first()->courses()->exists()) {
+                $hasCourse = true;
+            }
 
             // check which division method to use
             if ($hasCourse) {
@@ -463,8 +461,8 @@ class DashboardAdminController extends Controller
                 }
 
                 foreach ($courseModelCollections as $index => $collection) {
-                    $maxGroups = $request->input('max_groups_' . $index);
-                    $maxParticipants = $request->input('max_participants_' . $index);
+                    $maxGroups = $request->input('max_groups_'.$index);
+                    $maxParticipants = $request->input('max_participants_'.$index);
                     $groupCourseDivision = new GroupCourseDivision($event, $collection, $event->consider_alcohol, (int) $maxGroups, (int) $maxParticipants);
                     $groupCourseDivision->assign();
                 }
@@ -545,7 +543,7 @@ class DashboardAdminController extends Controller
         // create the user
         $user = User::create($validated);
 
-        Session::flash('success', 'Der Account <strong>' . $user->email . '</strong> wurde erfolgreich erstellt.');
+        Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich erstellt.');
 
         return Redirect::back();
     }
@@ -558,7 +556,7 @@ class DashboardAdminController extends Controller
     {
         // check if user with email not exists
         $user = User::where('email', Request::input('email'))->first();
-        if (!$user) {
+        if (! $user) {
             Session::flash('error', 'Der Account existiert nicht.');
 
             return Redirect::back();
@@ -566,7 +564,7 @@ class DashboardAdminController extends Controller
 
         // get event
         $event = Event::find(Request::input('event_id'));
-        if (!$event) {
+        if (! $event) {
             Session::flash('error', 'Das Event existiert nicht.');
 
             return Redirect::back();
@@ -577,7 +575,7 @@ class DashboardAdminController extends Controller
             'email' => ['required', 'string', 'email', 'min:3', 'max:255', 'exists:users,email'],
             'event_id' => ['required', 'integer', 'exists:events,id'],
             'slot_id' => ['integer'],
-            'group_id' => ['integer', 'exists:groups,id']
+            'group_id' => ['integer', 'exists:groups,id'],
         ]);
 
         // check for existing registration for this event and user
@@ -617,7 +615,7 @@ class DashboardAdminController extends Controller
                 $slot = Slot::find($userRegistration['slot_id']);
 
                 // check if slot exists
-                if (!$slot) {
+                if (! $slot) {
                     Session::flash('error', 'Das Slot existiert nicht.');
 
                     return Redirect::back();
@@ -627,7 +625,7 @@ class DashboardAdminController extends Controller
                 if ($slot->maximum_participants) {
                     $queuePosition = Registration::where('event_id', $event->id)->where('slot_id', $userRegistration['slot_id'])->max('queue_position');
 
-                    if (!$queuePosition || $queuePosition == -1) {
+                    if (! $queuePosition || $queuePosition == -1) {
                         $queuePosition = -1;
                     } else {
                         $queuePosition++;
@@ -655,17 +653,23 @@ class DashboardAdminController extends Controller
         }
 
         // create registration
-        Registration::create([
-            'user_id' => $user->id,
-            'event_id' => $userRegistration['event_id'],
-            'slot_id' => (array_key_exists('slot_id', $userRegistration) ? $userRegistration['slot_id'] : null),
-            'group_id' => (array_key_exists('group_id', $userRegistration) ? $userRegistration['group_id'] : null),
-            'drinks_alcohol' => (array_key_exists('drinks_alcohol', $userRegistration) ? $userRegistration['drinks_alcohol'] : null),
-            'form_responses' => (array_key_exists('form_responses', $userRegistration) ? $userRegistration['form_responses'] : null),
-            'queue_position' => $queuePosition,
-        ]);
+        try {
+            Registration::create([
+                'user_id' => $user->id,
+                'event_id' => $userRegistration['event_id'],
+                'slot_id' => (array_key_exists('slot_id', $userRegistration) ? $userRegistration['slot_id'] : null),
+                'group_id' => (array_key_exists('group_id', $userRegistration) ? $userRegistration['group_id'] : null),
+                'drinks_alcohol' => (array_key_exists('drinks_alcohol', $userRegistration) ? $userRegistration['drinks_alcohol'] : null),
+                'form_responses' => (array_key_exists('form_responses', $userRegistration) ? $userRegistration['form_responses'] : null),
+                'queue_position' => $queuePosition,
+            ]);
+        } catch (UniqueConstraintViolationException) {
+            Session::flash('error', 'Der Account ist bereits für dieses Event registriert.');
 
-        Session::flash('success', 'Der Account <strong>' . $user->email . '</strong> wurde erfolgreich für das Event <strong>' . $event->name . '</strong>' . (array_key_exists('slot_id', $userRegistration) ? ' zu dem Slot <strong>' . $slot->name . '</strong>' : '') . (array_key_exists('group_id', $userRegistration) ? ' zu der Gruppe <strong>' . $group->name . '</strong>' : '') . ' zugewiesen.');
+            return Redirect::back();
+        }
+
+        Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich für das Event <strong>'.$event->name.'</strong>'.(array_key_exists('slot_id', $userRegistration) ? ' zu dem Slot <strong>'.$slot->name.'</strong>' : '').(array_key_exists('group_id', $userRegistration) ? ' zu der Gruppe <strong>'.$group->name.'</strong>' : '').' zugewiesen.');
 
         return Redirect::back();
     }
@@ -676,15 +680,16 @@ class DashboardAdminController extends Controller
         $courseCollections = [];
 
         // loop through all groups
-        foreach ($event->groups()->orderBy('id')->get() as $group) {
+        $groups = $event->groups()->orderBy('id')->with(['courses' => function ($query) {
+            $query->orderBy('id');
+        }])->get();
+        foreach ($groups as $group) {
             // check if group has a course
-            if ($group->courses()->exists()) {
-                $courseCollection = [];
-                foreach ($group->courses()->orderBy('id')->get() as $course) {
-                    $courseCollection[] = $course->abbreviation;
-                }
+            if ($group->courses->isNotEmpty()) {
+                $courseCollection = $group->courses->pluck('abbreviation')->all();
+
                 // add course abbreviations to collection only if not already in collection
-                if (!in_array($courseCollection, $courseCollections)) {
+                if (! in_array($courseCollection, $courseCollections)) {
                     $courseCollections[] = $courseCollection;
                 }
             }

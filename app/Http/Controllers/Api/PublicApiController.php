@@ -15,7 +15,7 @@ class PublicApiController extends Controller
     {
         // get all users and get execute avatarUrl
         $users = User::with('course', 'roles')->get()->map(function ($user) {
-            $user->avatarUrl = $user->avatarUrl();
+            $user->avatarUrl = $user->avatarUrlUnchecked();
 
             return $user;
         });

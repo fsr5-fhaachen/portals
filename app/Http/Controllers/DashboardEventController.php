@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Registration;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,7 @@ class DashboardEventController extends Controller
      * Return a event by request or redirect
      *
      *
-     * @return Event | \Inertia\Response
+     * @return Event | Response
      */
     protected function getEvent(Request $request): Event
     {
@@ -99,7 +100,7 @@ class DashboardEventController extends Controller
     public function index(Request $request): Response
     {
         $event = $this->getEvent($request);
-        if ($event instanceof \Inertia\Response) {
+        if ($event instanceof Response) {
             return $event;
         }
 
@@ -124,7 +125,7 @@ class DashboardEventController extends Controller
     public function register(Request $request): Response|RedirectResponse
     {
         $event = $this->getEvent($request);
-        if ($event instanceof \Inertia\Response) {
+        if ($event instanceof Response) {
             return $event;
         }
         $registrationIsPossible = $this->redirectToEventIfNoRegistrationIsPossible($event);
@@ -144,7 +145,7 @@ class DashboardEventController extends Controller
     public function unregister(Request $request): Response|RedirectResponse
     {
         $event = $this->getEvent($request);
-        if ($event instanceof \Inertia\Response) {
+        if ($event instanceof Response) {
             return $event;
         }
         $unregistrationIsPossible = $this->redirectToEventIfNoUnregistrationIsPossible($event);
@@ -163,7 +164,7 @@ class DashboardEventController extends Controller
     public function registerUser(Request $request): RedirectResponse
     {
         $event = $this->getEvent($request);
-        if ($event instanceof \Inertia\Response) {
+        if ($event instanceof Response) {
             return $event;
         }
         $registrationIsPossible = $this->redirectToEventIfNoRegistrationIsPossible($event);
@@ -238,7 +239,13 @@ class DashboardEventController extends Controller
         }
 
         // register the user to the event
-        $event->registrations()->create($userRegistration);
+        try {
+            $event->registrations()->create($userRegistration);
+        } catch (UniqueConstraintViolationException) {
+            Session::flash('info', 'Du bist bereits für dieses Event angemeldet.');
+
+            return $this->redirectToEvent($event);
+        }
 
         Session::flash('success', 'Du wurdest erfolgreich für das Event angemeldet.');
 
@@ -251,7 +258,7 @@ class DashboardEventController extends Controller
     public function unregisterUser(Request $request): RedirectResponse
     {
         $event = $this->getEvent($request);
-        if ($event instanceof \Inertia\Response) {
+        if ($event instanceof Response) {
             return $event;
         }
         $unregistrationIsPossible = $this->redirectToEventIfNoUnregistrationIsPossible($event);
@@ -261,14 +268,11 @@ class DashboardEventController extends Controller
 
         // check if the user is already registered
         $registration = $event->registrations()->where('user_id', auth()->user()->id)->first();
-        if (! $registration->exists()) {
+        if (! $registration) {
             Session::flash('info', 'Du bist nicht für dieses Event angemeldet.');
 
             return Redirect::back();
         }
-
-        // get registration
-        $registration = Registration::find($registration->id);
 
         // check if user fulfils_requirements
         if ($registration->fulfils_requirements) {

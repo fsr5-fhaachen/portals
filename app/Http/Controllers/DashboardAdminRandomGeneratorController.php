@@ -19,7 +19,7 @@ class DashboardAdminRandomGeneratorController extends Controller
     {
         // get all users except tutors and admins
         $users = User::doesntHave('roles')->orderBy('firstname')->with('course')->get()->map(function ($user) {
-            $user->avatarUrl = $user->avatarUrl();
+            $user->avatarUrl = $user->avatarUrlUnchecked();
 
             return $user;
         });
@@ -90,7 +90,7 @@ class DashboardAdminRandomGeneratorController extends Controller
     {
         // get all users except tutors and admins
         $users = User::doesntHave('roles')->with('course')->get()->map(function ($user) {
-            $user->avatarUrl = $user->avatarUrl();
+            $user->avatarUrl = $user->avatarUrlUnchecked();
 
             return $user;
         });

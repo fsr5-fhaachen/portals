@@ -40,6 +40,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Workers
+    |--------------------------------------------------------------------------
+    |
+    | The number of workers and max requests per worker before a reload,
+    | used by `octane:start` when not overridden by --workers/--max-requests
+    | CLI flags. "auto" resizes the worker count to the CPU core count.
+    |
+    */
+
+    'workers' => env('OCTANE_WORKERS', 'auto'),
+
+    'max_requests' => env('OCTANE_MAX_REQUESTS', 500),
+
+    /*
+    |--------------------------------------------------------------------------
     | Force HTTPS
     |--------------------------------------------------------------------------
     |
