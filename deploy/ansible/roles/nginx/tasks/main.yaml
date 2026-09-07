@@ -7,25 +7,35 @@
     - nginx
     - certbot
     - python3-certbot-nginx
-- name: enable and start nginx
+- name: check if certificate already exists
+  ansible.builtin.stat:
+    path: "/etc/letsencrypt/live/{{ nginx_domain_name }}/fullchain.pem"
+  register: nginx_cert
+- name: stop nginx before requesting certificate
   become: yes
   ansible.builtin.service:
     name: nginx
-    state: started
-    enabled: true
-- name: create nginx site
-  become: yes
-  ansible.builtin.template:
-    src: site.conf.j2
-    dest: /etc/nginx/sites-available/default
-    mode: "0644"
-  notify: reload_nginx
+    state: stopped
+  when: not nginx_cert.stat.exists
 - name: create certificate
   become: yes
   ansible.builtin.command: >
-    certbot --nginx --non-interactive --agree-tos --redirect
+    certbot certonly --standalone --non-interactive --agree-tos
+    --pre-hook "systemctl stop nginx"
+    --post-hook "systemctl start nginx"
     -m {{ letsencrypt_email }}
-    -d {{ domain_name }}
-  args:
-    creates: /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem
+    -d {{ nginx_domain_name }}
+  when: not nginx_cert.stat.exists
+- name: create nginx site
+  become: yes
+  ansible.builtin.template:
+    src: "{{ nginx_site_template }}"
+    dest: /etc/nginx/sites-available/default
+    mode: "0644"
   notify: reload_nginx
+- name: enable and restart nginx
+  become: yes
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+    enabled: true

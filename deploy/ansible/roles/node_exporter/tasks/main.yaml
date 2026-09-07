@@ -1,0 +1,75 @@
+- name: create node_exporter system group
+  become: yes
+  ansible.builtin.group:
+    name: node_exporter
+    system: yes
+    state: present
+
+- name: create node_exporter system user
+  become: yes
+  ansible.builtin.user:
+    name: node_exporter
+    group: node_exporter
+    system: yes
+    shell: /usr/sbin/nologin
+    create_home: no
+    state: present
+
+- name: check if node_exporter is installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/node_exporter
+  register: node_exporter_binary
+
+- name: download node_exporter
+  ansible.builtin.get_url:
+    url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+    checksum: "sha256:https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/sha256sums.txt"
+    dest: /tmp/node_exporter.tar.gz
+    mode: "0644"
+  when: not node_exporter_binary.stat.exists
+
+- name: extract node_exporter
+  ansible.builtin.unarchive:
+    src: /tmp/node_exporter.tar.gz
+    dest: /tmp
+    remote_src: yes
+  when: not node_exporter_binary.stat.exists
+
+- name: install node_exporter binary
+  ansible.builtin.copy:
+    src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
+    dest: /usr/local/bin/node_exporter
+    remote_src: yes
+    owner: root
+    group: root
+    mode: "0755"
+  when: not node_exporter_binary.stat.exists
+
+- name: clean up node_exporter download artifacts
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /tmp/node_exporter.tar.gz
+    - "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64"
+  when: not node_exporter_binary.stat.exists
+
+- name: create node_exporter systemd unit
+  become: yes
+  ansible.builtin.template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+    mode: "0644"
+  notify: restart_node_exporter
+
+- name: reload systemd
+  become: yes
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: enable and start node_exporter
+  become: yes
+  ansible.builtin.systemd:
+    name: node_exporter.service
+    enabled: yes
+    state: started

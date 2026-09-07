@@ -1,0 +1,19 @@
+[Unit]
+Description=Prometheus Redis Exporter
+After=network.target redis-server.service
+
+[Service]
+User=redis_exporter
+Group=redis_exporter
+Type=simple
+Environment="REDIS_ADDR=127.0.0.1:6379"
+Environment="REDIS_PASSWORD={{ redis_password }}"
+ExecStart=/usr/local/bin/redis_exporter --web.listen-address=0.0.0.0:9121
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target

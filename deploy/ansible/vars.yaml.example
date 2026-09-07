@@ -17,7 +17,17 @@ db_password: "portals"
 
 letsencrypt_email: "your-mail@example.com"
 
+# monitoring stack
+node_exporter_version: "1.12.1"
+prometheus_version: "3.14.0"
+postgres_exporter_version: "0.20.1"
+redis_exporter_version: "1.90.0"
+nginx_exporter_version: "1.5.3"
+postgres_exporter_db_user: "postgres_exporter"
+postgres_exporter_db_password: "change-me"
+
 env_app_name: "Your Event Name"
+env_app_environment: "production" # use "local" for test/dry-run deployments (keeps Telescope active)
 env_app_key: "base64:your-app-key"
 env_app_debug: false
 env_app_event_type: "demo"
