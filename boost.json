@@ -1,0 +1,21 @@
+{
+    "agents": [
+        "claude_code"
+    ],
+    "cloud": true,
+    "guidelines": true,
+    "mcp": true,
+    "nightwatch": false,
+    "packages": [
+        "spatie/laravel-permission"
+    ],
+    "sail": true,
+    "skills": [
+        "infer-conventions",
+        "laravel-best-practices",
+        "octane-development",
+        "tailwindcss-development",
+        "laravel-permission-development",
+        "deploying-laravel-cloud"
+    ]
+}

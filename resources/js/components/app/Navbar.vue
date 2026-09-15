@@ -277,7 +277,7 @@
 </template>
 
 <script setup lang="ts">
-import { Link as InertiaLink } from "@inertiajs/inertia-vue3";
+import { Link as InertiaLink } from "@inertiajs/vue3";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 
 defineProps({

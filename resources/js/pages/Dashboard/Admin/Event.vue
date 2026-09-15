@@ -69,7 +69,7 @@
 
 <script setup lang="ts">
 import { ref, PropType, onBeforeUnmount } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 
 const { courses, event } = defineProps({
   courses: {
@@ -179,9 +179,9 @@ onBeforeUnmount(() => {
 });
 
 const submit = () => {
-  Inertia.visit("/dashboard/admin/event/" + event.id + "/submit");
+  router.visit("/dashboard/admin/event/" + event.id + "/submit");
 };
 const view = () => {
-  Inertia.visit("/dashboard/admin/event/" + event.id + "/registrations");
+  router.visit("/dashboard/admin/event/" + event.id + "/registrations");
 };
 </script>

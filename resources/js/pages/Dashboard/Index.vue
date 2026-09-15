@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { ref, PropType } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 
 const { registrations } = defineProps({
   events: {
@@ -42,7 +42,7 @@ const tutorPasswordForm = ref({
 });
 
 const submitTutorPasswordFormHandler = async () => {
-  Inertia.post("/dashboard/login-tutor", tutorPasswordForm.value);
+  router.post("/dashboard/login-tutor", tutorPasswordForm.value);
 };
 
 const getUserRegistrationForEvent = (event: App.Models.Event) => {

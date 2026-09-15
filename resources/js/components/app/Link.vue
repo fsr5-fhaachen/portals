@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { Link as InertiaLink } from "@inertiajs/inertia-vue3";
+import { Link as InertiaLink } from "@inertiajs/vue3";
 
 const { href, rootClass, theme } = defineProps({
   class: {

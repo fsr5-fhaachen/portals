@@ -12,8 +12,8 @@ jobs:
 
     strategy:
       matrix:
-        php-version: ["8.3"]
-        node-version: [20.x]
+        php-version: ["8.4"]
+        node-version: [24.x]
 
     steps:
       - name: Checkout
@@ -30,7 +30,7 @@ jobs:
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
       - name: Install PHP Dependencies
-        run: composer update --ignore-platform-req=php+ --no-interaction --no-progress
+        run: composer update --no-interaction --no-progress
       - name: Install Node.js Dependencies
         run: |
           npm ci

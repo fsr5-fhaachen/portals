@@ -72,7 +72,7 @@ import {
   TransitionRoot,
 } from "@headlessui/vue";
 import { PropType, ref } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 
 const { user } = defineProps({
   user: {
@@ -92,7 +92,7 @@ const close = () => {
   emits("close");
 };
 const deleteSubmitHandler = async () => {
-  Inertia.delete(`/dashboard/admin/user/${user.id}`, deleteForm.value);
+  router.delete(`/dashboard/admin/user/${user.id}`, deleteForm.value);
   emits("submit");
 };
 </script>

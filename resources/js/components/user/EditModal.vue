@@ -159,7 +159,7 @@ import {
   TransitionRoot,
 } from "@headlessui/vue";
 import { PropType, ref } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 
 const { user, courses, roles } = defineProps({
   user: {
@@ -240,7 +240,7 @@ const editSubmitHandler = async () => {
     }
   }
 
-  Inertia.post(`/dashboard/admin/user/${user.id}`, {
+  router.post(`/dashboard/admin/user/${user.id}`, {
     ...editForm.value,
     avatar: avatarPath.value,
   });

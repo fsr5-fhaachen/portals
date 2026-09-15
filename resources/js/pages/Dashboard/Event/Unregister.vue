@@ -54,7 +54,7 @@
 </template>
 
 <script lang="ts">
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 import DashboardCardLayout from "@/layouts/DashboardCardLayout.vue";
 
 export default {
@@ -75,6 +75,6 @@ const { event } = defineProps({
 const form = ref({});
 
 const submitHandler = async () => {
-  Inertia.post("/dashboard/event/" + event.id + "/unregister", form.value);
+  router.post("/dashboard/event/" + event.id + "/unregister", form.value);
 };
 </script>

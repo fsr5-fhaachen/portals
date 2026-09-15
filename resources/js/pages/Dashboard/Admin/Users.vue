@@ -29,7 +29,6 @@
 
 <script setup lang="ts">
 import { computed, ref, PropType, onBeforeUnmount } from "vue";
-import { Inertia } from "@inertiajs/inertia";
 
 const form = ref({
   query: "",

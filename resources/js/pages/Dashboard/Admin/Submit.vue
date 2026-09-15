@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 import { ref, PropType } from "vue";
-import { Inertia } from "@inertiajs/inertia";
+import { router } from "@inertiajs/vue3";
 
 const { event } = defineProps({
   course_collections: {
@@ -90,6 +90,6 @@ const { event } = defineProps({
 const form = ref({});
 
 const submitHandler = async () => {
-  Inertia.post("/dashboard/admin/event/" + event.id + "/submit", form.value);
+  router.post("/dashboard/admin/event/" + event.id + "/submit", form.value);
 };
 </script>
