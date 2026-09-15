@@ -139,7 +139,7 @@ class DashboardAdminController extends Controller
                 // add sub groups or slots stats
                 switch ($event->type) {
                     case 'event_registration':
-                        continue; // no sub groups
+                        continue 2; // no sub groups
                     case 'group_phase':
                         // event has subgroups
 
