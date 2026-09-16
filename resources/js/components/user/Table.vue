@@ -162,12 +162,17 @@ function getColumns(): Array<TableColumn> {
       let ret = "";
       if (user.roles.length) {
         ret += '<div class="flex flex-col gap-2">';
-        for (const role of user.roles.sort((a, b) => a.name.localeCompare(b.name))) {
+        for (const role of user.roles.sort((a, b) =>
+          a.name.localeCompare(b.name),
+        )) {
           const color = roleColors[role.name] ?? "bg-slate-500";
 
           ret +=
-            '<span class="rounded-md ' + color + ' text-xs text-white text-center">' +
-            role.name + "</span>";
+            '<span class="rounded-md ' +
+            color +
+            ' text-xs text-white text-center">' +
+            role.name +
+            "</span>";
         }
       }
       return ret;
