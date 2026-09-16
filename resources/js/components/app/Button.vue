@@ -1,5 +1,5 @@
 <template>
-  <div :class="rootClasses">
+  <div :class="rootClasses" @click="handleClick">
     <a>
       <slot />
     </a>
@@ -20,6 +20,17 @@ const props = defineProps({
       ["default", "gray", "warning", "danger"].includes(value),
   },
 });
+
+const emit = defineEmits<{
+  (e: "click", event: MouseEvent): void;
+}>();
+
+function handleClick(event: MouseEvent) {
+  if (props.disabled) {
+    return;
+  }
+  emit("click", event);
+}
 
 const rootClasses = computed(() => {
   const classes: string[] = [];
