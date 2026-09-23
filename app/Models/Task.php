@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class Station extends Model implements Auditable
+class Task extends Model implements Auditable
 {
     use HasFactory;
     use \OwenIt\Auditing\Auditable;
@@ -22,25 +22,7 @@ class Station extends Model implements Auditable
     protected $guarded = [];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'latitude' => 'float',
-        'longitude' => 'float',
-    ];
-
-    /**
-     * Get stops for the station.
-     */
-    public function stops(): HasMany
-    {
-        return $this->hasMany(Stop::class);
-    }
-
-    /**
-     * Get event for the station.
+     * Get event for the task.
      */
     public function event(): BelongsTo
     {
@@ -48,18 +30,18 @@ class Station extends Model implements Auditable
     }
 
     /**
-     * Get tutors for the station.
+     * Get completions for the task.
      */
-    public function tutors(): BelongsToMany
+    public function completions(): HasMany
     {
-        return $this->belongsToMany(User::class, 'station_tutor')->using(StationTutor::class);
+        return $this->hasMany(TaskCompletion::class);
     }
 
     /**
-     * Get groups for the station.
+     * Get groups for the task.
      */
     public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class, 'stops')->using(Stop::class);
+        return $this->belongsToMany(Group::class, 'task_completions')->using(TaskCompletion::class);
     }
 }

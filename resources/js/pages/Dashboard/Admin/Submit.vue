@@ -11,7 +11,7 @@
         v-model="form"
       >
         <FormContainer>
-          <template v-if="event.type == 'group_phase'">
+          <template v-if="['group_phase', 'station_rally'].includes(event.type)">
             <template v-if="hasCourse">
               <template
                 v-for="(course_collection, index) in course_collections"

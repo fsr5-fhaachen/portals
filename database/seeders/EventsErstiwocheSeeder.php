@@ -8,6 +8,7 @@ use App\Models\CourseGroup;
 use App\Models\Event;
 use App\Models\Group;
 use App\Models\Slot;
+use App\Models\Station;
 use DateTime;
 use Illuminate\Database\Seeder;
 
@@ -260,7 +261,14 @@ class EventsErstiwocheSeeder extends Seeder
         $event = new Event;
         $event->name = 'Stadtrallye';
         $event->description = '<p>Die Stadtrallye ist ein Event, bei dem du in Gruppen die Stadt erkundest. Dabei gibt es verschiedene Aufgaben, die ihr lösen müsst. Dabei könnt ihr euch gegenseitig unterstützen und euch so besser kennenlernen.</p><p><strong>Treffpunkt: </strong> 9:00 Uhr Campus Eupener Straße</p>';
-        $event->type = 'group_phase';
+        $event->type = 'station_rally';
+        $event->rally_config = [
+            'pairing' => 'duel',
+            'scoring_enabled' => true,
+            'station_tutors_enabled' => true,
+            'tasks_enabled' => true,
+            'task_mode' => 'points',
+        ];
         $event->registration_from = new DateTime('2026-09-28 8:00:00');
         $event->registration_to = new DateTime('2026-09-29 09:45:00');
         $event->has_requirements = false;
@@ -287,6 +295,14 @@ class EventsErstiwocheSeeder extends Seeder
             $group->event_id = $event->id;
             $group->telegram_group_link = array_key_exists('telegram_group_link', $groupData) ? $groupData['telegram_group_link'] : null;
             $group->save();
+        }
+
+        // create stations (tutor assignment and schedule generation happen manually in the admin UI)
+        for ($i = 1; $i <= 7; $i++) {
+            $station = new Station;
+            $station->name = "Station $i";
+            $station->event_id = $event->id;
+            $station->save();
         }
     }
 

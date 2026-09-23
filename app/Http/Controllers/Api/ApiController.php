@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Event;
+use App\Models\Group;
 use App\Models\Registration;
 use App\Models\State;
+use App\Models\Station;
+use App\Models\TaskCompletion;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -442,5 +445,145 @@ class ApiController extends Controller
             'presignedUrl' => $presignedUrl,
             'path' => $path,
         ]);
+    }
+
+    /**
+     * Check if the given user is allowed to see the rally schedule of the given group
+     * (either they're registered in it, or they're one of its group tutors).
+     */
+    private function canViewGroupRallyInfo(Group $group, User $user): bool
+    {
+        if ($group->tutors->contains($user->id)) {
+            return true;
+        }
+
+        return $group->registrations()->where('user_id', $user->id)->exists();
+    }
+
+    /**
+     * Return a group's station schedule: past stops, the current one, and future ones with
+     * the station name masked until it's their turn.
+     */
+    public function groupCurrentStop(Request $request): JsonResponse
+    {
+        $group = Group::with('event')->find($request->group);
+        if (! $group) {
+            return response()->json(['message' => 'Group not found'], 404);
+        }
+
+        if (! $this->canViewGroupRallyInfo($group, $request->user())) {
+            return response()->json(['message' => 'Not allowed'], 403);
+        }
+
+        $stops = $group->stops()->with('station')->orderBy('round')->get();
+        $scoringEnabled = (bool) ($group->event->rally_config['scoring_enabled'] ?? false);
+
+        $currentRound = null;
+        foreach ($stops as $stop) {
+            $completed = $scoringEnabled ? $stop->points !== null : ($stop->ends_at && $stop->ends_at->isPast());
+            if (! $completed) {
+                $currentRound = $stop->round;
+                break;
+            }
+        }
+
+        $result = $stops->map(function ($stop) use ($currentRound, $scoringEnabled) {
+            $revealed = $currentRound === null || $stop->round <= $currentRound;
+            $opponent = $stop->opponentStop();
+
+            return [
+                'round' => $stop->round,
+                'starts_at' => $stop->starts_at,
+                'ends_at' => $stop->ends_at,
+                'station' => $revealed ? ['id' => $stop->station->id, 'name' => $stop->station->name, 'latitude' => $stop->station->latitude, 'longitude' => $stop->station->longitude] : null,
+                'opponent_group_name' => $opponent?->group?->name,
+                'points' => $scoringEnabled ? $stop->points : null,
+                'bonus' => $scoringEnabled ? $stop->bonus : null,
+                'is_current' => $stop->round === $currentRound,
+            ];
+        });
+
+        return response()->json(['stops' => $result]);
+    }
+
+    /**
+     * Return the current (unscored) duel at a station, for the tutor's live view.
+     */
+    public function stationCurrentDuel(Request $request): JsonResponse
+    {
+        $station = Station::find($request->station);
+        if (! $station) {
+            return response()->json(['message' => 'Station not found'], 404);
+        }
+
+        $currentRound = $station->stops()->whereNull('points')->min('round');
+
+        $stops = $currentRound
+            ? $station->stops()->where('round', $currentRound)->orderBy('group_id')->with('group')->get()
+            : collect();
+
+        return response()->json([
+            'round' => $currentRound,
+            'stops' => $stops,
+        ]);
+    }
+
+    /**
+     * Return a group's task checklist with completion state.
+     */
+    public function eventTasksState(Request $request): JsonResponse
+    {
+        $group = Group::with('event')->find($request->group);
+        if (! $group) {
+            return response()->json(['message' => 'Group not found'], 404);
+        }
+
+        if (! $this->canViewGroupRallyInfo($group, $request->user())) {
+            return response()->json(['message' => 'Not allowed'], 403);
+        }
+
+        $tasks = $group->event->tasks()->with(['completions' => function ($query) use ($group) {
+            $query->where('group_id', $group->id);
+        }])->get();
+
+        return response()->json(['tasks' => $tasks]);
+    }
+
+    /**
+     * Return the task-race ranking for an event: groups that have completed every task,
+     * ordered by when they finished the last one.
+     */
+    public function eventTaskRanking(Request $request): JsonResponse
+    {
+        $event = Event::find($request->event);
+        if (! $event) {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+
+        $taskIds = $event->tasks()->pluck('id');
+        $taskCount = $taskIds->count();
+
+        if ($taskCount === 0) {
+            return response()->json(['ranking' => []]);
+        }
+
+        $ranking = $event->groups()->get()
+            ->map(function ($group) use ($taskIds, $taskCount) {
+                $completions = TaskCompletion::where('group_id', $group->id)
+                    ->whereIn('task_id', $taskIds)
+                    ->whereNotNull('completed_at')
+                    ->get();
+
+                if ($completions->count() !== $taskCount) {
+                    return null;
+                }
+
+                return ['group' => $group->only('id', 'name'), 'finished_at' => $completions->max('completed_at')];
+            })
+            ->filter()
+            ->sortBy('finished_at')
+            ->values();
+
+        return response()->json(['ranking' => $ranking]);
     }
 }

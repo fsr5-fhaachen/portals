@@ -30,7 +30,7 @@
       <ChartContainer :stats="courseTotal" chartType="total" />
     </div>
     <div
-      v-if="['group_phase', 'slot_booking'].includes(event.type)"
+      v-if="['group_phase', 'slot_booking', 'station_rally'].includes(event.type)"
       class="mb-16"
     >
       <AppButton
@@ -42,6 +42,12 @@
       </AppButton>
     </div>
 
+    <div v-if="event.type == 'station_rally'" class="mb-16">
+      <AppButton @click="stations()" class="text-center text-2xl uppercase">
+        Stationen &amp; Rallye verwalten
+      </AppButton>
+    </div>
+
     <div class="mb-16">
       <AppButton @click="view()" class="text-center text-2xl uppercase">
         Registrierungen anzeigen
@@ -49,7 +55,7 @@
     </div>
 
     <GroupTable
-      v-if="event.type == 'group_phase' && event.groups"
+      v-if="['group_phase', 'station_rally'].includes(event.type) && event.groups"
       :event="event"
       :groups="event.groups"
     />
@@ -183,5 +189,8 @@ const submit = () => {
 };
 const view = () => {
   router.visit("/dashboard/admin/event/" + event.id + "/registrations");
+};
+const stations = () => {
+  router.visit("/dashboard/admin/event/" + event.id + "/stations");
 };
 </script>

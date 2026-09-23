@@ -76,4 +76,12 @@ class Group extends Model implements Auditable
     {
         return $this->belongsToMany(Station::class, 'stops')->using(Stop::class);
     }
+
+    /**
+     * Get tasks for the group.
+     */
+    public function tasks(): BelongsToMany
+    {
+        return $this->belongsToMany(Task::class, 'task_completions')->using(TaskCompletion::class)->withPivot(['completed_at', 'completed_by']);
+    }
 }

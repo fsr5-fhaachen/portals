@@ -144,6 +144,51 @@
           </template>
         </template>
 
+        <template v-else-if="event.type == 'station_rally'">
+          <template v-if="userRegistration.group_id && userRegistration.group">
+            <UiMessage type="success">
+              <template #message>
+                Die Einteilung ist erfolgt. Du bist in der Gruppe
+                <strong>{{ userRegistration.group.name }}</strong
+                >.
+              </template>
+            </UiMessage>
+
+            <CardBase class="mt-6">
+              <UiH2>Dein Rundenplan</UiH2>
+              <div class="mt-4">
+                <RallyStationCarousel
+                  :stops="rallyStops"
+                  :scoringEnabled="rallyScoringEnabled"
+                />
+              </div>
+            </CardBase>
+
+            <CardBase class="mt-6">
+              <UiH2>Stationen</UiH2>
+              <div class="mt-4">
+                <RallyStationMap
+                  :stops="rallyStops"
+                  :scoringEnabled="rallyScoringEnabled"
+                />
+              </div>
+            </CardBase>
+
+            <CardBase v-if="rallyTasksEnabled" class="mt-6">
+              <UiH2>Aufgaben</UiH2>
+              <div class="mt-4">
+                <RallyTaskChecklist
+                  :group="userRegistration.group_id"
+                  :event="event.id"
+                  :taskMode="rallyTaskMode"
+                  :editable="false"
+                />
+              </div>
+            </CardBase>
+          </template>
+          <UiMessage v-else message="Die Zuteilung in deine Gruppe folgt bald." />
+        </template>
+
         <template v-else-if="event.type == 'event_registration'">
           <UiMessage
             v-if="
@@ -242,7 +287,47 @@ const fetchRegistration = async () => {
   isFetchingRegistration.value = false;
 };
 const registrationInterval = setInterval(fetchRegistration, 5000);
+
+const rallyConfig = event.rally_config || {};
+const rallyScoringEnabled = rallyConfig.scoring_enabled || false;
+const rallyTasksEnabled = rallyConfig.tasks_enabled || false;
+const rallyTaskMode = rallyConfig.task_mode || "points";
+
+const rallyStops = ref<Array<any>>([]);
+let isFetchingRallyStops = false;
+const fetchRallyStops = async () => {
+  if (isFetchingRallyStops || !userRegistration.value.group_id) {
+    return;
+  }
+  isFetchingRallyStops = true;
+
+  const response = await fetch(
+    "/api/groups/" + userRegistration.value.group_id + "/current-stop",
+    {
+      method: "GET",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    },
+  );
+
+  if (response.ok) {
+    const data = await response.json();
+    rallyStops.value = data.stops;
+  }
+
+  isFetchingRallyStops = false;
+};
+
+let rallyStopsInterval: ReturnType<typeof setInterval> | null = null;
+if (event.type == "station_rally") {
+  fetchRallyStops();
+  rallyStopsInterval = setInterval(fetchRallyStops, 5000);
+}
+
 onBeforeUnmount(() => {
   clearInterval(registrationInterval);
+  if (rallyStopsInterval) {
+    clearInterval(rallyStopsInterval);
+  }
 });
 </script>

@@ -5,11 +5,17 @@ namespace App\Http\Controllers;
 use App\Helpers\GroupBalancedDivision;
 use App\Helpers\GroupCourseDivision;
 use App\Helpers\SlotAssignment;
+use App\Helpers\StationScheduleGenerator;
 use App\Models\Course;
 use App\Models\Event;
 use App\Models\Group;
+use App\Models\GroupTutor;
 use App\Models\Registration;
 use App\Models\Slot;
+use App\Models\Station;
+use App\Models\StationTutor;
+use App\Models\Stop;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\RedirectResponse;
@@ -20,6 +26,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use OwenIt\Auditing\Models\Audit;
+use RuntimeException;
 use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -443,7 +451,7 @@ class DashboardAdminController extends Controller
         }
 
         // check event type
-        if ($event->type == 'group_phase') {
+        if ($event->type == 'group_phase' || $event->type == 'station_rally') {
             // check if any groups has a course
             $hasCourse = false;
             if ($event->groups->first()->courses()->exists()) {
@@ -696,5 +704,343 @@ class DashboardAdminController extends Controller
         }
 
         return $courseCollections;
+    }
+
+    /**
+     * Display the dashboard admin station rally management page
+     */
+    public function stationsIndex(IlluminateRequest $request): Response
+    {
+        $event = Event::find($request->event);
+        if (! $event) {
+            return Inertia::render('Dashboard/404');
+        }
+
+        $event->stations = $event->stations()->with('tutors')->orderBy('name')->get();
+        $event->groups = $event->groups()->with('tutors')->orderBy('name')->get();
+
+        $maxRound = Stop::whereIn('station_id', $event->stations->pluck('id'))->max('round');
+
+        return Inertia::render('Dashboard/Admin/Stations', [
+            'event' => $event,
+            'tutors' => User::role(['tutor', 'stage tutor'])->orderBy('lastname')->get(),
+            'tasks' => $event->tasks,
+            'maxRound' => $maxRound,
+        ]);
+    }
+
+    /**
+     * Create a new station for an event
+     */
+    public function stationsStore(IlluminateRequest $request): RedirectResponse
+    {
+        $event = Event::find($request->event);
+        if (! $event) {
+            Session::flash('error', 'Das angegebene Event existiert nicht');
+
+            return Redirect::back();
+        }
+
+        $validated = Request::validate([
+            'name' => ['required', 'string', 'min:1', 'max:255'],
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
+        ]);
+
+        $event->stations()->create($validated);
+
+        Session::flash('success', 'Die Station wurde erfolgreich angelegt');
+
+        return Redirect::back();
+    }
+
+    /**
+     * Update a station
+     */
+    public function stationsUpdate(IlluminateRequest $request): RedirectResponse
+    {
+        $station = Station::find($request->station);
+        if (! $station) {
+            Session::flash('error', 'Die angegebene Station existiert nicht');
+
+            return Redirect::back();
+        }
+
+        $validated = Request::validate([
+            'name' => ['required', 'string', 'min:1', 'max:255'],
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
+        ]);
+
+        $station->update($validated);
+
+        Session::flash('success', 'Die Station wurde erfolgreich aktualisiert');
+
+        return Redirect::back();
+    }
+
+    /**
+     * Delete a station
+     */
+    public function stationsDestroy(IlluminateRequest $request): RedirectResponse
+    {
+        $station = Station::find($request->station);
+        if (! $station) {
+            Session::flash('error', 'Die angegebene Station existiert nicht');
+
+            return Redirect::back();
+        }
+
+        if ($station->stops()->whereNotNull('points')->exists()) {
+            Session::flash('error', 'Für diese Station wurden bereits Ergebnisse eingetragen, sie kann nicht mehr gelöscht werden');
+
+            return Redirect::back();
+        }
+
+        $station->delete();
+
+        Session::flash('success', 'Die Station wurde erfolgreich gelöscht');
+
+        return Redirect::back();
+    }
+
+    /**
+     * Sync the tutors assigned to a station
+     */
+    public function stationTutorsSync(IlluminateRequest $request): RedirectResponse
+    {
+        $station = Station::find($request->station);
+        if (! $station) {
+            Session::flash('error', 'Die angegebene Station existiert nicht');
+
+            return Redirect::back();
+        }
+
+        $validated = Request::validate([
+            'user_id' => ['array'],
+            'user_id.*' => ['integer', 'exists:users,id'],
+        ]);
+
+        $station->tutors()->sync($validated['user_id'] ?? []);
+
+        Session::flash('success', 'Die Stationstutoren wurden erfolgreich aktualisiert');
+
+        return Redirect::back();
+    }
+
+    /**
+     * Sync the tutors assigned to a group
+     */
+    public function groupTutorsSync(IlluminateRequest $request): RedirectResponse
+    {
+        $group = Group::find($request->group);
+        if (! $group) {
+            Session::flash('error', 'Die angegebene Gruppe existiert nicht');
+
+            return Redirect::back();
+        }
+
+        $validated = Request::validate([
+            'user_id' => ['array'],
+            'user_id.*' => ['integer', 'exists:users,id'],
+        ]);
+
+        $group->tutors()->sync($validated['user_id'] ?? []);
+
+        Session::flash('success', 'Die Gruppentutoren wurden erfolgreich aktualisiert');
+
+        return Redirect::back();
+    }
+
+    /**
+     * Generate the station rally schedule for an event
+     */
+    public function stationScheduleGenerate(IlluminateRequest $request): RedirectResponse
+    {
+        $event = Event::find($request->event);
+        if (! $event) {
+            Session::flash('error', 'Das angegebene Event existiert nicht');
+
+            return Redirect::back();
+        }
+
+        $validated = Request::validate([
+            'rounds' => ['required', 'integer', 'min:1', 'max:50'],
+        ]);
+
+        try {
+            (new StationScheduleGenerator($event, (int) $validated['rounds']))->assign();
+        } catch (RuntimeException $exception) {
+            Session::flash('error', $exception->getMessage());
+
+            return Redirect::back();
+        }
+
+        Session::flash('success', 'Der Rundenplan wurde erfolgreich generiert');
+
+        return Redirect::back();
+    }
+
+    /**
+     * Set the start/end time for every stop of a given round
+     */
+    public function stationScheduleSetTimes(IlluminateRequest $request): RedirectResponse
+    {
+        $event = Event::find($request->event);
+        if (! $event) {
+            Session::flash('error', 'Das angegebene Event existiert nicht');
+
+            return Redirect::back();
+        }
+
+        $validated = Request::validate([
+            'round' => ['required', 'integer', 'min:1'],
+            'starts_at' => ['nullable', 'date'],
+            'ends_at' => ['nullable', 'date'],
+        ]);
+
+        Stop::whereIn('station_id', $event->stations()->pluck('id'))
+            ->where('round', $validated['round'])
+            ->update([
+                'starts_at' => $validated['starts_at'] ?? null,
+                'ends_at' => $validated['ends_at'] ?? null,
+            ]);
+
+        Session::flash('success', 'Die Rundenzeiten wurden erfolgreich gespeichert');
+
+        return Redirect::back();
+    }
+
+    /**
+     * Create a new task for an event
+     */
+    public function tasksStore(IlluminateRequest $request): RedirectResponse
+    {
+        $event = Event::find($request->event);
+        if (! $event) {
+            Session::flash('error', 'Das angegebene Event existiert nicht');
+
+            return Redirect::back();
+        }
+
+        $validated = Request::validate([
+            'name' => ['required', 'string', 'min:1', 'max:255'],
+            'points' => ['integer', 'min:0', 'max:255'],
+        ]);
+
+        $event->tasks()->create([
+            'name' => $validated['name'],
+            'points' => $validated['points'] ?? 1,
+            'sort_order' => $event->tasks()->max('sort_order') + 1,
+        ]);
+
+        Session::flash('success', 'Die Aufgabe wurde erfolgreich angelegt');
+
+        return Redirect::back();
+    }
+
+    /**
+     * Update a task
+     */
+    public function tasksUpdate(IlluminateRequest $request): RedirectResponse
+    {
+        $task = Task::find($request->task);
+        if (! $task) {
+            Session::flash('error', 'Die angegebene Aufgabe existiert nicht');
+
+            return Redirect::back();
+        }
+
+        $validated = Request::validate([
+            'name' => ['required', 'string', 'min:1', 'max:255'],
+            'points' => ['integer', 'min:0', 'max:255'],
+        ]);
+
+        $task->update($validated);
+
+        Session::flash('success', 'Die Aufgabe wurde erfolgreich aktualisiert');
+
+        return Redirect::back();
+    }
+
+    /**
+     * Delete a task
+     */
+    public function tasksDestroy(IlluminateRequest $request): RedirectResponse
+    {
+        $task = Task::find($request->task);
+        if (! $task) {
+            Session::flash('error', 'Die angegebene Aufgabe existiert nicht');
+
+            return Redirect::back();
+        }
+
+        $task->delete();
+
+        Session::flash('success', 'Die Aufgabe wurde erfolgreich gelöscht');
+
+        return Redirect::back();
+    }
+
+    /**
+     * Move an already registered user to a different group
+     */
+    public function registrationUpdateGroup(IlluminateRequest $request): RedirectResponse
+    {
+        $registration = Registration::find($request->registration);
+        if (! $registration) {
+            Session::flash('error', 'Die angegebene Registrierung existiert nicht');
+
+            return Redirect::back();
+        }
+
+        $validated = Request::validate([
+            'group_id' => ['required', 'integer', 'exists:groups,id'],
+        ]);
+
+        $group = Group::find($validated['group_id']);
+        if ($group->event_id != $registration->event_id) {
+            Session::flash('error', 'Die angegebene Gruppe gehört nicht zu diesem Event');
+
+            return Redirect::back();
+        }
+
+        $registration->update(['group_id' => $group->id]);
+
+        Session::flash('success', 'Der Account wurde erfolgreich in die Gruppe <strong>'.$group->name.'</strong> verschoben.');
+
+        return Redirect::back();
+    }
+
+    /**
+     * Display the audit log for a station rally event (who entered/changed what, and when)
+     */
+    public function rallyAuditLog(IlluminateRequest $request): Response
+    {
+        $event = Event::find($request->event);
+        if (! $event) {
+            return Inertia::render('Dashboard/404');
+        }
+
+        $stationIds = $event->stations()->pluck('id');
+        $groupIds = $event->groups()->pluck('id');
+        $stopIds = Stop::whereIn('station_id', $stationIds)->pluck('id');
+        $stationTutorIds = StationTutor::whereIn('station_id', $stationIds)->pluck('id');
+        $groupTutorIds = GroupTutor::whereIn('group_id', $groupIds)->pluck('id');
+
+        $audits = Audit::with('user')
+            ->where(function ($query) use ($stationIds, $stopIds, $stationTutorIds, $groupTutorIds) {
+                $query->where(fn ($q) => $q->where('auditable_type', Station::class)->whereIn('auditable_id', $stationIds))
+                    ->orWhere(fn ($q) => $q->where('auditable_type', Stop::class)->whereIn('auditable_id', $stopIds))
+                    ->orWhere(fn ($q) => $q->where('auditable_type', StationTutor::class)->whereIn('auditable_id', $stationTutorIds))
+                    ->orWhere(fn ($q) => $q->where('auditable_type', GroupTutor::class)->whereIn('auditable_id', $groupTutorIds));
+            })
+            ->orderByDesc('created_at')
+            ->get();
+
+        return Inertia::render('Dashboard/Admin/RallyAuditLog', [
+            'event' => $event,
+            'audits' => $audits,
+        ]);
     }
 }

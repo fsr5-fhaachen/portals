@@ -207,7 +207,10 @@ function getColumns(): Array<TableColumn> {
     columns.push(slotCol);
   }
 
-  if (!props.hideGroups && props.event.type == "group_phase") {
+  if (
+    !props.hideGroups &&
+    ["group_phase", "station_rally"].includes(props.event.type)
+  ) {
     let groupCol = new TableColumn({
       name: "group",
       text: "Gruppe",

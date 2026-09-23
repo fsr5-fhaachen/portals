@@ -30,6 +30,7 @@ class Event extends Model implements Auditable
         return [
             'registration_from' => 'datetime',
             'registration_to' => 'datetime',
+            'rally_config' => 'array',
         ];
     }
 
@@ -71,5 +72,13 @@ class Event extends Model implements Auditable
     public function courses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class, 'course_event')->using(CourseEvent::class);
+    }
+
+    /**
+     * Get tasks for the event.
+     */
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class)->orderBy('sort_order');
     }
 }

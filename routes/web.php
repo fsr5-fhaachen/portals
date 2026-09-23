@@ -64,6 +64,10 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
         Route::get('/event/{event}', [DashboardTutorController::class, 'event'])->name('dashboard.tutor.event.index');
         Route::get('/slot/{slot}', [DashboardTutorController::class, 'slot'])->name('dashboard.tutor.slot.index');
         Route::get('/group/{group}', [DashboardTutorController::class, 'group'])->name('dashboard.tutor.group.index');
+        Route::post('/group/{group}/name', [DashboardTutorController::class, 'groupUpdateName'])->name('dashboard.tutor.group.updateName');
+        Route::post('/group/{group}/task/{task}/toggle', [DashboardTutorController::class, 'taskToggle'])->name('dashboard.tutor.task.toggle');
+        Route::get('/station/{station}', [DashboardTutorController::class, 'station'])->name('dashboard.tutor.station.index');
+        Route::post('/station/{station}/result', [DashboardTutorController::class, 'stationSubmitResult'])->name('dashboard.tutor.station.submitResult');
     });
 
     Route::prefix('admin')->middleware(IsLoggedInAdmin::class)->group(function () {
@@ -91,6 +95,20 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
             Route::get('/event/{event}/registrations', [DashboardAdminController::class, 'registrations'])->name('dashboard.admin.event.registrations');
             Route::get('/event/{event}/submit', [DashboardAdminController::class, 'eventSubmit'])->name('dashboard.admin.event.submit');
             Route::post('/event/{event}/submit', [DashboardAdminController::class, 'eventExecuteSubmit'])->name('dashboard.admin.event.executeSubmit');
+            Route::post('/registration/{registration}/group', [DashboardAdminController::class, 'registrationUpdateGroup'])->name('dashboard.admin.registration.updateGroup');
+
+            Route::get('/event/{event}/stations', [DashboardAdminController::class, 'stationsIndex'])->name('dashboard.admin.event.stations');
+            Route::post('/event/{event}/stations', [DashboardAdminController::class, 'stationsStore'])->name('dashboard.admin.event.stations.store');
+            Route::post('/station/{station}', [DashboardAdminController::class, 'stationsUpdate'])->name('dashboard.admin.station.update');
+            Route::delete('/station/{station}', [DashboardAdminController::class, 'stationsDestroy'])->name('dashboard.admin.station.destroy');
+            Route::post('/station/{station}/tutors', [DashboardAdminController::class, 'stationTutorsSync'])->name('dashboard.admin.station.tutors.sync');
+            Route::post('/group/{group}/tutors', [DashboardAdminController::class, 'groupTutorsSync'])->name('dashboard.admin.group.tutors.sync');
+            Route::post('/event/{event}/schedule/generate', [DashboardAdminController::class, 'stationScheduleGenerate'])->name('dashboard.admin.event.schedule.generate');
+            Route::post('/event/{event}/schedule/times', [DashboardAdminController::class, 'stationScheduleSetTimes'])->name('dashboard.admin.event.schedule.times');
+            Route::post('/event/{event}/tasks', [DashboardAdminController::class, 'tasksStore'])->name('dashboard.admin.event.tasks.store');
+            Route::post('/task/{task}', [DashboardAdminController::class, 'tasksUpdate'])->name('dashboard.admin.task.update');
+            Route::delete('/task/{task}', [DashboardAdminController::class, 'tasksDestroy'])->name('dashboard.admin.task.destroy');
+            Route::get('/event/{event}/audit-log', [DashboardAdminController::class, 'rallyAuditLog'])->name('dashboard.admin.event.auditLog');
         });
 
         Route::middleware(ActiveModule::class.':randomGenerator', 'can:manage random generator')->group(function () {
@@ -163,6 +181,14 @@ Route::prefix('api')->middleware([Authenticate::class, 'throttle:api'])->group(f
     });
 
     Route::get('/registrations/{registration}', [ApiController::class, 'registrationsShow'])->name('api.registrations.show');
+
+    Route::get('/groups/{group}/current-stop', [ApiController::class, 'groupCurrentStop'])->name('api.group.currentStop');
+    Route::get('/groups/{group}/tasks', [ApiController::class, 'eventTasksState'])->name('api.group.tasks');
+    Route::get('/events/{event}/task-ranking', [ApiController::class, 'eventTaskRanking'])->name('api.event.taskRanking');
+
+    Route::middleware(IsLoggedInTutor::class)->group(function () {
+        Route::get('/stations/{station}/current-duel', [ApiController::class, 'stationCurrentDuel'])->name('api.station.currentDuel');
+    });
 
     Route::middleware(ActiveModule::class.':randomGenerator', 'can:manage random generator')->group(function () {
         Route::get('/random-generator/state', [ApiController::class, 'randomGeneratorState'])->name('api.randomGeneratorState');

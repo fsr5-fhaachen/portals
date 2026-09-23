@@ -3,9 +3,13 @@
     <template #title>{{ event.name }}</template>
 
     <GroupTable
-      v-if="event.type == 'group_phase' && event.groups"
+      v-if="['group_phase', 'station_rally'].includes(event.type) && event.groups"
       :event="event"
       :groups="event.groups"
+    />
+    <StationTable
+      v-if="event.type == 'station_rally' && event.stations"
+      :stations="event.stations"
     />
     <SlotTable
       v-else-if="event.type == 'slot_booking' && event.slots"

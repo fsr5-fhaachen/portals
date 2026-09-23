@@ -15,6 +15,39 @@
         </FormKit>
       </CardBase>
 
+      <CardBase v-if="event.type == 'station_rally'">
+        <UiH2>Registrierung in andere Gruppe verschieben</UiH2>
+        <FormKit
+          id="move-group"
+          type="form"
+          :actions="false"
+          v-model="moveForm"
+          @submit="moveRegistration"
+        >
+          <FormContainer>
+            <FormRow>
+              <FormKit
+                type="select"
+                name="registration_id"
+                label="Person"
+                placeholder="Wähle eine Registrierung aus"
+                validation="required"
+                :options="registrationOptions"
+              />
+              <FormKit
+                type="select"
+                name="group_id"
+                label="Neue Gruppe"
+                placeholder="Wähle eine Gruppe aus"
+                validation="required"
+                :options="groupOptions"
+              />
+              <FormKit type="submit" label="Verschieben" />
+            </FormRow>
+          </FormContainer>
+        </FormKit>
+      </CardBase>
+
       <RegistrationTable
         v-if="filteredRegistrations"
         :courses="courses"
@@ -28,10 +61,33 @@
 
 <script setup lang="ts">
 import { computed, ref, PropType, onBeforeUnmount } from "vue";
+import { router } from "@inertiajs/vue3";
 
 const form = ref({
   query: "",
 });
+
+const moveForm = ref({});
+const registrationOptions = computed(() =>
+  Object.fromEntries(
+    (event.registrations || []).map((registration) => [
+      registration.id,
+      registration.user?.firstname + " " + registration.user?.lastname,
+    ]),
+  ),
+);
+const groupOptions = computed(() =>
+  Object.fromEntries(
+    (event.groups || []).map((group) => [group.id, group.name]),
+  ),
+);
+const moveRegistration = (data: any) => {
+  router.post(
+    "/dashboard/admin/registration/" + data.registration_id + "/group",
+    data,
+    { onSuccess: () => (moveForm.value = {}) },
+  );
+};
 
 const { event } = defineProps({
   courses: {

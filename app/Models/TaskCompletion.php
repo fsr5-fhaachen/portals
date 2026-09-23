@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class Stop extends Pivot implements Auditable
+class TaskCompletion extends Pivot implements Auditable
 {
     use HasFactory;
     use \OwenIt\Auditing\Auditable;
@@ -24,7 +24,7 @@ class Stop extends Pivot implements Auditable
      *
      * @var string
      */
-    protected $table = 'stops';
+    protected $table = 'task_completions';
 
     /**
      * The attributes that should be cast.
@@ -32,12 +32,19 @@ class Stop extends Pivot implements Auditable
      * @var array
      */
     protected $casts = [
-        'starts_at' => 'datetime',
-        'ends_at' => 'datetime',
+        'completed_at' => 'datetime',
     ];
 
     /**
-     * Get group for the stop.
+     * Get task for the task_completion.
+     */
+    public function task(): BelongsTo
+    {
+        return $this->belongsTo(Task::class);
+    }
+
+    /**
+     * Get group for the task_completion.
      */
     public function group(): BelongsTo
     {
@@ -45,22 +52,10 @@ class Stop extends Pivot implements Auditable
     }
 
     /**
-     * Get station for the stop.
+     * Get the user who completed the task.
      */
-    public function station(): BelongsTo
+    public function completedBy(): BelongsTo
     {
-        return $this->belongsTo(Station::class);
-    }
-
-    /**
-     * Get the opponent's stop for the same station and round, if this stop is part of a duel.
-     */
-    public function opponentStop(): ?self
-    {
-        return self::query()
-            ->where('station_id', $this->station_id)
-            ->where('round', $this->round)
-            ->where('group_id', '!=', $this->group_id)
-            ->first();
+        return $this->belongsTo(User::class, 'completed_by');
     }
 }
