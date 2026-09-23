@@ -1,0 +1,17 @@
+[Unit]
+Description=Nginx Prometheus Exporter
+After=network.target nginx.service
+
+[Service]
+User=nginx_exporter
+Group=nginx_exporter
+Type=simple
+ExecStart=/usr/local/bin/nginx_exporter --web.listen-address=0.0.0.0:9113 --nginx.scrape-uri=http://127.0.0.1/nginx_status
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target

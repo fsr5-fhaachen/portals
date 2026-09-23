@@ -1,7 +1,8 @@
-hcloud_token     = ""
-cloudflare_token = ""
-s3_access_key    = ""
-s3_secret_key    = ""
+hcloud_token           = ""
+cloudflare_token       = ""
+s3_access_key          = ""
+s3_secret_key          = ""
+grafana_admin_password = ""
 ssh_keys = [
   {
     name             = "your-name"

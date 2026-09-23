@@ -1,0 +1,92 @@
+- name: create postgres_exporter db user
+  become: yes
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    name: "{{ postgres_exporter_db_user }}"
+    password: "{{ postgres_exporter_db_password }}"
+    encrypted: yes
+    state: present
+
+- name: grant pg_monitor role to postgres_exporter db user
+  become: yes
+  become_user: postgres
+  community.postgresql.postgresql_membership:
+    group: pg_monitor
+    target_roles: "{{ postgres_exporter_db_user }}"
+    state: present
+
+- name: create postgres_exporter system group
+  become: yes
+  ansible.builtin.group:
+    name: postgres_exporter
+    system: yes
+    state: present
+
+- name: create postgres_exporter system user
+  become: yes
+  ansible.builtin.user:
+    name: postgres_exporter
+    group: postgres_exporter
+    system: yes
+    shell: /usr/sbin/nologin
+    create_home: no
+    state: present
+
+- name: check if postgres_exporter is installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/postgres_exporter
+  register: postgres_exporter_binary
+
+- name: download postgres_exporter
+  ansible.builtin.get_url:
+    url: "https://github.com/prometheus-community/postgres_exporter/releases/download/v{{ postgres_exporter_version }}/postgres_exporter-{{ postgres_exporter_version }}.linux-amd64.tar.gz"
+    checksum: "sha256:https://github.com/prometheus-community/postgres_exporter/releases/download/v{{ postgres_exporter_version }}/sha256sums.txt"
+    dest: /tmp/postgres_exporter.tar.gz
+    mode: "0644"
+  when: not postgres_exporter_binary.stat.exists
+
+- name: extract postgres_exporter
+  ansible.builtin.unarchive:
+    src: /tmp/postgres_exporter.tar.gz
+    dest: /tmp
+    remote_src: yes
+  when: not postgres_exporter_binary.stat.exists
+
+- name: install postgres_exporter binary
+  ansible.builtin.copy:
+    src: "/tmp/postgres_exporter-{{ postgres_exporter_version }}.linux-amd64/postgres_exporter"
+    dest: /usr/local/bin/postgres_exporter
+    remote_src: yes
+    owner: root
+    group: root
+    mode: "0755"
+  when: not postgres_exporter_binary.stat.exists
+
+- name: clean up postgres_exporter download artifacts
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /tmp/postgres_exporter.tar.gz
+    - "/tmp/postgres_exporter-{{ postgres_exporter_version }}.linux-amd64"
+  when: not postgres_exporter_binary.stat.exists
+
+- name: create postgres_exporter systemd unit
+  become: yes
+  ansible.builtin.template:
+    src: postgres_exporter.service.j2
+    dest: /etc/systemd/system/postgres_exporter.service
+    mode: "0640"
+  notify: restart_postgres_exporter
+
+- name: reload systemd
+  become: yes
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: enable and start postgres_exporter
+  become: yes
+  ansible.builtin.systemd:
+    name: postgres_exporter.service
+    enabled: yes
+    state: started

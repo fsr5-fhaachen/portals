@@ -1,0 +1,75 @@
+- name: create nginx_exporter system group
+  become: yes
+  ansible.builtin.group:
+    name: nginx_exporter
+    system: yes
+    state: present
+
+- name: create nginx_exporter system user
+  become: yes
+  ansible.builtin.user:
+    name: nginx_exporter
+    group: nginx_exporter
+    system: yes
+    shell: /usr/sbin/nologin
+    create_home: no
+    state: present
+
+- name: check if nginx_exporter is installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/nginx_exporter
+  register: nginx_exporter_binary
+
+- name: download nginx_exporter
+  ansible.builtin.get_url:
+    url: "https://github.com/nginx/nginx-prometheus-exporter/releases/download/v{{ nginx_exporter_version }}/nginx-prometheus-exporter_{{ nginx_exporter_version }}_linux_amd64.tar.gz"
+    checksum: "sha256:https://github.com/nginx/nginx-prometheus-exporter/releases/download/v{{ nginx_exporter_version }}/nginx-prometheus-exporter_{{ nginx_exporter_version }}_checksums.txt"
+    dest: /tmp/nginx_exporter.tar.gz
+    mode: "0644"
+  when: not nginx_exporter_binary.stat.exists
+
+- name: extract nginx_exporter
+  ansible.builtin.unarchive:
+    src: /tmp/nginx_exporter.tar.gz
+    dest: /tmp
+    remote_src: yes
+  when: not nginx_exporter_binary.stat.exists
+
+- name: install nginx_exporter binary
+  ansible.builtin.copy:
+    src: /tmp/nginx-prometheus-exporter
+    dest: /usr/local/bin/nginx_exporter
+    remote_src: yes
+    owner: root
+    group: root
+    mode: "0755"
+  when: not nginx_exporter_binary.stat.exists
+
+- name: clean up nginx_exporter download artifacts
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /tmp/nginx_exporter.tar.gz
+    - /tmp/nginx-prometheus-exporter
+  when: not nginx_exporter_binary.stat.exists
+
+- name: create nginx_exporter systemd unit
+  become: yes
+  ansible.builtin.template:
+    src: nginx_exporter.service.j2
+    dest: /etc/systemd/system/nginx_exporter.service
+    mode: "0644"
+  notify: restart_nginx_exporter
+
+- name: reload systemd
+  become: yes
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: enable and start nginx_exporter
+  become: yes
+  ansible.builtin.systemd:
+    name: nginx_exporter.service
+    enabled: yes
+    state: started

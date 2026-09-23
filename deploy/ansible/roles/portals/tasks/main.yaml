@@ -28,7 +28,7 @@
     chdir: "{{ portals_local_path }}"
 - name: migrate database
   ansible.builtin.shell:
-    cmd: php artisan migrate
+    cmd: php artisan migrate --force
     chdir: "{{ portals_local_path }}"
 - name: create tutors.csv
   ansible.builtin.copy:
@@ -37,6 +37,7 @@
     owner: root
     group: root
     mode: "0644"
+  when: portals_seed_database | default(false)
 - name: create students.csv
   ansible.builtin.copy:
     dest: "{{ portals_local_path }}/database/seeders/students.csv"
@@ -44,6 +45,7 @@
     owner: root
     group: root
     mode: "0644"
+  when: portals_seed_database | default(false)
 - name: create telegram.csv
   ansible.builtin.copy:
     dest: "{{ portals_local_path }}/database/seeders/telegram.csv"
@@ -51,6 +53,7 @@
     owner: root
     group: root
     mode: "0644"
+  when: portals_seed_database | default(false)
 - name: create avatars
   ansible.builtin.copy:
     dest: "{{ portals_local_path }}/database/seeders/avatars"
@@ -58,9 +61,10 @@
     owner: root
     group: root
     mode: "0644"
+  when: portals_seed_database | default(false)
 - name: seed database
   ansible.builtin.shell:
-    cmd: php artisan db:seed
+    cmd: php artisan db:seed --force
     chdir: "{{ portals_local_path }}"
   when: portals_seed_database | default(false)
 - name: create systemd unit

@@ -64,6 +64,24 @@ variable "server_type" {
   default     = "cx23"
 }
 
+variable "monitoring_domain_name" {
+  description = ""
+  type        = string
+  default     = "monitoring.portals.fsr5.de"
+}
+
+variable "monitoring_server_type" {
+  description = ""
+  type        = string
+  default     = "cx23"
+}
+
+variable "grafana_admin_password" {
+  description = ""
+  sensitive   = true
+  type        = string
+}
+
 variable "ssh_keys" {
   description = ""
   type = list(object({

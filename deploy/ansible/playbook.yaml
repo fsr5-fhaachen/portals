@@ -1,5 +1,5 @@
 - name: Portals
-  hosts: all
+  hosts: app
   become: true
   vars_files:
     - vars.yaml
@@ -15,11 +15,111 @@
       ansible.builtin.service:
         name: redis-server
         state: restarted
-  roles:
-    - role: general
-    - role: nginx
-    - role: php
-    - role: node
-    - role: postgresql
-    - role: redis
-    - role: portals
+    - name: restart_node_exporter
+      become: yes
+      ansible.builtin.service:
+        name: node_exporter
+        state: restarted
+    - name: restart_postgres_exporter
+      become: yes
+      ansible.builtin.service:
+        name: postgres_exporter
+        state: restarted
+    - name: restart_redis_exporter
+      become: yes
+      ansible.builtin.service:
+        name: redis_exporter
+        state: restarted
+    - name: restart_nginx_exporter
+      become: yes
+      ansible.builtin.service:
+        name: nginx_exporter
+        state: restarted
+  tasks:
+    - name: general
+      ansible.builtin.include_role:
+        name: general
+    - meta: flush_handlers
+    - name: nginx
+      ansible.builtin.include_role:
+        name: nginx
+    - meta: flush_handlers
+    - name: php
+      ansible.builtin.include_role:
+        name: php
+    - meta: flush_handlers
+    - name: node
+      ansible.builtin.include_role:
+        name: node
+    - meta: flush_handlers
+    - name: postgresql
+      ansible.builtin.include_role:
+        name: postgresql
+    - meta: flush_handlers
+    - name: redis
+      ansible.builtin.include_role:
+        name: redis
+    - meta: flush_handlers
+    - name: portals
+      ansible.builtin.include_role:
+        name: portals
+    - meta: flush_handlers
+    - name: node_exporter
+      ansible.builtin.include_role:
+        name: node_exporter
+    - meta: flush_handlers
+    - name: postgres_exporter
+      ansible.builtin.include_role:
+        name: postgres_exporter
+    - meta: flush_handlers
+    - name: redis_exporter
+      ansible.builtin.include_role:
+        name: redis_exporter
+    - meta: flush_handlers
+    - name: nginx_exporter
+      ansible.builtin.include_role:
+        name: nginx_exporter
+    - meta: flush_handlers
+
+- name: Monitoring (Prometheus + Grafana)
+  hosts: monitoring
+  become: true
+  vars_files:
+    - vars.yaml
+    - vars_terraform.yaml
+  handlers:
+    - name: reload_nginx
+      become: yes
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+    - name: restart_prometheus
+      become: yes
+      ansible.builtin.service:
+        name: prometheus
+        state: restarted
+    - name: restart_grafana
+      become: yes
+      ansible.builtin.service:
+        name: grafana-server
+        state: restarted
+  tasks:
+    - name: general
+      ansible.builtin.include_role:
+        name: general
+    - meta: flush_handlers
+    - name: nginx
+      ansible.builtin.include_role:
+        name: nginx
+      vars:
+        nginx_site_template: grafana.conf.j2
+        nginx_domain_name: "{{ monitoring_domain_name }}"
+    - meta: flush_handlers
+    - name: prometheus
+      ansible.builtin.include_role:
+        name: prometheus
+    - meta: flush_handlers
+    - name: grafana
+      ansible.builtin.include_role:
+        name: grafana
+    - meta: flush_handlers

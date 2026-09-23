@@ -1,0 +1,134 @@
+- name: install grafana prerequisites
+  become: yes
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - apt-transport-https
+    - wget
+    - gnupg
+
+- name: create apt keyrings directory
+  become: yes
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: import grafana gpg key
+  become: yes
+  ansible.builtin.get_url:
+    url: https://apt.grafana.com/gpg-full.key
+    dest: /etc/apt/keyrings/grafana.asc
+    mode: "0644"
+
+- name: add grafana apt repository
+  become: yes
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/grafana.asc] https://apt.grafana.com stable main"
+    filename: grafana
+    state: present
+  register: grafana_repo
+
+- name: update apt cache
+  become: yes
+  ansible.builtin.apt:
+    update_cache: yes
+  when: grafana_repo.changed
+
+- name: install grafana
+  become: yes
+  ansible.builtin.apt:
+    name: grafana
+    state: present
+
+- name: create grafana provisioning directories
+  become: yes
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: grafana
+    group: grafana
+    mode: "0755"
+  loop:
+    - /etc/grafana/provisioning/datasources
+    - /etc/grafana/provisioning/dashboards
+    - /var/lib/grafana/dashboards
+
+- name: provision prometheus datasource
+  become: yes
+  ansible.builtin.template:
+    src: datasource.yaml.j2
+    dest: /etc/grafana/provisioning/datasources/prometheus.yaml
+    owner: grafana
+    group: grafana
+    mode: "0644"
+  notify: restart_grafana
+
+- name: provision dashboard provider
+  become: yes
+  ansible.builtin.template:
+    src: dashboards.yaml.j2
+    dest: /etc/grafana/provisioning/dashboards/default.yaml
+    owner: grafana
+    group: grafana
+    mode: "0644"
+  notify: restart_grafana
+
+- name: download starter dashboards
+  become: yes
+  ansible.builtin.get_url:
+    url: "https://grafana.com/api/dashboards/{{ item.id }}/revisions/latest/download"
+    dest: "/var/lib/grafana/dashboards/{{ item.name }}.json"
+    owner: grafana
+    group: grafana
+    mode: "0644"
+  loop:
+    - { id: 1860, name: node-exporter-full }
+    - { id: 9628, name: postgres-exporter }
+    - { id: 763, name: redis-exporter }
+    - { id: 12708, name: nginx-exporter }
+  notify: restart_grafana
+
+- name: install overview dashboard
+  become: yes
+  ansible.builtin.copy:
+    src: overview-dashboard.json
+    dest: /var/lib/grafana/dashboards/overview.json
+    owner: grafana
+    group: grafana
+    mode: "0644"
+  notify: restart_grafana
+
+- name: patch dashboards to reference the provisioned datasource
+  become: yes
+  ansible.builtin.replace:
+    path: "/var/lib/grafana/dashboards/{{ item }}.json"
+    regexp: '(?i)\$\{DS_[A-Za-z0-9_]*\}'
+    replace: prometheus
+  loop:
+    - node-exporter-full
+    - postgres-exporter
+    - redis-exporter
+    - nginx-exporter
+  notify: restart_grafana
+
+- name: set grafana environment overrides
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/default/grafana-server
+    regexp: "^{{ item.key }}="
+    line: "{{ item.key }}={{ item.value }}"
+    create: yes
+  loop:
+    - { key: "GF_SERVER_DOMAIN", value: "{{ monitoring_domain_name }}" }
+    - { key: "GF_SERVER_ROOT_URL", value: "https://{{ monitoring_domain_name }}/" }
+    - { key: "GF_SECURITY_ADMIN_PASSWORD", value: "{{ grafana_admin_password }}" }
+  notify: restart_grafana
+
+- name: enable and restart grafana-server
+  become: yes
+  ansible.builtin.systemd:
+    name: grafana-server
+    enabled: yes
+    state: restarted
