@@ -29,7 +29,7 @@
   when: not composer_binary.stat.exists
 - name: verify composer installer
   ansible.builtin.shell: |
-    EXPECTED_HASH="ed0feb545ba87161262f2d45a633e34f591ebb3381f2e0063c345ebea4d228dd0043083717770234ec00c5a9f9593792"
+    EXPECTED_HASH="c8b085408188070d5f52bcfe4ecfbee5f727afa458b2573b8eaaf77b3419b0bf2768dc67c86944da1544f06fa544fd47"
     ACTUAL_HASH=$(php -r "echo hash_file('sha384', '/tmp/composer-setup.php');")
     if [ "$EXPECTED_HASH" != "$ACTUAL_HASH" ]; then
       echo "Installer corrupt"

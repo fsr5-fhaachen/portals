@@ -1,0 +1,75 @@
+- name: create redis_exporter system group
+  become: yes
+  ansible.builtin.group:
+    name: redis_exporter
+    system: yes
+    state: present
+
+- name: create redis_exporter system user
+  become: yes
+  ansible.builtin.user:
+    name: redis_exporter
+    group: redis_exporter
+    system: yes
+    shell: /usr/sbin/nologin
+    create_home: no
+    state: present
+
+- name: check if redis_exporter is installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/redis_exporter
+  register: redis_exporter_binary
+
+- name: download redis_exporter
+  ansible.builtin.get_url:
+    url: "https://github.com/oliver006/redis_exporter/releases/download/v{{ redis_exporter_version }}/redis_exporter-v{{ redis_exporter_version }}.linux-amd64.tar.gz"
+    checksum: "sha256:https://github.com/oliver006/redis_exporter/releases/download/v{{ redis_exporter_version }}/sha256sums.txt"
+    dest: /tmp/redis_exporter.tar.gz
+    mode: "0644"
+  when: not redis_exporter_binary.stat.exists
+
+- name: extract redis_exporter
+  ansible.builtin.unarchive:
+    src: /tmp/redis_exporter.tar.gz
+    dest: /tmp
+    remote_src: yes
+  when: not redis_exporter_binary.stat.exists
+
+- name: install redis_exporter binary
+  ansible.builtin.copy:
+    src: "/tmp/redis_exporter-v{{ redis_exporter_version }}.linux-amd64/redis_exporter"
+    dest: /usr/local/bin/redis_exporter
+    remote_src: yes
+    owner: root
+    group: root
+    mode: "0755"
+  when: not redis_exporter_binary.stat.exists
+
+- name: clean up redis_exporter download artifacts
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /tmp/redis_exporter.tar.gz
+    - "/tmp/redis_exporter-v{{ redis_exporter_version }}.linux-amd64"
+  when: not redis_exporter_binary.stat.exists
+
+- name: create redis_exporter systemd unit
+  become: yes
+  ansible.builtin.template:
+    src: redis_exporter.service.j2
+    dest: /etc/systemd/system/redis_exporter.service
+    mode: "0640"
+  notify: restart_redis_exporter
+
+- name: reload systemd
+  become: yes
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: enable and start redis_exporter
+  become: yes
+  ansible.builtin.systemd:
+    name: redis_exporter.service
+    enabled: yes
+    state: started
