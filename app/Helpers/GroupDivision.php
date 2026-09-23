@@ -30,7 +30,7 @@ abstract class GroupDivision
     {
         $this->event = $event;
         $this->groups = $event->groups()->get();
-        $this->registrations = $event->registrations()->get();
+        $this->registrations = $event->registrations()->with('user')->get();
         $this->assignByAlc = $assignByAlc;
         $this->maxGroups = $maxGroups;
         $this->maxGroupSize = $maxGroupSize;
@@ -90,7 +90,7 @@ abstract class GroupDivision
      */
     public function getOpenGroupSpots(Group $group)
     {
-        $takenSpots = $group->registrations()->count();
+        $takenSpots = $this->registrations->where('group_id', '=', $group->id)->count();
 
         return $this->maxGroupSize ? ($this->maxGroupSize - $takenSpots) : PHP_INT_MAX;
     }
@@ -107,7 +107,7 @@ abstract class GroupDivision
         // If there is a maxGroupSize, only assign to groups that have not yet hit it
         if ($this->maxGroupSize > 0) {
             $groupsWithOpenSpots = $groupsWithOpenSpots->filter(function ($val, $key) {
-                return $val->registrations()->count() < $this->maxGroupSize;
+                return $this->registrations->where('group_id', '=', $val->id)->count() < $this->maxGroupSize;
             });
         }
 
@@ -177,7 +177,7 @@ abstract class GroupDivision
         // Sort groupsWithOpenSpots by how many people are assigned to it, so the one with the least people is in first place
         $groupsWithOpenSpots = $this->getGroupsWithOpenSpots()
             ->sortBy(function ($group) {
-                return $group->registrations()->count();
+                return $this->registrations->where('group_id', '=', $group->id)->count();
             });
         if ($groupsWithOpenSpots->isEmpty()) {
             return;
@@ -197,7 +197,8 @@ abstract class GroupDivision
 
             if ($cycleAssignByAlc && $registration->drinks_alcohol) {
                 $group = $groupsWithOpenSpots->filter(function ($val, $key) {
-                    return $val->registrations()
+                    return $this->registrations
+                        ->where('group_id', '=', $val->id)
                         ->where('drinks_alcohol', '=', false)
                         ->count() > 0;
                 })
@@ -224,7 +225,7 @@ abstract class GroupDivision
 
             // Sort the groups to have the group with least people in front again
             $groupsWithOpenSpots = $groupsWithOpenSpots->sortBy(function ($group) {
-                return $group->registrations()->count();
+                return $this->registrations->where('group_id', '=', $group->id)->count();
             });
         }
     }

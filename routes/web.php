@@ -3,9 +3,9 @@
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\DashboardAdminController;
+use App\Http\Controllers\DashboardAdminCountdownController;
 use App\Http\Controllers\DashboardAdminRandomGeneratorController;
 use App\Http\Controllers\DashboardAdminScoreSystemController;
-use App\Http\Controllers\DashboardAdminCountdownController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
@@ -35,7 +35,7 @@ Route::middleware(RedirectIfAuthenticated::class)->group(function () {
     Route::get('/login', [AppController::class, 'login'])->name('app.login');
     Route::post('/login', [AppController::class, 'loginUser'])->name('app.loginUser');
 
-    Route::middleware(ActiveModule::class . ':registration')->group(function () {
+    Route::middleware(ActiveModule::class.':registration')->group(function () {
         Route::get('/register', [AppController::class, 'register'])->name('app.register');
         Route::post('/register', [AppController::class, 'registerUser'])->name('app.registerUser');
     });
@@ -93,19 +93,19 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
             Route::post('/event/{event}/submit', [DashboardAdminController::class, 'eventExecuteSubmit'])->name('dashboard.admin.event.executeSubmit');
         });
 
-        Route::middleware(ActiveModule::class . ':randomGenerator', 'can:manage random generator')->group(function () {
+        Route::middleware(ActiveModule::class.':randomGenerator', 'can:manage random generator')->group(function () {
             Route::get('/random-generator', [DashboardAdminRandomGeneratorController::class, 'index'])->name('dashboard.admin.randomGenerator.index');
             Route::post('/random-generator', [DashboardAdminRandomGeneratorController::class, 'indexExecuteSubmit'])->name('dashboard.admin.randomGenerator.indexExecuteSubmit');
             Route::get('/random-generator/display', [DashboardAdminRandomGeneratorController::class, 'display'])->name('dashboard.admin.randomGenerator.display');
         });
 
-        Route::middleware(ActiveModule::class . ':scoreSystem', 'can:manage score system')->group(function () {
+        Route::middleware(ActiveModule::class.':scoreSystem', 'can:manage score system')->group(function () {
             Route::get('/score-system', [DashboardAdminScoreSystemController::class, 'index'])->name('dashboard.admin.scoreSystem.index');
             Route::post('/score-system', [DashboardAdminScoreSystemController::class, 'indexExecuteSubmit'])->name('dashboard.admin.scoreSystem.indexExecuteSubmit');
             Route::get('/score-system/display', [DashboardAdminScoreSystemController::class, 'display'])->name('dashboard.admin.scoreSystem.display');
         });
 
-        Route::middleware(ActiveModule::class . ':countdown', 'can:manage countdown')->group(function () {
+        Route::middleware(ActiveModule::class.':countdown', 'can:manage countdown')->group(function () {
             Route::get('/countdown', [DashboardAdminCountdownController::class, 'index'])->name('dashboard.admin.countdown.index');
             Route::post('/countdown', [DashboardAdminCountdownController::class, 'indexExecuteSubmit'])->name('dashboard.admin.countdown.indexExecuteSubmit');
             Route::get('/countdown/display', [DashboardAdminCountdownController::class, 'display'])->name('dashboard.admin.countdown.display');
@@ -116,25 +116,25 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
 });
 
 // public routes without authentication
-Route::prefix('public')->group(function () {
-    Route::middleware(ActivePublicModule::class . ':randomGenerator')->group(function () {
+Route::prefix('public')->middleware('throttle:api')->group(function () {
+    Route::middleware(ActivePublicModule::class.':randomGenerator')->group(function () {
         Route::get('/random-generator', [DashboardAdminRandomGeneratorController::class, 'display'])->name('public.randomGenerator');
         Route::get('/api/random-generator/state', [ApiController::class, 'randomGeneratorState'])->name('public.api.randomGeneratorState');
     });
 
-    Route::middleware(ActivePublicModule::class . ':scoreSystem')->group(function () {
+    Route::middleware(ActivePublicModule::class.':scoreSystem')->group(function () {
         Route::get('/score-system', [DashboardAdminScoreSystemController::class, 'display'])->name('public.scoreSystem');
         Route::get('/api/score-system/state', [ApiController::class, 'scoreSystemState'])->name('public.api.scoreSystemState');
     });
 
-    Route::middleware(ActivePublicModule::class . ':countdown')->group(function () {
+    Route::middleware(ActivePublicModule::class.':countdown')->group(function () {
         Route::get('/countdown', [DashboardAdminCountdownController::class, 'display'])->name('public.countdown');
         Route::get('/api/countdown/state', [ApiController::class, 'countdownState'])->name('public.api.countdownState');
     });
 });
 
 // api routes with authentication
-Route::prefix('api')->middleware(Authenticate::class)->group(function () {
+Route::prefix('api')->middleware([Authenticate::class, 'throttle:api'])->group(function () {
     Route::middleware(IsLoggedInTutor::class)->group(function () {
         Route::get('/events/{event}/registrations-amount', [ApiController::class, 'eventRegistrationsAmount'])->name('api.event.registrationsAmount');
         Route::get('/events/registrations-amount', [ApiController::class, 'eventsRegistrationsAmount'])->name('api.events.registrationsAmount');
@@ -164,15 +164,15 @@ Route::prefix('api')->middleware(Authenticate::class)->group(function () {
 
     Route::get('/registrations/{registration}', [ApiController::class, 'registrationsShow'])->name('api.registrations.show');
 
-    Route::middleware(ActiveModule::class . ':randomGenerator', 'can:manage random generator')->group(function () {
+    Route::middleware(ActiveModule::class.':randomGenerator', 'can:manage random generator')->group(function () {
         Route::get('/random-generator/state', [ApiController::class, 'randomGeneratorState'])->name('api.randomGeneratorState');
     });
 
-    Route::middleware(ActiveModule::class . ':scoreSystem', 'can:manage score system')->group(function () {
+    Route::middleware(ActiveModule::class.':scoreSystem', 'can:manage score system')->group(function () {
         Route::get('/score-system/state', [ApiController::class, 'scoreSystemState'])->name('api.scoreSystemState');
     });
 
-    Route::middleware(ActiveModule::class . ':countdown', 'can:manage countdown')->group(function () {
+    Route::middleware(ActiveModule::class.':countdown', 'can:manage countdown')->group(function () {
         Route::get('/countdown/state', [ApiController::class, 'countdownState'])->name('api.countdownState');
     });
 });

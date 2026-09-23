@@ -7,6 +7,9 @@ User=root
 Group=root
 WorkingDirectory={{ portals_local_path }}
 ExecStart=/usr/bin/php artisan octane:start
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
 StandardOutput=append:/var/log/octane.log
 StandardError=append:/var/log/octane-error.log
 

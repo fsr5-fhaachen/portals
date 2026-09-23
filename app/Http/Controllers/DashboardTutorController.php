@@ -35,10 +35,7 @@ class DashboardTutorController extends Controller
             return Inertia::render('Dashboard/404');
         }
         $event->slots = $event->slots()->with('registrations')->get();
-        $event->groups = $event->groups()->with('registrations')->get();
-        foreach ($event->groups as $group) {
-            $group->courses = $group->courses()->get();
-        }
+        $event->groups = $event->groups()->with(['registrations', 'courses'])->get();
         $event->registrations = $event->registrations()->with('user')->get();
 
         $courses = Course::all();
