@@ -46,7 +46,7 @@ import { ref, PropType, watch } from "vue";
 import { TableColumn } from "../../types/table-column";
 import { TableFunction } from "../../types/table-function";
 import { TableButton } from "../../types/table-button";
-import { roleColors } from "../../roleColors";
+import { roleColors } from "../../composables/useRoleColors";
 
 const props = defineProps({
   user: {
