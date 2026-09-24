@@ -1,12 +1,12 @@
 # Deployment
 
-This repo contains an automated way to deploy the application to a [Hetzner Cloud](https://hetzner.cloud/?ref=QVP9EsLHwtNY) server using [Terraform](https://developer.hashicorp.com/terraform) or [OpenTofu](https://opentofu.org/) and [Ansible](https://docs.ansible.com/).
+This repo contains an automated way to deploy the application to a [Hetzner Cloud](https://www.hetzner.com/?mtm_campaign=fh_aachen-ersti26&mtm_medium=referral&mtm_content=sponsoring_link) server using [Terraform](https://developer.hashicorp.com/terraform) or [OpenTofu](https://opentofu.org/) and [Ansible](https://docs.ansible.com/).
 
 ## Prerequisites
 
-- A Hetzner Cloud account. You can create one [here](https://hetzner.cloud/?ref=QVP9EsLHwtNY).
-- A Hetzner Cloud API token. You can create them in the [Hetzner Cloud Console](https://hetzner.cloud/?ref=QVP9EsLHwtNY).
-- Hetzner Cloud S3 credentials. You can create them in the [Hetzner Cloud Console](https://hetzner.cloud/?ref=QVP9EsLHwtNY).
+- A Hetzner Cloud account. You can create one [here](https://www.hetzner.com/?mtm_campaign=fh_aachen-ersti26&mtm_medium=referral&mtm_content=sponsoring_link).
+- A Hetzner Cloud API token. You can create them in the [Hetzner Cloud Console](https://www.hetzner.com/?mtm_campaign=fh_aachen-ersti26&mtm_medium=referral&mtm_content=sponsoring_link).
+- Hetzner Cloud S3 credentials. You can create them in the [Hetzner Cloud Console](https://www.hetzner.com/?mtm_campaign=fh_aachen-ersti26&mtm_medium=referral&mtm_content=sponsoring_link).
 - A Cloudflare account with the domain connected to it.
 - A Cloudflare API token with permissions to manage DNS records. You can create them in the [Cloudflare Dashboard](https://dash.cloudflare.com/).
 - [Terraform](https://developer.hashicorp.com/terraform) or [OpenTofu](https://opentofu.org/) installed on your local machine.

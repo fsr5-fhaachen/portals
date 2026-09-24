@@ -34,7 +34,7 @@
       </div>
       <div class="mt-6 px-2 text-sm text-gray-500">
         <AppLink
-          href="https://hetzner.cloud/?ref=QVP9EsLHwtNY"
+          href="https://www.hetzner.com/?mtm_campaign=fh_aachen-ersti26&mtm_medium=referral&mtm_content=sponsoring_link"
           theme="none"
           class="flex flex-col items-center justify-center gap-2"
         >
