@@ -46,6 +46,7 @@ import { ref, PropType, watch } from "vue";
 import { TableColumn } from "../../types/table-column";
 import { TableFunction } from "../../types/table-function";
 import { TableButton } from "../../types/table-button";
+import { roleColors } from "../../composables/useRoleColors";
 
 const props = defineProps({
   user: {
@@ -161,9 +162,15 @@ function getColumns(): Array<TableColumn> {
       let ret = "";
       if (user.roles.length) {
         ret += '<div class="flex flex-col gap-2">';
-        for (const role of user.roles) {
+        for (const role of user.roles.sort((a, b) =>
+          a.name.localeCompare(b.name),
+        )) {
+          const color = roleColors[role.name] ?? "bg-slate-500";
+
           ret +=
-            '<span class="rounded-md bg-slate-900 p-1 text-xs text-white">' +
+            '<span class="rounded-md ' +
+            color +
+            ' text-xs text-white text-center">' +
             role.name +
             "</span>";
         }
