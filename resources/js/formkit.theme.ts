@@ -7,7 +7,7 @@ const textClassification = {
 
 const boxClassification = {
   fieldset: "max-w-md border border-gray-400 rounded-md px-2 pb-1",
-  legend: "font-bold text-sm",
+  legend: "font-bold text-sm dark:text-gray-200",
   wrapper: "relative flex items-start cursor-pointer items-center",
   help: "mb-2",
   inner: "flex items-center h-5",

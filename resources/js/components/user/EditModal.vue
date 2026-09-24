@@ -100,7 +100,7 @@
                       "
                     >
                       <FormKit
-                        type="select"
+                        type="checkbox"
                         name="role_id"
                         label="Rollen"
                         placeholder="Wähle eine oder mehrere Rollen aus"
