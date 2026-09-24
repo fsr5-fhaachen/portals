@@ -2,6 +2,12 @@ portals_repo_url: "https://github.com/fsr5-fhaachen/portals.git"
 portals_local_path: "/opt/portals"
 portals_branch_or_tag: "main"
 portals_seed_database: false
+# each of these copies its file/folder and (for tutors/students) runs only that one
+# seeder, independent of portals_seed_database and of each other
+portals_seed_tutors: false
+portals_seed_students: false
+portals_seed_telegram: false
+portals_seed_avatars: false
 
 # tune to the actual vCPU count of the target server
 octane_workers: 4
