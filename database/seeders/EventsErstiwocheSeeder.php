@@ -220,19 +220,19 @@ class EventsErstiwocheSeeder extends Seeder
     }
 
     /**
-     * Run the "Mix and Mingle bei Mocktail und Bingo" event seeds.
+     * Run the "Cocktail und Mocktail Abend" event seeds.
      */
     public function runMocktail(): void
     {
-        // check if event with name "Mix and Mingle bei Mocktail und Bingo" exists
-        $event = Event::where('name', 'Mix and Mingle bei Mocktail und Bingo')->first();
+        // check if event with name "Cocktail und Mocktail Abend" exists
+        $event = Event::where('name', 'Cocktail und Mocktail Abend')->first();
         if ($event) {
             return;
         }
 
         // create a new event
         $event = new Event;
-        $event->name = 'Mix and Mingle bei Mocktail und Bingo';
+        $event->name = 'Cocktail und Mocktail Abend';
         $event->description = '<p>Geselliges Beisammensein mit Mocktails und einem kleinen Programm.</p>';
         $event->type = 'event_registration';
         $event->registration_from = new DateTime('2026-09-28 8:00:00');
@@ -413,7 +413,7 @@ class EventsErstiwocheSeeder extends Seeder
         // create a new event
         $event = new Event;
         $event->name = 'Kneipentour';
-        $event->description = '<p>Sei Teil unserer Kneipentour, um die besten Bars zu entdecken, unterhaltsame Spiele zu genießen und deine Kommilitonen kennenzulernen.</p>';
+        $event->description = '<p>Sei Teil unserer Kneipentour, um die besten Bars zu entdecken, unterhaltsame Spiele zu genießen und deine Kommilitonen kennenzulernen. Wer nicht trinkt ist trotzdem herzlich eingeladen!</p>';
         $event->type = 'group_phase';
         $event->registration_from = new DateTime('2026-09-28 8:00:00');
         $event->registration_to = new DateTime('2026-09-30 17:00:00');
@@ -450,21 +450,21 @@ class EventsErstiwocheSeeder extends Seeder
     public function runKaterbrunch(): void
     {
         // check if event with name "Katerbrunch" exists
-        $event = Event::where('name', 'Katerbrunch')->first();
+        $event = Event::where('name', 'Ersti-Brunch')->first();
         if ($event) {
             return;
         }
 
         // create a new event
         $event = new Event;
-        $event->name = 'Katerbrunch';
-        $event->description = '<p>Nachdem wir alle nach der Kneipentour am Mittwoch Abend etwas verkatert sind, gibt es doch nichts besseres als zusammen bei einem guten Fr&uuml;hst&uuml;ck auszukatern 😊 <br />Hierf&uuml;r bitte wir euch die 3&euro; Anmeldegeb&uuml;hr am Montag zwischen 12:30 und 14:00 Uhr, Mittwoch zwischen 10:00 und 14:00 Uhr im FSR oder vor Ort zu bezahlen, sonst k&ouml;nnt ihr leider nicht teilnehmen.</p>
+        $event->name = 'Ersti-Brunch';
+        $event->description = '<p>Nachdem wir alle nach der Kneipentour am Mittwoch Abend etwas müde sind, gibt es doch nichts besseres als ein etwas späteres gemeinsames Fr&uuml;hst&uuml;ck 😊 <br />
         <p><strong>Wann:</strong> 01.10. ab 12:30 Uhr <br /><strong>Wo:</strong> FH, am D Geb&auml;ude <br /><strong>Was mitbringen:</strong> Tasse/ Becher und Teller ggf, Picknickdecke bei gutem Wetter.</p>
-        <p>Im Anschluss findet noch ein spannender Spieleabend mit Brettspielen und Quizshow statt.</p> <br/>
+        <p>Im Anschluss findet noch ein spannender Spieleabend mit Brettspielen und Switch statt.</p> <br/>
         <p>Wir freuen uns auf euch</p>';
         $event->type = 'event_registration';
         $event->registration_from = new DateTime('2026-09-28 8:00:00');
-        $event->registration_to = new DateTime('2026-10-01 12:20:00');
+        $event->registration_to = new DateTime('2026-10-01 12:30:00');
         $event->has_requirements = true;
         $event->consider_alcohol = false;
         $event->sort_order = 140;
@@ -498,19 +498,23 @@ class EventsErstiwocheSeeder extends Seeder
         $event->description = '<p>Auch sportliche Aktivitäten kommen bei uns nicht zu kurz. Ihr könnt euch am Freitag richtig auspowern.</p>
             <p>Bitte beachtet auch die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
             <p><strong>Hochschulport:</strong> Hattet Ihr schon genug Saufsport diese Woche und wollt mal wieder richtigen Sport machen? Dann kommt mit uns zum Sportzentrum Königshügel! Egal ob Ihr Lust auf Fußball, Volleyball oder Basketball habt, dort gibt es alles. Nebenbei lernt Ihr den zentralen Ort für den Aachener Hochschulsport kennen und könnt euch über weitere Angebote und Events informieren.</p>
-            <p>Bitte denk an genügend zu trinken. Das Event findet outdoor statt, also nimm feste Schuhe und entsprechende Kleidung mit.</p><br>
+            <p>Bitte denk an genügend zu trinken. Das Event findet outdoor und indoor statt, also nimm feste Schuhe und entsprechende Kleidung mit.</p>
+            <p><strong>Wichtig:</strong> Fußball wird auf dem Rasen gespielt und Beachvolleyball im Sand. Basketball gibt es Indoor und ist <strong>nur mit Hallenschuhen</strong> spielbar.</p>
+            <p><strong>Treffpunkt:</strong> Königshügel, Sporthalle Eckertweg 11:45 Uhr vor Ort.</p><br>
             <p><strong>Yoga:</strong> Trinken oder nicht trinken, das ist hier nicht die Frage. Stelle deine Yogafähigkeiten beim herabschauenden Hund oder beim Krieger 2 unter Beweis. Mit oder ohne Spaßgetränk, hier kannst du zeigen, dass in dir mehr Beweglichkeit steckt, als in deinem Bürostuhl.</p>
-            <p>Hierfür brauchst du Sportsachen und gegebenenfalls ein Getränk und eine Unterlage.</p><br>
+            <p>Hierfür brauchst du Sportsachen und gegebenenfalls ein Getränk und eine Unterlage.</p>
+            <p><strong>Treffpunkt:</strong> FH Gut Bodenhof / Bei schlechtem Wetter D001 16 Uhr vor Ort.</p><br>
             <p><strong>Bouldern:</strong> Einfach losklettern! Bouldern ist Klettern in Absprunghöhe - keine Vorkenntnisse nötig, nur Neugier und ein bisschen Abenteuerlust. Gemeinsam tüfteln, Routen ausprobieren und Erfolge feiern macht dabei besonders viel Spaß. Perfekt, um dich auszupowern, Neues auszuprobieren und vielleicht deine neue Lieblingssportart zu entdecken.</p>
             <p>Was du brauchst: Sportklamotten, Getränk, Bussticket, Studierendennachweis, Hallenschuhe oder Boulderschuhe, ggf. Bargeld.
             Boulderschuhe können auch vor Ort auf eigene Kosten ausgeliehen werden. Allerdings sind nicht genügend Leihschuhe für alle da, also bringt wenn möglich eigene mit.</p>
-            <p><strong>Anmeldegebühr: 5€</strong></p>
-            <p><strong>Wichtig: </strong>Wer teilnehmen möchte, muss die <a href="https://www.campusboulderhalle.de/info/agb-bouldern/" target="_blank">AGB</a> unterschreiben. Das Formular dafür holt ihr euch im FSR, wenn ihr die Gebühr bezahlt.</p></p><br>
-            <p><strong>Lasertag:</strong> Beim Lasertag kannst du dein Aim unter Beweis stellen und den anderen zeigen das du nicht nur Online zielen kannst.
-            <p><strong>Anmeldegebühr: 5€</strong></p><br>
+            <p><strong>Wichtig: </strong>Wer teilnehmen möchte, muss die <a href="https://www.campusboulderhalle.de/info/agb-bouldern/" target="_blank">AGB</a> unterschreiben. Das Formular dafür holt ihr euch im FSR ab.</p></p>
+            <p><strong>Treffpunkt:</strong> CAMPUS Boulderhalle 11:45 Uhr vor Ort.</p><br>
+            <p><strong>Lasertag: </strong>Beim Lasertag kannst du dein Aim unter Beweis stellen und den anderen zeigen das du nicht nur Online zielen kannst.
+            <p><strong>Anmeldegebühr: </strong>5€</p>
+            <p><strong>Treffpunkt:</strong> LaserZone Würselen 11:30 Uhr vor Ort.</p><br>
             <p><strong>Allgemein:</strong> Anmeldegebühren zahlt ihr bitte am Montag zwischen 12:30 und 14:00 Uhr oder am Mittwoch zwischen 10:00 und 14:00 Uhr im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben.</p>
-            <p>Wer bei Trinkyoga mitmacht, kann sich auch zur Foodtour unter "Kultur" anmelden. Andere Kombinationen sind zeitlich leider nicht möglich.</p>
-            <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
+            <p>Wer bei Trinkyoga mitmacht, kann sich auch zur Foodtour unter "Kultur" anmelden. <strong>Andere Kombinationen sind zeitlich leider nicht möglich.</strong></p>
+            <p>Die Treffpunkte und Zeiten werden auch nochmal im Telegram Info Channel gepostet.</p>
             <p>Wir freuen uns auf euch!</p>';
         $event->type = 'slot_booking';
         $event->registration_from = new DateTime('2026-09-28 08:00:00');
@@ -532,7 +536,7 @@ class EventsErstiwocheSeeder extends Seeder
             [
                 'name' => 'Bouldern',
                 'has_requirements' => true,
-                'maximum_participants' => 57,
+                'maximum_participants' => 25,
             ],
             [
                 'name' => 'Trinkyoga',
@@ -542,7 +546,7 @@ class EventsErstiwocheSeeder extends Seeder
             [
                 'name' => 'Lasertag',
                 'has_requirements' => true,
-                'maximum_participants' => 50,
+                'maximum_participants' => 37,
             ],
         ];
 
@@ -571,14 +575,14 @@ class EventsErstiwocheSeeder extends Seeder
         // create a new event
         $event = new Event;
         $event->name = 'Kultur';
-        $event->description = '<p>Den Tivoli erkunden, Ziegen streicheln oder sich einfach den Bauch richtig voll schlagen?
+        $event->description = '<p>Den Tivoli erkunden oder sich einfach den Bauch richtig voll schlagen?
             Auch das ist am Freitag in der Erstiwoche möglich.</p>
             <p>Bitte beachtet die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
-            <p><strong>Tivoli-Tour:</strong> Bei der Stadiontour durch das Alemannia Aachen Stadion hast du exklusiv die Möglichkeit, einen Blick hinter die Kulissen zu werfen. Du erlebst hautnah Bereiche, die sonst nur Spielern oder Sponsoren vorbehalten sind - und das sogar kostenlos! Am Ende der Tour erwartet alle Teilnehmer*innen noch eine Überraschung. Also, worauf wartest du noch?</p><br>
-            <p><strong>Tierpark:</strong> Egal, ob Aachener oder nicht, der Aachener Tierpark bietet euch ein tolles Erlebnis vor MensaBeats. Entspannt coole Tiere ansehen und Kindheitserinnerungen wecken oder einen weiteren Teil der Aachener Kultur entdecken. Sei dabei und lass den Aachener Tierpark das vorletzte Erlebnis deiner Ersti-Woche werden!</p>
-            <p>Hier ist dein Studierendennachweis und ggf. ein Busticket wichtig.</p><br>
+            <p><strong>Tivoli-Tour:</strong> Bei der Stadiontour durch das Alemannia Aachen Stadion hast du exklusiv die Möglichkeit, einen Blick hinter die Kulissen zu werfen. Du erlebst hautnah Bereiche, die sonst nur Spielern oder Sponsoren vorbehalten sind - und das sogar kostenlos! Am Ende der Tour erwartet alle Teilnehmer*innen noch eine Überraschung. Also, worauf wartest du noch?</p>
+            <p><strong>Treffpunkt:</strong> Tivoli 13:45 Uhr vor Ort.</p><br>
             <p><strong>Foodtour:</strong> Bist du neu in Aachen und willst wissen wo man nach den Vorlesungen etwas Leckeres zu Essen findet? Oder hast du einfach Lust dich durch die verschiedenen Restaurants und Buden Aachens zu probieren? Dann ist die Foodtour genau das Richtige für dich! Zieh mit uns los und lerne Aachener Spezialitäten und andere leckere und besondere Speisen kennen.</p>
-            <p>Das Essen wird selber bezahlt, denke also an Bargeld.</p><br>
+            <p>Das Essen wird selber bezahlt, denke also an Bargeld.</p>
+            <p><strong>Treffpunkt:</strong> Haupteingang E Gebäude 11:45 Uhr vor Ort.</p><br>
             <p><strong>Allgemein:</strong> Wer bei der Foodtour mitmacht, kann sich auch zum Trinkyoga unter "Sport" anmelden. Andere Kombinationen sind zeitlich leider nicht möglich.</p>
             <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
             <p>Wir freuen uns auf euch!</p>';
@@ -599,14 +603,9 @@ class EventsErstiwocheSeeder extends Seeder
                 'maximum_participants' => 15,
             ],
             [
-                'name' => 'Tierpark',
-                'has_requirements' => false,
-                'maximum_participants' => 20,
-            ],
-            [
                 'name' => 'Foodtour',
                 'has_requirements' => false,
-                'maximum_participants' => 60,
+                'maximum_participants' => 75,
             ],
         ];
 
