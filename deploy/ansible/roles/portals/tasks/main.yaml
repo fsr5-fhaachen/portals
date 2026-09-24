@@ -55,12 +55,6 @@
     mode: "0644"
   when: portals_seed_database | default(false) or portals_seed_telegram | default(false)
 - name: create avatars
-  # NOTE: the source folder is kept named "avatars" (matches the existing local convention/
-  # convert.py helper), but TutorSeeder/StudentSeeder only ever read from "database/seeders/images"
-  # locally (the "avatars/" they reference is just the S3 upload destination) - the destination
-  # here is fixed to match, otherwise photos are copied to a path the seeders never look at.
-  # The trailing slash on src copies the folder's *contents* directly into dest, instead of
-  # nesting them one level deeper under an extra "avatars" subfolder.
   ansible.builtin.copy:
     dest: "{{ portals_local_path }}/database/seeders/images"
     src: ../../../avatars/
