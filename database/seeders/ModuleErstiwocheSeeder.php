@@ -18,13 +18,18 @@ class ModuleErstiwocheSeeder extends Seeder
                 'active' => true,
                 'expose_public' => false,
             ],
+            [
+                'key' => 'scoring',
+                'active' => true,
+                'expose_public' => false,
+            ],
         ];
 
         foreach ($modules as $module) {
             // check if module with key already exists
             $existingModule = Module::where('key', $module['key'])->first();
             if (! $existingModule) {
-                throw new \Exception('Module with key "' . $module['key'] . '" not found.');
+                throw new \Exception('Module with key "'.$module['key'].'" not found.');
             }
 
             // update module

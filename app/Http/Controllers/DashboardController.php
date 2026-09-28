@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\AuditRecorder;
 use App\Models\Event;
 use App\Models\Page;
 use Illuminate\Http\RedirectResponse;
@@ -43,29 +44,36 @@ class DashboardController extends Controller
      */
     public function loginTutor(Request $request): RedirectResponse
     {
-        $neededPassword = '';
-        $successMessage = '';
+        $user = Auth::user();
 
-        // check we need a password
-        if (Auth::user()->hasRole(['admin', 'super admin'])) {
+        // check which password we need
+        if ($user->hasRole(['admin', 'super admin'])) {
             $neededPassword = config('app.admin_password');
             $successMessage = 'Du wurdest als Admin angemeldet.';
-        } elseif (Auth::user()->hasRole(['esa', 'stage tutor', 'tutor'])) {
+            $auditEvent = 'adminLogin';
+        } elseif ($user->hasRole(['esa', 'stage tutor', 'tutor'])) {
             $neededPassword = config('app.tutor_password');
             $successMessage = 'Du wurdest als Tutor angemeldet.';
+            $auditEvent = 'tutorLogin';
+        } else {
+            Session::flash('error', 'Du hast keine Berechtigung, dich als Tutor anzumelden.');
+
+            return redirect()->back();
         }
 
-        if ($neededPassword) {
-            if ($request->input('password') == $neededPassword) {
-                session(['tutor' => true]);
-                Session::flash('success', $successMessage);
-                $intendedUrl = session('url.intended');
-                return redirect()->to($intendedUrl ?: route('dashboard.index'));
-            } else {
-                Session::flash('error', 'Das Passwort ist falsch.');
-                return redirect()->back();
-            }
+        if (! $neededPassword || ! hash_equals((string) $neededPassword, (string) $request->input('password'))) {
+            AuditRecorder::record($user, $auditEvent.'Failed');
+            Session::flash('error', 'Das Passwort ist falsch.');
+
+            return redirect()->back();
         }
+
+        session(['tutor' => true]);
+        AuditRecorder::record($user, $auditEvent);
+        Session::flash('success', $successMessage);
+        $intendedUrl = session('url.intended');
+
+        return redirect()->to($intendedUrl ?: route('dashboard.index'));
     }
 
     /**

@@ -2,13 +2,16 @@
 
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\AppController;
+use App\Http\Controllers\DashboardAdminAuditLogController;
 use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\DashboardAdminCountdownController;
 use App\Http\Controllers\DashboardAdminRandomGeneratorController;
 use App\Http\Controllers\DashboardAdminScoreSystemController;
+use App\Http\Controllers\DashboardAdminScoringController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
+use App\Http\Controllers\DashboardTutorScoringController;
 use App\Http\Middleware\ActiveModule;
 use App\Http\Middleware\ActivePublicModule;
 use App\Http\Middleware\IsLoggedInAdmin;
@@ -64,6 +67,13 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
         Route::get('/event/{event}', [DashboardTutorController::class, 'event'])->name('dashboard.tutor.event.index');
         Route::get('/slot/{slot}', [DashboardTutorController::class, 'slot'])->name('dashboard.tutor.slot.index');
         Route::get('/group/{group}', [DashboardTutorController::class, 'group'])->name('dashboard.tutor.group.index');
+
+        Route::middleware(ActiveModule::class.':scoring')->prefix('scoring')->group(function () {
+            Route::get('/', [DashboardTutorScoringController::class, 'index'])->name('dashboard.tutor.scoring.index');
+            Route::post('/competition/{competition}/duel', [DashboardTutorScoringController::class, 'storeDuel'])->name('dashboard.tutor.scoring.storeDuel');
+            Route::post('/duel/{duel}', [DashboardTutorScoringController::class, 'updateDuel'])->name('dashboard.tutor.scoring.updateDuel');
+            Route::delete('/duel/{duel}', [DashboardTutorScoringController::class, 'deleteDuel'])->name('dashboard.tutor.scoring.deleteDuel');
+        });
     });
 
     Route::prefix('admin')->middleware(IsLoggedInAdmin::class)->group(function () {
@@ -109,6 +119,32 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
             Route::get('/countdown', [DashboardAdminCountdownController::class, 'index'])->name('dashboard.admin.countdown.index');
             Route::post('/countdown', [DashboardAdminCountdownController::class, 'indexExecuteSubmit'])->name('dashboard.admin.countdown.indexExecuteSubmit');
             Route::get('/countdown/display', [DashboardAdminCountdownController::class, 'display'])->name('dashboard.admin.countdown.display');
+        });
+
+        Route::middleware(ActiveModule::class.':scoring', 'can:manage scoring')->prefix('scoring')->group(function () {
+            Route::get('/', [DashboardAdminScoringController::class, 'index'])->name('dashboard.admin.scoring.index');
+            Route::post('/competition', [DashboardAdminScoringController::class, 'storeCompetition'])->name('dashboard.admin.scoring.storeCompetition');
+            Route::get('/competition/{competition}', [DashboardAdminScoringController::class, 'showCompetition'])->name('dashboard.admin.scoring.competition');
+            Route::post('/competition/{competition}', [DashboardAdminScoringController::class, 'updateCompetition'])->name('dashboard.admin.scoring.updateCompetition');
+            Route::post('/competition/{competition}/toggle-open', [DashboardAdminScoringController::class, 'toggleCompetitionOpen'])->name('dashboard.admin.scoring.toggleCompetitionOpen');
+            Route::delete('/competition/{competition}', [DashboardAdminScoringController::class, 'deleteCompetition'])->name('dashboard.admin.scoring.deleteCompetition');
+
+            Route::post('/competition/{competition}/team', [DashboardAdminScoringController::class, 'storeTeam'])->name('dashboard.admin.scoring.storeTeam');
+            Route::post('/competition/{competition}/import-teams', [DashboardAdminScoringController::class, 'importTeams'])->name('dashboard.admin.scoring.importTeams');
+            Route::post('/team/{team}', [DashboardAdminScoringController::class, 'updateTeam'])->name('dashboard.admin.scoring.updateTeam');
+            Route::delete('/team/{team}', [DashboardAdminScoringController::class, 'deleteTeam'])->name('dashboard.admin.scoring.deleteTeam');
+
+            Route::post('/competition/{competition}/duel', [DashboardAdminScoringController::class, 'storeDuel'])->name('dashboard.admin.scoring.storeDuel');
+            Route::post('/duel/{duel}', [DashboardAdminScoringController::class, 'updateDuel'])->name('dashboard.admin.scoring.updateDuel');
+            Route::delete('/duel/{duel}', [DashboardAdminScoringController::class, 'deleteDuel'])->name('dashboard.admin.scoring.deleteDuel');
+
+            Route::post('/competition/{competition}/extra-point', [DashboardAdminScoringController::class, 'storeExtraPoint'])->name('dashboard.admin.scoring.storeExtraPoint');
+            Route::post('/extra-point/{extraPoint}', [DashboardAdminScoringController::class, 'updateExtraPoint'])->name('dashboard.admin.scoring.updateExtraPoint');
+            Route::delete('/extra-point/{extraPoint}', [DashboardAdminScoringController::class, 'deleteExtraPoint'])->name('dashboard.admin.scoring.deleteExtraPoint');
+        });
+
+        Route::middleware('can:view audit log')->group(function () {
+            Route::get('/audit-log', [DashboardAdminAuditLogController::class, 'index'])->name('dashboard.admin.auditLog.index');
         });
     });
 

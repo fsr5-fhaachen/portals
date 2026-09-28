@@ -53,6 +53,7 @@
 
 <script setup lang="ts">
 import { computed, PropType } from "vue";
+import { usePage } from "@inertiajs/vue3";
 
 const { initColorMode } = useColorMode();
 initColorMode();
@@ -74,19 +75,28 @@ const { pages, user } = defineProps({
     required: true,
   },
   modules: {
-    type: Array as PropType<App.Models.Module[]>,
-    default: () => [],
+    type: Object as PropType<Record<string, App.Models.Module>>,
+    default: () => ({}),
   },
 });
 
-const isTutorPage = computed(() => {
-  return window.location.pathname.includes("/dashboard/tutor");
-});
-const navigation = [
+const page = usePage();
+
+const isTutorPage = computed(() => page.url.startsWith("/dashboard/tutor"));
+const isTutor = computed(() =>
+  ["admin", "esa", "stage tutor", "tutor"].some((role) =>
+    user.rolesArray?.includes(role),
+  ),
+);
+
+const navigation = computed<NavbarLink[]>(() => [
   {
     title: "Veranstaltungen",
     href: "/dashboard" + (isTutorPage.value ? "/tutor" : ""),
   },
+  ...(page.props.modules?.["scoring"]?.active && isTutor.value
+    ? [{ title: "Scoring", href: "/dashboard/tutor/scoring" }]
+    : []),
   ...usePagesAsNavigation(pages, "/dashboard/"),
-];
+]);
 </script>

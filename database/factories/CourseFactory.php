@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Course;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Course>
+ * @extends Factory<Course>
  */
 class CourseFactory extends Factory
 {
@@ -19,7 +20,7 @@ class CourseFactory extends Factory
         return [
             'name' => $this->faker->word(),
             'abbreviation' => $this->faker->lexify('????'),
-            'color' => $this->faker->word(),
+            'classes' => 'bg-gray-500 text-white',
             'icon' => $this->faker->word(),
         ];
     }

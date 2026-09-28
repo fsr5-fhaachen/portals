@@ -25,6 +25,8 @@ class RoleSeeder extends Seeder
                 'manage random generator',
                 'manage score system',
                 'manage countdown',
+                'view audit log',
+                'manage scoring',
             ] as $permission
         ) {
             if (! Permission::where('name', $permission)->exists()) {
@@ -68,6 +70,8 @@ class RoleSeeder extends Seeder
         $adminRole->givePermissionTo($permissions['manage score system']);
         $adminRole->givePermissionTo($permissions['manage countdown']);
         $adminRole->givePermissionTo($permissions['manage users']);
+        $adminRole->givePermissionTo($permissions['view audit log']);
+        $adminRole->givePermissionTo($permissions['manage scoring']);
 
         // create super admin role if it doesn't exist
         if (! Role::where('name', 'super admin')->exists()) {
@@ -82,6 +86,8 @@ class RoleSeeder extends Seeder
         $superAdminRole->givePermissionTo($permissions['manage countdown']);
         $superAdminRole->givePermissionTo($permissions['manage users']);
         $superAdminRole->givePermissionTo($permissions['delete users']);
+        $superAdminRole->givePermissionTo($permissions['view audit log']);
+        $superAdminRole->givePermissionTo($permissions['manage scoring']);
 
         // create special role if it doesn't exist
         if (! Role::where('name', 'special')->exists()) {
