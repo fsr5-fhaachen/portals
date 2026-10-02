@@ -495,27 +495,7 @@ class EventsErstiwocheSeeder extends Seeder
         // create a new event
         $event = new Event;
         $event->name = 'Sport';
-        $event->description = '<p>Auch sportliche Aktivitäten kommen bei uns nicht zu kurz. Ihr könnt euch am Freitag richtig auspowern.</p>
-            <p>Bitte beachtet auch die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
-            <p><strong>Hochschulport:</strong> Hattet Ihr schon genug Saufsport diese Woche und wollt mal wieder richtigen Sport machen? Dann kommt mit uns zum Sportzentrum Königshügel! Egal ob Ihr Lust auf Fußball, Volleyball oder Basketball habt, dort gibt es alles. Nebenbei lernt Ihr den zentralen Ort für den Aachener Hochschulsport kennen und könnt euch über weitere Angebote und Events informieren.</p>
-            <p>Bitte denk an genügend zu trinken. Das Event findet outdoor und indoor statt, also nimm feste Schuhe und entsprechende Kleidung mit.</p>
-            <p><strong>Wichtig:</strong> Fußball wird auf dem Rasen gespielt und Beachvolleyball im Sand. Basketball gibt es Indoor und ist <strong>nur mit Hallenschuhen</strong> spielbar.</p>
-            <p><strong>Treffpunkt:</strong> Königshügel, Sporthalle Eckertweg 11:45 Uhr vor Ort.</p><br>
-            <p><strong>Yoga:</strong> Trinken oder nicht trinken, das ist hier nicht die Frage. Stelle deine Yogafähigkeiten beim herabschauenden Hund oder beim Krieger 2 unter Beweis. Mit oder ohne Spaßgetränk, hier kannst du zeigen, dass in dir mehr Beweglichkeit steckt, als in deinem Bürostuhl.</p>
-            <p>Hierfür brauchst du Sportsachen und gegebenenfalls ein Getränk und eine Unterlage.</p>
-            <p><strong>Treffpunkt:</strong> FH Gut Bodenhof / Bei schlechtem Wetter D001 16 Uhr vor Ort.</p><br>
-            <p><strong>Bouldern:</strong> Einfach losklettern! Bouldern ist Klettern in Absprunghöhe - keine Vorkenntnisse nötig, nur Neugier und ein bisschen Abenteuerlust. Gemeinsam tüfteln, Routen ausprobieren und Erfolge feiern macht dabei besonders viel Spaß. Perfekt, um dich auszupowern, Neues auszuprobieren und vielleicht deine neue Lieblingssportart zu entdecken.</p>
-            <p>Was du brauchst: Sportklamotten, Getränk, Bussticket, Studierendennachweis, Hallenschuhe oder Boulderschuhe, ggf. Bargeld.
-            Boulderschuhe können auch vor Ort auf eigene Kosten ausgeliehen werden. Allerdings sind nicht genügend Leihschuhe für alle da, also bringt wenn möglich eigene mit.</p>
-            <p><strong>Wichtig: </strong>Wer teilnehmen möchte, muss die <a href="https://www.campusboulderhalle.de/info/agb-bouldern/" target="_blank">AGB</a> unterschreiben. Das Formular dafür holt ihr euch im FSR ab.</p></p>
-            <p><strong>Treffpunkt:</strong> CAMPUS Boulderhalle 11:45 Uhr vor Ort.</p><br>
-            <p><strong>Lasertag: </strong>Beim Lasertag kannst du dein Aim unter Beweis stellen und den anderen zeigen das du nicht nur Online zielen kannst.
-            <p><strong>Anmeldegebühr: </strong>5€</p>
-            <p><strong>Treffpunkt:</strong> LaserZone Würselen 11:30 Uhr vor Ort.</p><br>
-            <p><strong>Allgemein:</strong> Anmeldegebühren zahlt ihr bitte am Montag zwischen 12:30 und 14:00 Uhr oder am Mittwoch zwischen 10:00 und 14:00 Uhr im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben.</p>
-            <p>Wer bei Trinkyoga mitmacht, kann sich auch zur Foodtour unter "Kultur" anmelden. <strong>Andere Kombinationen sind zeitlich leider nicht möglich.</strong></p>
-            <p>Die Treffpunkte und Zeiten werden auch nochmal im Telegram Info Channel gepostet.</p>
-            <p>Wir freuen uns auf euch!</p>';
+        $event->description = self::sportDescription();
         $event->type = 'slot_booking';
         $event->registration_from = new DateTime('2026-09-28 08:00:00');
         $event->registration_to = new DateTime('2026-09-30 23:59:00');
@@ -575,17 +555,7 @@ class EventsErstiwocheSeeder extends Seeder
         // create a new event
         $event = new Event;
         $event->name = 'Kultur';
-        $event->description = '<p>Den Tivoli erkunden oder sich einfach den Bauch richtig voll schlagen?
-            Auch das ist am Freitag in der Erstiwoche möglich.</p>
-            <p>Bitte beachtet die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
-            <p><strong>Tivoli-Tour:</strong> Bei der Stadiontour durch das Alemannia Aachen Stadion hast du exklusiv die Möglichkeit, einen Blick hinter die Kulissen zu werfen. Du erlebst hautnah Bereiche, die sonst nur Spielern oder Sponsoren vorbehalten sind - und das sogar kostenlos! Am Ende der Tour erwartet alle Teilnehmer*innen noch eine Überraschung. Also, worauf wartest du noch?</p>
-            <p><strong>Treffpunkt:</strong> Tivoli 13:45 Uhr vor Ort.</p><br>
-            <p><strong>Foodtour:</strong> Bist du neu in Aachen und willst wissen wo man nach den Vorlesungen etwas Leckeres zu Essen findet? Oder hast du einfach Lust dich durch die verschiedenen Restaurants und Buden Aachens zu probieren? Dann ist die Foodtour genau das Richtige für dich! Zieh mit uns los und lerne Aachener Spezialitäten und andere leckere und besondere Speisen kennen.</p>
-            <p>Das Essen wird selber bezahlt, denke also an Bargeld.</p>
-            <p><strong>Treffpunkt:</strong> Haupteingang E Gebäude 11:45 Uhr vor Ort.</p><br>
-            <p><strong>Allgemein:</strong> Wer bei der Foodtour mitmacht, kann sich auch zum Trinkyoga unter "Sport" anmelden. Andere Kombinationen sind zeitlich leider nicht möglich.</p>
-            <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
-            <p>Wir freuen uns auf euch!</p>';
+        $event->description = self::kulturDescription();
         $event->type = 'slot_booking';
         $event->registration_from = new DateTime('2026-09-28 08:00:00');
         $event->registration_to = new DateTime('2026-09-30 23:59:00');
@@ -618,5 +588,57 @@ class EventsErstiwocheSeeder extends Seeder
 
             $slot->save();
         }
+    }
+
+    /**
+     * Get the description of the "Sport" event.
+     */
+    public static function sportDescription(): string
+    {
+        return '<p>Auch sportliche Aktivitäten kommen bei uns nicht zu kurz. Ihr könnt euch am Freitag richtig auspowern.</p>
+            <p>Bitte beachtet auch die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
+            <p><strong>Hochschulport:</strong> Hattet Ihr schon genug Saufsport diese Woche und wollt mal wieder richtigen Sport machen? Dann kommt mit uns zum Sportzentrum Königshügel! Egal ob Ihr Lust auf Fußball, Volleyball oder Basketball habt, dort gibt es alles. Nebenbei lernt Ihr den zentralen Ort für den Aachener Hochschulsport kennen und könnt euch über weitere Angebote und Events informieren.</p>
+            <p>Bitte denk an genügend zu trinken. Das Event findet outdoor und indoor statt, also nimm feste Schuhe und entsprechende Kleidung mit.</p>
+            <p><strong>Wichtig:</strong> Fußball wird auf dem Rasen gespielt und Beachvolleyball im Sand. Basketball gibt es Indoor und ist <strong>nur mit Hallenschuhen</strong> spielbar.</p>
+            <p><strong>Telegram:</strong> <a href="https://t.me/+h1lXLiz8iJhhMjIy" target="_blank">https://t.me/+h1lXLiz8iJhhMjIy</a></p>
+            <p><strong>Treffpunkt:</strong> <a href="https://maps.app.goo.gl/h7rqJ9gYjBbXRu1f6" target="_blank">Königshügel, Sporthalle Eckertweg</a> 11:45 Uhr vor Ort.</p><br>
+            <p><strong>Yoga:</strong> Trinken oder nicht trinken, das ist hier nicht die Frage. Stelle deine Yogafähigkeiten beim herabschauenden Hund oder beim Krieger 2 unter Beweis. Mit oder ohne Spaßgetränk, hier kannst du zeigen, dass in dir mehr Beweglichkeit steckt, als in deinem Bürostuhl.</p>
+            <p>Hierfür brauchst du Sportsachen und gegebenenfalls ein Getränk und eine Unterlage.</p>
+            <p><strong>Telegram:</strong> <a href="https://t.me/+__cr8FlspiNjNTFi" target="_blank">https://t.me/+__cr8FlspiNjNTFi</a></p>
+            <p><strong>Treffpunkt:</strong> <a href="https://maps.app.goo.gl/chzwUuMm2SWWdoYb8" target="_blank">FH Gut Bodenhof</a> / Bei schlechtem Wetter D001 16 Uhr vor Ort.</p><br>
+            <p><strong>Bouldern:</strong> Einfach losklettern! Bouldern ist Klettern in Absprunghöhe - keine Vorkenntnisse nötig, nur Neugier und ein bisschen Abenteuerlust. Gemeinsam tüfteln, Routen ausprobieren und Erfolge feiern macht dabei besonders viel Spaß. Perfekt, um dich auszupowern, Neues auszuprobieren und vielleicht deine neue Lieblingssportart zu entdecken.</p>
+            <p>Was du brauchst: Sportklamotten, Getränk, Bussticket, Studierendennachweis, Hallenschuhe oder Boulderschuhe, ggf. Bargeld.
+            Boulderschuhe können auch vor Ort auf eigene Kosten ausgeliehen werden. Allerdings sind nicht genügend Leihschuhe für alle da, also bringt wenn möglich eigene mit.</p>
+            <p><strong>Wichtig: </strong>Wer teilnehmen möchte, muss die <a href="https://www.campusboulderhalle.de/info/agb-bouldern/" target="_blank">AGB</a> unterschreiben. Das Formular dafür holt ihr euch im FSR ab.</p>
+            <p><strong>Telegram:</strong> <a href="https://t.me/+b6AKT0MsF3QzZDEy" target="_blank">https://t.me/+b6AKT0MsF3QzZDEy</a></p>
+            <p><strong>Treffpunkt:</strong> <a href="https://maps.app.goo.gl/JYsg51y9m2ENQ47o6" target="_blank">CAMPUS Boulderhalle</a> 11:45 Uhr vor Ort.</p><br>
+            <p><strong>Lasertag: </strong>Beim Lasertag kannst du dein Aim unter Beweis stellen und den anderen zeigen das du nicht nur Online zielen kannst.</p>
+            <p><strong>Anmeldegebühr: </strong>5€</p>
+            <p><strong>Telegram:</strong> <a href="https://t.me/+xcVtkbICXHVjNWUy" target="_blank">https://t.me/+xcVtkbICXHVjNWUy</a></p>
+            <p><strong>Treffpunkt:</strong> <a href="https://maps.app.goo.gl/aBD7EDYU734Eqkuz6" target="_blank">LaserZone Würselen</a> 11:30 Uhr vor Ort.</p><br>
+            <p><strong>Allgemein:</strong> Anmeldegebühren zahlt ihr bitte am Montag zwischen 12:30 und 14:00 Uhr oder am Mittwoch zwischen 10:00 und 14:00 Uhr im FSR. Solltet ihr bis Mittwoch nicht gezahlt haben, werden eure reservierten Plätze wieder freigegeben.</p>
+            <p>Wer bei Trinkyoga mitmacht, kann sich auch zur Foodtour unter "Kultur" anmelden. <strong>Andere Kombinationen sind zeitlich leider nicht möglich.</strong></p>
+            <p>Die Treffpunkte und Zeiten werden auch nochmal im Telegram Info Channel gepostet.</p>
+            <p>Wir freuen uns auf euch!</p>';
+    }
+
+    /**
+     * Get the description of the "Kultur" event.
+     */
+    public static function kulturDescription(): string
+    {
+        return '<p>Den Tivoli erkunden oder sich einfach den Bauch richtig voll schlagen?
+            Auch das ist am Freitag in der Erstiwoche möglich.</p>
+            <p>Bitte beachtet die folgenden Hinweise zu den einzelnen Programmpunkten:</p>
+            <p><strong>Tivoli-Tour:</strong> Bei der Stadiontour durch das Alemannia Aachen Stadion hast du exklusiv die Möglichkeit, einen Blick hinter die Kulissen zu werfen. Du erlebst hautnah Bereiche, die sonst nur Spielern oder Sponsoren vorbehalten sind - und das sogar kostenlos! Am Ende der Tour erwartet alle Teilnehmer*innen noch eine Überraschung. Also, worauf wartest du noch?</p>
+            <p><strong>Telegram:</strong> <a href="https://t.me/+bbd5jIap5b1mZDNi" target="_blank">https://t.me/+bbd5jIap5b1mZDNi</a></p>
+            <p><strong>Dieser Programmpunkt muss aufgrund des Veranstalters leider ausfallen. Tretet trotzdem bitte der Telegram-Gruppe bei, um Updates und Informationen zu einem Alternativtermin zu erhalten.</strong></p><br>
+            <p><strong>Foodtour:</strong> Bist du neu in Aachen und willst wissen wo man nach den Vorlesungen etwas Leckeres zu Essen findet? Oder hast du einfach Lust dich durch die verschiedenen Restaurants und Buden Aachens zu probieren? Dann ist die Foodtour genau das Richtige für dich! Zieh mit uns los und lerne Aachener Spezialitäten und andere leckere und besondere Speisen kennen.</p>
+            <p>Das Essen wird selber bezahlt, denke also an Bargeld.</p>
+            <p><strong>Telegram:</strong> <a href="https://t.me/+-MgJhEQP_g82Yjk6" target="_blank">https://t.me/+-MgJhEQP_g82Yjk6</a></p>
+            <p><strong>Treffpunkt:</strong> <a href="https://maps.app.goo.gl/V9jqdMJuUt3sCCPb9" target="_blank">Haupteingang E Gebäude</a> 11:45 Uhr vor Ort.</p><br>
+            <p><strong>Allgemein:</strong> Wer bei der Foodtour mitmacht, kann sich auch zum Trinkyoga unter "Sport" anmelden. Andere Kombinationen sind zeitlich leider nicht möglich.</p>
+            <p>Die genauen Treffpunkte und Zeiten posten wir rechtzeitig im Telegram Info Channel.</p>
+            <p>Wir freuen uns auf euch!</p>';
     }
 }
