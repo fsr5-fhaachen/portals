@@ -1,0 +1,244 @@
+---
+config:
+  layout: elk
+  layoutDirection: LR
+---
+
+erDiagram
+
+    courses {
+        BIGINT id PK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        VARCHAR name
+        VARCHAR abbreviation
+        VARCHAR classes
+        VARCHAR icon
+        BOOLEAN show_on_registration
+    }
+
+    events {
+        BIGINT id PK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        VARCHAR name
+        TEXT description
+        DATETIME registration_from
+        DATETIME registration_to
+        VARCHAR type
+        BOOLEAN has_requirements
+        BOOLEAN consider_alcohol
+        JSON form
+        INTEGER sort_order
+    }
+
+    pages {
+        BIGINT id PK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        VARCHAR title
+        VARCHAR slug
+        TEXT content
+        INTEGER sort_order
+    }
+
+    users {
+        BIGINT id PK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        VARCHAR firstname
+        VARCHAR lastname
+        VARCHAR email
+        BIGINT course_id FK
+        VARCHAR avatar
+        VARCHAR remember_token
+        INTEGER pin
+    }
+
+    slots {
+        BIGINT id PK
+        VARCHAR name
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        BIGINT event_id FK
+        BOOLEAN has_requirements
+        INTEGER maximum_participants
+        JSON form
+        VARCHAR telegram_group_link
+    }
+
+    stations {
+        BIGINT id PK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        VARCHAR name
+        BIGINT event_id FK
+    }
+
+    groups {
+        BIGINT id PK
+        VARCHAR name
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        BIGINT event_id FK
+        VARCHAR telegram_group_link
+    }
+
+    group_tutor {
+        BIGINT id PK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        BIGINT user_id FK
+        BIGINT group_id FK
+    }
+
+    stops {
+        BIGINT id PK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        BIGINT group_id FK
+        BIGINT station_id FK
+        TIMESTAMP arrival_at
+        TIMESTAMP departure_at
+    }
+
+    station_tutor {
+        BIGINT id PK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        BIGINT user_id FK
+        BIGINT station_id FK
+    }
+
+    registrations {
+        BIGINT id PK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        BIGINT event_id FK
+        BIGINT user_id FK
+        BIGINT slot_id FK
+        BIGINT group_id FK
+        BOOLEAN drinks_alcohol
+        BOOLEAN fulfils_requirements
+        BOOLEAN is_present
+        JSON form_responses
+        INTEGER queue_position
+    }
+
+    modules {
+        BIGINT id PK
+        VARCHAR key
+        BOOLEAN active
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        BOOLEAN expose_public
+    }
+
+    states {
+        BIGINT id PK
+        VARCHAR key
+        JSON value
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    course_group {
+        BIGINT id PK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        BIGINT course_id FK
+        BIGINT group_id FK
+    }
+
+    course_event {
+        BIGINT id PK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+        BIGINT course_id FK
+        BIGINT event_id FK
+    }
+
+    cache {
+        VARCHAR key PK
+        MEDIUMTEXT value
+        INTEGER expiration
+    }
+
+    cache_locks {
+        VARCHAR key PK
+        VARCHAR owner
+        INTEGER expiration
+    }
+
+    audits {
+        BIGINT id PK
+        VARCHAR user_type
+        BIGINT user_id
+        VARCHAR event
+        VARCHAR auditable_type
+        BIGINT auditable_id
+        TEXT old_values
+        TEXT new_values
+        TEXT url
+        IPADDRESS ip_address
+        VARCHAR user_agent
+        VARCHAR tags
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    permissions {
+        BIGINT id PK
+        VARCHAR name
+        VARCHAR guard_name
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    roles {
+        BIGINT id PK
+        VARCHAR name
+        VARCHAR guard_name
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    model_has_permissions {
+        BIGINT permission_id FK
+        VARCHAR model_type PK
+        BIGINT model_id PK
+    }
+
+    model_has_roles {
+        BIGINT role_id FK
+        VARCHAR model_type PK
+        BIGINT model_id PK
+    }
+
+    role_has_permissions {
+        BIGINT permission_id FK
+        BIGINT role_id FK
+    }
+
+    courses ||--o{ users : has
+    events ||--o{ slots : has
+    events ||--o{ stations : has
+    events ||--o{ groups : has
+    events ||--o{ registrations : has
+    users ||--o{ registrations : makes
+    slots o|--o{ registrations : receives
+    groups o|--o{ registrations : assigns
+    users ||--o{ group_tutor : tutors
+    groups ||--o{ group_tutor : has
+    groups ||--o{ stops : contains
+    stations ||--o{ stops : serves
+    users ||--o{ station_tutor : tutors
+    stations ||--o{ station_tutor : has
+    courses ||--o{ course_group : contains
+    groups ||--o{ course_group : belongs_to
+    courses ||--o{ course_event : offers
+    events ||--o{ course_event : belongs_to
+    permissions ||--o{ model_has_permissions : grants
+    roles ||--o{ model_has_roles : assigns
+    permissions ||--o{ role_has_permissions : includes
+    roles ||--o{ role_has_permissions : includes
