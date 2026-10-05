@@ -29,9 +29,8 @@ const fileUploadClassification = {
   label: "block text-sm font-medium text-gray-700 dark:text-gray-200",
 
   // Container: Zeile mit Upload-Button und rotem X-Button
-  inner:
-    "group relative w-full mb-1 flex items-stretch gap-2 rounded-md ",
-    //"focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-fhac-mint",
+  inner: "group relative w-full mb-1 flex items-stretch gap-2 rounded-md ",
+  //"focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-fhac-mint",
 
   // Natives Input unsichtbar über den Container legen
   input:
