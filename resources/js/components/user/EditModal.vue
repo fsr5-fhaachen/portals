@@ -126,8 +126,11 @@
                         type="file"
                         name="avatar"
                         label="Avatar hochladen"
+                        file-remove-icon="close"
+                        no-files-icon="fileDoc"
                         validation="file|image|mimes:jpeg,jpg,png,gif"
-                      />
+                      >
+                      </FormKit>
                     </FormRow>
 
                     <FormRow>

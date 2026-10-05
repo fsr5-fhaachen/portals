@@ -39,6 +39,8 @@ Copy `.env.example` to `.env` and fill in the database credentials.
 cp .env.example .env
 ```
 
+When using the S3 Self-Host Storage please use the `.env.with.s3.example` instead.
+
 For a quick setup: Change the Database connection details in the .env to only the following. Create the file `database.sqlite` in the `database` folder.
 
 ```env
@@ -86,6 +88,16 @@ npm run dev
 ```
 
 Login to the demo system with the email adress `superadmin@example.com`
+
+### S3 storage (MinIO)
+
+The `docker-compose.yaml` provides S3-compatible storage via MinIO. Start everything with:
+
+    docker compose up -d
+
+The `minio-setup` service waits until MinIO is ready, creates the bucket defined in `AWS_BUCKET`, and then exits on its own. It does not need to be started separately, and an exit status of 0 is expected.
+
+The MinIO console is available at http://localhost:9001.
 
 ### devcontainer
 
