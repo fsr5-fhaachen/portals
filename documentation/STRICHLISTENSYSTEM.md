@@ -62,7 +62,7 @@ Bei gecachter Konfiguration nach Änderungen an der `.env` `php artisan config:c
 
 ## Konfiguration
 
-Alle Einstellungen liegen in [`config/strichlistensystem.php`](config/strichlistensystem.php) und werden über die `.env` gesetzt. Die Vorlage steht in [`.env.example`](.env.example).
+Alle Einstellungen liegen in [`config/strichlistensystem.php`](../config/strichlistensystem.php) und werden über die `.env` gesetzt. Die Vorlage steht in [`.env.example`](../.env.example).
 
 | Variable | Config-Key | Standard | Bedeutung |
 |---|---|---|---|
@@ -128,10 +128,10 @@ Unter `/dashboard/admin/strichlistensystem` (Menüpunkt „Strichliste“ im rot
 
 | Datei | Inhalt |
 |---|---|
-| [`2026_10_11_181156_change_pin_to_string_on_users_table.php`](database/migrations/2026_10_11_181156_change_pin_to_string_on_users_table.php) | Wandelt `users.pin` von `integer` in `string(4)` um. Bestehende Werte werden mit führenden Nullen aufgefüllt (`123` → `0123`), ungültige Werte (negativ oder mehr als 4 Stellen) werden `NULL`. Funktioniert über eine temporäre Spalte, damit es auf MySQL/MariaDB, PostgreSQL und SQLite gleich läuft. Rollback wandelt zurück in `integer`. |
-| [`2026_10_11_181203_create_articles_table.php`](database/migrations/2026_10_11_181203_create_articles_table.php) | Tabelle `articles` |
-| [`2026_10_11_181206_create_article_action_logs_table.php`](database/migrations/2026_10_11_181206_create_article_action_logs_table.php) | Tabelle `article_action_logs` |
-| [`2026_10_11_185307_add_is_active_to_articles_table.php`](database/migrations/2026_10_11_185307_add_is_active_to_articles_table.php) | Spalte `articles.is_active` |
+| [`2026_10_11_181156_change_pin_to_string_on_users_table.php`](../database/migrations/2026_10_11_181156_change_pin_to_string_on_users_table.php) | Wandelt `users.pin` von `integer` in `string(4)` um. Bestehende Werte werden mit führenden Nullen aufgefüllt (`123` → `0123`), ungültige Werte (negativ oder mehr als 4 Stellen) werden `NULL`. Funktioniert über eine temporäre Spalte, damit es auf MySQL/MariaDB, PostgreSQL und SQLite gleich läuft. Rollback wandelt zurück in `integer`. |
+| [`2026_10_11_181203_create_articles_table.php`](../database/migrations/2026_10_11_181203_create_articles_table.php) | Tabelle `articles` |
+| [`2026_10_11_181206_create_article_action_logs_table.php`](../database/migrations/2026_10_11_181206_create_article_action_logs_table.php) | Tabelle `article_action_logs` |
+| [`2026_10_11_185307_add_is_active_to_articles_table.php`](../database/migrations/2026_10_11_185307_add_is_active_to_articles_table.php) | Spalte `articles.is_active` |
 
 ### Tabellen
 
@@ -182,7 +182,7 @@ Index auf `(user_id, created_at)`.
 
 ## Routen
 
-Alle Routen liegen in [`routes/web.php`](routes/web.php) und stehen hinter der Middleware `StrichlistensystemEnabled`.
+Alle Routen liegen in [`routes/web.php`](../routes/web.php) und stehen hinter der Middleware `StrichlistensystemEnabled`.
 
 | Methode | URI | Name |
 |---|---|---|
