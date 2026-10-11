@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Table\ArticlesTable;
 use App\Models\Article;
 use App\Models\ArticleActionLog;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -19,15 +21,15 @@ class DashboardAdminStrichlistensystemController extends Controller
     /**
      * Display the article management
      */
-    public function index(): Response
+    public function index(Request $request): Response|JsonResponse
     {
-        $articles = Article::withCount(['articleActionLogs' => fn ($query) => $query->withTrashed()])
-            ->orderBy('show_order')
-            ->orderBy('name')
-            ->get();
+        $articlesTable = new ArticlesTable($request);
+        if ($articlesTable->wantsChanges()) {
+            return $articlesTable->changesResponse();
+        }
 
         return Inertia::render('Dashboard/Admin/Strichlistensystem/Index', [
-            'articles' => $articles,
+            'articles' => $articlesTable->scroll(),
             'icons' => config('strichlistensystem.icons'),
             'limitWindow' => config('strichlistensystem.self_service_limit_window'),
         ]);

@@ -113,8 +113,8 @@
       </CardBase>
 
       <AppTable
+        data="articles"
         :columns="getColumns()"
-        :elements="articles"
         :idFunction="(article) => article.id"
         :functions="getFunctions()"
         :rowClass="
@@ -142,10 +142,6 @@ defineProps({
   errors: {
     type: Object as PropType<Record<string, string>>,
     default: () => ({}),
-  },
-  articles: {
-    type: Array as PropType<App.Models.Article[]>,
-    required: true,
   },
   icons: {
     type: Array as PropType<string[]>,
@@ -201,6 +197,7 @@ const submitArticleHandler = () => {
   router.post(url, articleForm.value, {
     preserveScroll: true,
     preserveState: true,
+    reset: ["articles"],
     onSuccess: () => {
       resetArticleForm();
     },
@@ -214,6 +211,7 @@ const toggleArticleActive = (article: App.Models.Article) => {
     {
       preserveScroll: true,
       preserveState: true,
+      reset: ["articles"],
       onSuccess: () => {
         // keep the form in sync if the toggled article is currently edited
         if (articleToEdit.value?.id === article.id) {
@@ -231,6 +229,8 @@ const deleteArticle = (article: App.Models.Article) => {
 
   router.delete(`/dashboard/admin/strichlistensystem/article/${article.id}`, {
     preserveScroll: true,
+    preserveState: true,
+    reset: ["articles"],
   });
 };
 
@@ -247,48 +247,42 @@ const escapeHtml = (value: string) => {
 const getColumns = (): TableColumn[] => [
   new TableColumn({
     name: "name",
+    sortKey: "name",
     text: "Name",
     valueFunction: (article: App.Models.Article) => escapeHtml(article.name),
-    compareFunction: (a: App.Models.Article, b: App.Models.Article) =>
-      a.name.localeCompare(b.name),
   }),
   new TableColumn({
     name: "icon",
+    sortKey: "icon",
     text: "Icon",
     valueFunction: (article: App.Models.Article) => escapeHtml(article.icon),
-    compareFunction: (a: App.Models.Article, b: App.Models.Article) =>
-      a.icon.localeCompare(b.icon),
   }),
   new TableColumn({
     name: "show_order",
+    sortKey: "show_order",
     text: "Reihenfolge",
     valueFunction: (article: App.Models.Article) => `${article.show_order}`,
-    compareFunction: (a: App.Models.Article, b: App.Models.Article) =>
-      a.show_order - b.show_order,
   }),
   new TableColumn({
     name: "max_order_amount",
+    sortKey: "max_order_amount",
     text: "Max. Anzahl",
     valueFunction: (article: App.Models.Article) =>
       `${article.max_order_amount}`,
-    compareFunction: (a: App.Models.Article, b: App.Models.Article) =>
-      a.max_order_amount - b.max_order_amount,
   }),
   new TableColumn({
     name: "is_active",
+    sortKey: "is_active",
     text: "Status",
     valueFunction: (article: App.Models.Article) =>
       article.is_active ? "Aktiv" : "Deaktiviert",
-    compareFunction: (a: App.Models.Article, b: App.Models.Article) =>
-      Number(b.is_active) - Number(a.is_active),
   }),
   new TableColumn({
     name: "article_action_logs_count",
+    sortKey: "article_action_logs_count",
     text: "Buchungen",
     valueFunction: (article: App.Models.Article) =>
       `${article.article_action_logs_count ?? 0}`,
-    compareFunction: (a: App.Models.Article, b: App.Models.Article) =>
-      (a.article_action_logs_count ?? 0) - (b.article_action_logs_count ?? 0),
   }),
 ];
 

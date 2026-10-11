@@ -195,6 +195,7 @@ const { user, courses, roles } = defineProps({
 const emits = defineEmits<{
   close: [];
   submit: [];
+  saved: [];
 }>();
 
 const editForm = ref({
@@ -259,10 +260,20 @@ const editSubmitHandler = async () => {
     }
   }
 
-  router.post(`/dashboard/admin/user/${user.id}`, {
-    ...editForm.value,
-    avatar: avatarPath.value,
-  });
+  // only the message is reloaded, the table updates the user by its live update
+  router.post(
+    `/dashboard/admin/user/${user.id}`,
+    {
+      ...editForm.value,
+      avatar: avatarPath.value,
+    },
+    {
+      only: ["message"],
+      preserveState: true,
+      preserveScroll: true,
+      onSuccess: () => emits("saved"),
+    },
+  );
   emits("submit");
 };
 </script>

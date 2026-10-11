@@ -1,7 +1,9 @@
 <template>
   <AppTable
+    ref="table"
+    :data="data"
+    searchable
     :columns="getColumns()"
-    :elements="registrationsData"
     :idFunction="(registration: any) => registration.id"
     :functions="getFunctions()"
     :rowClass="
@@ -20,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, PropType, watch } from "vue";
+import { ref, PropType } from "vue";
 import { TableColumn } from "../../types/table-column";
 import { ButtonState, TableStateButton } from "../../types/table-state-button";
 import { TableFunction } from "../../types/table-function";
@@ -28,6 +30,11 @@ import { TableButton } from "../../types/table-button";
 import { TableSortValue } from "../../types/table-sort-value";
 
 const props = defineProps({
+  // name of the infinite scroll prop with the registrations
+  data: {
+    type: String,
+    default: "registrations",
+  },
   courses: {
     type: Array as PropType<App.Models.Course[]>,
     required: true,
@@ -36,9 +43,10 @@ const props = defineProps({
     type: Object as PropType<App.Models.Event>,
     required: true,
   },
-  registrations: {
-    type: Array as PropType<App.Models.Registration[]>,
-    required: true,
+  // whether any registration has form responses (column "Rückmeldung")
+  hasFormResponses: {
+    type: Boolean,
+    default: false,
   },
   hideGroups: {
     type: Boolean,
@@ -53,6 +61,11 @@ const props = defineProps({
     default: null,
   },
 });
+
+const table = ref<{
+  patchRow: (id: number, fields: Record<string, any>) => void;
+  removeRow: (id: number) => void;
+} | null>(null);
 
 const getCourseById = (id: number) => {
   return props.courses.find((course) => course.id === id);
@@ -83,18 +96,6 @@ const getGroupName = (id: number) => {
   return group !== undefined && group !== null ? group.name : "";
 };
 
-const registrationsData = ref(props.registrations);
-watch(props, (props) => {
-  registrationsData.value = props.registrations;
-});
-
-const showFormColomn = computed(() => {
-  // check if any registrationsData has the attribute "form_responses"
-  return registrationsData.value.some((registration) => {
-    return registration.form_responses;
-  });
-});
-
 const toggleIsPresent = async (registrationId: number) => {
   const response = await fetch(
     "/api/registrations/" + registrationId + "/toggle-is-present",
@@ -110,12 +111,7 @@ const toggleIsPresent = async (registrationId: number) => {
   if (response.ok) {
     const data = await response.json();
 
-    registrationsData.value = registrationsData.value.map((registration) => {
-      if (registration.id === registrationId) {
-        registration.is_present = data.is_present;
-      }
-      return registration;
-    });
+    table.value?.patchRow(registrationId, { is_present: data.is_present });
   }
 };
 const toggleFulfilsRequirements = async (registrationId: number) => {
@@ -133,11 +129,8 @@ const toggleFulfilsRequirements = async (registrationId: number) => {
   if (response.ok) {
     const data = await response.json();
 
-    registrationsData.value = registrationsData.value.map((registration) => {
-      if (registration.id === registrationId) {
-        registration.fulfils_requirements = data.fulfils_requirements;
-      }
-      return registration;
+    table.value?.patchRow(registrationId, {
+      fulfils_requirements: data.fulfils_requirements,
     });
   }
 };
@@ -156,9 +149,7 @@ const destroy = async (registrationId: number) => {
   });
 
   if (response.ok) {
-    registrationsData.value = registrationsData.value.filter(
-      (registration) => registration.id !== registrationId,
-    );
+    table.value?.removeRow(registrationId);
   }
 };
 
@@ -169,8 +160,7 @@ function getColumns(): Array<TableColumn> {
     name: "firstName",
     text: "Vorname",
     valueFunction: (registration) => registration.user.firstname,
-    compareFunction: (registration1, registration2) =>
-      registration1.user.firstname.localeCompare(registration2.user.firstname),
+    sortKey: "firstname",
   });
   columns.push(firstNameCol);
 
@@ -178,8 +168,7 @@ function getColumns(): Array<TableColumn> {
     name: "lastName",
     text: "Nachname",
     valueFunction: (registration) => registration.user.lastname,
-    compareFunction: (registration1, registration2) =>
-      registration1.user.lastname.localeCompare(registration2.user.lastname),
+    sortKey: "lastname",
   });
   columns.push(lastNameCol);
 
@@ -187,10 +176,7 @@ function getColumns(): Array<TableColumn> {
     name: "course",
     text: "Studiengang",
     valueFunction: (registration) => getCourseName(registration.user.course_id),
-    compareFunction: (registration1, registration2) =>
-      getCourseName(registration1.user.course_id).localeCompare(
-        getCourseName(registration2.user.course_id),
-      ),
+    sortKey: "course",
   });
   columns.push(courseCol);
 
@@ -199,10 +185,7 @@ function getColumns(): Array<TableColumn> {
       name: "slot",
       text: "Slot",
       valueFunction: (registration) => getSlotName(registration.slot_id),
-      compareFunction: (registration1, registration2) =>
-        getSlotName(registration1.slot_id).localeCompare(
-          getSlotName(registration2.slot_id),
-        ),
+      sortKey: "slot",
     });
     columns.push(slotCol);
   }
@@ -212,10 +195,7 @@ function getColumns(): Array<TableColumn> {
       name: "group",
       text: "Gruppe",
       valueFunction: (registration) => getGroupName(registration.group_id),
-      compareFunction: (registration1, registration2) =>
-        getGroupName(registration1.group_id).localeCompare(
-          getGroupName(registration2.group_id),
-        ),
+      sortKey: "group",
     });
     columns.push(groupCol);
   }
@@ -226,12 +206,7 @@ function getColumns(): Array<TableColumn> {
       text: "Trinkt Alkohol",
       valueFunction: (registration) =>
         registration.drinks_alcohol ? "Ja" : "Nein",
-      compareFunction: (registration1, registration2) =>
-        registration1.drinks_alcohol === registration2.drinks_alcohol
-          ? 0
-          : registration1.drinks_alcohol
-            ? 1
-            : -1,
+      sortKey: "drinks_alcohol",
     });
     columns.push(alcoholCol);
   }
@@ -252,19 +227,12 @@ function getColumns(): Array<TableColumn> {
           return "Angemeldet";
         }
       },
-      compareFunction: (registration1, registration2) =>
-        registration1.queue_position === null ||
-        registration1.queue_position === undefined
-          ? -1
-          : registration2.queue_position === null ||
-              registration2.queue_position === undefined
-            ? 1
-            : registration1.queue_position - registration2.queue_position,
+      sortKey: "queue_position",
     });
     columns.push(queueCol);
   }
 
-  if (showFormColomn) {
+  if (props.hasFormResponses) {
     let formCol = new TableColumn({
       name: "form",
       text: "Rückmeldung",
@@ -278,10 +246,7 @@ function getColumns(): Array<TableColumn> {
         }
         return "";
       },
-      compareFunction: (registration1, registration2) =>
-        safeArrayToString(registration1.form_responses).localeCompare(
-          safeArrayToString(registration2.form_responses),
-        ),
+      sortKey: "form_responses",
     });
     columns.push(formCol);
   }
@@ -376,12 +341,7 @@ function getSortValues() {
   let sortByPresent = new TableSortValue({
     name: "presence",
     text: "Anwesenheit",
-    compareFunction: (registration1, registration2) =>
-      registration1.is_present === registration2.is_present
-        ? 0
-        : registration1.is_present
-          ? -1
-          : 1,
+    sortKey: "is_present",
   });
 
   sortValues.push(sortByPresent);
@@ -393,13 +353,7 @@ function getSortValues() {
     let sortByRequirements = new TableSortValue({
       name: "requirements",
       text: "Anforderungen",
-      compareFunction: (registration1, registration2) =>
-        registration1.fulfils_requirements ===
-        registration2.fulfils_requirements
-          ? 0
-          : registration1.fulfils_requirements
-            ? -1
-            : 1,
+      sortKey: "fulfils_requirements",
     });
 
     sortValues.push(sortByRequirements);

@@ -65,8 +65,8 @@ class DashboardAdminStrichlistensystemTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Dashboard/Admin/Strichlistensystem/Index')
-                ->has('articles', 1)
-                ->where('articles.0.article_action_logs_count', 2)
+                ->has('articles.data', 1)
+                ->where('articles.data.0.article_action_logs_count', 2)
                 ->where('icons', config('strichlistensystem.icons'))
             );
     }
@@ -200,8 +200,8 @@ class DashboardAdminStrichlistensystemTest extends TestCase
         $this->actingAsAdmin()
             ->get(route('dashboard.admin.strichlistensystem.index'))
             ->assertInertia(fn (Assert $page) => $page
-                ->has('articles', 1)
-                ->where('articles.0.is_active', false)
+                ->has('articles.data', 1)
+                ->where('articles.data.0.is_active', false)
             );
 
         $csv = $this->actingAsAdmin()->get(route('dashboard.admin.strichlistensystem.export'))->streamedContent();

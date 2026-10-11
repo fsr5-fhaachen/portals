@@ -10,7 +10,7 @@
         <FormKit type="form" id="filter" :actions="false" v-model="filterForm">
           <FormContainer>
             <FormRow>
-              <FormKit type="text" name="query" label="Suche" />
+              <FormKit type="text" name="search" label="Suche" />
             </FormRow>
           </FormContainer>
         </FormKit>
@@ -18,48 +18,67 @@
         <div class="mt-6 flex flex-wrap gap-3">
           <AppButton
             :theme="filter === 'all' ? 'default' : 'gray'"
-            @click="filter = 'all'"
+            @click="setFilter('all')"
           >
             Alle
           </AppButton>
           <AppButton
-            v-for="course in coursesWithPersons"
+            v-for="course in courses"
             :key="course.id"
             :theme="filter === `course-${course.id}` ? 'default' : 'gray'"
-            @click="filter = `course-${course.id}`"
+            @click="setFilter(`course-${course.id}`)"
           >
             <FontAwesomeIcon :icon="course.icon" class="mr-1" />
             {{ course.abbreviation }}
           </AppButton>
           <AppButton
             :theme="filter === 'tutor' ? 'default' : 'gray'"
-            @click="filter = 'tutor'"
+            @click="setFilter('tutor')"
           >
             Tutor*innen
           </AppButton>
           <AppButton
             :theme="filter === 'special' ? 'default' : 'gray'"
-            @click="filter = 'special'"
+            @click="setFilter('special')"
           >
             Special
           </AppButton>
         </div>
       </CardBase>
 
-      <div
-        class="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+      <InfiniteScroll
+        data="persons"
+        items-element="#kiosk-persons"
+        preserve-url
+        only-next
       >
-        <StrichlistensystemPersonCard
-          v-for="person in filteredPersons"
-          :key="person.id"
-          :person="person"
-          clickable
-          @click="openPinDialog(person)"
-        />
-      </div>
+        <div
+          id="kiosk-persons"
+          class="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+        >
+          <StrichlistensystemPersonCard
+            v-for="person in persons.data"
+            :key="person.id"
+            :person="person"
+            clickable
+            @click="openPinDialog(person)"
+          />
+        </div>
+
+        <template #loading>
+          <div
+            class="flex items-center justify-center gap-2 py-6 text-sm text-gray-500 dark:text-gray-400"
+          >
+            <div
+              class="h-4 w-4 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700"
+            ></div>
+            Lade weitere Personen …
+          </div>
+        </template>
+      </InfiniteScroll>
 
       <p
-        v-if="!filteredPersons.length"
+        v-if="!persons.data.length"
         class="text-center text-gray-500 dark:text-gray-400"
       >
         Es wurden keine Personen gefunden.
@@ -150,8 +169,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, PropType, ref } from "vue";
-import { useForm } from "@inertiajs/vue3";
+import { onBeforeUnmount, PropType, ref, watch } from "vue";
+import { InfiniteScroll, router, useForm } from "@inertiajs/vue3";
 import {
   Dialog,
   DialogPanel,
@@ -164,10 +183,12 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  // persons are loaded page by page (infinite scroll), search and filters are applied on the server
   persons: {
-    type: Array as PropType<Strichlistensystem.Person[]>,
+    type: Object as PropType<{ data: Strichlistensystem.Person[] }>,
     required: true,
   },
+  // courses with active persons
   courses: {
     type: Array as PropType<App.Models.Course[]>,
     required: true,
@@ -179,43 +200,55 @@ const pinDialogTimeoutSeconds = 30;
 
 const selfServiceUrl = `${window.location.origin}/strichlistensystem`;
 
-const filterForm = ref({
-  query: "",
-});
-const filter = ref("all");
+const initialQuery = new URLSearchParams(window.location.search);
 
-const coursesWithPersons = computed(() =>
-  props.courses.filter((course) =>
-    props.persons.some((person) => person.course?.id === course.id),
-  ),
+const filterForm = ref({
+  search: initialQuery.get("search") ?? "",
+});
+const filter = ref(
+  initialQuery.get("course")
+    ? `course-${initialQuery.get("course")}`
+    : (initialQuery.get("role") ?? "all"),
 );
 
-const filteredPersons = computed(() => {
-  const query = filterForm.value.query?.toLowerCase().trim() ?? "";
+/**
+ * Reload the persons from the first page with the current search and filter.
+ */
+const reloadPersons = () => {
+  const query: Record<string, string> = {};
+  if (filterForm.value.search) {
+    query.search = filterForm.value.search;
+  }
+  if (filter.value.startsWith("course-")) {
+    query.course = filter.value.replace("course-", "");
+  } else if (filter.value !== "all") {
+    query.role = filter.value;
+  }
 
-  return props.persons.filter((person) => {
-    if (filter.value === "tutor" && !person.roles?.includes("tutor")) {
-      return false;
-    }
-    if (filter.value === "special" && !person.roles?.includes("special")) {
-      return false;
-    }
-    if (
-      filter.value.startsWith("course-") &&
-      `course-${person.course?.id}` !== filter.value
-    ) {
-      return false;
-    }
-
-    if (!query) {
-      return true;
-    }
-
-    return `${person.firstname} ${person.lastname}`
-      .toLowerCase()
-      .includes(query);
+  router.get(window.location.pathname, query, {
+    only: ["persons"],
+    reset: ["persons"],
+    preserveState: true,
+    preserveScroll: true,
+    replace: true,
   });
-});
+};
+
+const setFilter = (newFilter: string) => {
+  filter.value = newFilter;
+  reloadPersons();
+};
+
+let searchTimeout: ReturnType<typeof setTimeout> | null = null;
+watch(
+  () => filterForm.value.search,
+  () => {
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    searchTimeout = setTimeout(reloadPersons, 300);
+  },
+);
 
 // the selected person is kept until the leave transition of the dialog is finished,
 // otherwise the dialog panel is removed during the transition and the dialog never closes

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Helpers\GroupBalancedDivision;
 use App\Helpers\GroupCourseDivision;
 use App\Helpers\SlotAssignment;
+use App\Helpers\Table\EventPageTable;
+use App\Helpers\Table\RegistrationsTable;
+use App\Helpers\Table\UsersTable;
 use App\Models\Course;
 use App\Models\Event;
 use App\Models\Group;
@@ -12,6 +15,7 @@ use App\Models\Registration;
 use App\Models\Slot;
 use App\Models\User;
 use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request as IlluminateRequest;
 use Illuminate\Support\Facades\Redirect;
@@ -244,8 +248,13 @@ class DashboardAdminController extends Controller
     /**
      * Display the dashboard admin users page
      */
-    public function users(): Response
+    public function users(IlluminateRequest $request): Response|JsonResponse
     {
+        $usersTable = new UsersTable($request);
+        if ($usersTable->wantsChanges()) {
+            return $usersTable->changesResponse();
+        }
+
         $roles = Role::where('name', '!=', 'super admin')->get();
         $coures = Course::all();
 
@@ -253,6 +262,7 @@ class DashboardAdminController extends Controller
             'roles' => $roles,
             'courses' => $coures,
             'authenticated' => Session::get('tutor'),
+            'users' => $usersTable->scroll(),
         ]);
     }
 
@@ -328,6 +338,9 @@ class DashboardAdminController extends Controller
             $user->syncRoles($roles);
         }
 
+        // role changes do not change the user itself, touch it for the live update of the user table
+        $user->touch();
+
         Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich bearbeitet. Die Tabelle aktualisiert sich in wenigen Sekunden automatisch.');
 
         return Redirect::back();
@@ -373,40 +386,50 @@ class DashboardAdminController extends Controller
     /**
      * Display the dashboard admin registrations page
      */
-    public function registrations(IlluminateRequest $request): Response
+    public function registrations(IlluminateRequest $request): Response|JsonResponse
     {
-        $event = Event::with('groups')->with('slots')->find($request->event);
+        $event = Event::with(['groups:id,event_id,name', 'slots:id,event_id,name'])->find($request->event);
         if (! $event) {
             return Inertia::render('Dashboard/404');
         }
-        $event->registrations = $event->registrations()->with('user')->get();
+
+        $registrationsTable = new RegistrationsTable($request, eventId: $event->id);
+        if ($registrationsTable->wantsChanges()) {
+            return $registrationsTable->changesResponse();
+        }
 
         $courses = Course::all();
 
         return Inertia::render('Dashboard/Admin/Registrations', [
             'event' => $event,
             'courses' => $courses,
+            'registrations' => $registrationsTable->scroll(),
+            'hasFormResponses' => $registrationsTable->hasFormResponses(),
         ]);
     }
 
     /**
      * Display the dashboard admin event page
      */
-    public function event(IlluminateRequest $request): Response
+    public function event(IlluminateRequest $request): Response|JsonResponse
     {
         $event = Event::find($request->event);
         if (! $event) {
             return Inertia::render('Dashboard/404');
         }
-        $event->slots = $event->slots()->with('registrations')->get();
-        $event->groups = $event->groups()->with(['registrations', 'courses'])->get();
-        $event->registrations = $event->registrations()->with('user')->get();
+
+        $eventPageTable = EventPageTable::for($request, $event);
+        if ($eventPageTable && $eventPageTable[1]->wantsChanges()) {
+            return $eventPageTable[1]->changesResponse();
+        }
 
         $courses = Course::all();
 
         return Inertia::render('Dashboard/Admin/Event', [
             'event' => $event,
             'courses' => $courses,
+            ...($eventPageTable ? [$eventPageTable[0] => $eventPageTable[1]->scroll()] : []),
+            'hasFormResponses' => $eventPageTable && $eventPageTable[1] instanceof RegistrationsTable && $eventPageTable[1]->hasFormResponses(),
         ]);
     }
 

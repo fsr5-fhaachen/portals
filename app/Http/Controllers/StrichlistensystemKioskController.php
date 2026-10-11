@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Table\KioskPersonsTable;
 use App\Models\Article;
 use App\Models\ArticleActionLog;
 use App\Models\Course;
@@ -29,24 +30,15 @@ class StrichlistensystemKioskController extends Controller
     /**
      * Display all persons of the kiosk
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         // the overview always locks the kiosk again
         Session::forget(self::SESSION_KEY);
 
-        $users = User::where('is_disabled', false)
-            ->with(['course', 'roles'])
-            ->orderBy('firstname')
-            ->orderBy('lastname')
-            ->get()
-            ->map(fn (User $user) => $this->toPerson($user) + [
-                'roles' => $user->roles->pluck('name'),
-                'has_pin' => $user->hasPin(),
-            ]);
-
         return Inertia::render('Strichlistensystem/Kiosk/Index', [
-            'persons' => $users,
-            'courses' => Course::orderBy('name')->get(),
+            'persons' => (new KioskPersonsTable($request))->scroll(),
+            // only courses with active persons are shown as filter
+            'courses' => fn () => Course::whereHas('users', fn ($query) => $query->where('is_disabled', false))->orderBy('name')->get(),
         ]);
     }
 

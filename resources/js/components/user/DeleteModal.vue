@@ -84,15 +84,20 @@ const { user } = defineProps({
 const emits = defineEmits<{
   close: [];
   submit: [];
+  saved: [];
 }>();
-
-const deleteForm = ref({});
 
 const close = () => {
   emits("close");
 };
 const deleteSubmitHandler = async () => {
-  router.delete(`/dashboard/admin/user/${user.id}`, deleteForm.value);
+  // only the message is reloaded, the table updates the user by its live update
+  router.delete(`/dashboard/admin/user/${user.id}`, {
+    only: ["message"],
+    preserveState: true,
+    preserveScroll: true,
+    onSuccess: () => emits("saved"),
+  });
   emits("submit");
 };
 </script>

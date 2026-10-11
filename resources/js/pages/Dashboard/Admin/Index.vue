@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, PropType, onBeforeUnmount } from "vue";
+import { ref, PropType } from "vue";
 
 const { courses, totalUser } = defineProps({
   courses: {
@@ -79,10 +79,7 @@ const fetchCourses = async () => {
 
   isFetchingCourses.value = false;
 };
-const coursesInterval = setInterval(fetchCourses, 2500);
-onBeforeUnmount(() => {
-  clearInterval(coursesInterval);
-});
+usePolling(fetchCourses, 2500);
 
 const downloadStats = () => {
   window.open("/dashboard/admin/download-stats", "_blank");

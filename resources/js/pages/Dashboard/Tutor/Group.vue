@@ -12,24 +12,12 @@
           {{ group.telegram_group_link }}
         </AppLink>
       </CardBase>
-      <CardBase>
-        <FormKit type="form" id="assign" :actions="false" v-model="form">
-          <FormContainer>
-            <FormRow>
-              <UiH2>Filter</UiH2>
-            </FormRow>
-            <FormRow>
-              <FormKit type="text" name="query" label="Suche" />
-            </FormRow>
-          </FormContainer>
-        </FormKit>
-      </CardBase>
 
       <RegistrationTable
-        v-if="group.event && filteredRegistrations"
+        v-if="group.event"
         :courses="courses"
         :event="group.event"
-        :registrations="filteredRegistrations"
+        :hasFormResponses="hasFormResponses"
         :hideGroups="true"
         :user="user"
       />
@@ -38,13 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, PropType } from "vue";
+import { PropType } from "vue";
 
-const form = ref({
-  query: "",
-});
-
-const { group } = defineProps({
+defineProps({
   courses: {
     type: Array as PropType<App.Models.Course[]>,
     required: true,
@@ -53,56 +37,13 @@ const { group } = defineProps({
     type: Object as PropType<App.Models.Group>,
     required: true,
   },
+  hasFormResponses: {
+    type: Boolean,
+    default: false,
+  },
   user: {
     type: Object as PropType<Models.User>,
     required: true,
   },
 });
-const registrations = ref(group.registrations);
-
-const filteredRegistrations = computed(() => {
-  if (!form.value.query) {
-    return registrations.value;
-  }
-
-  if (!registrations.value) {
-    return [];
-  }
-
-  return registrations.value.filter((registration) => {
-    return (
-      registration.user?.firstname
-        .toLowerCase()
-        .includes(form.value.query.toLowerCase()) ||
-      registration.user?.lastname
-        .toLowerCase()
-        .includes(form.value.query.toLowerCase()) ||
-      registration.user?.email
-        .toLowerCase()
-        .includes(form.value.query.toLowerCase())
-    );
-  });
-});
-
-// const fetchRegistrations = async () => {
-//   const response = await fetch(
-//     "/api/events/" + group.event_id + "/registrations",
-//     {
-//       method: "GET",
-//       credentials: "include",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     },
-//   );
-
-//   if (response.ok) {
-//     const data = await response.json();
-//     registrations.value = data.groups[group.id];
-//   }
-// };
-// const registrationsInterval = setInterval(fetchRegistrations, 5000);
-// onBeforeUnmount(() => {
-//   clearInterval(registrationsInterval);
-// });
 </script>

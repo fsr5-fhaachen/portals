@@ -100,12 +100,12 @@ class StrichlistensystemKioskTest extends TestCase
         $response->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Strichlistensystem/Kiosk/Index')
-                ->has('persons', 2)
-                ->where('persons.0.id', $userWithPin->id)
-                ->where('persons.0.has_pin', true)
-                ->missing('persons.0.pin')
-                ->where('persons.1.id', $userWithoutPin->id)
-                ->where('persons.1.has_pin', false)
+                ->has('persons.data', 2)
+                ->where('persons.data.0.id', $userWithPin->id)
+                ->where('persons.data.0.has_pin', true)
+                ->missing('persons.data.0.pin')
+                ->where('persons.data.1.id', $userWithoutPin->id)
+                ->where('persons.data.1.has_pin', false)
             );
 
         $this->assertStringNotContainsString('"pin":', $response->getContent());

@@ -6,15 +6,16 @@
 // biome-ignore lint: disable
 export {}
 declare global {
-  const roleColors: typeof import('../composables/useRoleColors')['roleColors']
-  const useAppEventType: typeof import('../composables/useAppEventType')['default']
-  const useColorMode: typeof import('../composables/useColorMode')['default']
-  const usePagesAsNavigation: typeof import('../composables/usePagesAsNavigation')['default']
-  const usePlaceholderPerson: typeof import('../composables/usePlaceholderPerson')['default']
-  const useS3: typeof import('../composables/useS3')['default']
-  const useSelectFormCourseOptions: typeof import('../composables/useSelectFormCourseOptions')['default']
-  const useSelectFormEventOptions: typeof import('../composables/useSelectFormEventOptions')['default']
-  const useSelectFormGroupOptions: typeof import('../composables/useSelectFormGroupOptions')['default']
-  const useSelectFormRoleOptions: typeof import('../composables/useSelectFormRoleOptions')['default']
-  const useSelectFormSlotOptions: typeof import('../composables/useSelectFormSlotOptions')['default']
+  const roleColors: (typeof import("../composables/useRoleColors"))["roleColors"];
+  const useAppEventType: (typeof import("../composables/useAppEventType"))["default"];
+  const useColorMode: (typeof import("../composables/useColorMode"))["default"];
+  const usePagesAsNavigation: (typeof import("../composables/usePagesAsNavigation"))["default"];
+  const usePlaceholderPerson: (typeof import("../composables/usePlaceholderPerson"))["default"];
+  const usePolling: (typeof import("../composables/usePolling"))["default"];
+  const useS3: (typeof import("../composables/useS3"))["default"];
+  const useSelectFormCourseOptions: (typeof import("../composables/useSelectFormCourseOptions"))["default"];
+  const useSelectFormEventOptions: (typeof import("../composables/useSelectFormEventOptions"))["default"];
+  const useSelectFormGroupOptions: (typeof import("../composables/useSelectFormGroupOptions"))["default"];
+  const useSelectFormRoleOptions: (typeof import("../composables/useSelectFormRoleOptions"))["default"];
+  const useSelectFormSlotOptions: (typeof import("../composables/useSelectFormSlotOptions"))["default"];
 }

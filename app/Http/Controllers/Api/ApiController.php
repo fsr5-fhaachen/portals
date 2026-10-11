@@ -48,17 +48,16 @@ class ApiController extends Controller
     public function eventRegistrationsAmount(Request $request): JsonResponse
     {
         $event = Event::with([
-            'registrations.user',
             'slots' => fn ($query) => $query->withCount('registrations'),
             'groups' => fn ($query) => $query->withCount('registrations'),
-        ])->find($request->event);
+        ])->withCount('registrations')->find($request->event);
 
         if (! $event) {
             return response()->json(['message' => 'Event not found'], 404);
         }
 
         $result = [
-            'amount' => $event->registrations->count(),
+            'amount' => $event->registrations_count,
         ];
 
         // add slot amounts
@@ -72,11 +71,9 @@ class ApiController extends Controller
         }
 
         // add course amounts of registrations for this event by user course
-        foreach (Course::all() as $course) {
-            $result['courses'][$course->id] = 0;
-        }
-        foreach ($event->registrations as $registration) {
-            $result['courses'][$registration->user->course_id]++;
+        $amountsByCourse = $this->registrationAmountsByEventAndCourse($event->id)[$event->id] ?? [];
+        foreach (Course::pluck('id') as $courseId) {
+            $result['courses'][$courseId] = $amountsByCourse[$courseId] ?? 0;
         }
 
         return response()->json($result);
@@ -89,28 +86,49 @@ class ApiController extends Controller
      */
     public function eventsRegistrationsAmount(): JsonResponse
     {
-        $events = Event::with('registrations.user')->get();
-        $courses = Course::all();
+        $events = Event::withCount('registrations')->get();
+        $courseIds = Course::pluck('id');
+        $amountsByEventAndCourse = $this->registrationAmountsByEventAndCourse();
 
         $result = [];
         foreach ($events as $event) {
             $eventResult = [
                 'id' => $event->id,
-                'amount' => $event->registrations->count(),
+                'amount' => $event->registrations_count,
             ];
 
             // add course amounts of registrations for this event by user course
-            foreach ($courses as $course) {
-                $eventResult['courses'][$course->id] = 0;
-            }
-            foreach ($event->registrations as $registration) {
-                $eventResult['courses'][$registration->user->course_id]++;
+            foreach ($courseIds as $courseId) {
+                $eventResult['courses'][$courseId] = $amountsByEventAndCourse[$event->id][$courseId] ?? 0;
             }
 
             $result[] = $eventResult;
         }
 
         return response()->json($result);
+    }
+
+    /**
+     * Get the amount of registrations grouped by event and course of the user (one query instead of loading all registrations).
+     *
+     * @return array<int, array<int, int>>
+     */
+    protected function registrationAmountsByEventAndCourse(?int $eventId = null): array
+    {
+        $amounts = [];
+
+        Registration::query()
+            ->join('users', 'users.id', '=', 'registrations.user_id')
+            ->when($eventId !== null, fn ($query) => $query->where('registrations.event_id', $eventId))
+            ->selectRaw('registrations.event_id, users.course_id, count(*) as amount')
+            ->groupBy('registrations.event_id', 'users.course_id')
+            ->toBase()
+            ->get()
+            ->each(function ($row) use (&$amounts) {
+                $amounts[(int) $row->event_id][(int) $row->course_id] = (int) $row->amount;
+            });
+
+        return $amounts;
     }
 
     /**
@@ -254,7 +272,8 @@ class ApiController extends Controller
      */
     public function courseStatistics(Request $request): JsonResponse
     {
-        $event = Event::with(['registrations.user'])->find($request->event);
+        // only the columns of the statistics are needed
+        $event = Event::with(['registrations:id,event_id,drinks_alcohol,form_responses'])->find($request->event);
 
         if (! $event) {
             return response()->json(['message' => 'Event not found'], 404);
