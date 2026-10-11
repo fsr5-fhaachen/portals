@@ -1,6 +1,11 @@
 <template>
   <div class="min-h-full">
-    <AppNavbar :navigation="navigation" :user="user" :modules="modules" />
+    <AppNavbar
+      :navigation="navigation"
+      :user="user"
+      :modules="modules"
+      :strichlistensystemEnabled="strichlistensystemEnabled"
+    />
 
     <div class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
       <AppMessage :message="message" />
@@ -60,7 +65,7 @@ initColorMode();
 const packageName = __PACKAGE_NAME__;
 const packageRepositoryUrl = __PACKAGE_REPOSITORY_URL__;
 
-const { pages, user } = defineProps({
+const { pages, user, strichlistensystemEnabled } = defineProps({
   message: {
     type: Object,
     default: () => ({}),
@@ -77,6 +82,10 @@ const { pages, user } = defineProps({
     type: Array as PropType<App.Models.Module[]>,
     default: () => [],
   },
+  strichlistensystemEnabled: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const isTutorPage = computed(() => {
@@ -87,6 +96,9 @@ const navigation = [
     title: "Veranstaltungen",
     href: "/dashboard" + (isTutorPage.value ? "/tutor" : ""),
   },
+  ...(strichlistensystemEnabled
+    ? [{ title: "Strichliste", href: "/strichlistensystem" }]
+    : []),
   ...usePagesAsNavigation(pages, "/dashboard/"),
 ];
 </script>

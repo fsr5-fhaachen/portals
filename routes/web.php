@@ -6,14 +6,19 @@ use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\DashboardAdminCountdownController;
 use App\Http\Controllers\DashboardAdminRandomGeneratorController;
 use App\Http\Controllers\DashboardAdminScoreSystemController;
+use App\Http\Controllers\DashboardAdminStrichlistensystemController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
+use App\Http\Controllers\StrichlistensystemController;
+use App\Http\Controllers\StrichlistensystemKioskController;
 use App\Http\Middleware\ActiveModule;
 use App\Http\Middleware\ActivePublicModule;
 use App\Http\Middleware\IsLoggedInAdmin;
 use App\Http\Middleware\IsLoggedInTutor;
 use App\Http\Middleware\RedirectIfTutor;
+use App\Http\Middleware\StrichlistensystemEnabled;
+use App\Http\Middleware\StrichlistensystemKiosk;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Facades\Route;
@@ -110,9 +115,40 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
             Route::post('/countdown', [DashboardAdminCountdownController::class, 'indexExecuteSubmit'])->name('dashboard.admin.countdown.indexExecuteSubmit');
             Route::get('/countdown/display', [DashboardAdminCountdownController::class, 'display'])->name('dashboard.admin.countdown.display');
         });
+
+        Route::prefix('strichlistensystem')->middleware(StrichlistensystemEnabled::class, 'can:manage strichlistensystem')->group(function () {
+            Route::get('/', [DashboardAdminStrichlistensystemController::class, 'index'])->name('dashboard.admin.strichlistensystem.index');
+            Route::get('/export', [DashboardAdminStrichlistensystemController::class, 'export'])->name('dashboard.admin.strichlistensystem.export');
+            Route::post('/article', [DashboardAdminStrichlistensystemController::class, 'storeArticle'])->name('dashboard.admin.strichlistensystem.storeArticle');
+            Route::post('/article/{article}', [DashboardAdminStrichlistensystemController::class, 'updateArticle'])->name('dashboard.admin.strichlistensystem.updateArticle');
+            Route::post('/article/{article}/toggle-active', [DashboardAdminStrichlistensystemController::class, 'toggleArticleActive'])->name('dashboard.admin.strichlistensystem.toggleArticleActive');
+            Route::delete('/article/{article}', [DashboardAdminStrichlistensystemController::class, 'deleteArticle'])->name('dashboard.admin.strichlistensystem.deleteArticle');
+        });
     });
 
     Route::get('{slug?}', [DashboardController::class, 'cmsPage'])->where('slug', '.*');
+});
+
+// strichlistensystem
+Route::prefix('strichlistensystem')->middleware(StrichlistensystemEnabled::class)->group(function () {
+    // kiosk for the tablets, every request must contain the kiosk bearer token
+    Route::prefix('kiosk')->middleware(StrichlistensystemKiosk::class)->group(function () {
+        Route::get('/', [StrichlistensystemKioskController::class, 'index'])->name('strichlistensystem.kiosk.index');
+        Route::post('/logout', [StrichlistensystemKioskController::class, 'logout'])->name('strichlistensystem.kiosk.logout');
+        Route::get('/user/{user}', [StrichlistensystemKioskController::class, 'show'])->name('strichlistensystem.kiosk.show');
+        Route::get('/user/{user}/avatar', [StrichlistensystemKioskController::class, 'avatar'])->name('strichlistensystem.kiosk.avatar');
+        Route::post('/user/{user}/pin', [StrichlistensystemKioskController::class, 'verifyPin'])->name('strichlistensystem.kiosk.verifyPin');
+        Route::post('/user/{user}/buy/{article}', [StrichlistensystemKioskController::class, 'buy'])->name('strichlistensystem.kiosk.buy');
+        Route::post('/user/{user}/cancel/{articleActionLog}', [StrichlistensystemKioskController::class, 'cancel'])->withTrashed()->name('strichlistensystem.kiosk.cancel');
+    });
+
+    // self service for logged in users
+    Route::middleware(Authenticate::class)->group(function () {
+        Route::get('/', [StrichlistensystemController::class, 'index'])->name('strichlistensystem.index');
+        Route::post('/pin', [StrichlistensystemController::class, 'updatePin'])->name('strichlistensystem.updatePin');
+        Route::post('/buy/{article}', [StrichlistensystemController::class, 'buy'])->name('strichlistensystem.buy');
+        Route::post('/cancel/{articleActionLog}', [StrichlistensystemController::class, 'cancel'])->withTrashed()->name('strichlistensystem.cancel');
+    });
 });
 
 // public routes without authentication

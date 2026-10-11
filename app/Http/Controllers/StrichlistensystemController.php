@@ -1,0 +1,127 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Article;
+use App\Models\ArticleActionLog;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
+use Inertia\Inertia;
+use Inertia\Response;
+
+class StrichlistensystemController extends Controller
+{
+    /**
+     * Display the strichlistensystem of the logged in user
+     */
+    public function index(Request $request): Response
+    {
+        $user = $request->user();
+
+        return Inertia::render('Strichlistensystem/Index', [
+            'hasPin' => $user->hasPin(),
+            'isDisabled' => (bool) $user->is_disabled,
+            'articles' => $user->bookableArticles($this->limitSince(), config('strichlistensystem.self_service_limit_window')),
+            'articleActionLogs' => $user->latestArticleActionLogs(),
+            'limitWindow' => config('strichlistensystem.self_service_limit_window'),
+        ]);
+    }
+
+    /**
+     * Set or change the pin of the logged in user
+     */
+    public function updatePin(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'pin' => ['required', 'string', 'regex:/^\d{4}$/', 'confirmed'],
+        ], [
+            'pin.regex' => 'Die PIN muss aus genau 4 Ziffern bestehen.',
+            'pin.confirmed' => 'Die PINs stimmen nicht überein.',
+        ]);
+
+        // load a fresh instance, because HandleInertiaRequests adds non-database attributes (rolesArray, permissionsArray) to the authenticated user
+        $user = User::findOrFail($request->user()->id);
+        $hadPin = $user->hasPin();
+
+        $user->pin = $validated['pin'];
+        $user->save();
+
+        Session::flash('success', $hadPin ? 'Deine PIN wurde geändert.' : 'Deine PIN wurde gespeichert. Du kannst jetzt Striche machen.');
+
+        return Redirect::route('strichlistensystem.index');
+    }
+
+    /**
+     * Book an article for the logged in user
+     */
+    public function buy(Request $request, Article $article): RedirectResponse
+    {
+        $user = $request->user();
+
+        if (! $user->canUseStrichlistensystem()) {
+            Session::flash('error', 'Du kannst aktuell keine Striche machen.');
+
+            return Redirect::route('strichlistensystem.index');
+        }
+
+        if (! $article->is_active) {
+            Session::flash('error', 'Der Artikel <strong>'.e($article->name).'</strong> ist nicht mehr verfügbar.');
+
+            return Redirect::route('strichlistensystem.index');
+        }
+
+        $limitWindow = config('strichlistensystem.self_service_limit_window');
+
+        $remainingAmount = $user->remainingArticleAmount($article, $this->limitSince());
+        if ($remainingAmount < 1) {
+            Session::flash('error', 'Du hast die maximale Anzahl für <strong>'.e($article->name).'</strong> erreicht. Bitte warte bis zu '.$limitWindow.' Sekunden.');
+
+            return Redirect::route('strichlistensystem.index');
+        }
+
+        $validated = $request->validate([
+            'amount' => ['required', 'integer', 'min:1', 'max:'.$remainingAmount],
+        ], [
+            'amount.max' => 'Du kannst von '.$article->name.' innerhalb von '.$limitWindow.' Sekunden nur noch :max Stück buchen.',
+        ]);
+
+        if (! $user->buyArticle($article, $validated['amount'], $request->ip(), $this->limitSince())) {
+            Session::flash('error', 'Du hast die maximale Anzahl für <strong>'.e($article->name).'</strong> erreicht. Bitte warte bis zu '.$limitWindow.' Sekunden.');
+
+            return Redirect::route('strichlistensystem.index');
+        }
+
+        Session::flash('success', 'Du hast <strong>'.$validated['amount'].'x '.e($article->name).'</strong> gebucht.');
+
+        return Redirect::route('strichlistensystem.index');
+    }
+
+    /**
+     * Cancel a booking of the logged in user
+     */
+    public function cancel(Request $request, ArticleActionLog $articleActionLog): RedirectResponse
+    {
+        if (! $request->user()->cancelArticleActionLog($articleActionLog)) {
+            Session::flash('error', 'Die Buchung kann nicht mehr storniert werden.');
+
+            return Redirect::route('strichlistensystem.index');
+        }
+
+        Session::flash('success', 'Die Buchung wurde storniert.');
+
+        return Redirect::route('strichlistensystem.index');
+    }
+
+    /**
+     * Get the start of the time window in which the article limit applies. Bookings that are exactly
+     * "window" seconds old do not count anymore, so that the limit resets at first booking + window.
+     */
+    private function limitSince(): Carbon
+    {
+        return now()->subSeconds(config('strichlistensystem.self_service_limit_window'))->addSecond();
+    }
+}

@@ -3,10 +3,11 @@
 namespace Database\Factories;
 
 use App\Models\Course;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
@@ -22,6 +23,17 @@ class UserFactory extends Factory
             'lastname' => $this->faker->lastName(),
             'email' => $this->faker->unique()->safeEmail(),
             'course_id' => Course::all(['id'])->random(),
+            'pin' => $this->faker->numerify('####'),
         ];
+    }
+
+    /**
+     * Indicate that the user has not set a pin yet.
+     */
+    public function withoutPin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'pin' => null,
+        ]);
     }
 }

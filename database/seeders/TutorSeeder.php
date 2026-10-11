@@ -16,18 +16,18 @@ class TutorSeeder extends Seeder
      *
      * @var string
      */
-    private const TUTORS_CSV_PATH = __DIR__ . '/tutors.csv';
+    private const TUTORS_CSV_PATH = __DIR__.'/tutors.csv';
 
     /**
      * Set path to the folder with tutor images.
-     * 
+     *
      * @var string
      */
-    private const TUTOR_IMAGES_PATH = __DIR__ . '/images';
+    private const TUTOR_IMAGES_PATH = __DIR__.'/images';
 
     /**
      * Set possible file extensions for the tutor images.
-     * 
+     *
      * @var array
      */
     private const TUTOR_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png'];
@@ -68,28 +68,28 @@ class TutorSeeder extends Seeder
             }
 
             // create a new user
-            echo 'Creating tutor ' . $tutor[0] . ' ' . $tutor[1] . ' (' . $tutor[3] . ')' . PHP_EOL;
+            echo 'Creating tutor '.$tutor[0].' '.$tutor[1].' ('.$tutor[3].')'.PHP_EOL;
             $user = new User;
             $user->lastname = $tutor[0];
             $user->firstname = $tutor[1];
             $user->course_id = $courseByKey[$tutor[2]]->id;
             $user->email = strtolower($tutor[3]);
-            $user->pin = $tutor[6];
+            $user->pin = $this->parsePin($tutor[6] ?? null, $user);
 
-            //set user to disabled
+            // set user to disabled
             if (array_key_exists(5, $tutor) && $tutor[5] == '1') {
-                echo 'Setting tutor to disabled for ' . $tutor[0] . ' ' . $tutor[1] . ' (' . $tutor[3] . ')' . PHP_EOL;
+                echo 'Setting tutor to disabled for '.$tutor[0].' '.$tutor[1].' ('.$tutor[3].')'.PHP_EOL;
                 $user->is_disabled = true;
             }
 
             // check if an image with the name of the user in one of the possible extensions exists
-            $imageBasePath = self::TUTOR_IMAGES_PATH . '/' . strtolower($user->firstname) . '_' . strtolower($user->lastname);
+            $imageBasePath = self::TUTOR_IMAGES_PATH.'/'.strtolower($user->firstname).'_'.strtolower($user->lastname);
             $imageExtension = null;
             $imagePath = null;
             foreach (self::TUTOR_IMAGE_EXTENSIONS as $extension) {
-                if (file_exists($imageBasePath . '.' . $extension)) {
+                if (file_exists($imageBasePath.'.'.$extension)) {
                     $imageExtension = $extension;
-                    $imagePath = $imageBasePath . '.' . $extension;
+                    $imagePath = $imageBasePath.'.'.$extension;
                     break;
                 }
             }
@@ -97,7 +97,7 @@ class TutorSeeder extends Seeder
             if ($imagePath) {
                 // generate presigned url
                 $uuid = Str::uuid()->toString();
-                $path = 'avatars/' . $uuid . '.' . $imageExtension;
+                $path = 'avatars/'.$uuid.'.'.$imageExtension;
                 $presignedUrl = Storage::disk('s3')->temporaryUploadUrl(
                     $path,
                     now()->addMinutes(5)
@@ -131,7 +131,7 @@ class TutorSeeder extends Seeder
             $user->save();
 
             // assigne user role
-            echo 'Assigning role tutor to ' . $tutor[0] . ' ' . $tutor[1] . ' (' . $tutor[3] . ')' . PHP_EOL;
+            echo 'Assigning role tutor to '.$tutor[0].' '.$tutor[1].' ('.$tutor[3].')'.PHP_EOL;
             $user->assignRole('tutor');
 
             // check if the user has additional roles
@@ -145,10 +145,30 @@ class TutorSeeder extends Seeder
                     if (empty($role)) {
                         continue;
                     }
-                    echo 'Assigning role ' . $role . ' to ' . $tutor[0] . ' ' . $tutor[1] . ' (' . $tutor[3] . ')' . PHP_EOL;
+                    echo 'Assigning role '.$role.' to '.$tutor[0].' '.$tutor[1].' ('.$tutor[3].')'.PHP_EOL;
                     $user->assignRole($role);
                 }
             }
         }
+    }
+
+    /**
+     * Parse the pin from the csv file. Only pins with exactly 4 digits are valid, otherwise the user has to set the pin by himself.
+     */
+    private function parsePin(?string $pin, User $user): ?string
+    {
+        $pin = trim((string) $pin);
+
+        if ($pin === '') {
+            return null;
+        }
+
+        if (! preg_match('/^\d{4}$/', $pin)) {
+            $this->command->warn("Ignoring invalid pin for user {$user->firstname} {$user->lastname} (pin must contain exactly 4 digits)");
+
+            return null;
+        }
+
+        return $pin;
     }
 }

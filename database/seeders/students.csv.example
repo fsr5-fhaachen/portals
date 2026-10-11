@@ -1,2 +1,2 @@
-lastname;firstname;course;email
-Mustermann;Max;INF;max.mustermann@alumni.fh-aachen.de
+lastname;firstname;course;email;pin
+Mustermann;Max;INF;max.mustermann@alumni.fh-aachen.de;1234

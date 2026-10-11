@@ -17,6 +17,7 @@ class UserDemoSeeder extends Seeder
             'firstname' => 'Super',
             'lastname' => 'Admin',
             'email' => 'superadmin@example.com',
+            'pin' => '1234',
         ]);
         $superAdminUser->assignRole(['super admin', 'admin', 'tutor', 'special']);
 
@@ -25,6 +26,7 @@ class UserDemoSeeder extends Seeder
             'firstname' => 'Admin',
             'lastname' => 'User',
             'email' => 'admin@example.com',
+            'pin' => '1234',
         ]);
         $adminUser->assignRole(['admin', 'tutor']);
 
@@ -33,6 +35,7 @@ class UserDemoSeeder extends Seeder
             'firstname' => 'ESA',
             'lastname' => 'User',
             'email' => 'esa@exampe.com',
+            'pin' => '1234',
         ]);
         $esaUser->assignRole(['esa', 'tutor']);
 
@@ -41,6 +44,7 @@ class UserDemoSeeder extends Seeder
             'firstname' => 'Stage',
             'lastname' => 'Tutor',
             'email' => 'stagetutor@example.com',
+            'pin' => '1234',
         ]);
         $stageTutorUser->assignRole(['stage tutor', 'tutor']);
 
@@ -49,6 +53,7 @@ class UserDemoSeeder extends Seeder
             'firstname' => 'Tutor',
             'lastname' => 'User',
             'email' => 'tutor@example.com',
+            'pin' => '1234',
         ]);
         $tutorUser->assignRole(['tutor']);
 

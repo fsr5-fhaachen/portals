@@ -10,7 +10,8 @@ declare namespace App.Models {
     remember_token: string | null;
     is_disabled: boolean;
     avatar: string | null;
-    pin: number | null;
+    pin?: string | null;
+    article_action_logs?: ArticleActionLog[] | null;
     station_tutors?: StationTutor[] | null;
     group_tutors?: GroupTutor[] | null;
     registrations?: Registration[] | null;

@@ -91,6 +91,22 @@
                       />
                     </FormRow>
 
+                    <FormRow v-if="strichlistensystemEnabled">
+                      <FormKit
+                        type="text"
+                        name="pin"
+                        label="PIN (Strichliste)"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        maxlength="4"
+                        help="Genau 4 Ziffern. Leer lassen, um die PIN zu entfernen."
+                        validation="matches:/^\d{4}$/"
+                        :validation-messages="{
+                          matches: 'Die PIN muss aus genau 4 Ziffern bestehen.',
+                        }"
+                      />
+                    </FormRow>
+
                     <FormRow
                       v-if="
                         !user.roles.length ||
@@ -159,7 +175,7 @@ import {
   TransitionRoot,
 } from "@headlessui/vue";
 import { PropType, ref } from "vue";
-import { router } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
 
 const { user, courses, roles } = defineProps({
   user: {
@@ -191,7 +207,10 @@ const editForm = ref({
   remove_avatar: false,
   avatar: null,
   is_disabled: user.is_disabled == 1 ? true : false,
+  pin: user.pin ?? "",
 });
+
+const strichlistensystemEnabled = usePage().props.strichlistensystemEnabled;
 
 const selectFormCourseOptions = useSelectFormCourseOptions(courses, true);
 const selectFormRoleOptions = useSelectFormRoleOptions(roles);

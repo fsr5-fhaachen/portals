@@ -280,6 +280,9 @@ class DashboardAdminController extends Controller
             'is_disabled' => ['boolean'],
             'remove_avatar' => ['boolean'],
             'avatar' => ['nullable', 'string'],
+            'pin' => ['nullable', 'string', 'regex:/^\d{4}$/'],
+        ], [
+            'pin.regex' => 'Die PIN muss aus genau 4 Ziffern bestehen.',
         ]);
 
         // check if all roles exists and not super admin if so add to roles array

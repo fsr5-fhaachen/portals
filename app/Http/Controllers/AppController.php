@@ -119,6 +119,14 @@ class AppController extends Controller
         // login the user
         Auth::login($user, true);
 
+        // redirect back to the strichlistensystem if the user was redirected from there to the login
+        $intendedUrl = Session::get('url.intended');
+        if (is_string($intendedUrl) && str_starts_with((string) parse_url($intendedUrl, PHP_URL_PATH), '/strichlistensystem')) {
+            Session::forget('url.intended');
+
+            return Redirect::to($intendedUrl);
+        }
+
         return Redirect::route('dashboard.index');
     }
 }

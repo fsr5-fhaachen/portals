@@ -401,6 +401,9 @@ class ApiController extends Controller
         $users = User::with('course', 'roles')->get()->map(function ($user) {
             $user->avatarUrl = $user->avatarUrlUnchecked();
 
+            // the pin is needed for the user management
+            $user->makeVisible('pin');
+
             return $user;
         });
 
