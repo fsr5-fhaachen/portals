@@ -39,45 +39,18 @@ resource "hcloud_firewall" "this" {
       "::/0"
     ]
   }
-  rule {
-    description = "Allow Node Exporter from monitoring server"
-    direction   = "in"
-    protocol    = "tcp"
-    port        = "9100"
-    source_ips = [
-      "${hcloud_primary_ip.monitoring_ipv4.ip_address}/32",
-      "${hcloud_primary_ip.monitoring_ipv6.ip_address}1/128"
-    ]
-  }
-  rule {
-    description = "Allow Postgres Exporter from monitoring server"
-    direction   = "in"
-    protocol    = "tcp"
-    port        = "9187"
-    source_ips = [
-      "${hcloud_primary_ip.monitoring_ipv4.ip_address}/32",
-      "${hcloud_primary_ip.monitoring_ipv6.ip_address}1/128"
-    ]
-  }
-  rule {
-    description = "Allow Redis Exporter from monitoring server"
-    direction   = "in"
-    protocol    = "tcp"
-    port        = "9121"
-    source_ips = [
-      "${hcloud_primary_ip.monitoring_ipv4.ip_address}/32",
-      "${hcloud_primary_ip.monitoring_ipv6.ip_address}1/128"
-    ]
-  }
-  rule {
-    description = "Allow Nginx Exporter from monitoring server"
-    direction   = "in"
-    protocol    = "tcp"
-    port        = "9113"
-    source_ips = [
-      "${hcloud_primary_ip.monitoring_ipv4.ip_address}/32",
-      "${hcloud_primary_ip.monitoring_ipv6.ip_address}1/128"
-    ]
+  dynamic "rule" {
+    for_each = var.monitoring_enabled ? local.monitoring_exporters : {}
+    content {
+      description = "Allow ${rule.key} from monitoring server"
+      direction   = "in"
+      protocol    = "tcp"
+      port        = rule.value
+      source_ips = [
+        "${hcloud_primary_ip.monitoring_ipv4[0].ip_address}/32",
+        "${hcloud_primary_ip.monitoring_ipv6[0].ip_address}1/128"
+      ]
+    }
   }
 }
 
@@ -89,7 +62,8 @@ resource "hcloud_firewall_attachment" "this" {
 }
 
 resource "hcloud_firewall" "monitoring" {
-  name = var.monitoring_domain_name
+  count = var.monitoring_enabled ? 1 : 0
+  name  = var.monitoring_domain_name
   rule {
     description = "Allow ICMP"
     direction   = "in"
@@ -132,8 +106,9 @@ resource "hcloud_firewall" "monitoring" {
 }
 
 resource "hcloud_firewall_attachment" "monitoring" {
-  firewall_id = hcloud_firewall.monitoring.id
+  count       = var.monitoring_enabled ? 1 : 0
+  firewall_id = hcloud_firewall.monitoring[0].id
   server_ids = [
-    hcloud_server.monitoring.id
+    hcloud_server.monitoring[0].id
   ]
 }

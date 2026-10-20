@@ -25,6 +25,7 @@ resource "hcloud_rdns" "ipv6" {
 }
 
 resource "hcloud_primary_ip" "monitoring_ipv4" {
+  count       = var.monitoring_enabled ? 1 : 0
   name        = "${var.monitoring_domain_name}-ipv4"
   location    = var.server_region
   type        = "ipv4"
@@ -32,6 +33,7 @@ resource "hcloud_primary_ip" "monitoring_ipv4" {
 }
 
 resource "hcloud_primary_ip" "monitoring_ipv6" {
+  count       = var.monitoring_enabled ? 1 : 0
   name        = "${var.monitoring_domain_name}-ipv6"
   location    = var.server_region
   type        = "ipv6"
@@ -39,13 +41,15 @@ resource "hcloud_primary_ip" "monitoring_ipv6" {
 }
 
 resource "hcloud_rdns" "monitoring_ipv4" {
-  primary_ip_id = hcloud_primary_ip.monitoring_ipv4.id
-  ip_address    = hcloud_primary_ip.monitoring_ipv4.ip_address
+  count         = var.monitoring_enabled ? 1 : 0
+  primary_ip_id = hcloud_primary_ip.monitoring_ipv4[0].id
+  ip_address    = hcloud_primary_ip.monitoring_ipv4[0].ip_address
   dns_ptr       = var.monitoring_domain_name
 }
 
 resource "hcloud_rdns" "monitoring_ipv6" {
-  primary_ip_id = hcloud_primary_ip.monitoring_ipv6.id
-  ip_address    = "${hcloud_primary_ip.monitoring_ipv6.ip_address}1"
+  count         = var.monitoring_enabled ? 1 : 0
+  primary_ip_id = hcloud_primary_ip.monitoring_ipv6[0].id
+  ip_address    = "${hcloud_primary_ip.monitoring_ipv6[0].ip_address}1"
   dns_ptr       = var.monitoring_domain_name
 }

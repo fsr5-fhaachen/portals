@@ -70,6 +70,12 @@ variable "monitoring_domain_name" {
   default     = "monitoring.portals.fsr5.de"
 }
 
+variable "monitoring_enabled" {
+  description = "Create the monitoring server (Prometheus + Grafana)."
+  type        = bool
+  default     = true
+}
+
 variable "monitoring_server_type" {
   description = ""
   type        = string

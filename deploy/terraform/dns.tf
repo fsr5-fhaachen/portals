@@ -19,21 +19,23 @@ resource "cloudflare_dns_record" "ipv6" {
 }
 
 resource "cloudflare_dns_record" "monitoring_ipv4" {
+  count   = var.monitoring_enabled ? 1 : 0
   zone_id = var.cloudflare_zone_id
   name    = var.monitoring_domain_name
   ttl     = 3600
   type    = "A"
   comment = "Managed by OpenTofu"
-  content = hcloud_primary_ip.monitoring_ipv4.ip_address
+  content = hcloud_primary_ip.monitoring_ipv4[0].ip_address
   proxied = false
 }
 
 resource "cloudflare_dns_record" "monitoring_ipv6" {
+  count   = var.monitoring_enabled ? 1 : 0
   zone_id = var.cloudflare_zone_id
   name    = var.monitoring_domain_name
   ttl     = 3600
   type    = "AAAA"
   comment = "Managed by OpenTofu"
-  content = "${hcloud_primary_ip.monitoring_ipv6.ip_address}1"
+  content = "${hcloud_primary_ip.monitoring_ipv6[0].ip_address}1"
   proxied = false
 }
