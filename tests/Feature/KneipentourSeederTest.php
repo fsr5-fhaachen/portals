@@ -3,16 +3,31 @@
 namespace Tests\Feature;
 
 use App\Models\Competition;
+use App\Models\Course;
 use App\Models\Event;
 use App\Models\Group;
 use App\Models\Module;
 use Database\Seeders\KneipentourSeeder;
+use Database\Seeders\TutorSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class KneipentourSeederTest extends TestCase
 {
     use RefreshDatabase;
+
+    /**
+     * Skip the tutor seeds, because they depend on the local (gitignored) tutors.csv.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->app->instance(TutorSeeder::class, new class extends TutorSeeder
+        {
+            public function run(): void {}
+        });
+    }
 
     public function test_it_seeds_only_the_kneipentour_with_eight_groups(): void
     {
@@ -30,6 +45,17 @@ class KneipentourSeederTest extends TestCase
             $groups->pluck('name')->all()
         );
         $this->assertTrue($groups->every(fn (Group $group) => $group->telegram_group_link === null));
+    }
+
+    public function test_it_seeds_only_the_faculty_courses(): void
+    {
+        $this->seed(KneipentourSeeder::class);
+
+        $this->assertSame(
+            ['FB1' => 'fa-map', 'FB4' => 'fa-paint-brush', 'FB5' => 'fa-plug'],
+            Course::orderBy('abbreviation')->pluck('icon', 'abbreviation')->all()
+        );
+        $this->assertTrue(Course::all()->every(fn (Course $course) => (bool) $course->show_on_registration));
     }
 
     public function test_it_opens_the_registration_for_one_week_from_now(): void
@@ -79,5 +105,6 @@ class KneipentourSeederTest extends TestCase
         $this->assertSame(1, Event::count());
         $this->assertSame(8, Group::count());
         $this->assertSame(1, Competition::count());
+        $this->assertSame(3, Course::count());
     }
 }
