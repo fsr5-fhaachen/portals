@@ -27,6 +27,7 @@ class StrichlistensystemController extends Controller
             'isDisabled' => (bool) $user->is_disabled,
             'articles' => $user->bookableArticles($this->limitSince(), config('strichlistensystem.self_service_limit_window')),
             'articleActionLogs' => $user->latestArticleActionLogs(),
+            'balance' => $user->strichlistensystemBalance(),
             'limitWindow' => config('strichlistensystem.self_service_limit_window'),
         ]);
     }
@@ -85,12 +86,25 @@ class StrichlistensystemController extends Controller
 
         $validated = $request->validate([
             'amount' => ['required', 'integer', 'min:1', 'max:'.$remainingAmount],
+            // the price the user saw, the booking is rejected if the price changed in the meantime
+            'price' => ['present', 'nullable', 'integer'],
         ], [
             'amount.max' => 'Du kannst von '.$article->name.' innerhalb von '.$limitWindow.' Sekunden nur noch :max Stück buchen.',
         ]);
+        $expectedPrice = $validated['price'] === null ? null : (int) $validated['price'];
 
-        if (! $user->buyArticle($article, $validated['amount'], $request->ip(), $this->limitSince())) {
-            Session::flash('error', 'Du hast die maximale Anzahl für <strong>'.e($article->name).'</strong> erreicht. Bitte warte bis zu '.$limitWindow.' Sekunden.');
+        if ($article->price !== $expectedPrice) {
+            Session::flash('error', 'Der Preis von <strong>'.e($article->name).'</strong> hat sich geändert. Bitte prüfe den neuen Preis und buche erneut.');
+
+            return Redirect::route('strichlistensystem.index');
+        }
+
+        if (! $user->buyArticle($article, $validated['amount'], $request->ip(), $this->limitSince(), $expectedPrice)) {
+            if ($article->refresh()->price !== $expectedPrice) {
+                Session::flash('error', 'Der Preis von <strong>'.e($article->name).'</strong> hat sich geändert. Bitte prüfe den neuen Preis und buche erneut.');
+            } else {
+                Session::flash('error', 'Du hast die maximale Anzahl für <strong>'.e($article->name).'</strong> erreicht. Bitte warte bis zu '.$limitWindow.' Sekunden.');
+            }
 
             return Redirect::route('strichlistensystem.index');
         }

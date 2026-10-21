@@ -119,6 +119,10 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
         Route::prefix('strichlistensystem')->middleware(StrichlistensystemEnabled::class, 'can:manage strichlistensystem')->group(function () {
             Route::get('/', [DashboardAdminStrichlistensystemController::class, 'index'])->name('dashboard.admin.strichlistensystem.index');
             Route::get('/export', [DashboardAdminStrichlistensystemController::class, 'export'])->name('dashboard.admin.strichlistensystem.export');
+            Route::get('/billing', [DashboardAdminStrichlistensystemController::class, 'billing'])->name('dashboard.admin.strichlistensystem.billing');
+            Route::get('/billing/user/{user}', [DashboardAdminStrichlistensystemController::class, 'billingUser'])->name('dashboard.admin.strichlistensystem.billingUser');
+            Route::post('/billing/user/{user}/payment', [DashboardAdminStrichlistensystemController::class, 'storePayment'])->name('dashboard.admin.strichlistensystem.storePayment');
+            Route::delete('/billing/payment/{payment}', [DashboardAdminStrichlistensystemController::class, 'deletePayment'])->name('dashboard.admin.strichlistensystem.deletePayment');
             Route::post('/article', [DashboardAdminStrichlistensystemController::class, 'storeArticle'])->name('dashboard.admin.strichlistensystem.storeArticle');
             Route::post('/article/{article}', [DashboardAdminStrichlistensystemController::class, 'updateArticle'])->name('dashboard.admin.strichlistensystem.updateArticle');
             Route::post('/article/{article}/toggle-active', [DashboardAdminStrichlistensystemController::class, 'toggleArticleActive'])->name('dashboard.admin.strichlistensystem.toggleArticleActive');

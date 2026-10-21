@@ -15,10 +15,26 @@
           class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
         >
           <div>
+            <UiH2>Abrechnung</UiH2>
+            <p class="text-gray-500 dark:text-gray-400">
+              Offene Beträge aller Personen ansehen und Zahlungen eintragen.
+            </p>
+          </div>
+          <AppLink href="/dashboard/admin/strichlistensystem/billing">
+            Zur Abrechnung
+          </AppLink>
+        </div>
+      </CardBase>
+
+      <CardBase>
+        <div
+          class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div>
             <UiH2>Export</UiH2>
             <p class="text-gray-500 dark:text-gray-400">
-              Anzahl der gebuchten Artikel (ohne Stornierungen) pro Person als
-              CSV.
+              Anzahl und Beträge der gebuchten Artikel (ohne Stornierungen),
+              Gesamtsumme, bezahlter und offener Betrag pro Person als CSV.
             </p>
           </div>
           <AppButton @click="downloadExport">Export herunterladen</AppButton>
@@ -88,6 +104,22 @@
             </FormRow>
             <FormRow>
               <FormKit
+                type="text"
+                name="price"
+                label="Preis in €"
+                placeholder="1,50"
+                inputmode="decimal"
+                autocomplete="off"
+                help="Gilt nur für neue Buchungen. Bisherige Buchungen behalten ihren Preis. Buchungen ohne Preis erhalten einmalig den ersten festgelegten Preis."
+                :validation="[['required'], ['matches', priceInputPattern]]"
+                :validation-messages="{
+                  matches:
+                    'Bitte gib einen Preis zwischen 0 und 1000 € mit höchstens 2 Nachkommastellen an, z. B. 1,50.',
+                }"
+              />
+            </FormRow>
+            <FormRow>
+              <FormKit
                 type="checkbox"
                 name="is_active"
                 label="Aktiv"
@@ -130,6 +162,12 @@
 <script setup lang="ts">
 import { PropType, ref } from "vue";
 import { router } from "@inertiajs/vue3";
+import { reset } from "@formkit/core";
+import {
+  centsToPriceInput,
+  formatPrice,
+  parsePriceToCents,
+} from "../../../../composables/usePrice";
 import { TableColumn } from "../../../../types/table-column";
 import { TableFunction } from "../../../../types/table-function";
 import { TableButton } from "../../../../types/table-button";
@@ -153,11 +191,16 @@ defineProps({
   },
 });
 
+// 0 to 1000 euro with max. 2 decimals, comma or dot as decimal separator
+const priceInputPattern = /^(\d{1,3}([.,]\d{1,2})?|1000([.,]0{1,2})?)$/;
+
 type ArticleForm = {
   name: string;
   icon: string;
   show_order: number;
   max_order_amount: number;
+  // price in euro as entered, e.g. "1,50"
+  price: string;
   is_active: boolean;
 };
 
@@ -166,6 +209,7 @@ const emptyArticleForm = (): ArticleForm => ({
   icon: "",
   show_order: 0,
   max_order_amount: 1,
+  price: "",
   is_active: true,
 });
 
@@ -174,6 +218,8 @@ const articleToEdit = ref<App.Models.Article | null>(null);
 
 const resetArticleForm = () => {
   articleToEdit.value = null;
+  // reset via formkit, otherwise the form stays submitted and shows the validation errors of the empty fields
+  reset("article", emptyArticleForm());
   articleForm.value = emptyArticleForm();
 };
 
@@ -184,6 +230,7 @@ const editArticle = (article: App.Models.Article) => {
     icon: article.icon,
     show_order: article.show_order,
     max_order_amount: article.max_order_amount,
+    price: centsToPriceInput(article.price).replace(".", ","),
     is_active: article.is_active,
   };
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -194,14 +241,19 @@ const submitArticleHandler = () => {
     ? `/dashboard/admin/strichlistensystem/article/${articleToEdit.value.id}`
     : "/dashboard/admin/strichlistensystem/article";
 
-  router.post(url, articleForm.value, {
-    preserveScroll: true,
-    preserveState: true,
-    reset: ["articles"],
-    onSuccess: () => {
-      resetArticleForm();
+  // the price is sent in cents
+  router.post(
+    url,
+    { ...articleForm.value, price: parsePriceToCents(articleForm.value.price) },
+    {
+      preserveScroll: true,
+      preserveState: true,
+      reset: ["articles"],
+      onSuccess: () => {
+        resetArticleForm();
+      },
     },
-  });
+  );
 };
 
 const toggleArticleActive = (article: App.Models.Article) => {
@@ -269,6 +321,15 @@ const getColumns = (): TableColumn[] => [
     text: "Max. Anzahl",
     valueFunction: (article: App.Models.Article) =>
       `${article.max_order_amount}`,
+  }),
+  new TableColumn({
+    name: "price",
+    sortKey: "price",
+    text: "Preis",
+    valueFunction: (article: App.Models.Article) =>
+      article.price !== null
+        ? formatPrice(article.price)
+        : '<span class="text-red-600 dark:text-red-400">kein Preis</span>',
   }),
   new TableColumn({
     name: "is_active",

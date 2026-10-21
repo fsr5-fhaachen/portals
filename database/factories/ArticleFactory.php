@@ -22,8 +22,19 @@ class ArticleFactory extends Factory
             'icon' => $this->faker->randomElement(config('strichlistensystem.icons')),
             'show_order' => $this->faker->numberBetween(1, 100),
             'max_order_amount' => $this->faker->numberBetween(1, 8),
+            'price' => $this->faker->numberBetween(0, 500),
             'is_active' => true,
         ];
+    }
+
+    /**
+     * Indicate that the article has no price yet.
+     */
+    public function withoutPrice(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'price' => null,
+        ]);
     }
 
     /**

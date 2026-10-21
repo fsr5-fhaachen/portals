@@ -7,6 +7,8 @@ declare namespace App.Models {
     icon: string;
     show_order: number;
     max_order_amount: number;
+    // price in cents, null if no price is set yet
+    price: number | null;
     is_active: boolean;
     remaining_amount?: number;
     limit_resets_at?: string | null;

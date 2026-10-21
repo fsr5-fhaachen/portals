@@ -97,6 +97,9 @@ class StrichlistensystemKioskController extends Controller
             'person' => $this->toPerson($user),
             'articles' => $user->bookableArticles($this->unlockedAt()),
             'articleActionLogs' => $user->latestArticleActionLogs(),
+            'balance' => $user->strichlistensystemBalance(),
+            // sum of the bookings of the current kiosk login
+            'loginTotal' => $user->articleActionLogsTotal($this->unlockedAt()),
             'sessionTimeout' => config('strichlistensystem.kiosk_session_timeout'),
         ]);
     }
@@ -125,12 +128,25 @@ class StrichlistensystemKioskController extends Controller
 
         $validated = $request->validate([
             'amount' => ['required', 'integer', 'min:1', 'max:'.$remainingAmount],
+            // the price the person saw, the booking is rejected if the price changed in the meantime
+            'price' => ['present', 'nullable', 'integer'],
         ], [
             'amount.max' => 'Du kannst von '.$article->name.' in dieser Anmeldung nur noch :max Stück buchen.',
         ]);
+        $expectedPrice = $validated['price'] === null ? null : (int) $validated['price'];
 
-        if (! $user->buyArticle($article, $validated['amount'], $request->ip(), $this->unlockedAt())) {
-            Session::flash('error', 'Du hast die maximale Anzahl für <strong>'.e($article->name).'</strong> in dieser Anmeldung erreicht.');
+        if ($article->price !== $expectedPrice) {
+            Session::flash('error', 'Der Preis von <strong>'.e($article->name).'</strong> hat sich geändert. Bitte prüfe den neuen Preis und buche erneut.');
+
+            return Redirect::route('strichlistensystem.kiosk.show', ['user' => $user->id]);
+        }
+
+        if (! $user->buyArticle($article, $validated['amount'], $request->ip(), $this->unlockedAt(), $expectedPrice)) {
+            if ($article->refresh()->price !== $expectedPrice) {
+                Session::flash('error', 'Der Preis von <strong>'.e($article->name).'</strong> hat sich geändert. Bitte prüfe den neuen Preis und buche erneut.');
+            } else {
+                Session::flash('error', 'Du hast die maximale Anzahl für <strong>'.e($article->name).'</strong> in dieser Anmeldung erreicht.');
+            }
 
             return Redirect::route('strichlistensystem.kiosk.show', ['user' => $user->id]);
         }

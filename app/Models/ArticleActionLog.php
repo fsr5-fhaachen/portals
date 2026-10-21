@@ -46,6 +46,18 @@ class ArticleActionLog extends Model
     ];
 
     /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'price' => 'integer',
+        ];
+    }
+
+    /**
      * Get the user (buyer) of the action log.
      */
     public function user(): BelongsTo

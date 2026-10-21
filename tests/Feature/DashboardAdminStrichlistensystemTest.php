@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Article;
 use App\Models\ArticleActionLog;
+use App\Models\StrichlistensystemPayment;
 use App\Models\User;
 use Database\Seeders\CourseSeeder;
 use Database\Seeders\ModuleSeeder;
@@ -42,7 +43,7 @@ class DashboardAdminStrichlistensystemTest extends TestCase
     /**
      * Get valid article data.
      *
-     * @return array{name: string, icon: string, show_order: int, max_order_amount: int, is_active: bool}
+     * @return array{name: string, icon: string, show_order: int, max_order_amount: int, price: int, is_active: bool}
      */
     private function articleData(array $overrides = []): array
     {
@@ -51,6 +52,7 @@ class DashboardAdminStrichlistensystemTest extends TestCase
             'icon' => 'bottle-water',
             'show_order' => 7,
             'max_order_amount' => 4,
+            'price' => 250,
             'is_active' => true,
         ], $overrides);
     }
@@ -126,6 +128,11 @@ class DashboardAdminStrichlistensystemTest extends TestCase
             ['icon', $this->articleData(['icon' => 'skull'])],
             ['show_order', $this->articleData(['show_order' => -1])],
             ['max_order_amount', $this->articleData(['max_order_amount' => 0])],
+            ['price', $this->articleData(['price' => null])],
+            ['price', $this->articleData(['price' => -1])],
+            ['price', $this->articleData(['price' => 100001])],
+            ['price', $this->articleData(['price' => 1.5])],
+            ['price', $this->articleData(['price' => '1,50'])],
             ['is_active', $this->articleData(['is_active' => 'yes'])],
         ] as [$field, $data]) {
             $this->actingAsAdmin()
@@ -145,6 +152,74 @@ class DashboardAdminStrichlistensystemTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $this->assertDatabaseHas('articles', ['id' => $article->id] + $this->articleData(['name' => 'Bier']));
+    }
+
+    public function test_article_can_be_free(): void
+    {
+        $this->actingAsAdmin()
+            ->post(route('dashboard.admin.strichlistensystem.storeArticle'), $this->articleData(['price' => 0]))
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame(0, Article::first()->price);
+    }
+
+    public function test_price_change_does_not_change_existing_bookings(): void
+    {
+        $article = Article::factory()->create(['name' => 'Bier', 'price' => 150]);
+        $articleActionLog = ArticleActionLog::factory()->for($article)->create();
+        $cancelledArticleActionLog = ArticleActionLog::factory()->for($article)->create();
+        $cancelledArticleActionLog->delete();
+
+        $this->actingAsAdmin()
+            ->post(route('dashboard.admin.strichlistensystem.updateArticle', $article), $this->articleData(['name' => 'Bier', 'price' => 200]))
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('success', 'Der Artikel <strong>Bier</strong> wurde gespeichert.');
+
+        $this->assertSame(200, $article->fresh()->price);
+        $this->assertSame(150, $articleActionLog->fresh()->price);
+        $this->assertSame(150, $cancelledArticleActionLog->fresh()->price);
+    }
+
+    public function test_bookings_without_price_get_the_first_price_once(): void
+    {
+        $article = Article::factory()->withoutPrice()->create(['name' => 'Bier']);
+        $articleActionLogs = ArticleActionLog::factory()->count(2)->for($article)->create();
+        $cancelledArticleActionLog = ArticleActionLog::factory()->for($article)->create();
+        $cancelledArticleActionLog->delete();
+        $otherArticleActionLog = ArticleActionLog::factory()->for(Article::factory()->withoutPrice())->create();
+
+        $this->assertNull($articleActionLogs[0]->price);
+
+        $this->actingAsAdmin()
+            ->post(route('dashboard.admin.strichlistensystem.updateArticle', $article), $this->articleData(['name' => 'Bier', 'price' => 180]))
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('success', 'Der Artikel <strong>Bier</strong> wurde gespeichert. 3 Buchungen ohne Preis haben den Preis 1,80 € erhalten.');
+
+        $this->assertSame(180, $articleActionLogs[0]->fresh()->price);
+        $this->assertSame(180, $articleActionLogs[1]->fresh()->price);
+        $this->assertSame(180, $cancelledArticleActionLog->fresh()->price);
+        $this->assertNull($otherArticleActionLog->fresh()->price);
+
+        // a later price change only applies to new bookings
+        $this->actingAsAdmin()
+            ->post(route('dashboard.admin.strichlistensystem.updateArticle', $article), $this->articleData(['name' => 'Bier', 'price' => 220]))
+            ->assertSessionHas('success', 'Der Artikel <strong>Bier</strong> wurde gespeichert.');
+
+        $this->assertSame(180, $articleActionLogs[0]->fresh()->price);
+    }
+
+    public function test_article_management_contains_the_price(): void
+    {
+        Article::factory()->create(['price' => 120]);
+        Article::factory()->withoutPrice()->create();
+
+        $this->actingAsAdmin()
+            ->get(route('dashboard.admin.strichlistensystem.index', ['sort' => 'price', 'direction' => 'desc']))
+            ->assertInertia(fn (Assert $page) => $page
+                ->has('articles.data', 2)
+                ->where('articles.data.0.price', 120)
+                ->where('articles.data.1.price', null)
+            );
     }
 
     public function test_admin_can_deactivate_an_article_via_the_form(): void
@@ -193,7 +268,7 @@ class DashboardAdminStrichlistensystemTest extends TestCase
 
     public function test_inactive_articles_are_listed_in_the_admin_and_the_export(): void
     {
-        $article = Article::factory()->inactive()->create(['name' => 'Alt']);
+        $article = Article::factory()->inactive()->create(['name' => 'Alt', 'price' => 410]);
         $user = User::factory()->create();
         ArticleActionLog::factory()->count(2)->for($user)->for($article)->create();
 
@@ -207,8 +282,7 @@ class DashboardAdminStrichlistensystemTest extends TestCase
         $csv = $this->actingAsAdmin()->get(route('dashboard.admin.strichlistensystem.export'))->streamedContent();
 
         $this->assertStringContainsString(';Anz_Alt', $csv);
-        $this->assertStringContainsString("{$user->lastname};{$user->firstname};2
-", $csv);
+        $this->assertStringContainsString("{$user->lastname};{$user->firstname};2;8,20;8,20;0,00;8,20\n", $csv);
     }
 
     public function test_admin_can_delete_an_article_without_bookings(): void
@@ -237,21 +311,53 @@ class DashboardAdminStrichlistensystemTest extends TestCase
 
     public function test_admin_can_export_the_bookings_as_csv(): void
     {
-        $beer = Article::factory()->create(['name' => 'Bier', 'show_order' => 1]);
-        $water = Article::factory()->create(['name' => 'Wasser', 'show_order' => 2]);
+        $beer = Article::factory()->create(['name' => 'Bier', 'show_order' => 1, 'price' => 150]);
+        $water = Article::factory()->create(['name' => 'Wasser', 'show_order' => 2, 'price' => 50]);
         $user = User::factory()->create(['firstname' => 'Jörg', 'lastname' => 'Älter']);
         ArticleActionLog::factory()->count(3)->for($user)->for($beer)->create();
         ArticleActionLog::factory()->for($user)->for($water)->create();
         ArticleActionLog::factory()->for($user)->for($water)->create()->delete();
+        StrichlistensystemPayment::factory()->for($user)->create(['amount' => 200]);
+        StrichlistensystemPayment::factory()->for($user)->create(['amount' => 1000])->delete();
 
         $response = $this->actingAsAdmin()->get(route('dashboard.admin.strichlistensystem.export'));
 
         $response->assertOk();
         $csv = $response->streamedContent();
 
-        $this->assertStringStartsWith("\xEF\xBB\xBFNachname;Vorname;Anz_Bier;Anz_Wasser\n", $csv);
-        $this->assertStringContainsString("Älter;Jörg;3;1\n", $csv);
-        $this->assertStringContainsString("{$this->admin->lastname};{$this->admin->firstname};0;0\n", $csv);
+        $this->assertStringStartsWith("\xEF\xBB\xBFNachname;Vorname;Anz_Bier;Anz_Wasser;Betrag_Bier;Betrag_Wasser;Gesamt;Bezahlt;Offen\n", $csv);
+        $this->assertStringContainsString("Älter;Jörg;3;1;4,50;0,50;5,00;2,00;3,00\n", $csv);
+        $this->assertStringContainsString("{$this->admin->lastname};{$this->admin->firstname};0;0;0,00;0,00;0,00;0,00;0,00\n", $csv);
+    }
+
+    public function test_export_uses_the_price_at_the_time_of_the_booking(): void
+    {
+        $beer = Article::factory()->create(['name' => 'Bier', 'price' => 150]);
+        $user = User::factory()->create(['firstname' => 'Jörg', 'lastname' => 'Älter']);
+        ArticleActionLog::factory()->for($user)->for($beer)->create();
+
+        $this->actingAsAdmin()
+            ->post(route('dashboard.admin.strichlistensystem.updateArticle', $beer), $this->articleData(['name' => 'Bier', 'price' => 200]))
+            ->assertSessionHasNoErrors();
+
+        ArticleActionLog::factory()->for($user)->for($beer)->create();
+
+        $csv = $this->actingAsAdmin()->get(route('dashboard.admin.strichlistensystem.export'))->streamedContent();
+
+        $this->assertStringContainsString("Älter;Jörg;2;3,50;3,50;0,00;3,50\n", $csv);
+    }
+
+    public function test_export_formats_a_negative_open_amount(): void
+    {
+        $beer = Article::factory()->create(['name' => 'Bier', 'price' => 150]);
+        $user = User::factory()->create(['firstname' => 'Jörg', 'lastname' => 'Älter']);
+        ArticleActionLog::factory()->for($user)->for($beer)->create();
+        ArticleActionLog::factory()->for($user)->for($beer)->create()->delete();
+        StrichlistensystemPayment::factory()->for($user)->create(['amount' => 300]);
+
+        $csv = $this->actingAsAdmin()->get(route('dashboard.admin.strichlistensystem.export'))->streamedContent();
+
+        $this->assertStringContainsString("Älter;Jörg;1;1,50;1,50;3,00;-1,50\n", $csv);
     }
 
     public function test_admin_can_set_and_remove_the_pin_of_a_user(): void

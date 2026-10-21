@@ -146,7 +146,7 @@ class StrichlistensystemKioskTest extends TestCase
             );
 
         $this->withHeaders($this->kioskHeaders())
-            ->post(route('strichlistensystem.kiosk.buy', [$user, $inactiveArticle]), ['amount' => 1])
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $inactiveArticle]), ['amount' => 1, 'price' => $inactiveArticle->price])
             ->assertRedirect(route('strichlistensystem.kiosk.show', $user))
             ->assertSessionHas('error');
 
@@ -249,10 +249,97 @@ class StrichlistensystemKioskTest extends TestCase
         $this->unlockKiosk($user);
 
         $this->withHeaders($this->kioskHeaders())
-            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 3])
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 3, 'price' => $article->price])
             ->assertRedirect(route('strichlistensystem.kiosk.show', $user));
 
         $this->assertSame(3, $user->articleActionLogs()->where('article_id', $article->id)->count());
+    }
+
+    public function test_bookings_keep_the_price_of_the_article(): void
+    {
+        $user = User::factory()->create();
+        $article = Article::factory()->create(['max_order_amount' => 5, 'price' => 150]);
+
+        $this->unlockKiosk($user);
+
+        $this->withHeaders($this->kioskHeaders())
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 2, 'price' => 150])
+            ->assertSessionHas('success');
+
+        $article->update(['price' => 200]);
+
+        $this->withHeaders($this->kioskHeaders())
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => 200])
+            ->assertSessionHas('success');
+
+        $this->assertSame([150, 150, 200], $user->articleActionLogs()->orderBy('id')->pluck('price')->all());
+        $this->assertSame(500, $user->articleActionLogsTotal());
+    }
+
+    public function test_booking_is_rejected_if_the_price_changed(): void
+    {
+        $user = User::factory()->create();
+        $article = Article::factory()->create(['name' => 'Bier', 'max_order_amount' => 5, 'price' => 200]);
+
+        $this->unlockKiosk($user);
+
+        $this->withHeaders($this->kioskHeaders())
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => 150])
+            ->assertRedirect(route('strichlistensystem.kiosk.show', $user))
+            ->assertSessionHas('error', 'Der Preis von <strong>Bier</strong> hat sich geändert. Bitte prüfe den neuen Preis und buche erneut.');
+
+        $this->withHeaders($this->kioskHeaders())
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => null])
+            ->assertSessionHas('error');
+
+        $this->withHeaders($this->kioskHeaders())
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1])
+            ->assertSessionHasErrors('price');
+
+        $this->assertSame(0, $user->articleActionLogs()->count());
+    }
+
+    public function test_article_without_price_can_be_booked_and_gets_the_price_later(): void
+    {
+        $user = User::factory()->create();
+        $article = Article::factory()->withoutPrice()->create(['max_order_amount' => 5]);
+
+        $this->unlockKiosk($user);
+
+        $this->withHeaders($this->kioskHeaders())
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 2, 'price' => null])
+            ->assertSessionHas('success');
+
+        $this->assertSame([null, null], $user->articleActionLogs()->pluck('price')->all());
+
+        $article->update(['price' => 120]);
+        $article->applyPriceToBookingsWithoutPrice();
+
+        $this->assertSame([120, 120], $user->articleActionLogs()->pluck('price')->all());
+    }
+
+    public function test_person_page_contains_the_balance_and_the_total_of_the_login(): void
+    {
+        $user = User::factory()->create();
+        $article = Article::factory()->create(['max_order_amount' => 5, 'price' => 150]);
+        ArticleActionLog::factory()->for($user)->for($article)->create(['created_at' => now()->subHour()]);
+        ArticleActionLog::factory()->for($user)->for($article)->create(['created_at' => now()->subHour()])->delete();
+        $user->strichlistensystemPayments()->create(['amount' => 100]);
+
+        $this->unlockKiosk($user);
+
+        $this->withHeaders($this->kioskHeaders())
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 2, 'price' => 150]);
+        $user->articleActionLogs()->latest('id')->first()->delete();
+
+        $this->withHeaders($this->kioskHeaders())
+            ->get(route('strichlistensystem.kiosk.show', $user))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('loginTotal', 150)
+                ->where('balance', ['total' => 300, 'paid' => 100, 'open' => 200, 'bookings_without_price' => 0])
+                ->where('articles.0.price', 150)
+                ->where('articleActionLogs.0.price', 150)
+            );
     }
 
     public function test_amount_above_maximum_is_rejected(): void
@@ -264,12 +351,12 @@ class StrichlistensystemKioskTest extends TestCase
 
         foreach ([0, 3, 'abc'] as $amount) {
             $this->withHeaders($this->kioskHeaders())
-                ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => $amount])
+                ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => $amount, 'price' => $article->price])
                 ->assertSessionHasErrors('amount');
         }
 
         $this->withHeaders($this->kioskHeaders())
-            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 3])
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 3, 'price' => $article->price])
             ->assertSessionHasErrors(['amount' => "Du kannst von {$article->name} in dieser Anmeldung nur noch 2 Stück buchen."]);
 
         $this->assertSame(0, ArticleActionLog::count());
@@ -283,11 +370,11 @@ class StrichlistensystemKioskTest extends TestCase
         $this->unlockKiosk($user);
 
         $this->withHeaders($this->kioskHeaders())
-            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1])
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price])
             ->assertSessionHas('success');
 
         $this->withHeaders($this->kioskHeaders())
-            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1])
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price])
             ->assertRedirect(route('strichlistensystem.kiosk.show', $user))
             ->assertSessionHas('error');
 
@@ -299,7 +386,7 @@ class StrichlistensystemKioskTest extends TestCase
         $this->unlockKiosk($user);
 
         $this->withHeaders($this->kioskHeaders())
-            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1])
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price])
             ->assertSessionHas('success');
 
         $this->assertSame(2, ArticleActionLog::count());
@@ -313,15 +400,15 @@ class StrichlistensystemKioskTest extends TestCase
         $this->unlockKiosk($user);
 
         $this->withHeaders($this->kioskHeaders())
-            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 2])
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 2, 'price' => $article->price])
             ->assertSessionHas('success');
 
         $this->withHeaders($this->kioskHeaders())
-            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 2])
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 2, 'price' => $article->price])
             ->assertSessionHasErrors(['amount' => "Du kannst von {$article->name} in dieser Anmeldung nur noch 1 Stück buchen."]);
 
         $this->withHeaders($this->kioskHeaders())
-            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1])
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price])
             ->assertSessionHas('success');
 
         $this->assertSame(3, ArticleActionLog::count());
@@ -336,7 +423,7 @@ class StrichlistensystemKioskTest extends TestCase
         $this->unlockKiosk($user);
 
         $this->withHeaders($this->kioskHeaders())
-            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1])
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price])
             ->assertSessionHas('success');
     }
 
@@ -348,11 +435,11 @@ class StrichlistensystemKioskTest extends TestCase
         $this->unlockKiosk($user);
 
         $this->withHeaders($this->kioskHeaders())
-            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1]);
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price]);
         $user->articleActionLogs()->first()->delete();
 
         $this->withHeaders($this->kioskHeaders())
-            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1])
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price])
             ->assertSessionHas('success');
 
         $this->assertSame(1, $user->articleActionLogs()->count());
@@ -366,8 +453,8 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1]);
-        $this->withHeaders($this->kioskHeaders())->post(route('strichlistensystem.kiosk.buy', [$user, $exhaustedArticle]), ['amount' => 1]);
+        $this->withHeaders($this->kioskHeaders())->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price]);
+        $this->withHeaders($this->kioskHeaders())->post(route('strichlistensystem.kiosk.buy', [$user, $exhaustedArticle]), ['amount' => 1, 'price' => $exhaustedArticle->price]);
 
         $this->withHeaders($this->kioskHeaders())
             ->get(route('strichlistensystem.kiosk.show', $user))
@@ -390,7 +477,7 @@ class StrichlistensystemKioskTest extends TestCase
         $this->unlockKiosk($user);
 
         $this->withHeaders($this->kioskHeaders())
-            ->post(route('strichlistensystem.kiosk.buy', [$otherUser, $article]), ['amount' => 1])
+            ->post(route('strichlistensystem.kiosk.buy', [$otherUser, $article]), ['amount' => 1, 'price' => $article->price])
             ->assertRedirect(route('strichlistensystem.kiosk.index'));
 
         $this->assertSame(0, ArticleActionLog::count());
@@ -406,7 +493,7 @@ class StrichlistensystemKioskTest extends TestCase
         $this->travel(config('strichlistensystem.kiosk_session_timeout') + 1)->seconds();
 
         $this->withHeaders($this->kioskHeaders())
-            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1])
+            ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price])
             ->assertRedirect(route('strichlistensystem.kiosk.index'));
 
         $this->assertSame(0, ArticleActionLog::count());

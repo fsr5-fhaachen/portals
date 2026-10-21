@@ -37,6 +37,8 @@ declare module 'vue' {
     SlotTable: typeof import('./../components/slot/Table.vue')['default']
     StrichlistensystemActionLogList: typeof import('./../components/strichlistensystem/ActionLogList.vue')['default']
     StrichlistensystemArticleCard: typeof import('./../components/strichlistensystem/ArticleCard.vue')['default']
+    StrichlistensystemBalanceCard: typeof import('./../components/strichlistensystem/BalanceCard.vue')['default']
+    StrichlistensystemPaymentModal: typeof import('./../components/strichlistensystem/PaymentModal.vue')['default']
     StrichlistensystemPersonCard: typeof import('./../components/strichlistensystem/PersonCard.vue')['default']
     StrichlistensystemPinForm: typeof import('./../components/strichlistensystem/PinForm.vue')['default']
     StrichlistensystemPinPad: typeof import('./../components/strichlistensystem/PinPad.vue')['default']

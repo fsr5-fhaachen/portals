@@ -73,7 +73,7 @@ class StrichlistensystemSelfServiceTest extends TestCase
         $article = Article::factory()->create();
 
         $this->actingAs($user)
-            ->post(route('strichlistensystem.buy', $article), ['amount' => 1])
+            ->post(route('strichlistensystem.buy', $article), ['amount' => 1, 'price' => $article->price])
             ->assertSessionHas('error');
 
         $this->assertSame(0, ArticleActionLog::count());
@@ -127,7 +127,7 @@ class StrichlistensystemSelfServiceTest extends TestCase
         $article = Article::factory()->create(['max_order_amount' => 2]);
 
         $this->actingAs($user)
-            ->post(route('strichlistensystem.buy', $article), ['amount' => 2])
+            ->post(route('strichlistensystem.buy', $article), ['amount' => 2, 'price' => $article->price])
             ->assertRedirect(route('strichlistensystem.index'))
             ->assertSessionHas('success');
 
@@ -139,6 +139,56 @@ class StrichlistensystemSelfServiceTest extends TestCase
                 ->where('articleActionLogs.0.article.name', $article->name)
                 ->missing('articleActionLogs.0.ip')
             );
+    }
+
+    public function test_booking_keeps_the_price_and_page_contains_the_balance(): void
+    {
+        $user = User::factory()->create();
+        $article = Article::factory()->create(['max_order_amount' => 3, 'price' => 250]);
+        $user->strichlistensystemPayments()->create(['amount' => 200]);
+
+        $this->actingAs($user)
+            ->post(route('strichlistensystem.buy', $article), ['amount' => 3, 'price' => 250])
+            ->assertSessionHas('success');
+
+        $this->assertSame([250, 250, 250], $user->articleActionLogs()->pluck('price')->all());
+
+        $this->actingAs($user)
+            ->get(route('strichlistensystem.index'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('balance', ['total' => 750, 'paid' => 200, 'open' => 550, 'bookings_without_price' => 0])
+                ->where('articles.0.price', 250)
+            );
+    }
+
+    public function test_booking_is_rejected_if_the_price_changed(): void
+    {
+        $user = User::factory()->create();
+        $article = Article::factory()->create(['name' => 'Bier', 'max_order_amount' => 3, 'price' => 250]);
+
+        $this->actingAs($user)
+            ->post(route('strichlistensystem.buy', $article), ['amount' => 1, 'price' => 200])
+            ->assertRedirect(route('strichlistensystem.index'))
+            ->assertSessionHas('error', 'Der Preis von <strong>Bier</strong> hat sich geändert. Bitte prüfe den neuen Preis und buche erneut.');
+
+        $this->actingAs($user)
+            ->post(route('strichlistensystem.buy', $article), ['amount' => 1])
+            ->assertSessionHasErrors('price');
+
+        $this->assertSame(0, $user->articleActionLogs()->count());
+    }
+
+    public function test_buy_article_rejects_a_changed_price(): void
+    {
+        $user = User::factory()->create();
+        $article = Article::factory()->create(['max_order_amount' => 3, 'price' => 250]);
+
+        // the price changed after the article was loaded
+        Article::whereKey($article->id)->update(['price' => 300]);
+
+        $this->assertFalse($user->buyArticle($article, 1, null, now()->subMinute(), 250));
+        $this->assertTrue($user->buyArticle($article, 1, null, now()->subMinute(), 300));
+        $this->assertSame([300], $user->articleActionLogs()->pluck('price')->all());
     }
 
     public function test_inactive_articles_are_hidden_and_can_not_be_bought(): void
@@ -155,7 +205,7 @@ class StrichlistensystemSelfServiceTest extends TestCase
             );
 
         $this->actingAs($user)
-            ->post(route('strichlistensystem.buy', $inactiveArticle), ['amount' => 1])
+            ->post(route('strichlistensystem.buy', $inactiveArticle), ['amount' => 1, 'price' => $inactiveArticle->price])
             ->assertSessionHas('error');
 
         $this->assertSame(0, ArticleActionLog::count());
@@ -168,13 +218,13 @@ class StrichlistensystemSelfServiceTest extends TestCase
         $article = Article::factory()->create(['max_order_amount' => 1]);
 
         $this->actingAs($user)
-            ->post(route('strichlistensystem.buy', $article), ['amount' => 1])
+            ->post(route('strichlistensystem.buy', $article), ['amount' => 1, 'price' => $article->price])
             ->assertSessionHas('success');
 
         $this->travel(59)->seconds();
 
         $this->actingAs($user)
-            ->post(route('strichlistensystem.buy', $article), ['amount' => 1])
+            ->post(route('strichlistensystem.buy', $article), ['amount' => 1, 'price' => $article->price])
             ->assertSessionHas('error');
 
         $this->assertSame(1, ArticleActionLog::count());
@@ -182,7 +232,7 @@ class StrichlistensystemSelfServiceTest extends TestCase
         $this->travel(1)->seconds();
 
         $this->actingAs($user)
-            ->post(route('strichlistensystem.buy', $article), ['amount' => 1])
+            ->post(route('strichlistensystem.buy', $article), ['amount' => 1, 'price' => $article->price])
             ->assertSessionHas('success');
 
         $this->assertSame(2, ArticleActionLog::count());
@@ -216,7 +266,7 @@ class StrichlistensystemSelfServiceTest extends TestCase
         ArticleActionLog::factory()->for($user)->for($article)->create()->delete();
 
         $this->actingAs($user)
-            ->post(route('strichlistensystem.buy', $article), ['amount' => 1])
+            ->post(route('strichlistensystem.buy', $article), ['amount' => 1, 'price' => $article->price])
             ->assertSessionHas('success');
     }
 
@@ -226,10 +276,10 @@ class StrichlistensystemSelfServiceTest extends TestCase
         $article = Article::factory()->create(['max_order_amount' => 2]);
         $limitSince = now()->subMinute();
 
-        $this->assertFalse($user->buyArticle($article, 3, null, $limitSince));
-        $this->assertFalse($user->buyArticle($article, 0, null, $limitSince));
-        $this->assertTrue($user->buyArticle($article, 2, null, $limitSince));
-        $this->assertFalse($user->buyArticle($article, 1, null, $limitSince));
+        $this->assertFalse($user->buyArticle($article, 3, null, $limitSince, $article->price));
+        $this->assertFalse($user->buyArticle($article, 0, null, $limitSince, $article->price));
+        $this->assertTrue($user->buyArticle($article, 2, null, $limitSince, $article->price));
+        $this->assertFalse($user->buyArticle($article, 1, null, $limitSince, $article->price));
         $this->assertSame(2, ArticleActionLog::count());
     }
 
@@ -239,7 +289,7 @@ class StrichlistensystemSelfServiceTest extends TestCase
         $article = Article::factory()->create(['max_order_amount' => 1]);
 
         $this->actingAs($user)
-            ->post(route('strichlistensystem.buy', $article), ['amount' => 2])
+            ->post(route('strichlistensystem.buy', $article), ['amount' => 2, 'price' => $article->price])
             ->assertSessionHasErrors('amount');
 
         $this->assertSame(0, ArticleActionLog::count());
@@ -251,7 +301,7 @@ class StrichlistensystemSelfServiceTest extends TestCase
         $article = Article::factory()->create();
 
         $this->actingAs($user)
-            ->post(route('strichlistensystem.buy', $article), ['amount' => 1])
+            ->post(route('strichlistensystem.buy', $article), ['amount' => 1, 'price' => $article->price])
             ->assertSessionHas('error');
 
         $this->assertSame(0, ArticleActionLog::count());

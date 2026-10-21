@@ -11,6 +11,13 @@
         </div>
         <div>
           <UiH2>{{ article.name }}</UiH2>
+          <p class="font-semibold text-gray-900 dark:text-gray-100">
+            {{
+              article.price !== null
+                ? formatPrice(article.price)
+                : "Preis noch nicht festgelegt"
+            }}
+          </p>
           <p class="text-sm text-gray-500 dark:text-gray-400">
             Max. {{ article.max_order_amount }} {{ limitLabel }}
           </p>
@@ -42,6 +49,16 @@
         </AppButton>
       </div>
 
+      <p
+        v-if="!isLimitReached && article.price !== null"
+        class="text-center text-gray-700 dark:text-gray-300"
+      >
+        {{ amount }} × {{ formatPrice(article.price) }} =
+        <span class="font-semibold text-gray-900 dark:text-gray-100">
+          {{ formatPrice(amount * article.price) }}
+        </span>
+      </p>
+
       <UiMessage v-if="isLimitReached" type="info" :message="limitMessage" />
 
       <AppButton
@@ -58,6 +75,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, PropType, ref, watch } from "vue";
 
+import { formatPrice } from "../../composables/usePrice";
 const props = defineProps({
   article: {
     type: Object as PropType<App.Models.Article>,

@@ -1,6 +1,6 @@
 # Strichlistensystem
 
-Das Strichlistensystem (früher eigenes Repository `fsr5-fhaachen/strichlistensystem`) ist in Portals integriert. Personen buchen Getränke und Snacks entweder an einem Tablet im Kiosk-Modus oder selbst mit dem eigenen Handy. Die Buchungen werden im Admin-Dashboard als CSV exportiert.
+Das Strichlistensystem (früher eigenes Repository `fsr5-fhaachen/strichlistensystem`) ist in Portals integriert. Personen buchen Getränke und Snacks entweder an einem Tablet im Kiosk-Modus oder selbst mit dem eigenen Handy. Jeder Artikel hat einen Preis. Die Kosten sehen die Personen am Kiosk und im Selbstzugriff, Zahlungen werden im Admin-Dashboard eingetragen und alles wird als CSV exportiert.
 
 Grundlage der Integration war der Branch `pin_feature` des alten Repositorys (Laravel 11, Inertia 1). Der Code wurde nicht kopiert, sondern nach den Konventionen von Portals neu geschrieben (Laravel 13, Inertia 3, Vue 3 mit TypeScript, vorhandene Portals-Komponenten).
 
@@ -10,6 +10,7 @@ Grundlage der Integration war der Branch `pin_feature` des alten Repositorys (La
 - [Einrichtung](#einrichtung)
 - [Konfiguration](#konfiguration)
 - [Abläufe](#abläufe)
+- [Preise und Abrechnung](#preise-und-abrechnung)
 - [Datenbank](#datenbank)
 - [Sicherheit](#sicherheit)
 - [Routen](#routen)
@@ -102,7 +103,7 @@ Unabhängig vom Strichlistensystem ist der Schlüssel für die öffentliche API 
 ### Buchungen und Limits
 
 - Gebucht werden kann nur, wenn der User nicht deaktiviert ist (`users.is_disabled`) und eine PIN hat.
-- Pro Buchung wird je Stück ein Eintrag in `article_action_logs` angelegt.
+- Pro Buchung wird je Stück ein Eintrag in `article_action_logs` angelegt. Jeder Eintrag speichert den Preis des Artikels zum Zeitpunkt der Buchung (siehe [Preise und Abrechnung](#preise-und-abrechnung)).
 - Das Feld **Maximale Anzahl** eines Artikels (`articles.max_order_amount`) wirkt so:
   - **Kiosk:** maximale Anzahl **pro Anmeldung**. Gezählt werden alle Buchungen des Artikels seit der PIN-Eingabe (`unlocked_at`).
   - **Selbstzugriff:** maximale Anzahl **pro Zeitfenster** (`self_service_limit_window`, gleitend). Die Seite zeigt einen Countdown und lädt die Artikel nach Ablauf automatisch neu.
@@ -116,11 +117,35 @@ Unabhängig vom Strichlistensystem ist der Schlüssel für die öffentliche API 
 
 Unter `/dashboard/admin/strichlistensystem` (Menüpunkt „Strichliste“ im roten Admin-Bereich):
 
-- **Artikel anlegen und bearbeiten:** Name (eindeutig, max. 50 Zeichen), Icon, Reihenfolge, maximale Anzahl (1–100), aktiv.
+- **Artikel anlegen und bearbeiten:** Name (eindeutig, max. 50 Zeichen), Icon, Reihenfolge, maximale Anzahl (1–100), Preis (0–1000 €, Eingabe in Euro mit Komma oder Punkt), aktiv.
 - **Aktivieren/Deaktivieren:** Deaktivierte Artikel werden am Kiosk und im Selbstzugriff nicht mehr angezeigt und können nicht mehr gebucht werden. Bisherige Buchungen bleiben erhalten und erscheinen weiterhin im Export.
 - **Löschen:** nur für Artikel ohne Buchungen (auch stornierte zählen). Artikel mit Buchungen sollten deaktiviert werden.
-- **CSV-Export:** `strichlisten_export.csv` mit den Spalten `Nachname;Vorname;Anz_<Artikel>…`. Enthält alle User und alle Artikel (auch deaktivierte), gezählt werden nur nicht stornierte Buchungen. Kodierung UTF-8 mit BOM, Trennzeichen `;`.
+- **Abrechnung** (`/dashboard/admin/strichlistensystem/billing`, Link „Zur Abrechnung“): Tabelle aller Personen mit Anzahl der Buchungen, Gesamt, Bezahlt und Offen (Suche, Sortierung, Live-Update). Über „Zahlungen“ öffnet sich ein Dialog, in dem ein bezahlter Betrag eingetragen (vorausgefüllt mit dem offenen Betrag, Teilzahlungen möglich) und die letzte Zahlung rückgängig gemacht werden kann.
+- **CSV-Export:** `strichlisten_export.csv` mit den Spalten `Nachname;Vorname;Anz_<Artikel>…;Betrag_<Artikel>…;Gesamt;Bezahlt;Offen`. Enthält alle User und alle Artikel (auch deaktivierte), gezählt werden nur nicht stornierte Buchungen. Beträge werden mit dem Preis zum Zeitpunkt der Buchung berechnet und als Dezimalzahl mit Komma ohne Währungszeichen ausgegeben (z. B. `1,50`), damit ein deutsches Excel sie als Zahl erkennt. Kodierung UTF-8 mit BOM, Trennzeichen `;`.
 - **PIN im User-Bearbeiten-Dialog** (User-Verwaltung, Berechtigung `manage users`): PIN anzeigen, setzen oder durch ein leeres Feld entfernen.
+
+## Preise und Abrechnung
+
+### Preise
+
+- Preise werden überall als ganze Cent gespeichert und übertragen (`articles.price`, `article_action_logs.price`, `strichlistensystem_payments.amount`). Das Frontend rechnet nur für die Anzeige und Eingabe in Euro um (`resources/js/composables/usePrice.ts`), das Backend formatiert mit `App\Helpers\Price`.
+- **Preis pro Buchung (Snapshot):** Beim Buchen wird der aktuelle Preis des Artikels in die Buchung kopiert. Spätere Preisänderungen ändern bestehende Buchungen nicht. Summen, Abrechnung und Export rechnen immer mit dem Preis der Buchung.
+- **Buchungen ohne Preis:** Bestehende Artikel haben nach der Migration noch keinen Preis (`NULL`) und können weiter gebucht werden. Diese Buchungen haben ebenfalls keinen Preis. Sobald der Admin den Preis eines Artikels zum ersten Mal speichert, erhalten alle Buchungen dieses Artikels ohne Preis (auch stornierte) einmalig diesen Preis (`Article::applyPriceToBookingsWithoutPrice()`). Danach ist ein Preis Pflicht und kann nicht mehr entfernt werden, es entstehen also keine neuen Buchungen ohne Preis. Bis dahin zählen sie in keiner Summe mit. Darauf weisen die Kosten-Übersicht, das Zahlungs-Dialogfenster und die Abrechnungsseite hin.
+- **Preisänderung während der Buchung:** Das Frontend sendet beim Buchen den angezeigten Preis mit (`price`). Weicht er vom aktuellen Preis ab, wird die Buchung abgelehnt („Der Preis von … hat sich geändert“). Die Seite lädt dann den neuen Preis. `User::buyArticle()` sperrt dafür den Artikel (`lockForUpdate`), und das Speichern eines Artikels sperrt ihn ebenfalls. Eine parallele Preisänderung liegt so immer vollständig vor oder nach einer Buchung.
+
+### Anzeige
+
+- **Artikelkarte:** Preis pro Stück und Preis der gewählten Menge (z. B. `2 × 1,50 € = 3,00 €`). Ohne Preis steht dort „Preis noch nicht festgelegt“.
+- **Kosten-Übersicht** (`BalanceCard`): „Noch zu bezahlen“ (bzw. „Guthaben“, falls mehr bezahlt als gebucht wurde), „Insgesamt ausgegeben“ und „Bereits bezahlt“. Am Kiosk kommt „Diese Anmeldung“ dazu, die Summe aller Buchungen seit der PIN-Eingabe.
+- **Letzte Buchungen:** Preis jeder Buchung. Bei stornierten Buchungen ist er durchgestrichen.
+
+### Zahlungen
+
+- Gesamt = Summe der Preise aller nicht stornierten Buchungen. Bezahlt = Summe aller nicht rückgängig gemachten Zahlungen. Offen = Gesamt − Bezahlt (`User::strichlistensystemBalance()`).
+- Eine Zahlung muss zwischen 0,01 € und dem offenen Betrag liegen. Der Server prüft das in einer Transaktion mit Sperre auf den User (`User::payStrichlistensystem()`), sodass parallele Zahlungen den offenen Betrag nicht überschreiten können.
+- Gespeichert wird, wer die Zahlung eingetragen hat (`created_by_id`). Zahlungen werden auditiert.
+- Nur die jeweils letzte Zahlung einer Person kann rückgängig gemacht werden (Soft Delete). Danach ist die vorherige Zahlung die letzte. Rückgängig gemachte Zahlungen bleiben im Dialog durchgestrichen sichtbar.
+- Wird nach einer Zahlung noch eine Buchung storniert, kann der offene Betrag negativ werden. Das wird als Guthaben angezeigt, im Export als negativer Wert bei `Offen`.
 
 ## Datenbank
 
@@ -132,6 +157,9 @@ Unter `/dashboard/admin/strichlistensystem` (Menüpunkt „Strichliste“ im rot
 | [`2026_10_11_181203_create_articles_table.php`](../database/migrations/2026_10_11_181203_create_articles_table.php) | Tabelle `articles` |
 | [`2026_10_11_181206_create_article_action_logs_table.php`](../database/migrations/2026_10_11_181206_create_article_action_logs_table.php) | Tabelle `article_action_logs` |
 | [`2026_10_11_185307_add_is_active_to_articles_table.php`](../database/migrations/2026_10_11_185307_add_is_active_to_articles_table.php) | Spalte `articles.is_active` |
+| [`2026_10_21_105252_add_price_to_articles_table.php`](../database/migrations/2026_10_21_105252_add_price_to_articles_table.php) | Spalte `articles.price` (Cent, `NULL` = noch kein Preis) |
+| [`2026_10_21_105253_add_price_to_article_action_logs_table.php`](../database/migrations/2026_10_21_105253_add_price_to_article_action_logs_table.php) | Spalte `article_action_logs.price` (Preis zum Zeitpunkt der Buchung). Bestehende Buchungen bekommen `NULL` |
+| [`2026_10_21_105254_create_strichlistensystem_payments_table.php`](../database/migrations/2026_10_21_105254_create_strichlistensystem_payments_table.php) | Tabelle `strichlistensystem_payments` |
 
 ### Tabellen
 
@@ -153,6 +181,7 @@ Unter `/dashboard/admin/strichlistensystem` (Menüpunkt „Strichliste“ im rot
 | `icon` | `string(50)` | Font-Awesome-Icon (aus `strichlistensystem.icons`) |
 | `show_order` | `integer` | Sortierung (aufsteigend) |
 | `max_order_amount` | `integer` | Maximale Anzahl pro Kiosk-Anmeldung bzw. pro Zeitfenster im Selbstzugriff |
+| `price` | `unsigned integer`, nullable | Preis in Cent. `NULL` bedeutet, dass noch kein Preis festgelegt ist |
 | `is_active` | `boolean` | Deaktivierte Artikel sind nicht sichtbar und nicht buchbar |
 
 **`article_action_logs`** (eine Zeile pro gebuchtem Stück)
@@ -161,11 +190,21 @@ Unter `/dashboard/admin/strichlistensystem` (Menüpunkt „Strichliste“ im rot
 |---|---|---|
 | `user_id` | FK `users` | Person; beim Löschen des Users werden die Buchungen mitgelöscht (`cascade`) |
 | `article_id` | FK `articles` | Artikel; Löschen eines gebuchten Artikels wird verhindert (`restrict`) |
+| `price` | `unsigned integer`, nullable | Preis in Cent zum Zeitpunkt der Buchung. `NULL` bei Buchungen, bevor der Artikel einen Preis hatte |
 | `ip` | `string(45)` | IP-Adresse der Buchung (wird nicht an das Frontend ausgeliefert) |
 | `created_at` | `timestamp` | Buchungszeitpunkt, Grundlage für Limits und Stornofrist |
 | `deleted_at` | `timestamp` | Storno (Soft Delete) |
 
 Index auf `(user_id, created_at)`.
+
+**`strichlistensystem_payments`** (Zahlungen)
+
+| Spalte | Typ | Bedeutung |
+|---|---|---|
+| `user_id` | FK `users` | Person, die bezahlt hat; beim Löschen des Users werden die Zahlungen mitgelöscht (`cascade`) |
+| `created_by_id` | FK `users`, nullable | Admin, der die Zahlung eingetragen hat (`NULL`, wenn der Admin gelöscht wurde) |
+| `amount` | `unsigned integer` | Betrag in Cent |
+| `deleted_at` | `timestamp` | Zahlung rückgängig gemacht (Soft Delete) |
 
 ## Sicherheit
 
@@ -203,6 +242,10 @@ Alle Routen liegen in [`routes/web.php`](../routes/web.php) und stehen hinter de
 | POST | `/dashboard/admin/strichlistensystem/article/{article}` | `dashboard.admin.strichlistensystem.updateArticle` |
 | POST | `/dashboard/admin/strichlistensystem/article/{article}/toggle-active` | `dashboard.admin.strichlistensystem.toggleArticleActive` |
 | DELETE | `/dashboard/admin/strichlistensystem/article/{article}` | `dashboard.admin.strichlistensystem.deleteArticle` |
+| GET | `/dashboard/admin/strichlistensystem/billing` | `dashboard.admin.strichlistensystem.billing` |
+| GET | `/dashboard/admin/strichlistensystem/billing/user/{user}` | `dashboard.admin.strichlistensystem.billingUser` (JSON für den Zahlungs-Dialog) |
+| POST | `/dashboard/admin/strichlistensystem/billing/user/{user}/payment` | `dashboard.admin.strichlistensystem.storePayment` |
+| DELETE | `/dashboard/admin/strichlistensystem/billing/payment/{payment}` | `dashboard.admin.strichlistensystem.deletePayment` |
 
 Middleware-Kette:
 - Kiosk: `StrichlistensystemEnabled` → `StrichlistensystemKiosk`
@@ -228,14 +271,21 @@ Middleware-Kette:
 | `resources/js/pages/Strichlistensystem/Kiosk/Index.vue` | Kiosk-Übersicht mit PIN-Dialog |
 | `resources/js/pages/Strichlistensystem/Kiosk/Show.vue` | Kiosk-Personenseite |
 | `resources/js/pages/Strichlistensystem/Index.vue` | Selbstzugriff (nutzt `DashboardLayout`) |
-| `resources/js/pages/Dashboard/Admin/Strichlistensystem/Index.vue` | Admin-Seite |
+| `resources/js/pages/Dashboard/Admin/Strichlistensystem/Index.vue` | Admin-Seite (Artikel) |
+| `resources/js/pages/Dashboard/Admin/Strichlistensystem/Billing.vue` | Admin-Seite Abrechnung |
+| `resources/js/components/strichlistensystem/BalanceCard.vue` | Kosten-Übersicht am Kiosk und im Selbstzugriff |
+| `resources/js/components/strichlistensystem/PaymentModal.vue` | Dialog zum Eintragen und Rückgängigmachen von Zahlungen |
+| `resources/js/composables/usePrice.ts` | Formatierung und Eingabe von Preisen (Cent ↔ Euro) |
+| `app/Models/StrichlistensystemPayment.php` | Zahlung (Soft Delete, auditiert) |
+| `app/Helpers/Price.php` | Formatierung von Cent-Beträgen (`1,50` bzw. `1,50 €`) |
+| `app/Helpers/Table/StrichlistensystemBillingTable.php` | Tabelle der Abrechnung (Summen per Unterabfrage, Live-Update auch bei neuen Buchungen und Zahlungen) |
 | `resources/js/components/strichlistensystem/ArticleCard.vue` | Artikelkarte mit Mengenregler, Limit-Hinweis und Countdown |
 | `resources/js/components/strichlistensystem/ActionLogList.vue` | Liste der letzten Buchungen mit Storno |
 | `resources/js/components/strichlistensystem/PersonCard.vue` | Personenkarte am Kiosk |
 | `resources/js/components/strichlistensystem/PinPad.vue` | Ziffernblock für die PIN-Eingabe |
 | `resources/js/components/strichlistensystem/PinForm.vue` | Formular zum Setzen/Ändern der PIN |
 | `resources/js/types/article.d.ts`, `article-action-log.d.ts`, `strichlistensystem-person.d.ts` | TypeScript-Typen |
-| `tests/Feature/StrichlistensystemKioskTest.php`, `StrichlistensystemSelfServiceTest.php`, `DashboardAdminStrichlistensystemTest.php` | Feature-Tests |
+| `tests/Feature/StrichlistensystemKioskTest.php`, `StrichlistensystemSelfServiceTest.php`, `DashboardAdminStrichlistensystemTest.php`, `DashboardAdminStrichlistensystemBillingTest.php` | Feature-Tests |
 | `phpunit.xml` | Lokale PHPUnit-Konfiguration (SQLite in-memory). Steht in `.gitignore` und wird nicht eingecheckt, siehe [Tests](#tests). |
 
 Die Komponenten werden über `unplugin-vue-components` automatisch als `StrichlistensystemArticleCard` usw. registriert. Alle Seiten nutzen die vorhandenen Portals-Komponenten (`CardBase`, `AppButton`, `UiH2`, `UiMessage`, `AppTable`, FormKit, Headless UI).
@@ -244,7 +294,7 @@ Die Komponenten werden über `unplugin-vue-components` automatisch als `Strichli
 
 | Datei | Änderung |
 |---|---|
-| `app/Models/User.php` | Relation `articleActionLogs()`; Methoden `hasPin()`, `isPinValid()`, `canUseStrichlistensystem()`, `remainingArticleAmount()`, `bookableArticles()`, `buyArticle()`, `cancelArticleActionLog()`, `latestArticleActionLogs()`; `pin` in `$hidden` und `$auditExclude` |
+| `app/Models/User.php` | Relation `articleActionLogs()`; Methoden `hasPin()`, `isPinValid()`, `canUseStrichlistensystem()`, `remainingArticleAmount()`, `bookableArticles()`, `buyArticle()`, `cancelArticleActionLog()`, `latestArticleActionLogs()`, `articleActionLogsTotal()`, `strichlistensystemBalance()`, `payStrichlistensystem()`, `latestStrichlistensystemPayment()`, `undoStrichlistensystemPayment()`; Relation `strichlistensystemPayments()`; `pin` in `$hidden` und `$auditExclude` |
 | `app/Http/Middleware/HandleInertiaRequests.php` | Geteilter Prop `strichlistensystemEnabled` |
 | `app/Http/Controllers/AppController.php` | Nach dem Login Weiterleitung zurück zu `/strichlistensystem`, falls die Person von dort kam. Andere gespeicherte Ziele (`url.intended`) bleiben unberührt, damit der Tutor-Login weiter funktioniert. |
 | `app/Http/Controllers/DashboardAdminController.php` | `editUser` validiert und speichert `pin` (leer = entfernen) |
@@ -265,19 +315,19 @@ Die Komponenten werden über `unplugin-vue-components` automatisch als `Strichli
 
 ## Seeder
 
-- `ArticleSeeder` legt an: Bier (8), Radler (8), Cola (8), Spezi (8), Wasser (2), Bacardi (1). Die Zahl in Klammern ist die maximale Anzahl. Existierende Artikel (gleicher Name) werden übersprungen.
+- `ArticleSeeder` legt an: Bier (8), Radler (8), Cola (8), Spezi (8), Wasser (2), Bacardi (1). Die Zahl in Klammern ist die maximale Anzahl. Existierende Artikel (gleicher Name) werden übersprungen. Die Artikel haben noch keinen Preis, er muss im Admin-Dashboard festgelegt werden.
 - `UserDemoSeeder` (Event-Typ `demo`): Die benannten Demo-Accounts (`superadmin@example.com`, `admin@example.com`, `tutor@example.com` usw.) haben die PIN `1234`. Die 800 Demo-Studierenden bekommen zufällige PINs.
 - `TutorSeeder` liest die PIN aus Spalte 7 von `tutors.csv`, `StudentSeeder` aus Spalte 5 von `students.csv`.
 
 ## Tests
 
 ```bash
-php artisan test --compact tests/Feature/StrichlistensystemKioskTest.php tests/Feature/StrichlistensystemSelfServiceTest.php tests/Feature/DashboardAdminStrichlistensystemTest.php
+php artisan test --compact tests/Feature/StrichlistensystemKioskTest.php tests/Feature/StrichlistensystemSelfServiceTest.php tests/Feature/DashboardAdminStrichlistensystemTest.php tests/Feature/DashboardAdminStrichlistensystemBillingTest.php
 ```
 
 Die Tests brauchen eine `phpunit.xml`, die im Repository per `.gitignore` ausgeschlossen ist. Lokal reicht die Standard-Konfiguration aus dem Laravel-Skeleton mit `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`, `SESSION_DRIVER=array` und `CACHE_STORE=array`.
 
-Abgedeckt sind unter anderem: Bearer-Token, Ein/Aus-Schalter, PIN-Prüfung inkl. Rate-Limit, Kiosk-Timeout, Buchen und Stornieren, Limits pro Anmeldung und Zeitfenster, deaktivierte Artikel und User, Bildauslieferung, Admin-Berechtigungen, Artikelverwaltung, CSV-Export und dass die PIN nicht an das Frontend oder die öffentliche API gelangt.
+Abgedeckt sind unter anderem: Bearer-Token, Ein/Aus-Schalter, PIN-Prüfung inkl. Rate-Limit, Kiosk-Timeout, Buchen und Stornieren, Limits pro Anmeldung und Zeitfenster, deaktivierte Artikel und User, Bildauslieferung, Admin-Berechtigungen, Artikelverwaltung, Preise (Snapshot pro Buchung, einmalige Übernahme für Buchungen ohne Preis, Ablehnung bei geändertem Preis), Abrechnung und Zahlungen (Teilzahlung, Obergrenze, Rückgängig nur für die letzte Zahlung, Live-Update), CSV-Export mit Beträgen und dass die PIN nicht an das Frontend oder die öffentliche API gelangt.
 
 Hinweis: Der bereits vorhandene `tests/Feature/ExampleTest.php` schlägt fehl, weil er keine Datenbank migriert. Das ist unabhängig vom Strichlistensystem.
 
@@ -290,7 +340,8 @@ Hinweis: Der bereits vorhandene `tests/Feature/ExampleTest.php` schlägt fehl, w
 | Zugriffsschutz über eigene VPN-Installation (`APP_IS_VPN`) | Bearer-Token für den Kiosk |
 | QR-Code mit Auth-Link (`auth_token`) zum Weiterbuchen am Handy | Selbstzugriff über den Portals-Login |
 | PIN als `char(4)` mit `pin_change_required` (Branch `pin_feature`) | `pin` als `string(4)`; eine fehlende PIN muss im Selbstzugriff gesetzt werden |
-| CSV-Export über `/exportcsv/{password}`, ISO-8859-1 | Admin-Dashboard mit Berechtigung, UTF-8 mit BOM, gleiche Spalten |
+| CSV-Export über `/exportcsv/{password}`, ISO-8859-1 | Admin-Dashboard mit Berechtigung, UTF-8 mit BOM, gleiche Spalten plus Beträge, Gesamt, Bezahlt und Offen |
+| Keine Preise | Preis pro Artikel, Preis-Snapshot pro Buchung, Zahlungen pro Person |
 | Telegram-Benachrichtigungen (bereits auskommentiert) | Entfernt |
 | Artikel nur über Seeder pflegbar | Artikelverwaltung im Admin-Dashboard inkl. Aktivieren/Deaktivieren |
 | `max_order_amount` = Maximum pro einzelner Buchung | Maximum pro Kiosk-Anmeldung bzw. pro Zeitfenster im Selbstzugriff |

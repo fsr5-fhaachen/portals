@@ -31,6 +31,8 @@
       </template>
 
       <template v-else>
+        <StrichlistensystemBalanceCard :balance="balance" />
+
         <GridContainer>
           <StrichlistensystemArticleCard
             v-for="article in articles"
@@ -89,6 +91,10 @@ defineProps({
     type: Array as PropType<App.Models.ArticleActionLog[]>,
     required: true,
   },
+  balance: {
+    type: Object as PropType<Strichlistensystem.Balance>,
+    required: true,
+  },
   limitWindow: {
     type: Number,
     required: true,
@@ -103,7 +109,7 @@ const reloadArticles = () => {
 const buy = (article: App.Models.Article, amount: number) => {
   router.post(
     `/strichlistensystem/buy/${article.id}`,
-    { amount },
+    { amount, price: article.price },
     { preserveScroll: true, preserveState: true },
   );
 };

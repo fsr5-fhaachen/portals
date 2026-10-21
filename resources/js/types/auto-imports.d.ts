@@ -6,6 +6,9 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const centsToPriceInput: (typeof import("../composables/usePrice"))["centsToPriceInput"];
+  const formatPrice: (typeof import("../composables/usePrice"))["formatPrice"];
+  const parsePriceToCents: (typeof import("../composables/usePrice"))["parsePriceToCents"];
   const roleColors: (typeof import("../composables/useRoleColors"))["roleColors"];
   const useAppEventType: (typeof import("../composables/useAppEventType"))["default"];
   const useColorMode: (typeof import("../composables/useColorMode"))["default"];

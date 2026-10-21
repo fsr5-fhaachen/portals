@@ -690,6 +690,7 @@ router.post(url, form, { preserveScroll: true, preserveState: true, reset: ["art
 | `GroupsTable` | Admin/Tutor Event (Typ `group_phase`) | `groups` | – | alle Zeilen (Teilnehmerzahl) |
 | `SlotsTable` | Admin/Tutor Event (Typ `slot_booking`) | `slots` | – | alle Zeilen (Teilnehmerzahl) |
 | `ArticlesTable` | Admin → Strichliste | `articles` | – | alle Zeilen (Buchungsanzahl) |
+| `StrichlistensystemBillingTable` | Admin → Strichliste → Abrechnung | `balances` | Vorname, Nachname, E-Mail | geänderte Zeilen (inkl. neuer Buchungen, Stornos, Preisübernahmen und Zahlungen über `whereChangedSince()`) |
 | `KioskPersonsTable` | Strichliste Kiosk (Kartenansicht, nicht `AppTable`) | `persons` | Vorname, Nachname | – (48 pro Seite, Filter `course` und `role`) |
 
 ## Tests

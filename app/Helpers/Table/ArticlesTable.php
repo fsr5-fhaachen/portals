@@ -32,6 +32,7 @@ class ArticlesTable extends Table
             'icon' => $model->icon,
             'show_order' => $model->show_order,
             'max_order_amount' => $model->max_order_amount,
+            'price' => $model->price,
             'is_active' => $model->is_active,
             'article_action_logs_count' => $model->article_action_logs_count,
         ];
@@ -63,6 +64,7 @@ class ArticlesTable extends Table
             'icon' => 'articles.icon',
             'show_order' => 'articles.show_order',
             'max_order_amount' => 'articles.max_order_amount',
+            'price' => 'articles.price',
             // ascending: active articles first
             'is_active' => fn (Builder $query, string $direction) => $this->orderByBoolean($query, 'is_active', $direction, true),
             'article_action_logs_count' => 'article_action_logs_count',

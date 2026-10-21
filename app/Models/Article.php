@@ -31,6 +31,7 @@ class Article extends Model implements Auditable
         return [
             'show_order' => 'integer',
             'max_order_amount' => 'integer',
+            'price' => 'integer',
             'is_active' => 'boolean',
         ];
     }
@@ -50,5 +51,21 @@ class Article extends Model implements Auditable
     public function articleActionLogs(): HasMany
     {
         return $this->hasMany(ArticleActionLog::class);
+    }
+
+    /**
+     * Give the bookings without a price (booked before the article had a price) the current price of the article.
+     * Bookings with a price keep it, so that price changes only apply to new bookings.
+     */
+    public function applyPriceToBookingsWithoutPrice(): int
+    {
+        if ($this->price === null) {
+            return 0;
+        }
+
+        return $this->articleActionLogs()
+            ->withTrashed()
+            ->whereNull('price')
+            ->update(['price' => $this->price]);
     }
 }

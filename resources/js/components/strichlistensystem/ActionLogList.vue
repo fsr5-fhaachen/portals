@@ -38,6 +38,19 @@
               }}</span>
               gebucht
             </span>
+            <span
+              :class="[
+                articleActionLog.deleted_at
+                  ? 'text-gray-400 line-through dark:text-gray-500'
+                  : 'text-gray-900 dark:text-gray-100',
+              ]"
+            >
+              {{
+                articleActionLog.price !== null
+                  ? formatPrice(articleActionLog.price)
+                  : "noch ohne Preis"
+              }}
+            </span>
           </div>
 
           <AppButton
@@ -57,6 +70,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, PropType, ref } from "vue";
 
+import { formatPrice } from "../../composables/usePrice";
 defineProps({
   articleActionLogs: {
     type: Array as PropType<App.Models.ArticleActionLog[]>,

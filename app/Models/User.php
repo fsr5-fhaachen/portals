@@ -88,6 +88,14 @@ class User extends Authenticatable implements Auditable
     }
 
     /**
+     * Get the payments of the strichlistensystem for the user.
+     */
+    public function strichlistensystemPayments(): HasMany
+    {
+        return $this->hasMany(StrichlistensystemPayment::class);
+    }
+
+    /**
      * Check if the user has set a pin for the strichlistensystem.
      */
     public function hasPin(): bool
@@ -149,13 +157,23 @@ class User extends Authenticatable implements Auditable
     }
 
     /**
-     * Book an article the given amount of times for the user. Returns false if the limit since the given time would be exceeded.
+     * Book an article the given amount of times for the user. Every booking keeps the current price of the article.
+     * Returns false if the limit since the given time would be exceeded or if the price of the article is not
+     * the expected price (the price the user saw) anymore.
      */
-    public function buyArticle(Article $article, int $amount, ?string $ip, CarbonInterface $limitSince): bool
+    public function buyArticle(Article $article, int $amount, ?string $ip, CarbonInterface $limitSince, ?int $expectedPrice): bool
     {
-        return DB::transaction(function () use ($article, $amount, $ip, $limitSince) {
+        return DB::transaction(function () use ($article, $amount, $ip, $limitSince, $expectedPrice) {
             // lock the user so that parallel bookings (e.g. double clicks) can not exceed the limit
             self::whereKey($this->id)->lockForUpdate()->first();
+
+            // lock the article so that a parallel price change is either completely before or after the booking
+            $price = Article::whereKey($article->id)->lockForUpdate()->value('price');
+            $price = $price === null ? null : (int) $price;
+
+            if ($price !== $expectedPrice) {
+                return false;
+            }
 
             if ($amount < 1 || $amount > $this->remainingArticleAmount($article, $limitSince)) {
                 return false;
@@ -164,11 +182,87 @@ class User extends Authenticatable implements Auditable
             for ($i = 0; $i < $amount; $i++) {
                 $this->articleActionLogs()->create([
                     'article_id' => $article->id,
+                    'price' => $price,
                     'ip' => $ip,
                 ]);
             }
 
             return true;
+        });
+    }
+
+    /**
+     * Get the sum of the prices (in cents) of the bookings (without cancelled ones) of the user. Bookings without
+     * a price are not counted. If a time is given, only bookings since then are counted (e.g. the kiosk login).
+     */
+    public function articleActionLogsTotal(?CarbonInterface $since = null): int
+    {
+        return (int) $this->articleActionLogs()
+            ->when($since, fn ($query) => $query->where('created_at', '>=', $since))
+            ->sum('price');
+    }
+
+    /**
+     * Get the strichlistensystem balance of the user in cents: sum of all bookings (without cancelled ones),
+     * sum of all payments (without undone ones) and the open amount (total - paid, negative if the user paid more).
+     *
+     * @return array{total: int, paid: int, open: int, bookings_without_price: int}
+     */
+    public function strichlistensystemBalance(): array
+    {
+        $total = $this->articleActionLogsTotal();
+        $paid = (int) $this->strichlistensystemPayments()->sum('amount');
+
+        return [
+            'total' => $total,
+            'paid' => $paid,
+            'open' => $total - $paid,
+            'bookings_without_price' => $this->articleActionLogs()->whereNull('price')->count(),
+        ];
+    }
+
+    /**
+     * Record a payment of the user. The amount (in cents) must be between 1 and the open amount.
+     * Returns null if the amount is not valid (anymore), e.g. because a parallel payment was recorded.
+     */
+    public function payStrichlistensystem(int $amount, ?User $createdBy): ?StrichlistensystemPayment
+    {
+        return DB::transaction(function () use ($amount, $createdBy) {
+            // lock the user so that parallel payments can not exceed the open amount
+            self::whereKey($this->id)->lockForUpdate()->first();
+
+            if ($amount < 1 || $amount > $this->strichlistensystemBalance()['open']) {
+                return null;
+            }
+
+            return $this->strichlistensystemPayments()->create([
+                'amount' => $amount,
+                'created_by_id' => $createdBy?->id,
+            ]);
+        });
+    }
+
+    /**
+     * Get the latest payment (without undone ones) of the user. Only this payment can be undone.
+     */
+    public function latestStrichlistensystemPayment(): ?StrichlistensystemPayment
+    {
+        return $this->strichlistensystemPayments()->latest()->latest('id')->first();
+    }
+
+    /**
+     * Undo the given payment if it is the latest payment of the user.
+     */
+    public function undoStrichlistensystemPayment(StrichlistensystemPayment $payment): bool
+    {
+        return DB::transaction(function () use ($payment) {
+            self::whereKey($this->id)->lockForUpdate()->first();
+
+            if ($payment->user_id !== $this->id || $payment->trashed() || $this->latestStrichlistensystemPayment()?->id !== $payment->id) {
+                return false;
+            }
+
+            return (bool) $payment->delete();
         });
     }
 

@@ -22,6 +22,8 @@ class ArticleActionLogFactory extends Factory
         return [
             'user_id' => User::factory(),
             'article_id' => Article::factory(),
+            // the price of the article at the time of the booking
+            'price' => fn (array $attributes) => Article::find($attributes['article_id'])?->price,
             'ip' => $this->faker->ipv4(),
         ];
     }

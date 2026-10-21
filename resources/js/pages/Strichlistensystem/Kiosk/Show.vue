@@ -15,6 +15,11 @@
         <AppButton theme="gray" @click="logout">Fertig & abmelden</AppButton>
       </div>
 
+      <StrichlistensystemBalanceCard
+        :balance="balance"
+        :loginTotal="loginTotal"
+      />
+
       <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
         <StrichlistensystemPersonCard :person="person" class="md:col-span-1" />
 
@@ -64,6 +69,14 @@ const props = defineProps({
     type: Array as PropType<App.Models.ArticleActionLog[]>,
     required: true,
   },
+  balance: {
+    type: Object as PropType<Strichlistensystem.Balance>,
+    required: true,
+  },
+  loginTotal: {
+    type: Number,
+    required: true,
+  },
   sessionTimeout: {
     type: Number,
     required: true,
@@ -84,7 +97,7 @@ const buy = (article: App.Models.Article, amount: number) => {
   redirectCountdown.value = countdownSecondsAfterAction;
   router.post(
     `/strichlistensystem/kiosk/user/${props.person.id}/buy/${article.id}`,
-    { amount },
+    { amount, price: article.price },
     { preserveScroll: true, preserveState: true },
   );
 };
