@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\FormResponseStatistics;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Event;
@@ -280,28 +281,19 @@ class ApiController extends Controller
         return !is_null($item);
       });
 
-      // Count statistics from formData
+      // Count statistics from formData. Answers may be lists
+      // (multi-select fields) — FormResponseStatistics counts each
+      // selected option instead of crashing on an array offset.
+      $formDataSets = [];
       foreach ($formData as $data) {
         if (is_string($data)) {
           $data = json_decode($data, true);
         }
         if (is_array($data)) {
-          foreach ($data as $key => $value) {
-            if (!isset($result[$key])) {
-              $result[$key] = [
-                $value => 1,
-                'name' => $key,
-              ];
-            } else {
-              if (isset($result[$key][$value])) {
-                $result[$key][$value]++;
-              } else {
-                $result[$key][$value] = 1;
-              }
-            }
-          }
+          $formDataSets[] = $data;
         }
       }
+      $result = array_merge($result, FormResponseStatistics::count($formDataSets));
       return response()->json($result);
     }
 
