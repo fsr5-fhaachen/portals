@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Article;
 use App\Models\ArticleActionLog;
+use App\Models\Module;
 use App\Models\StrichlistensystemPayment;
 use App\Models\User;
 use Database\Seeders\CourseSeeder;
@@ -11,6 +12,8 @@ use Database\Seeders\ModuleSeeder;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
 
 class DashboardAdminStrichlistensystemTest extends TestCase
@@ -26,7 +29,7 @@ class DashboardAdminStrichlistensystemTest extends TestCase
         $this->withoutVite();
         $this->seed([RoleSeeder::class, ModuleSeeder::class, CourseSeeder::class]);
 
-        config(['strichlistensystem.enabled' => true]);
+        Module::where('key', 'strichlistensystem')->update(['active' => true]);
 
         $this->admin = User::factory()->create();
         $this->admin->assignRole(['admin', 'tutor']);
@@ -73,13 +76,28 @@ class DashboardAdminStrichlistensystemTest extends TestCase
             );
     }
 
-    public function test_article_management_is_not_reachable_if_strichlistensystem_is_disabled(): void
+    public function test_article_management_is_not_reachable_if_the_module_is_inactive(): void
     {
-        config(['strichlistensystem.enabled' => false]);
+        Module::where('key', 'strichlistensystem')->update(['active' => false]);
 
         $this->actingAsAdmin()
             ->get(route('dashboard.admin.strichlistensystem.index'))
-            ->assertNotFound();
+            ->assertRedirect(route('app.index'));
+    }
+
+    public function test_migration_creates_the_module_and_the_permission_on_an_existing_installation(): void
+    {
+        // an existing installation that was seeded before the strichlistensystem existed
+        Module::where('key', 'strichlistensystem')->delete();
+        Permission::where('name', 'manage strichlistensystem')->delete();
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->assertFalse($this->admin->fresh()->can('manage strichlistensystem'));
+
+        $migration = require database_path('migrations/2026_10_27_141723_add_strichlistensystem_module_and_permission.php');
+        $migration->up();
+
+        $this->assertDatabaseHas('modules', ['key' => 'strichlistensystem', 'active' => false, 'expose_public' => false]);
+        $this->assertTrue($this->admin->fresh()->can('manage strichlistensystem'));
     }
 
     public function test_user_without_permission_can_not_manage_articles(): void

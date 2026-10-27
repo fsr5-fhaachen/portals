@@ -4,7 +4,6 @@
       :navigation="navigation"
       :user="user"
       :modules="modules"
-      :strichlistensystemEnabled="strichlistensystemEnabled"
     />
 
     <div class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
@@ -65,7 +64,7 @@ initColorMode();
 const packageName = __PACKAGE_NAME__;
 const packageRepositoryUrl = __PACKAGE_REPOSITORY_URL__;
 
-const { pages, user, strichlistensystemEnabled } = defineProps({
+const { pages, user, modules } = defineProps({
   message: {
     type: Object,
     default: () => ({}),
@@ -82,10 +81,6 @@ const { pages, user, strichlistensystemEnabled } = defineProps({
     type: Array as PropType<App.Models.Module[]>,
     default: () => [],
   },
-  strichlistensystemEnabled: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 const isTutorPage = computed(() => {
@@ -96,7 +91,7 @@ const navigation = [
     title: "Veranstaltungen",
     href: "/dashboard" + (isTutorPage.value ? "/tutor" : ""),
   },
-  ...(strichlistensystemEnabled
+  ...(modules['strichlistensystem']?.active
     ? [{ title: "Strichliste", href: "/strichlistensystem" }]
     : []),
   ...usePagesAsNavigation(pages, "/dashboard/"),

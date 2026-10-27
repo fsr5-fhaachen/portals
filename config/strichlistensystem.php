@@ -4,18 +4,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Enable Strichlistensystem
-    |--------------------------------------------------------------------------
-    |
-    | If disabled, all strichlistensystem routes (self service, kiosk and
-    | admin) respond with 404 and the navigation entries are hidden.
-    |
-    */
-
-    'enabled' => (bool) env('STRICHLISTENSYSTEM_ENABLED', false),
-
-    /*
-    |--------------------------------------------------------------------------
     | Kiosk Token
     |--------------------------------------------------------------------------
     |
@@ -37,7 +25,7 @@ return [
     |
     */
 
-    'kiosk_session_timeout' => (int) env('STRICHLISTENSYSTEM_KIOSK_SESSION_TIMEOUT', 120),
+    'kiosk_session_timeout' => 120,
 
     /*
     |--------------------------------------------------------------------------
@@ -48,7 +36,7 @@ return [
     |
     */
 
-    'pin_max_attempts' => (int) env('STRICHLISTENSYSTEM_PIN_MAX_ATTEMPTS', 5),
+    'pin_max_attempts' => 5,
 
     /*
     |--------------------------------------------------------------------------
@@ -62,7 +50,7 @@ return [
     |
     */
 
-    'self_service_limit_window' => (int) env('STRICHLISTENSYSTEM_SELF_SERVICE_LIMIT_WINDOW', 60),
+    'self_service_limit_window' => 60,
 
     /*
     |--------------------------------------------------------------------------
@@ -74,7 +62,7 @@ return [
     |
     */
 
-    'cancel_window' => (int) env('STRICHLISTENSYSTEM_CANCEL_WINDOW', 60),
+    'cancel_window' => 60,
 
     /*
     |--------------------------------------------------------------------------

@@ -52,7 +52,6 @@ class HandleInertiaRequests extends Middleware
             },
             // get all modules and store them in a array with $module->key => $module
             'modules' => fn () => Module::all()->keyBy('key')->all(),
-            'strichlistensystemEnabled' => (bool) config('strichlistensystem.enabled'),
             // start time for the live update of tables
             'serverTime' => fn () => now()->timestamp,
             'message' => [

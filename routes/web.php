@@ -17,7 +17,6 @@ use App\Http\Middleware\ActivePublicModule;
 use App\Http\Middleware\IsLoggedInAdmin;
 use App\Http\Middleware\IsLoggedInTutor;
 use App\Http\Middleware\RedirectIfTutor;
-use App\Http\Middleware\StrichlistensystemEnabled;
 use App\Http\Middleware\StrichlistensystemKiosk;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
@@ -116,7 +115,7 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
             Route::get('/countdown/display', [DashboardAdminCountdownController::class, 'display'])->name('dashboard.admin.countdown.display');
         });
 
-        Route::prefix('strichlistensystem')->middleware(StrichlistensystemEnabled::class, 'can:manage strichlistensystem')->group(function () {
+        Route::prefix('strichlistensystem')->middleware(ActiveModule::class.':strichlistensystem', 'can:manage strichlistensystem')->group(function () {
             Route::get('/', [DashboardAdminStrichlistensystemController::class, 'index'])->name('dashboard.admin.strichlistensystem.index');
             Route::get('/export', [DashboardAdminStrichlistensystemController::class, 'export'])->name('dashboard.admin.strichlistensystem.export');
             Route::get('/billing', [DashboardAdminStrichlistensystemController::class, 'billing'])->name('dashboard.admin.strichlistensystem.billing');
@@ -134,7 +133,7 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
 });
 
 // strichlistensystem
-Route::prefix('strichlistensystem')->middleware(StrichlistensystemEnabled::class)->group(function () {
+Route::prefix('strichlistensystem')->middleware(ActiveModule::class.':strichlistensystem')->group(function () {
     // kiosk for the tablets, every request must contain the kiosk bearer token
     Route::prefix('kiosk')->middleware(StrichlistensystemKiosk::class)->group(function () {
         Route::get('/', [StrichlistensystemKioskController::class, 'index'])->name('strichlistensystem.kiosk.index');

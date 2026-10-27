@@ -211,7 +211,8 @@ const editForm = ref({
   pin: user.pin ?? "",
 });
 
-const strichlistensystemEnabled = usePage().props.strichlistensystemEnabled;
+const strichlistensystemEnabled =
+  usePage().props.modules?.strichlistensystem?.active ?? false;
 
 const selectFormCourseOptions = useSelectFormCourseOptions(courses, true);
 const selectFormRoleOptions = useSelectFormRoleOptions(roles);

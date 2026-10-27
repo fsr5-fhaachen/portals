@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Article;
 use App\Models\ArticleActionLog;
+use App\Models\Module;
 use App\Models\User;
 use Database\Seeders\CourseSeeder;
 use Database\Seeders\ModuleSeeder;
@@ -23,16 +24,16 @@ class StrichlistensystemSelfServiceTest extends TestCase
         $this->withoutVite();
         $this->seed([RoleSeeder::class, ModuleSeeder::class, CourseSeeder::class]);
 
-        config(['strichlistensystem.enabled' => true]);
+        Module::where('key', 'strichlistensystem')->update(['active' => true]);
     }
 
-    public function test_self_service_is_not_reachable_if_strichlistensystem_is_disabled(): void
+    public function test_self_service_is_not_reachable_if_the_module_is_inactive(): void
     {
-        config(['strichlistensystem.enabled' => false]);
+        Module::where('key', 'strichlistensystem')->update(['active' => false]);
 
         $this->actingAs(User::factory()->create())
             ->get(route('strichlistensystem.index'))
-            ->assertNotFound();
+            ->assertRedirect(route('app.index'));
     }
 
     public function test_guest_is_redirected_to_login_and_back_after_login(): void

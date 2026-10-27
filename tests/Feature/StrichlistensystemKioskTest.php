@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Article;
 use App\Models\ArticleActionLog;
+use App\Models\Module;
 use App\Models\User;
 use Database\Seeders\CourseSeeder;
 use Database\Seeders\ModuleSeeder;
@@ -26,10 +27,8 @@ class StrichlistensystemKioskTest extends TestCase
         $this->withoutVite();
         $this->seed([RoleSeeder::class, ModuleSeeder::class, CourseSeeder::class]);
 
-        config([
-            'strichlistensystem.enabled' => true,
-            'strichlistensystem.kiosk_token' => self::KIOSK_TOKEN,
-        ]);
+        Module::where('key', 'strichlistensystem')->update(['active' => true]);
+        config(['strichlistensystem.kiosk_token' => self::KIOSK_TOKEN]);
     }
 
     /**
@@ -52,13 +51,13 @@ class StrichlistensystemKioskTest extends TestCase
             ->assertRedirect(route('strichlistensystem.kiosk.show', $user));
     }
 
-    public function test_kiosk_is_not_reachable_if_strichlistensystem_is_disabled(): void
+    public function test_kiosk_is_not_reachable_if_the_module_is_inactive(): void
     {
-        config(['strichlistensystem.enabled' => false]);
+        Module::where('key', 'strichlistensystem')->update(['active' => false]);
 
         $this->withHeaders($this->kioskHeaders())
             ->get(route('strichlistensystem.kiosk.index'))
-            ->assertNotFound();
+            ->assertRedirect(route('app.index'));
     }
 
     public function test_kiosk_requires_bearer_token(): void

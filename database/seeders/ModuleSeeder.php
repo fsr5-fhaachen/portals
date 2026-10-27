@@ -33,6 +33,11 @@ class ModuleSeeder extends Seeder
                 'active' => false,
                 'expose_public' => false,
             ],
+            [
+                'key' => 'strichlistensystem',
+                'active' => false,
+                'expose_public' => false,
+            ],
         ];
 
         foreach ($modules as $module) {

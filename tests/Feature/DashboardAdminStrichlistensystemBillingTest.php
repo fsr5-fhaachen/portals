@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Article;
 use App\Models\ArticleActionLog;
+use App\Models\Module;
 use App\Models\StrichlistensystemPayment;
 use App\Models\User;
 use Database\Seeders\CourseSeeder;
@@ -26,7 +27,7 @@ class DashboardAdminStrichlistensystemBillingTest extends TestCase
         $this->withoutVite();
         $this->seed([RoleSeeder::class, ModuleSeeder::class, CourseSeeder::class]);
 
-        config(['strichlistensystem.enabled' => true]);
+        Module::where('key', 'strichlistensystem')->update(['active' => true]);
 
         $this->admin = User::factory()->create(['lastname' => 'Admin']);
         $this->admin->assignRole(['admin', 'tutor']);
@@ -168,14 +169,14 @@ class DashboardAdminStrichlistensystemBillingTest extends TestCase
             ->assertRedirect();
         $this->assertSame(0, StrichlistensystemPayment::count());
 
-        config(['strichlistensystem.enabled' => false]);
+        Module::where('key', 'strichlistensystem')->update(['active' => false]);
 
         $this->actingAsAdmin()
             ->get(route('dashboard.admin.strichlistensystem.billing'))
-            ->assertNotFound();
+            ->assertRedirect(route('app.index'));
         $this->actingAsAdmin()
             ->getJson(route('dashboard.admin.strichlistensystem.billingUser', $user))
-            ->assertNotFound();
+            ->assertRedirect(route('app.index'));
     }
 
     public function test_admin_can_record_a_partial_payment(): void

@@ -110,7 +110,7 @@
             </InertiaLink>
             <InertiaLink
               v-if="
-                strichlistensystemEnabled &&
+                modules['strichlistensystem']?.active &&
                 user.permissionsArray.includes('manage strichlistensystem')
               "
               href="/dashboard/admin/strichlistensystem"
@@ -261,7 +261,7 @@
         </DisclosureButton>
         <DisclosureButton
           v-if="
-            strichlistensystemEnabled &&
+            modules['strichlistensystem']?.active &&
             user.permissionsArray.includes('manage strichlistensystem')
           "
           :as="InertiaLink"
@@ -325,10 +325,6 @@ defineProps({
   modules: {
     type: Array as () => App.Models.Module[],
     default: () => [],
-  },
-  strichlistensystemEnabled: {
-    type: Boolean,
-    default: false,
   },
 });
 </script>
