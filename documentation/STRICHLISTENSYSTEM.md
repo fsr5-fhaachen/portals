@@ -42,7 +42,7 @@ Das Strichlistensystem ist ein Modul wie Registrierung, Zufallsgenerator oder Co
    ```bash
    php artisan db:seed --class=ArticleSeeder
    ```
-4. Tablets freischalten: Unter **Dashboard → Admin → Strichliste → Kiosk-Geräte** ein Gerät anlegen (z. B. „Tablet Bar“) und dessen Pairing-URL einmal im Browser des Tablets öffnen. Der Server speichert dann ein Cookie (400 Tage, nur für `/strichlistensystem/kiosk`) und leitet auf den Kiosk weiter. Danach bleibt das Tablet freigeschaltet, auch nach Reloads.
+4. Tablets freischalten: Unter **Dashboard → Admin → Strichliste → Kiosk-Geräte** ein Gerät anlegen (z. B. „Tablet Bar“) und mit dem Tablet den QR-Code scannen oder die Pairing-URL einmal im Browser des Tablets öffnen. Der Server speichert dann ein Cookie (400 Tage, nur für `/strichlistensystem/kiosk`) und leitet auf den Kiosk weiter. Danach bleibt das Tablet freigeschaltet, auch nach Reloads.
    - Ohne gültiges Cookie antwortet der Kiosk mit 401.
    - Wird das Gerät gelöscht oder eine neue Pairing-URL erzeugt, ist das Tablet sofort gesperrt und muss mit der neuen URL neu freigeschaltet werden.
 
@@ -108,7 +108,7 @@ Unter `/dashboard/admin/strichlistensystem` (Menüpunkt „Strichliste“ im rot
 - **Löschen:** nur für Artikel ohne Buchungen (auch stornierte zählen). Artikel mit Buchungen sollten deaktiviert werden.
 - **Abrechnung** (`/dashboard/admin/strichlistensystem/billing`, Link „Zur Abrechnung“): Tabelle aller Personen mit Anzahl der Buchungen, Gesamt, Bezahlt und Offen (Suche, Sortierung, Live-Update). Über „Zahlungen“ öffnet sich ein Dialog, in dem ein bezahlter Betrag eingetragen (vorausgefüllt mit dem offenen Betrag, Teilzahlungen möglich) und die letzte Zahlung rückgängig gemacht werden kann.
 - **CSV-Export:** `strichlisten_export.csv` mit den Spalten `Nachname;Vorname;Anz_<Artikel>…;Betrag_<Artikel>…;Gesamt;Bezahlt;Offen`. Enthält alle User und alle Artikel (auch deaktivierte), gezählt werden nur nicht stornierte Buchungen. Beträge werden mit dem Preis zum Zeitpunkt der Buchung berechnet und als Dezimalzahl mit Komma ohne Währungszeichen ausgegeben (z. B. `1,50`), damit ein deutsches Excel sie als Zahl erkennt. Kodierung UTF-8 mit BOM, Trennzeichen `;`. Namen, die mit `=`, `+`, `-`, `@`, Tab oder CR beginnen, bekommen ein führendes `'`, damit Excel sie nicht als Formel ausführt.
-- **Kiosk-Geräte** (`/dashboard/admin/strichlistensystem/kiosk-devices`, Link „Zu den Kiosk-Geräten“): Tablets anlegen, löschen und eine neue Pairing-URL erzeugen. Pro Gerät werden die Pairing-URL und der Zeitpunkt der letzten Nutzung angezeigt.
+- **Kiosk-Geräte** (`/dashboard/admin/strichlistensystem/kiosk-devices`, Link „Zu den Kiosk-Geräten“): Tablets anlegen, löschen und eine neue Pairing-URL erzeugen. Pro Gerät werden die Pairing-URL als Text und QR-Code (SVG, erzeugt mit `bacon/bacon-qr-code`) sowie der Zeitpunkt der letzten Nutzung angezeigt.
 - **PIN im User-Bearbeiten-Dialog** (User-Verwaltung, Berechtigung `manage users`): Zeigt nur, ob eine PIN gesetzt ist. Admins können die PIN weder sehen noch setzen, sondern nur zurücksetzen (löschen). Der User muss dann im Selbstzugriff eine neue PIN festlegen, bevor er wieder buchen kann.
 - **User löschen:** Hat der User in der Strichliste noch einen offenen Betrag (oder ein Guthaben), zeigt der Lösch-Dialog eine Warnung mit dem Betrag. Beim Löschen werden alle Buchungen und Zahlungen des Users mitgelöscht.
 
@@ -267,7 +267,7 @@ Middleware-Kette:
 |---|---|
 | `config/strichlistensystem.php` | Konfiguration |
 | `app/Http/Middleware/StrichlistensystemKiosk.php` | Prüfung des Kiosk-Cookies |
-| `app/Models/StrichlistensystemKioskDevice.php` | Kiosk-Gerät mit Token, Cookie-Wert und Pairing-URL |
+| `app/Models/StrichlistensystemKioskDevice.php` | Kiosk-Gerät mit Token, Cookie-Wert, Pairing-URL und QR-Code |
 | `resources/js/pages/Dashboard/Admin/Strichlistensystem/KioskDevices.vue` | Verwaltung der Kiosk-Geräte |
 | `app/Http/Controllers/StrichlistensystemKioskController.php` | Kiosk: Übersicht, PIN, Buchen, Storno, Abmelden, Bilder |
 | `app/Http/Controllers/StrichlistensystemController.php` | Selbstzugriff: PIN setzen/ändern, Buchen, Storno |

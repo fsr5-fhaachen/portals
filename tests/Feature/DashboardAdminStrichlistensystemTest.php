@@ -400,7 +400,7 @@ class DashboardAdminStrichlistensystemTest extends TestCase
         $this->assertSame('Anna-Lena', $firstnames['Normal']);
     }
 
-    public function test_admin_can_view_the_kiosk_devices_with_their_pairing_url(): void
+    public function test_admin_can_view_the_kiosk_devices_with_their_pairing_url_and_qr_code(): void
     {
         $device = StrichlistensystemKioskDevice::factory()->create(['name' => 'Tablet Bar']);
 
@@ -412,6 +412,7 @@ class DashboardAdminStrichlistensystemTest extends TestCase
                 ->has('devices', 1)
                 ->where('devices.0.name', 'Tablet Bar')
                 ->where('devices.0.pairing_url', $device->pairingUrl())
+                ->where('devices.0.pairing_qr_code', fn (string $svg) => str_starts_with($svg, '<svg') && str_ends_with($svg, '</svg>'))
                 ->missing('devices.0.token')
             );
     }

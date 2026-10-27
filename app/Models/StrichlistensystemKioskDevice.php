@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -117,6 +121,16 @@ class StrichlistensystemKioskDevice extends Model implements Auditable
     public function pairingUrl(): string
     {
         return route('strichlistensystem.kiosk.pair', ['device' => $this->id, 'token' => $this->token]);
+    }
+
+    /**
+     * Get the pairing url as qr code (inline svg without xml declaration), so a tablet can scan it.
+     */
+    public function pairingQrCodeSvg(): string
+    {
+        $writer = new Writer(new ImageRenderer(new RendererStyle(240, 1), new SvgImageBackEnd));
+
+        return trim(preg_replace('/^<\?xml[^>]*\?>/', '', $writer->writeString($this->pairingUrl())));
     }
 
     /**

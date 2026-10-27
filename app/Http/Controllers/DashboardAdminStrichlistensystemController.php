@@ -284,7 +284,7 @@ class DashboardAdminStrichlistensystemController extends Controller
     }
 
     /**
-     * Display the kiosk devices with their pairing urls
+     * Display the kiosk devices with their pairing urls and qr codes
      */
     public function kioskDevices(): Response
     {
@@ -294,6 +294,7 @@ class DashboardAdminStrichlistensystemController extends Controller
                 'name' => $device->name,
                 'last_used_at' => $device->last_used_at,
                 'pairing_url' => $device->pairingUrl(),
+                'pairing_qr_code' => $device->pairingQrCodeSvg(),
             ]),
         ]);
     }
