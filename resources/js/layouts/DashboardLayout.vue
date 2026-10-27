@@ -1,10 +1,6 @@
 <template>
   <div class="min-h-full">
-    <AppNavbar
-      :navigation="navigation"
-      :user="user"
-      :modules="modules"
-    />
+    <AppNavbar :navigation="navigation" :user="user" :modules="modules" />
 
     <div class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
       <AppMessage :message="message" />
@@ -91,7 +87,7 @@ const navigation = [
     title: "Veranstaltungen",
     href: "/dashboard" + (isTutorPage.value ? "/tutor" : ""),
   },
-  ...(modules['strichlistensystem']?.active
+  ...(modules["strichlistensystem"]?.active
     ? [{ title: "Strichliste", href: "/strichlistensystem" }]
     : []),
   ...usePagesAsNavigation(pages, "/dashboard/"),
