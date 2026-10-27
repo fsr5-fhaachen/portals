@@ -92,19 +92,27 @@
                     </FormRow>
 
                     <FormRow v-if="strichlistensystemEnabled">
-                      <FormKit
-                        type="text"
-                        name="pin"
-                        label="PIN (Strichliste)"
-                        inputmode="numeric"
-                        autocomplete="off"
-                        maxlength="4"
-                        help="Genau 4 Ziffern. Leer lassen, um die PIN zu entfernen."
-                        validation="matches:/^\d{4}$/"
-                        :validation-messages="{
-                          matches: 'Die PIN muss aus genau 4 Ziffern bestehen.',
-                        }"
-                      />
+                      <div class="flex flex-col w-full">
+                        <label
+                          class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+                          >PIN (Strichliste)</label
+                        >
+                        <div class="flex gap-2">
+                          <div
+                            class="shadow-sm flex-1 sm:text-sm border border-gray-300 rounded-md px-3 py-2 dark:bg-gray-700 dark:border-gray-700 dark:text-gray-300"
+                          >
+                            {{ user.has_pin ? "Gesetzt" : "Nicht gesetzt" }}
+                          </div>
+                          <AppButton
+                            v-if="user.has_pin"
+                            @click="resetPin"
+                            theme="danger"
+                            class="text-center"
+                          >
+                            PIN zurücksetzen
+                          </AppButton>
+                        </div>
+                      </div>
                     </FormRow>
 
                     <FormRow
@@ -208,7 +216,6 @@ const editForm = ref({
   remove_avatar: false,
   avatar: null,
   is_disabled: user.is_disabled == 1 ? true : false,
-  pin: user.pin ?? "",
 });
 
 const strichlistensystemEnabled =
@@ -222,6 +229,28 @@ const { uploadFileByPresignedUrl } = useS3();
 
 const close = () => {
   emits("close");
+};
+const resetPin = () => {
+  if (
+    !window.confirm(
+      `Soll die PIN von ${user.firstname} ${user.lastname} zurückgesetzt werden? Danach muss eine neue PIN im Selbstzugriff gesetzt werden.`,
+    )
+  ) {
+    return;
+  }
+
+  // only the message is reloaded, the table updates the user by its live update
+  router.post(
+    `/dashboard/admin/user/${user.id}/reset-pin`,
+    {},
+    {
+      only: ["message"],
+      preserveState: true,
+      preserveScroll: true,
+      onSuccess: () => emits("saved"),
+    },
+  );
+  emits("submit");
 };
 const editSubmitHandler = async () => {
   const avatarPath = ref<string | undefinded>();

@@ -100,7 +100,8 @@ class TableTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Dashboard/Admin/Users')
                 ->has('users.data', 50)
-                ->where('users.data.0.pin', fn ($pin) => is_string($pin))
+                ->where('users.data.0.has_pin', true)
+                ->missing('users.data.0.pin')
                 ->has('users.data.0._version')
             );
     }

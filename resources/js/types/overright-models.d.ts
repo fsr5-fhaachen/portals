@@ -3,5 +3,6 @@ declare namespace Models {
     rolesArray: string[];
     permissionsArray: string[];
     avatarUrl?: string;
+    has_pin?: boolean;
   }
 }

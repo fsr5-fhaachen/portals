@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\ArticleActionLog;
 use App\Models\Module;
 use App\Models\User;
+use Database\Factories\UserFactory;
 use Database\Seeders\CourseSeeder;
 use Database\Seeders\ModuleSeeder;
 use Database\Seeders\RoleSeeder;
@@ -44,10 +45,10 @@ class StrichlistensystemKioskTest extends TestCase
     /**
      * Unlock the kiosk for the given user.
      */
-    private function unlockKiosk(User $user): void
+    private function unlockKiosk(User $user, string $pin = UserFactory::PIN): void
     {
         $this->withHeaders($this->kioskHeaders())
-            ->post(route('strichlistensystem.kiosk.verifyPin', $user), ['pin' => $user->pin])
+            ->post(route('strichlistensystem.kiosk.verifyPin', $user), ['pin' => $pin])
             ->assertRedirect(route('strichlistensystem.kiosk.show', $user));
     }
 
@@ -82,7 +83,7 @@ class StrichlistensystemKioskTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->post(route('strichlistensystem.kiosk.verifyPin', $user), ['pin' => $user->pin])
+        $this->post(route('strichlistensystem.kiosk.verifyPin', $user), ['pin' => UserFactory::PIN])
             ->assertUnauthorized();
 
         $this->assertNull(session('strichlistensystem.kiosk'));
@@ -115,7 +116,7 @@ class StrichlistensystemKioskTest extends TestCase
         $user = User::factory()->create(['pin' => '0123']);
         Article::factory()->count(2)->create();
 
-        $this->unlockKiosk($user);
+        $this->unlockKiosk($user, '0123');
 
         $this->withHeaders($this->kioskHeaders())
             ->get(route('strichlistensystem.kiosk.show', $user))
@@ -217,7 +218,7 @@ class StrichlistensystemKioskTest extends TestCase
         $user = User::factory()->create(['is_disabled' => true]);
 
         $this->withHeaders($this->kioskHeaders())
-            ->post(route('strichlistensystem.kiosk.verifyPin', $user), ['pin' => $user->pin])
+            ->post(route('strichlistensystem.kiosk.verifyPin', $user), ['pin' => UserFactory::PIN])
             ->assertNotFound();
     }
 

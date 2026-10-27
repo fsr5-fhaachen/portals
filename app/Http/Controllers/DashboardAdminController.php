@@ -290,9 +290,6 @@ class DashboardAdminController extends Controller
             'is_disabled' => ['boolean'],
             'remove_avatar' => ['boolean'],
             'avatar' => ['nullable', 'string'],
-            'pin' => ['nullable', 'string', 'regex:/^\d{4}$/'],
-        ], [
-            'pin.regex' => 'Die PIN muss aus genau 4 Ziffern bestehen.',
         ]);
 
         // check if all roles exists and not super admin if so add to roles array
@@ -342,6 +339,19 @@ class DashboardAdminController extends Controller
         $user->touch();
 
         Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich bearbeitet. Die Tabelle aktualisiert sich in wenigen Sekunden automatisch.');
+
+        return Redirect::back();
+    }
+
+    /**
+     * Reset the strichlistensystem pin of a user, the user has to set a new pin in the self service
+     */
+    public function resetUserPin(User $user): RedirectResponse
+    {
+        $user->pin = null;
+        $user->save();
+
+        Session::flash('success', 'Die PIN von <strong>'.e($user->email).'</strong> wurde zurückgesetzt. Beim nächsten Login muss eine neue PIN gesetzt werden.');
 
         return Redirect::back();
     }

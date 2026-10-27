@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use OwenIt\Auditing\Contracts\Auditable;
 use Spatie\Permission\Traits\HasRoles;
@@ -27,6 +28,16 @@ class User extends Authenticatable implements Auditable
      */
     protected $guarded = [
         'remember_token',
+        'pin',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'pin' => 'hashed',
     ];
 
     /**
@@ -108,7 +119,7 @@ class User extends Authenticatable implements Auditable
      */
     public function isPinValid(string $pin): bool
     {
-        return $this->hasPin() && hash_equals((string) $this->pin, $pin);
+        return $this->hasPin() && Hash::check($pin, $this->pin);
     }
 
     /**

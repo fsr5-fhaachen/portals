@@ -11,6 +11,7 @@ use Database\Seeders\CourseSeeder;
 use Database\Seeders\ModuleSeeder;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
@@ -378,42 +379,84 @@ class DashboardAdminStrichlistensystemTest extends TestCase
         $this->assertStringContainsString("Älter;Jörg;1;1,50;1,50;3,00;-1,50\n", $csv);
     }
 
-    public function test_admin_can_set_and_remove_the_pin_of_a_user(): void
+    public function test_admin_can_not_set_the_pin_of_a_user(): void
     {
-        $user = User::factory()->withoutPin()->create();
-        $data = [
-            'firstname' => $user->firstname,
-            'lastname' => $user->lastname,
-            'email' => $user->email,
-            'email_confirm' => $user->email,
-            'course_id' => $user->course_id,
-            'is_disabled' => false,
-        ];
+        $user = User::factory()->create();
+        $hashedPin = $user->getRawOriginal('pin');
 
         $this->actingAsAdmin()
-            ->post(route('dashboard.admin.editUser', $user), $data + ['pin' => '0815'])
+            ->post(route('dashboard.admin.editUser', $user), [
+                'firstname' => $user->firstname,
+                'lastname' => $user->lastname,
+                'email' => $user->email,
+                'email_confirm' => $user->email,
+                'course_id' => $user->course_id,
+                'is_disabled' => false,
+                'pin' => '0815',
+            ])
             ->assertSessionHasNoErrors();
-        $this->assertSame('0815', $user->fresh()->pin);
 
-        $this->actingAsAdmin()
-            ->post(route('dashboard.admin.editUser', $user), $data + ['pin' => '81'])
-            ->assertSessionHasErrors('pin');
-        $this->assertSame('0815', $user->fresh()->pin);
-
-        $this->actingAsAdmin()
-            ->post(route('dashboard.admin.editUser', $user), $data + ['pin' => ''])
-            ->assertSessionHasNoErrors();
-        $this->assertNull($user->fresh()->pin);
+        $this->assertSame($hashedPin, $user->fresh()->getRawOriginal('pin'));
     }
 
-    public function test_user_management_api_contains_the_pin(): void
+    public function test_admin_can_reset_the_pin_of_a_user(): void
     {
-        $user = User::factory()->create(['pin' => '4711']);
+        $user = User::factory()->create();
 
         $this->actingAsAdmin()
-            ->getJson(route('api.users'))
-            ->assertOk()
-            ->assertJsonFragment(['id' => $user->id, 'pin' => '4711']);
+            ->post(route('dashboard.admin.resetUserPin', $user))
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $this->assertFalse($user->fresh()->hasPin());
+    }
+
+    public function test_user_without_permission_can_not_reset_the_pin(): void
+    {
+        $tutor = User::factory()->create();
+        $tutor->assignRole('tutor');
+        $user = User::factory()->create();
+
+        $this->actingAs($tutor)->withSession(['tutor' => true])
+            ->post(route('dashboard.admin.resetUserPin', $user))
+            ->assertRedirect();
+
+        $this->assertTrue($user->fresh()->hasPin());
+    }
+
+    public function test_pin_can_not_be_reset_if_the_module_is_inactive(): void
+    {
+        Module::where('key', 'strichlistensystem')->update(['active' => false]);
+        $user = User::factory()->create();
+
+        $this->actingAsAdmin()
+            ->post(route('dashboard.admin.resetUserPin', $user))
+            ->assertRedirect(route('app.index'));
+
+        $this->assertTrue($user->fresh()->hasPin());
+    }
+
+    public function test_user_management_does_not_contain_the_pin(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAsAdmin()->getJson(route('api.users'));
+
+        $response->assertOk()->assertJsonFragment(['id' => $user->id]);
+        $this->assertStringNotContainsString($user->getRawOriginal('pin'), $response->getContent());
+        $this->assertArrayNotHasKey('pin', $response->json('users.0'));
+    }
+
+    public function test_migration_hashes_existing_plain_text_pins(): void
+    {
+        $user = User::factory()->create();
+        DB::table('users')->where('id', $user->id)->update(['pin' => '0815']);
+
+        $migration = require database_path('migrations/2026_10_27_142004_hash_pins_on_users_table.php');
+        $migration->up();
+
+        $this->assertNotSame('0815', $user->fresh()->getRawOriginal('pin'));
+        $this->assertTrue($user->fresh()->isPinValid('0815'));
     }
 
     public function test_public_api_does_not_contain_the_pin(): void

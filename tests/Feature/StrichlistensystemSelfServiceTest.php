@@ -89,18 +89,20 @@ class StrichlistensystemSelfServiceTest extends TestCase
             ->assertRedirect(route('strichlistensystem.index'))
             ->assertSessionHasNoErrors();
 
-        $this->assertSame('0042', $user->fresh()->pin);
+        $this->assertTrue($user->fresh()->isPinValid('0042'));
+        $this->assertNotSame('0042', $user->fresh()->getRawOriginal('pin'));
     }
 
     public function test_user_can_change_the_pin(): void
     {
-        $user = User::factory()->create(['pin' => '1111']);
+        $user = User::factory()->create(['pin' => '5821']);
 
         $this->actingAs($user)
-            ->post(route('strichlistensystem.updatePin'), ['pin' => '2222', 'pin_confirmation' => '2222'])
+            ->post(route('strichlistensystem.updatePin'), ['pin' => '3907', 'pin_confirmation' => '3907'])
             ->assertSessionHasNoErrors();
 
-        $this->assertSame('2222', $user->fresh()->pin);
+        $this->assertTrue($user->fresh()->isPinValid('3907'));
+        $this->assertFalse($user->fresh()->isPinValid('5821'));
     }
 
     public function test_invalid_pins_are_rejected(): void

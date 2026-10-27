@@ -80,6 +80,7 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
         Route::middleware('can:manage users')->group(function () {
             Route::get('/users', [DashboardAdminController::class, 'users'])->name('dashboard.admin.users');
             Route::post('/user/{user}', [DashboardAdminController::class, 'editUser'])->name('dashboard.admin.editUser');
+            Route::post('/user/{user}/reset-pin', [DashboardAdminController::class, 'resetUserPin'])->middleware(ActiveModule::class.':strichlistensystem')->name('dashboard.admin.resetUserPin');
 
             Route::middleware('can:delete users')->group(function () {
                 Route::delete('/user/{user}', [DashboardAdminController::class, 'deleteUser'])->name('dashboard.admin.deleteUser');

@@ -42,7 +42,7 @@ class UsersTable extends Table
             'is_disabled' => (bool) $model->is_disabled,
             'avatar' => $model->avatar,
             'avatarUrl' => $model->avatarUrlUnchecked(),
-            'pin' => $model->pin,
+            'has_pin' => $model->hasPin(),
             'created_at' => $model->created_at,
             'updated_at' => $model->updated_at,
         ];
