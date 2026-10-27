@@ -124,6 +124,30 @@ class StrichlistensystemSelfServiceTest extends TestCase
         $this->assertNull($user->fresh()->pin);
     }
 
+    public function test_trivial_pins_are_rejected(): void
+    {
+        $user = User::factory()->withoutPin()->create();
+
+        foreach (['0000', '1234', '1111', '4321'] as $pin) {
+            $this->actingAs($user)
+                ->post(route('strichlistensystem.updatePin'), ['pin' => $pin, 'pin_confirmation' => $pin])
+                ->assertSessionHasErrors(['pin' => 'Diese PIN ist zu leicht zu erraten. Bitte wähle eine andere PIN.']);
+        }
+
+        $this->assertFalse($user->fresh()->hasPin());
+    }
+
+    public function test_user_has_to_set_a_new_pin_after_the_reset(): void
+    {
+        $user = User::factory()->create();
+        $user->pin = null;
+        $user->save();
+
+        $this->actingAs($user)
+            ->get(route('strichlistensystem.index'))
+            ->assertInertia(fn (Assert $page) => $page->where('hasPin', false));
+    }
+
     public function test_user_with_pin_can_buy_and_sees_the_bookings(): void
     {
         $user = User::factory()->create();

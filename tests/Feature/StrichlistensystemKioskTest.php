@@ -293,6 +293,44 @@ class StrichlistensystemKioskTest extends TestCase
             ->assertRedirect(route('strichlistensystem.kiosk.index'));
     }
 
+    public function test_wrong_pins_of_many_persons_lock_the_device(): void
+    {
+        $users = User::factory()->count(config('strichlistensystem.kiosk_device_max_failed_pins'))->create();
+        $victim = User::factory()->create();
+
+        // one wrong pin per person stays below the limit per person
+        foreach ($users as $user) {
+            $this->asKiosk()
+                ->post(route('strichlistensystem.kiosk.verifyPin', $user), ['pin' => '0000'])
+                ->assertSessionHasErrors(['pin' => 'Die PIN ist falsch.']);
+        }
+
+        // even the correct pin of another person is rejected now
+        $this->asKiosk()
+            ->post(route('strichlistensystem.kiosk.verifyPin', $victim), ['pin' => UserFactory::PIN])
+            ->assertSessionHasErrors(['pin' => 'Zu viele falsche PINs an diesem Gerät. Das Gerät ist noch 10 Minuten gesperrt.']);
+        $this->assertNull(session('strichlistensystem.kiosk'));
+
+        // other devices are not locked
+        $otherDevice = StrichlistensystemKioskDevice::factory()->create();
+        $this->asKiosk($otherDevice->cookieValue())
+            ->post(route('strichlistensystem.kiosk.verifyPin', $victim), ['pin' => UserFactory::PIN])
+            ->assertRedirect(route('strichlistensystem.kiosk.show', $victim));
+
+        // the device is unlocked again after the lock time
+        $this->travel(config('strichlistensystem.kiosk_device_lock_seconds') + 1)->seconds();
+        $this->unlockKiosk($victim);
+    }
+
+    public function test_correct_pins_do_not_count_for_the_device_limit(): void
+    {
+        $user = User::factory()->create();
+
+        for ($i = 0; $i < config('strichlistensystem.kiosk_device_max_failed_pins') + 1; $i++) {
+            $this->unlockKiosk($user);
+        }
+    }
+
     public function test_unlocked_person_can_buy_articles(): void
     {
         $user = User::factory()->create();

@@ -59,6 +59,14 @@ class StrichlistensystemKioskController extends Controller
             ]);
         }
 
+        // wrong pins of all persons at this device, so that common pins can not be tried for many persons
+        $deviceRateLimiterKey = 'strichlistensystem-kiosk-device-pin:'.$request->attributes->get('kioskDevice')->id;
+        if (RateLimiter::tooManyAttempts($deviceRateLimiterKey, config('strichlistensystem.kiosk_device_max_failed_pins'))) {
+            return Redirect::back()->withErrors([
+                'pin' => 'Zu viele falsche PINs an diesem Gerät. Das Gerät ist noch '.ceil(RateLimiter::availableIn($deviceRateLimiterKey) / 60).' Minuten gesperrt.',
+            ]);
+        }
+
         $rateLimiterKey = 'strichlistensystem-pin:'.$user->id;
         if (RateLimiter::tooManyAttempts($rateLimiterKey, config('strichlistensystem.pin_max_attempts'))) {
             return Redirect::back()->withErrors([
@@ -69,6 +77,7 @@ class StrichlistensystemKioskController extends Controller
         $pin = (string) $request->input('pin');
         if (! preg_match('/^\d{4}$/', $pin) || ! $user->isPinValid($pin)) {
             RateLimiter::hit($rateLimiterKey, 60);
+            RateLimiter::hit($deviceRateLimiterKey, config('strichlistensystem.kiosk_device_lock_seconds'));
 
             return Redirect::back()->withErrors([
                 'pin' => 'Die PIN ist falsch.',

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -38,10 +39,11 @@ class StrichlistensystemController extends Controller
     public function updatePin(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'pin' => ['required', 'string', 'regex:/^\d{4}$/', 'confirmed'],
+            'pin' => ['required', 'string', 'regex:/^\d{4}$/', 'confirmed', Rule::notIn(config('strichlistensystem.trivial_pins'))],
         ], [
             'pin.regex' => 'Die PIN muss aus genau 4 Ziffern bestehen.',
             'pin.confirmed' => 'Die PINs stimmen nicht überein.',
+            'pin.not_in' => 'Diese PIN ist zu leicht zu erraten. Bitte wähle eine andere PIN.',
         ]);
 
         // load a fresh instance, because HandleInertiaRequests adds non-database attributes (rolesArray, permissionsArray) to the authenticated user
