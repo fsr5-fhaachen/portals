@@ -50,6 +50,18 @@
                         :message="`Sie sind dabei den User ${user.firstname} ${user.lastname} zu löschen. Sind Sie sicher?`"
                       />
                     </FormRow>
+                    <FormRow v-if="user.strichlistensystem_open > 0">
+                      <UiMessage
+                        type="error"
+                        :message="`Achtung: In der Strichliste stehen noch <strong>${formatPrice(user.strichlistensystem_open)}</strong> aus. Alle Buchungen und Zahlungen des Users werden mitgelöscht.`"
+                      />
+                    </FormRow>
+                    <FormRow v-else-if="user.strichlistensystem_open < 0">
+                      <UiMessage
+                        type="error"
+                        :message="`Achtung: Der User hat in der Strichliste noch <strong>${formatPrice(-user.strichlistensystem_open)}</strong> Guthaben. Alle Buchungen und Zahlungen des Users werden mitgelöscht.`"
+                      />
+                    </FormRow>
                     <FormRow>
                       <FormKit type="submit" label="Löschen" />
                     </FormRow>
@@ -73,6 +85,7 @@ import {
 } from "@headlessui/vue";
 import { PropType, ref } from "vue";
 import { router } from "@inertiajs/vue3";
+import { formatPrice } from "../../composables/usePrice";
 
 const { user } = defineProps({
   user: {

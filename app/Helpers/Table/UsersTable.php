@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -18,10 +19,14 @@ class UsersTable extends Table
      */
     protected function query(): Builder
     {
-        return User::query()->with([
-            'course:id,name,abbreviation,classes,icon',
-            'roles:id,name',
-        ]);
+        return User::query()
+            ->with([
+                'course:id,name,abbreviation,classes,icon',
+                'roles:id,name',
+            ])
+            // the open amount of the strichlistensystem is shown as warning before a user is deleted
+            ->withSum('articleActionLogs as article_action_logs_total', 'price')
+            ->withSum('strichlistensystemPayments as strichlistensystem_payments_total', 'amount');
     }
 
     /**
@@ -43,6 +48,7 @@ class UsersTable extends Table
             'avatar' => $model->avatar,
             'avatarUrl' => $model->avatarUrlUnchecked(),
             'has_pin' => $model->hasPin(),
+            'strichlistensystem_open' => (int) $model->article_action_logs_total - (int) $model->strichlistensystem_payments_total,
             'created_at' => $model->created_at,
             'updated_at' => $model->updated_at,
         ];
@@ -82,5 +88,27 @@ class UsersTable extends Table
                 'CASE WHEN '.$this->wrap('users.avatar')." IS NULL THEN 0 ELSE 1 END {$direction}"
             ),
         ];
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Bookings and payments change the open amount without a change of the user, so they are checked separately.
+     */
+    protected function whereChangedSince(Builder $query, Carbon $since): void
+    {
+        $query->where('users.updated_at', '>=', $since)
+            ->orWhereHas('articleActionLogs', fn (Builder $logQuery) => $logQuery->withTrashed()->where('article_action_logs.updated_at', '>=', $since))
+            ->orWhereHas('strichlistensystemPayments', fn (Builder $paymentQuery) => $paymentQuery->withTrashed()->where('strichlistensystem_payments.updated_at', '>=', $since));
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * The open amount can change without a change of the user, so the latest loaded row is always the newest version.
+     */
+    protected function rowVersion(Model $model): int
+    {
+        return now()->timestamp;
     }
 }

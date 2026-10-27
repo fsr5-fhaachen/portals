@@ -4,5 +4,7 @@ declare namespace Models {
     permissionsArray: string[];
     avatarUrl?: string;
     has_pin?: boolean;
+    // open amount of the strichlistensystem in cents, negative if the user paid more
+    strichlistensystem_open?: number;
   }
 }

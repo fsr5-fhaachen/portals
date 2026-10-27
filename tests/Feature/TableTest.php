@@ -3,11 +3,14 @@
 namespace Tests\Feature;
 
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Models\Article;
+use App\Models\ArticleActionLog;
 use App\Models\Course;
 use App\Models\Event;
 use App\Models\Group;
 use App\Models\Registration;
 use App\Models\Slot;
+use App\Models\StrichlistensystemPayment;
 use App\Models\User;
 use Database\Seeders\CourseSeeder;
 use Database\Seeders\ModuleSeeder;
@@ -187,6 +190,43 @@ class TableTest extends TestCase
         $this->assertSame('Geändert', $changes['rows'][0]['firstname']);
         $this->assertSame([$deletedUser->id], $changes['removed_ids']);
         $this->assertSame([$newUser->id], $changes['new_ids']);
+    }
+
+    public function test_users_contain_the_open_amount_of_the_strichlistensystem(): void
+    {
+        $user = User::factory()->create();
+        $article = Article::factory()->create(['price' => 250]);
+        ArticleActionLog::factory()->count(2)->for($user)->for($article)->create();
+        ArticleActionLog::factory()->for($user)->for($article)->create()->delete();
+        StrichlistensystemPayment::factory()->for($user)->create(['amount' => 100]);
+
+        $this->actingAsAdmin()
+            ->get(route('dashboard.admin.users', ['sort' => 'firstname']))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('users.data', fn ($rows) => collect($rows)->firstWhere('id', $user->id)['strichlistensystem_open'] === 400)
+            );
+    }
+
+    public function test_changes_contain_users_with_new_bookings_or_payments(): void
+    {
+        $this->freezeSecond();
+        $bookingUser = User::factory()->create();
+        $payingUser = User::factory()->create();
+        $unchangedUser = User::factory()->create();
+        $article = Article::factory()->create(['price' => 250]);
+        $this->travel(1)->seconds();
+        $since = now()->timestamp;
+
+        $this->travel(5)->seconds();
+        ArticleActionLog::factory()->for($bookingUser)->for($article)->create();
+        StrichlistensystemPayment::factory()->for($payingUser)->create(['amount' => 100]);
+
+        $changes = $this->userChanges($since, [$bookingUser->id, $payingUser->id, $unchangedUser->id]);
+
+        $rows = collect($changes['rows'])->keyBy('id');
+        $this->assertEqualsCanonicalizing([$bookingUser->id, $payingUser->id], $rows->keys()->all());
+        $this->assertSame(250, $rows[$bookingUser->id]['strichlistensystem_open']);
+        $this->assertSame(-100, $rows[$payingUser->id]['strichlistensystem_open']);
     }
 
     public function test_changes_respect_the_search(): void
