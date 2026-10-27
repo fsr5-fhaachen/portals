@@ -380,6 +380,26 @@ class DashboardAdminStrichlistensystemTest extends TestCase
         $this->assertStringContainsString("Älter;Jörg;1;1,50;1,50;3,00;-1,50\n", $csv);
     }
 
+    public function test_export_escapes_names_that_would_run_as_formula(): void
+    {
+        foreach (['=1+1', '+49', '-Minus', '@SUM(A1)', "\tTab", "\rReturn"] as $index => $firstname) {
+            User::factory()->create(['firstname' => $firstname, 'lastname' => 'Formel'.$index]);
+        }
+        User::factory()->create(['firstname' => 'Anna-Lena', 'lastname' => 'Normal']);
+
+        $csv = $this->actingAsAdmin()->get(route('dashboard.admin.strichlistensystem.export'))->streamedContent();
+        $rows = array_map(fn (string $line) => str_getcsv($line, ';'), explode("\n", trim(substr($csv, 3))));
+        $firstnames = array_column($rows, 1, 0);
+
+        $this->assertSame("'=1+1", $firstnames['Formel0']);
+        $this->assertSame("'+49", $firstnames['Formel1']);
+        $this->assertSame("'-Minus", $firstnames['Formel2']);
+        $this->assertSame("'@SUM(A1)", $firstnames['Formel3']);
+        $this->assertSame("'\tTab", $firstnames['Formel4']);
+        $this->assertSame("'\rReturn", $firstnames['Formel5']);
+        $this->assertSame('Anna-Lena', $firstnames['Normal']);
+    }
+
     public function test_admin_can_view_the_kiosk_devices_with_their_pairing_url(): void
     {
         $device = StrichlistensystemKioskDevice::factory()->create(['name' => 'Tablet Bar']);

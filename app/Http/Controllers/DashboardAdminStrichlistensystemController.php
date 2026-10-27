@@ -255,9 +255,10 @@ class DashboardAdminStrichlistensystemController extends Controller
             fwrite($file, "\xEF\xBB\xBF");
             fputcsv($file, $columns, ';');
 
-            User::orderBy('lastname')->orderBy('firstname')->chunk(500, function ($users) use ($file, $articles, $amounts, $totals, $payments) {
+            // the id makes the order unique, otherwise users with the same name can be skipped or repeated between the chunks
+            User::orderBy('lastname')->orderBy('firstname')->orderBy('id')->chunk(500, function ($users) use ($file, $articles, $amounts, $totals, $payments) {
                 foreach ($users as $user) {
-                    $row = [$user->lastname, $user->firstname];
+                    $row = [$this->escapeCsvCell($user->lastname), $this->escapeCsvCell($user->firstname)];
                     foreach ($articles as $article) {
                         $row[] = $amounts[$user->id][$article->id] ?? 0;
                     }
@@ -338,6 +339,19 @@ class DashboardAdminStrichlistensystemController extends Controller
         Session::flash('success', 'Das Gerät <strong>'.e($device->name).'</strong> wurde gelöscht.');
 
         return Redirect::route('dashboard.admin.strichlistensystem.kioskDevices');
+    }
+
+    /**
+     * Escape a text cell of the csv export. Spreadsheet programs run cells that start with =, +, -, @, tab
+     * or carriage return as formula, a leading ' makes them plain text. Only used for free text like names.
+     */
+    private function escapeCsvCell(string $value): string
+    {
+        if ($value !== '' && in_array($value[0], ['=', '+', '-', '@', "\t", "\r"], true)) {
+            return "'".$value;
+        }
+
+        return $value;
     }
 
     /**
