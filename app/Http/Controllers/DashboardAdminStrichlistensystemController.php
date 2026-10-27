@@ -7,6 +7,7 @@ use App\Helpers\Table\ArticlesTable;
 use App\Helpers\Table\StrichlistensystemBillingTable;
 use App\Models\Article;
 use App\Models\ArticleActionLog;
+use App\Models\StrichlistensystemKioskDevice;
 use App\Models\StrichlistensystemPayment;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -279,6 +280,64 @@ class DashboardAdminStrichlistensystemController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Display the kiosk devices with their pairing urls
+     */
+    public function kioskDevices(): Response
+    {
+        return Inertia::render('Dashboard/Admin/Strichlistensystem/KioskDevices', [
+            'devices' => StrichlistensystemKioskDevice::orderBy('name')->get()->map(fn (StrichlistensystemKioskDevice $device) => [
+                'id' => $device->id,
+                'name' => $device->name,
+                'last_used_at' => $device->last_used_at,
+                'pairing_url' => $device->pairingUrl(),
+            ]),
+        ]);
+    }
+
+    /**
+     * Create a new kiosk device
+     */
+    public function storeKioskDevice(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'min:1', 'max:50', Rule::unique('strichlistensystem_kiosk_devices', 'name')],
+        ]);
+
+        $device = StrichlistensystemKioskDevice::create([
+            'name' => $validated['name'],
+            'token' => StrichlistensystemKioskDevice::generateToken(),
+        ]);
+
+        Session::flash('success', 'Das Gerät <strong>'.e($device->name).'</strong> wurde erstellt. Öffne die Pairing-URL auf dem Tablet, um es freizuschalten.');
+
+        return Redirect::route('dashboard.admin.strichlistensystem.kioskDevices');
+    }
+
+    /**
+     * Generate a new token for a kiosk device, the paired tablet is locked out until it is paired again
+     */
+    public function regenerateKioskDeviceToken(StrichlistensystemKioskDevice $device): RedirectResponse
+    {
+        $device->update(['token' => StrichlistensystemKioskDevice::generateToken()]);
+
+        Session::flash('success', 'Für das Gerät <strong>'.e($device->name).'</strong> wurde eine neue Pairing-URL erzeugt. Das Tablet muss neu freigeschaltet werden.');
+
+        return Redirect::route('dashboard.admin.strichlistensystem.kioskDevices');
+    }
+
+    /**
+     * Delete a kiosk device, the paired tablet is locked out
+     */
+    public function deleteKioskDevice(StrichlistensystemKioskDevice $device): RedirectResponse
+    {
+        $device->delete();
+
+        Session::flash('success', 'Das Gerät <strong>'.e($device->name).'</strong> wurde gelöscht.');
+
+        return Redirect::route('dashboard.admin.strichlistensystem.kioskDevices');
     }
 
     /**

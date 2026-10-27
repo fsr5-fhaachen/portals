@@ -1,0 +1,189 @@
+<template>
+  <LayoutDashboardContent>
+    <template #title>Strichliste – Kiosk-Geräte</template>
+
+    <CardContainer>
+      <UiMessage
+        v-for="error in Object.values(errors)"
+        :key="error"
+        type="error"
+        :message="error"
+      />
+
+      <CardBase>
+        <div
+          class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div>
+            <UiH2>Kiosk-Geräte</UiH2>
+            <p class="text-gray-500 dark:text-gray-400">
+              Nur freigeschaltete Tablets können den Kiosk öffnen. Öffne die
+              Pairing-URL einmal auf dem Tablet, danach bleibt es
+              freigeschaltet. Wird ein Gerät gelöscht oder eine neue Pairing-URL
+              erzeugt, ist das Tablet sofort gesperrt.
+            </p>
+          </div>
+          <AppLink href="/dashboard/admin/strichlistensystem" theme="gray">
+            Zur Artikelverwaltung
+          </AppLink>
+        </div>
+      </CardBase>
+
+      <CardBase>
+        <FormKit
+          type="form"
+          id="kioskDevice"
+          @submit="submitDeviceHandler"
+          :actions="false"
+          v-model="deviceForm"
+        >
+          <FormContainer>
+            <FormRow>
+              <UiH2>Gerät hinzufügen</UiH2>
+            </FormRow>
+            <FormRow>
+              <FormKit
+                type="text"
+                name="name"
+                label="Name"
+                placeholder="Tablet Bar"
+                validation="required|length:1,50"
+              />
+            </FormRow>
+            <FormRow>
+              <FormKit type="submit" label="Gerät hinzufügen" />
+            </FormRow>
+          </FormContainer>
+        </FormKit>
+      </CardBase>
+
+      <CardBase v-if="!devices.length">
+        <p class="text-gray-500 dark:text-gray-400">
+          Es sind noch keine Kiosk-Geräte angelegt.
+        </p>
+      </CardBase>
+
+      <CardBase v-for="device in devices" :key="device.id">
+        <div class="flex flex-col gap-4">
+          <div
+            class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
+          >
+            <div>
+              <UiH2>{{ device.name }}</UiH2>
+              <p class="text-gray-500 dark:text-gray-400">
+                Zuletzt verwendet:
+                {{
+                  device.last_used_at
+                    ? formatDateTime(device.last_used_at)
+                    : "noch nie"
+                }}
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <AppButton theme="gray" @click="copyPairingUrl(device)">
+                {{ copiedDeviceId === device.id ? "Kopiert" : "URL kopieren" }}
+              </AppButton>
+              <AppButton theme="warning" @click="regenerateToken(device)">
+                Neue Pairing-URL
+              </AppButton>
+              <AppButton theme="danger" @click="deleteDevice(device)">
+                Löschen
+              </AppButton>
+            </div>
+          </div>
+          <code
+            class="block break-all rounded-md bg-gray-100 px-3 py-2 text-sm text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+          >
+            {{ device.pairing_url }}
+          </code>
+        </div>
+      </CardBase>
+    </CardContainer>
+  </LayoutDashboardContent>
+</template>
+
+<script setup lang="ts">
+import { PropType, ref } from "vue";
+import { router } from "@inertiajs/vue3";
+import { reset } from "@formkit/core";
+
+type KioskDevice = {
+  id: number;
+  name: string;
+  last_used_at: string | null;
+  pairing_url: string;
+};
+
+defineProps({
+  errors: {
+    type: Object as PropType<Record<string, string>>,
+    default: () => ({}),
+  },
+  devices: {
+    type: Array as PropType<KioskDevice[]>,
+    required: true,
+  },
+});
+
+const deviceForm = ref({ name: "" });
+const copiedDeviceId = ref<number | null>(null);
+
+const formatDateTime = (value: string) =>
+  new Date(value).toLocaleString("de-DE", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+const submitDeviceHandler = () => {
+  router.post(
+    "/dashboard/admin/strichlistensystem/kiosk-device",
+    deviceForm.value,
+    {
+      preserveScroll: true,
+      onSuccess: () => {
+        // reset via formkit, otherwise the form stays submitted and shows the validation errors of the empty field
+        reset("kioskDevice", { name: "" });
+      },
+    },
+  );
+};
+
+const copyPairingUrl = async (device: KioskDevice) => {
+  await navigator.clipboard.writeText(device.pairing_url);
+  copiedDeviceId.value = device.id;
+};
+
+const regenerateToken = (device: KioskDevice) => {
+  if (
+    !window.confirm(
+      `Soll für „${device.name}“ eine neue Pairing-URL erzeugt werden? Das Tablet ist dann gesperrt, bis es neu freigeschaltet wird.`,
+    )
+  ) {
+    return;
+  }
+
+  router.post(
+    `/dashboard/admin/strichlistensystem/kiosk-device/${device.id}/regenerate-token`,
+    {},
+    { preserveScroll: true },
+  );
+};
+
+const deleteDevice = (device: KioskDevice) => {
+  if (
+    !window.confirm(
+      `Soll das Gerät „${device.name}“ gelöscht werden? Das Tablet ist dann sofort gesperrt.`,
+    )
+  ) {
+    return;
+  }
+
+  router.delete(
+    `/dashboard/admin/strichlistensystem/kiosk-device/${device.id}`,
+    { preserveScroll: true },
+  );
+};
+</script>

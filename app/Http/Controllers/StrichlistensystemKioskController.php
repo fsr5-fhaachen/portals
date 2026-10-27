@@ -6,10 +6,12 @@ use App\Helpers\Table\KioskPersonsTable;
 use App\Models\Article;
 use App\Models\ArticleActionLog;
 use App\Models\Course;
+use App\Models\StrichlistensystemKioskDevice;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
@@ -172,6 +174,28 @@ class StrichlistensystemKioskController extends Controller
         }
 
         return Redirect::route('strichlistensystem.kiosk.show', ['user' => $user->id]);
+    }
+
+    /**
+     * Pair a tablet with a kiosk device. The token is stored in a long living cookie, so the tablet
+     * can open the kiosk without the token in the url.
+     */
+    public function pair(Request $request, StrichlistensystemKioskDevice $device): RedirectResponse
+    {
+        if (! $device->isTokenValid((string) $request->query('token'))) {
+            abort(404);
+        }
+
+        $cookie = Cookie::make(
+            StrichlistensystemKioskDevice::COOKIE_NAME,
+            $device->cookieValue(),
+            StrichlistensystemKioskDevice::COOKIE_LIFETIME,
+            '/strichlistensystem/kiosk',
+        );
+
+        Session::flash('success', 'Dieses Gerät ist jetzt als Kiosk <strong>'.e($device->name).'</strong> freigeschaltet.');
+
+        return Redirect::route('strichlistensystem.kiosk.index')->withCookie($cookie);
     }
 
     /**

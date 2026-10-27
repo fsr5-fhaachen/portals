@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Article;
 use App\Models\ArticleActionLog;
 use App\Models\Module;
+use App\Models\StrichlistensystemKioskDevice;
 use App\Models\StrichlistensystemPayment;
 use App\Models\User;
 use Database\Seeders\CourseSeeder;
@@ -377,6 +378,92 @@ class DashboardAdminStrichlistensystemTest extends TestCase
         $csv = $this->actingAsAdmin()->get(route('dashboard.admin.strichlistensystem.export'))->streamedContent();
 
         $this->assertStringContainsString("Älter;Jörg;1;1,50;1,50;3,00;-1,50\n", $csv);
+    }
+
+    public function test_admin_can_view_the_kiosk_devices_with_their_pairing_url(): void
+    {
+        $device = StrichlistensystemKioskDevice::factory()->create(['name' => 'Tablet Bar']);
+
+        $this->actingAsAdmin()
+            ->get(route('dashboard.admin.strichlistensystem.kioskDevices'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Dashboard/Admin/Strichlistensystem/KioskDevices')
+                ->has('devices', 1)
+                ->where('devices.0.name', 'Tablet Bar')
+                ->where('devices.0.pairing_url', $device->pairingUrl())
+                ->missing('devices.0.token')
+            );
+    }
+
+    public function test_admin_can_create_a_kiosk_device(): void
+    {
+        $this->actingAsAdmin()
+            ->post(route('dashboard.admin.strichlistensystem.storeKioskDevice'), ['name' => 'Tablet Bar'])
+            ->assertRedirect(route('dashboard.admin.strichlistensystem.kioskDevices'))
+            ->assertSessionHasNoErrors();
+
+        $device = StrichlistensystemKioskDevice::sole();
+        $this->assertSame('Tablet Bar', $device->name);
+        $this->assertSame(64, strlen($device->token));
+        // the token is stored encrypted
+        $this->assertNotSame($device->token, $device->getRawOriginal('token'));
+    }
+
+    public function test_kiosk_device_names_are_validated(): void
+    {
+        StrichlistensystemKioskDevice::factory()->create(['name' => 'Tablet Bar']);
+
+        foreach (['', 'Tablet Bar', str_repeat('a', 51)] as $name) {
+            $this->actingAsAdmin()
+                ->post(route('dashboard.admin.strichlistensystem.storeKioskDevice'), ['name' => $name])
+                ->assertSessionHasErrors('name');
+        }
+
+        $this->assertSame(1, StrichlistensystemKioskDevice::count());
+    }
+
+    public function test_admin_can_regenerate_the_token_of_a_kiosk_device(): void
+    {
+        $device = StrichlistensystemKioskDevice::factory()->create();
+        $oldToken = $device->token;
+
+        $this->actingAsAdmin()
+            ->post(route('dashboard.admin.strichlistensystem.regenerateKioskDeviceToken', $device))
+            ->assertRedirect(route('dashboard.admin.strichlistensystem.kioskDevices'));
+
+        $this->assertNotSame($oldToken, $device->fresh()->token);
+    }
+
+    public function test_admin_can_delete_a_kiosk_device(): void
+    {
+        $device = StrichlistensystemKioskDevice::factory()->create();
+
+        $this->actingAsAdmin()
+            ->delete(route('dashboard.admin.strichlistensystem.deleteKioskDevice', $device))
+            ->assertRedirect(route('dashboard.admin.strichlistensystem.kioskDevices'));
+
+        $this->assertModelMissing($device);
+    }
+
+    public function test_user_without_permission_can_not_manage_kiosk_devices(): void
+    {
+        $tutor = User::factory()->create();
+        $tutor->assignRole('tutor');
+        $device = StrichlistensystemKioskDevice::factory()->create();
+
+        $this->actingAs($tutor)->withSession(['tutor' => true])
+            ->get(route('dashboard.admin.strichlistensystem.kioskDevices'))
+            ->assertRedirect();
+        $this->actingAs($tutor)->withSession(['tutor' => true])
+            ->post(route('dashboard.admin.strichlistensystem.storeKioskDevice'), ['name' => 'Tablet Bar'])
+            ->assertRedirect();
+        $this->actingAs($tutor)->withSession(['tutor' => true])
+            ->delete(route('dashboard.admin.strichlistensystem.deleteKioskDevice', $device))
+            ->assertRedirect();
+
+        $this->assertSame(1, StrichlistensystemKioskDevice::count());
+        $this->assertModelExists($device);
     }
 
     public function test_admin_can_not_set_the_pin_of_a_user(): void

@@ -127,6 +127,10 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
             Route::post('/article/{article}', [DashboardAdminStrichlistensystemController::class, 'updateArticle'])->name('dashboard.admin.strichlistensystem.updateArticle');
             Route::post('/article/{article}/toggle-active', [DashboardAdminStrichlistensystemController::class, 'toggleArticleActive'])->name('dashboard.admin.strichlistensystem.toggleArticleActive');
             Route::delete('/article/{article}', [DashboardAdminStrichlistensystemController::class, 'deleteArticle'])->name('dashboard.admin.strichlistensystem.deleteArticle');
+            Route::get('/kiosk-devices', [DashboardAdminStrichlistensystemController::class, 'kioskDevices'])->name('dashboard.admin.strichlistensystem.kioskDevices');
+            Route::post('/kiosk-device', [DashboardAdminStrichlistensystemController::class, 'storeKioskDevice'])->name('dashboard.admin.strichlistensystem.storeKioskDevice');
+            Route::post('/kiosk-device/{device}/regenerate-token', [DashboardAdminStrichlistensystemController::class, 'regenerateKioskDeviceToken'])->name('dashboard.admin.strichlistensystem.regenerateKioskDeviceToken');
+            Route::delete('/kiosk-device/{device}', [DashboardAdminStrichlistensystemController::class, 'deleteKioskDevice'])->name('dashboard.admin.strichlistensystem.deleteKioskDevice');
         });
     });
 
@@ -135,7 +139,10 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
 
 // strichlistensystem
 Route::prefix('strichlistensystem')->middleware(ActiveModule::class.':strichlistensystem')->group(function () {
-    // kiosk for the tablets, every request must contain the kiosk bearer token
+    // pairing of a tablet with the pairing url (or qr code) of a kiosk device
+    Route::get('/kiosk/pair/{device}', [StrichlistensystemKioskController::class, 'pair'])->middleware('throttle:10,1')->name('strichlistensystem.kiosk.pair');
+
+    // kiosk for the tablets, every request must contain the cookie of a paired kiosk device
     Route::prefix('kiosk')->middleware(StrichlistensystemKiosk::class)->group(function () {
         Route::get('/', [StrichlistensystemKioskController::class, 'index'])->name('strichlistensystem.kiosk.index');
         Route::post('/logout', [StrichlistensystemKioskController::class, 'logout'])->name('strichlistensystem.kiosk.logout');

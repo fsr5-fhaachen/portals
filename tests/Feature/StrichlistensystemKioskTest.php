@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Article;
 use App\Models\ArticleActionLog;
 use App\Models\Module;
+use App\Models\StrichlistensystemKioskDevice;
 use App\Models\User;
 use Database\Factories\UserFactory;
 use Database\Seeders\CourseSeeder;
@@ -19,7 +20,7 @@ class StrichlistensystemKioskTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const KIOSK_TOKEN = 'kiosk-test-token';
+    private StrichlistensystemKioskDevice $device;
 
     protected function setUp(): void
     {
@@ -29,17 +30,15 @@ class StrichlistensystemKioskTest extends TestCase
         $this->seed([RoleSeeder::class, ModuleSeeder::class, CourseSeeder::class]);
 
         Module::where('key', 'strichlistensystem')->update(['active' => true]);
-        config(['strichlistensystem.kiosk_token' => self::KIOSK_TOKEN]);
+        $this->device = StrichlistensystemKioskDevice::factory()->create();
     }
 
     /**
-     * Get the headers of the kiosk.
-     *
-     * @return array<string, string>
+     * Send the following requests from the paired kiosk device.
      */
-    private function kioskHeaders(string $token = self::KIOSK_TOKEN): array
+    private function asKiosk(?string $cookie = null): static
     {
-        return ['Authorization' => 'Bearer '.$token];
+        return $this->withCookie(StrichlistensystemKioskDevice::COOKIE_NAME, $cookie ?? $this->device->cookieValue());
     }
 
     /**
@@ -47,7 +46,7 @@ class StrichlistensystemKioskTest extends TestCase
      */
     private function unlockKiosk(User $user, string $pin = UserFactory::PIN): void
     {
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.verifyPin', $user), ['pin' => $pin])
             ->assertRedirect(route('strichlistensystem.kiosk.show', $user));
     }
@@ -56,30 +55,83 @@ class StrichlistensystemKioskTest extends TestCase
     {
         Module::where('key', 'strichlistensystem')->update(['active' => false]);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->get(route('strichlistensystem.kiosk.index'))
             ->assertRedirect(route('app.index'));
     }
 
-    public function test_kiosk_requires_bearer_token(): void
+    public function test_kiosk_requires_a_paired_device(): void
     {
         $this->get(route('strichlistensystem.kiosk.index'))->assertUnauthorized();
-
-        $this->withHeaders($this->kioskHeaders('wrong-token'))
-            ->get(route('strichlistensystem.kiosk.index'))
-            ->assertUnauthorized();
     }
 
-    public function test_kiosk_is_not_reachable_without_configured_token(): void
+    public function test_kiosk_rejects_a_wrong_token(): void
     {
-        config(['strichlistensystem.kiosk_token' => null]);
-
-        $this->withHeaders(['Authorization' => 'Bearer '])
+        $this->asKiosk($this->device->id.'|wrong-token')
             ->get(route('strichlistensystem.kiosk.index'))
             ->assertUnauthorized();
     }
 
-    public function test_kiosk_post_requests_require_bearer_token(): void
+    public function test_kiosk_rejects_a_malformed_cookie(): void
+    {
+        $this->asKiosk('no-device')
+            ->get(route('strichlistensystem.kiosk.index'))
+            ->assertUnauthorized();
+    }
+
+    public function test_deleted_device_is_locked_out(): void
+    {
+        $cookie = $this->device->cookieValue();
+        $this->device->delete();
+
+        $this->asKiosk($cookie)
+            ->get(route('strichlistensystem.kiosk.index'))
+            ->assertUnauthorized();
+    }
+
+    public function test_device_with_a_new_token_is_locked_out(): void
+    {
+        $cookie = $this->device->cookieValue();
+        $this->device->update(['token' => StrichlistensystemKioskDevice::generateToken()]);
+
+        $this->asKiosk($cookie)
+            ->get(route('strichlistensystem.kiosk.index'))
+            ->assertUnauthorized();
+    }
+
+    public function test_pairing_url_pairs_the_tablet(): void
+    {
+        $response = $this->get($this->device->pairingUrl());
+
+        $response->assertRedirect(route('strichlistensystem.kiosk.index'))
+            ->assertCookie(StrichlistensystemKioskDevice::COOKIE_NAME, $this->device->cookieValue());
+
+        $this->asKiosk($response->getCookie(StrichlistensystemKioskDevice::COOKIE_NAME)->getValue())
+            ->get(route('strichlistensystem.kiosk.index'))
+            ->assertOk();
+        $this->assertNotNull($this->device->fresh()->last_used_at);
+    }
+
+    public function test_pairing_with_a_wrong_token_fails(): void
+    {
+        $this->get(route('strichlistensystem.kiosk.pair', ['device' => $this->device->id, 'token' => 'wrong-token']))
+            ->assertNotFound()
+            ->assertCookieMissing(StrichlistensystemKioskDevice::COOKIE_NAME);
+
+        $this->get(route('strichlistensystem.kiosk.pair', ['device' => $this->device->id]))
+            ->assertNotFound();
+    }
+
+    public function test_pairing_is_not_possible_if_the_module_is_inactive(): void
+    {
+        Module::where('key', 'strichlistensystem')->update(['active' => false]);
+
+        $this->get($this->device->pairingUrl())
+            ->assertRedirect(route('app.index'))
+            ->assertCookieMissing(StrichlistensystemKioskDevice::COOKIE_NAME);
+    }
+
+    public function test_kiosk_post_requests_require_a_paired_device(): void
     {
         $user = User::factory()->create();
 
@@ -95,7 +147,7 @@ class StrichlistensystemKioskTest extends TestCase
         $userWithoutPin = User::factory()->withoutPin()->create(['firstname' => 'Bert']);
         User::factory()->create(['firstname' => 'Carl', 'is_disabled' => true]);
 
-        $response = $this->withHeaders($this->kioskHeaders())->get(route('strichlistensystem.kiosk.index'));
+        $response = $this->asKiosk()->get(route('strichlistensystem.kiosk.index'));
 
         $response->assertOk()
             ->assertInertia(fn (Assert $page) => $page
@@ -118,7 +170,7 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user, '0123');
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->get(route('strichlistensystem.kiosk.show', $user))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
@@ -138,14 +190,14 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->get(route('strichlistensystem.kiosk.show', $user))
             ->assertInertia(fn (Assert $page) => $page
                 ->has('articles', 1)
                 ->where('articles.0.id', $activeArticle->id)
             );
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $inactiveArticle]), ['amount' => 1, 'price' => $inactiveArticle->price])
             ->assertRedirect(route('strichlistensystem.kiosk.show', $user))
             ->assertSessionHas('error');
@@ -162,14 +214,14 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->get(route('strichlistensystem.kiosk.show', $user))
             ->assertInertia(fn (Assert $page) => $page
                 ->has('articles', 0)
                 ->where('articleActionLogs.0.article.name', $article->name)
             );
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.cancel', [$user, $articleActionLog]))
             ->assertSessionHas('success');
 
@@ -180,11 +232,11 @@ class StrichlistensystemKioskTest extends TestCase
     {
         $user = User::factory()->create(['pin' => '1234']);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.verifyPin', $user), ['pin' => '4321'])
             ->assertSessionHasErrors('pin');
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->get(route('strichlistensystem.kiosk.show', $user))
             ->assertRedirect(route('strichlistensystem.kiosk.index'));
     }
@@ -194,7 +246,7 @@ class StrichlistensystemKioskTest extends TestCase
         $user = User::factory()->create(['pin' => '1234']);
 
         foreach (['123', '12345', 'abcd', ''] as $pin) {
-            $this->withHeaders($this->kioskHeaders())
+            $this->asKiosk()
                 ->post(route('strichlistensystem.kiosk.verifyPin', $user), ['pin' => $pin])
                 ->assertSessionHasErrors('pin');
         }
@@ -204,11 +256,11 @@ class StrichlistensystemKioskTest extends TestCase
     {
         $user = User::factory()->withoutPin()->create();
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.verifyPin', $user), ['pin' => '0000'])
             ->assertSessionHasErrors('pin');
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->get(route('strichlistensystem.kiosk.show', $user))
             ->assertRedirect(route('strichlistensystem.kiosk.index'));
     }
@@ -217,7 +269,7 @@ class StrichlistensystemKioskTest extends TestCase
     {
         $user = User::factory()->create(['is_disabled' => true]);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.verifyPin', $user), ['pin' => UserFactory::PIN])
             ->assertNotFound();
     }
@@ -227,16 +279,16 @@ class StrichlistensystemKioskTest extends TestCase
         $user = User::factory()->create(['pin' => '1234']);
 
         for ($i = 0; $i < config('strichlistensystem.pin_max_attempts'); $i++) {
-            $this->withHeaders($this->kioskHeaders())
+            $this->asKiosk()
                 ->post(route('strichlistensystem.kiosk.verifyPin', $user), ['pin' => '0000']);
         }
 
         // even the correct pin is rejected now
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.verifyPin', $user), ['pin' => '1234'])
             ->assertSessionHasErrors('pin');
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->get(route('strichlistensystem.kiosk.show', $user))
             ->assertRedirect(route('strichlistensystem.kiosk.index'));
     }
@@ -248,7 +300,7 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 3, 'price' => $article->price])
             ->assertRedirect(route('strichlistensystem.kiosk.show', $user));
 
@@ -262,13 +314,13 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 2, 'price' => 150])
             ->assertSessionHas('success');
 
         $article->update(['price' => 200]);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => 200])
             ->assertSessionHas('success');
 
@@ -283,16 +335,16 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => 150])
             ->assertRedirect(route('strichlistensystem.kiosk.show', $user))
             ->assertSessionHas('error', 'Der Preis von <strong>Bier</strong> hat sich geändert. Bitte prüfe den neuen Preis und buche erneut.');
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => null])
             ->assertSessionHas('error');
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1])
             ->assertSessionHasErrors('price');
 
@@ -306,7 +358,7 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 2, 'price' => null])
             ->assertSessionHas('success');
 
@@ -328,11 +380,11 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 2, 'price' => 150]);
         $user->articleActionLogs()->latest('id')->first()->delete();
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->get(route('strichlistensystem.kiosk.show', $user))
             ->assertInertia(fn (Assert $page) => $page
                 ->where('loginTotal', 150)
@@ -350,12 +402,12 @@ class StrichlistensystemKioskTest extends TestCase
         $this->unlockKiosk($user);
 
         foreach ([0, 3, 'abc'] as $amount) {
-            $this->withHeaders($this->kioskHeaders())
+            $this->asKiosk()
                 ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => $amount, 'price' => $article->price])
                 ->assertSessionHasErrors('amount');
         }
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 3, 'price' => $article->price])
             ->assertSessionHasErrors(['amount' => "Du kannst von {$article->name} in dieser Anmeldung nur noch 2 Stück buchen."]);
 
@@ -369,11 +421,11 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price])
             ->assertSessionHas('success');
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price])
             ->assertRedirect(route('strichlistensystem.kiosk.show', $user))
             ->assertSessionHas('error');
@@ -381,11 +433,11 @@ class StrichlistensystemKioskTest extends TestCase
         $this->assertSame(1, ArticleActionLog::count());
 
         // a new login resets the limit
-        $this->withHeaders($this->kioskHeaders())->post(route('strichlistensystem.kiosk.logout'));
+        $this->asKiosk()->post(route('strichlistensystem.kiosk.logout'));
         $this->travel(1)->seconds();
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price])
             ->assertSessionHas('success');
 
@@ -399,15 +451,15 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 2, 'price' => $article->price])
             ->assertSessionHas('success');
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 2, 'price' => $article->price])
             ->assertSessionHasErrors(['amount' => "Du kannst von {$article->name} in dieser Anmeldung nur noch 1 Stück buchen."]);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price])
             ->assertSessionHas('success');
 
@@ -422,7 +474,7 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price])
             ->assertSessionHas('success');
     }
@@ -434,11 +486,11 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price]);
         $user->articleActionLogs()->first()->delete();
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price])
             ->assertSessionHas('success');
 
@@ -453,10 +505,10 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price]);
-        $this->withHeaders($this->kioskHeaders())->post(route('strichlistensystem.kiosk.buy', [$user, $exhaustedArticle]), ['amount' => 1, 'price' => $exhaustedArticle->price]);
+        $this->asKiosk()->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price]);
+        $this->asKiosk()->post(route('strichlistensystem.kiosk.buy', [$user, $exhaustedArticle]), ['amount' => 1, 'price' => $exhaustedArticle->price]);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->get(route('strichlistensystem.kiosk.show', $user))
             ->assertInertia(fn (Assert $page) => $page
                 ->where('articles.0.id', $article->id)
@@ -476,7 +528,7 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$otherUser, $article]), ['amount' => 1, 'price' => $article->price])
             ->assertRedirect(route('strichlistensystem.kiosk.index'));
 
@@ -492,7 +544,7 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->travel(config('strichlistensystem.kiosk_session_timeout') + 1)->seconds();
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.buy', [$user, $article]), ['amount' => 1, 'price' => $article->price])
             ->assertRedirect(route('strichlistensystem.kiosk.index'));
 
@@ -505,9 +557,9 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())->get(route('strichlistensystem.kiosk.index'))->assertOk();
+        $this->asKiosk()->get(route('strichlistensystem.kiosk.index'))->assertOk();
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->get(route('strichlistensystem.kiosk.show', $user))
             ->assertRedirect(route('strichlistensystem.kiosk.index'));
     }
@@ -518,11 +570,11 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.logout'))
             ->assertRedirect(route('strichlistensystem.kiosk.index'));
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->get(route('strichlistensystem.kiosk.show', $user))
             ->assertRedirect(route('strichlistensystem.kiosk.index'));
     }
@@ -534,7 +586,7 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.cancel', [$user, $articleActionLog]))
             ->assertRedirect(route('strichlistensystem.kiosk.show', $user));
 
@@ -550,7 +602,7 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.cancel', [$user, $articleActionLog]))
             ->assertSessionHas('error');
 
@@ -564,7 +616,7 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.cancel', [$user, $articleActionLog]))
             ->assertSessionHas('error');
 
@@ -579,7 +631,7 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->unlockKiosk($user);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->post(route('strichlistensystem.kiosk.cancel', [$user, $articleActionLog]))
             ->assertRedirect(route('strichlistensystem.kiosk.show', $user))
             ->assertSessionHas('error');
@@ -593,7 +645,7 @@ class StrichlistensystemKioskTest extends TestCase
 
         $this->get(route('strichlistensystem.kiosk.avatar', $user))->assertUnauthorized();
 
-        $response = $this->withHeaders($this->kioskHeaders())->get(route('strichlistensystem.kiosk.avatar', $user));
+        $response = $this->asKiosk()->get(route('strichlistensystem.kiosk.avatar', $user));
         $response->assertOk();
         $this->assertSame('image-content', $response->streamedContent());
     }
@@ -604,11 +656,11 @@ class StrichlistensystemKioskTest extends TestCase
         $userWithoutAvatar = User::factory()->create(['avatar' => null]);
         $userWithMissingFile = User::factory()->create(['avatar' => 'avatars/missing.jpg']);
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->get(route('strichlistensystem.kiosk.avatar', $userWithoutAvatar))
             ->assertNotFound();
 
-        $this->withHeaders($this->kioskHeaders())
+        $this->asKiosk()
             ->get(route('strichlistensystem.kiosk.avatar', $userWithMissingFile))
             ->assertNotFound();
     }

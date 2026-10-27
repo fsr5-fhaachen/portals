@@ -4,19 +4,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Kiosk Token
-    |--------------------------------------------------------------------------
-    |
-    | Every request to /strichlistensystem/kiosk must send this token as
-    | "Authorization: Bearer <token>" header. If no token is configured,
-    | the kiosk is not reachable at all.
-    |
-    */
-
-    'kiosk_token' => env('STRICHLISTENSYSTEM_KIOSK_TOKEN'),
-
-    /*
-    |--------------------------------------------------------------------------
     | Kiosk Session Timeout
     |--------------------------------------------------------------------------
     |

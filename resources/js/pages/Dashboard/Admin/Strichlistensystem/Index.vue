@@ -31,6 +31,22 @@
           class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
         >
           <div>
+            <UiH2>Kiosk-Geräte</UiH2>
+            <p class="text-gray-500 dark:text-gray-400">
+              Tablets für den Kiosk freischalten oder sperren.
+            </p>
+          </div>
+          <AppLink href="/dashboard/admin/strichlistensystem/kiosk-devices">
+            Zu den Kiosk-Geräten
+          </AppLink>
+        </div>
+      </CardBase>
+
+      <CardBase>
+        <div
+          class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div>
             <UiH2>Export</UiH2>
             <p class="text-gray-500 dark:text-gray-400">
               Anzahl und Beträge der gebuchten Artikel (ohne Stornierungen),
