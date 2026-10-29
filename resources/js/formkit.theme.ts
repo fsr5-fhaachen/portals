@@ -27,12 +27,21 @@ const checkboxClassification = {
 
 const fileUploadClassification = {
   label: "block text-sm font-medium text-gray-700 dark:text-gray-200",
-  inner: "max-w-md cursor-pointer",
+  inner: "mt-1 flex flex-wrap items-center gap-x-4 gap-y-2",
+  // the native input shows the button and the name of the selected file, the focus ring replaces the black outline
   input:
-    "text-gray-600 text-sm mb-1 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-blue-500 file:text-white hover:file:bg-blue-600",
-  noFiles: "block text-sm font-medium text-gray-700 dark:text-gray-200",
-  fileItem: "block text-sm font-medium text-gray-700 dark:text-gray-200",
-  removeFiles: "block text-sm font-medium text-gray-700 dark:text-gray-200",
+    "max-w-full cursor-pointer rounded-md text-sm text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-fhac-mint dark:text-gray-300 file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-fhac-mint-dark file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-fhac-mint",
+  // the file name is already shown by the native input, only the remove button is kept
+  fileList: "flex",
+  fileItem: "flex",
+  fileItemIcon: "hidden",
+  fileName: "hidden",
+  // the button text contains the file name ("Entfernen <name>"), it is shown as a short label instead
+  fileRemove:
+    "text-[0px] text-red-600 hover:underline dark:text-red-400 before:text-sm before:content-['Entfernen']",
+  fileRemoveIcon: "hidden",
+  noFiles: "hidden",
+  noFilesIcon: "hidden",
 };
 
 export default {
