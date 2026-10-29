@@ -1,6 +1,10 @@
 <template>
   <LayoutDashboardContent>
     <template #title>Strichliste</template>
+    <!-- the kiosk has no navbar, so the color mode is switched here -->
+    <template #actions>
+      <ColorModeButton class="p-2 text-2xl" />
+    </template>
     <template #subtitle>Tippe auf dein Bild, um Striche zu machen.</template>
 
     <CardContainer>

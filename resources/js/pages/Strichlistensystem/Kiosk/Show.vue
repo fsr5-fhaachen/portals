@@ -1,6 +1,10 @@
 <template>
   <LayoutDashboardContent>
     <template #title>Hallo {{ person.firstname }},</template>
+    <!-- the kiosk has no navbar, so the color mode is switched here -->
+    <template #actions>
+      <ColorModeButton class="p-2 text-2xl" />
+    </template>
     <template #subtitle>
       du wirst in {{ redirectCountdown }}
       {{ redirectCountdown === 1 ? "Sekunde" : "Sekunden" }} automatisch
