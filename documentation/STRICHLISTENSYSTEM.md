@@ -78,6 +78,7 @@ Unabhängig vom Strichlistensystem ist der Schlüssel für die öffentliche API 
    - den Countdown auf der Seite (40 Sekunden, nach jeder Aktion 30 Sekunden),
    - Inaktivität länger als `kiosk_session_timeout` (wird serverseitig geprüft),
    - den Aufruf der Übersicht.
+5. Der Kiosk hat keine Navbar. Hell und dunkel wird über den Mond- bzw. Sonnen-Button oben rechts umgeschaltet; die Wahl wird im Browser des Tablets gespeichert. Ohne Wahl folgt der Kiosk der Systemeinstellung des Tablets.
 
 ### Selbstzugriff
 
@@ -322,18 +323,16 @@ Die Komponenten werden über `unplugin-vue-components` automatisch als `Strichli
 | `resources/js/components/user/DeleteModal.vue` | Warnung bei offenem Betrag |
 | `app/Helpers/Table/UsersTable.php` | `has_pin` und `strichlistensystem_open` pro User, Live-Update auch bei neuen Buchungen und Zahlungen |
 | `database/seeders/ModuleSeeder.php`, `ModuleDemoSeeder.php` | Modul `strichlistensystem` (im Demo-Modus aktiv) |
-| `database/factories/UserFactory.php` | PIN `UserFactory::PIN` (`4711`, einmal gehasht), State `withoutPin()` |
+| `database/factories/UserFactory.php` | PIN `UserFactory::PIN` (`4711`, einmal gehasht) für Tests, State `withoutPin()` für Seeder |
 | `database/seeders/RoleSeeder.php` | Berechtigung `manage strichlistensystem` für `admin` und `super admin` |
 | `database/seeders/DatabaseSeeder.php` | `ArticleSeeder` in den Basis-Seedern |
-| `database/seeders/UserDemoSeeder.php` | Demo-Accounts mit PIN `1234` |
-| `database/seeders/TutorSeeder.php`, `StudentSeeder.php` | PIN aus CSV nur übernehmen, wenn sie aus genau 4 Ziffern besteht; fehlende Spalte führt nicht mehr zu einem Fehler |
-| `database/seeders/students.csv.example` | Spalte `pin` ergänzt |
+| `database/seeders/UserDemoSeeder.php` | Demo-Accounts ohne PIN |
+| `resources/js/components/layout/DashboardContent.vue` | Slot `actions` neben dem Titel, z. B. für den Dark-Mode-Schalter am Kiosk |
 
 ## Seeder
 
 - `ArticleSeeder` legt an: Bier (8), Radler (8), Cola (8), Spezi (8), Wasser (2), Bacardi (1). Die Zahl in Klammern ist die maximale Anzahl. Existierende Artikel (gleicher Name) werden übersprungen. Die Artikel haben noch keinen Preis, er muss im Admin-Dashboard festgelegt werden.
-- `UserDemoSeeder` (Event-Typ `demo`): Die benannten Demo-Accounts (`superadmin@example.com`, `admin@example.com`, `tutor@example.com` usw.) haben die PIN `1234`. Die 800 Demo-Studierenden haben die PIN `4711`.
-- `TutorSeeder` liest die PIN aus Spalte 7 von `tutors.csv`, `StudentSeeder` aus Spalte 5 von `students.csv`.
+- Kein Seeder setzt PINs, auch nicht der CSV-Import (`TutorSeeder`, `StudentSeeder`) und der `UserDemoSeeder`. Alle User legen ihre PIN beim ersten Mal im Selbstzugriff fest, dabei greift die Sperre für leicht zu erratende PINs.
 
 ## Tests
 

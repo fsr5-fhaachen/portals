@@ -9,6 +9,7 @@ use App\Models\User;
 use Database\Seeders\CourseSeeder;
 use Database\Seeders\ModuleSeeder;
 use Database\Seeders\RoleSeeder;
+use Database\Seeders\UserDemoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -122,6 +123,14 @@ class StrichlistensystemSelfServiceTest extends TestCase
         }
 
         $this->assertNull($user->fresh()->pin);
+    }
+
+    public function test_demo_users_have_no_pin(): void
+    {
+        $this->seed(UserDemoSeeder::class);
+
+        $this->assertFalse(User::where('email', 'admin@example.com')->sole()->hasPin());
+        $this->assertSame(0, User::whereNotNull('pin')->count());
     }
 
     public function test_trivial_pins_are_rejected(): void
