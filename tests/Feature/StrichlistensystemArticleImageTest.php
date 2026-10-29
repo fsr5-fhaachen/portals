@@ -8,10 +8,12 @@ use App\Models\User;
 use Database\Seeders\CourseSeeder;
 use Database\Seeders\ModuleSeeder;
 use Database\Seeders\RoleSeeder;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia as Assert;
+use Mockery;
 use Tests\TestCase;
 
 class StrichlistensystemArticleImageTest extends TestCase
@@ -161,6 +163,47 @@ class StrichlistensystemArticleImageTest extends TestCase
                 'image' => $this->fakeImage('gross.png', 3 * 1024 * 1024),
             ]))
             ->assertSessionHasErrors(['image' => 'Das Bild darf höchstens 2 MB groß sein.']);
+    }
+
+    public function test_failed_upload_is_reported_and_the_article_is_not_saved(): void
+    {
+        // the s3 disk returns false if the upload fails, e.g. without configuration
+        $disk = Mockery::mock(FilesystemAdapter::class);
+        $disk->shouldReceive('putFileAs')->andReturnFalse();
+        Storage::set('s3', $disk);
+
+        $this->actingAsAdmin()
+            ->post(route('dashboard.admin.strichlistensystem.storeArticle'), $this->articleData([
+                'image' => $this->fakeImage('mate.png'),
+            ]))
+            ->assertSessionHasErrors(['image' => 'Das Bild konnte nicht gespeichert werden. Bitte versuche es erneut.']);
+
+        $this->assertSame(0, Article::count());
+    }
+
+    public function test_upload_error_is_reported_and_the_article_is_not_updated(): void
+    {
+        $article = Article::factory()->create(['name' => 'Mate']);
+
+        // a disk that can not write: the folder "articles" is a file
+        $root = sys_get_temp_dir().'/strichlistensystem-'.uniqid();
+        mkdir($root);
+        touch($root.'/articles');
+        config(['filesystems.disks.s3' => ['driver' => 'local', 'root' => $root, 'throw' => false]]);
+        Storage::forgetDisk('s3');
+
+        $this->actingAsAdmin()
+            ->post(route('dashboard.admin.strichlistensystem.updateArticle', $article), $this->articleData([
+                'name' => 'Club Mate',
+                'image' => $this->fakeImage('mate.png'),
+            ]))
+            ->assertSessionHasErrors(['image' => 'Das Bild konnte nicht gespeichert werden. Bitte versuche es erneut.']);
+
+        $this->assertSame('Mate', $article->fresh()->name);
+        $this->assertNull($article->fresh()->image);
+
+        unlink($root.'/articles');
+        rmdir($root);
     }
 
     public function test_new_image_replaces_and_deletes_the_old_image(): void

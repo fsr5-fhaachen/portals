@@ -15,13 +15,16 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use League\Flysystem\FilesystemException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DashboardAdminStrichlistensystemController extends Controller
@@ -371,6 +374,8 @@ class DashboardAdminStrichlistensystemController extends Controller
      *
      * @param  array<string, mixed>  $validated
      * @return array<string, mixed>
+     *
+     * @throws ValidationException if the image could not be uploaded
      */
     private function storeArticleImage(array $validated): array
     {
@@ -379,7 +384,23 @@ class DashboardAdminStrichlistensystemController extends Controller
         unset($validated['image'], $validated['remove_image']);
 
         if ($image instanceof UploadedFile) {
-            $validated['image'] = $image->store('articles', 's3');
+            // without "throw" the s3 disk returns false for a failed upload (e.g. s3 not configured), other errors are thrown
+            try {
+                $path = $image->store('articles', 's3');
+            } catch (FilesystemException $exception) {
+                report($exception);
+                $path = false;
+            }
+
+            if ($path === false) {
+                Log::error('The image of a strichlistensystem article could not be uploaded to s3.');
+
+                throw ValidationException::withMessages([
+                    'image' => 'Das Bild konnte nicht gespeichert werden. Bitte versuche es erneut.',
+                ]);
+            }
+
+            $validated['image'] = $path;
         } elseif ($removeImage) {
             $validated['image'] = null;
         }
