@@ -74,7 +74,6 @@ class TutorSeeder extends Seeder
             $user->firstname = $tutor[1];
             $user->course_id = $courseByKey[$tutor[2]]->id;
             $user->email = strtolower($tutor[3]);
-            $user->pin = $this->parsePin($tutor[6] ?? null, $user);
 
             // set user to disabled
             if (array_key_exists(5, $tutor) && $tutor[5] == '1') {
@@ -150,25 +149,5 @@ class TutorSeeder extends Seeder
                 }
             }
         }
-    }
-
-    /**
-     * Parse the pin from the csv file. Only pins with exactly 4 digits are valid, otherwise the user has to set the pin by himself.
-     */
-    private function parsePin(?string $pin, User $user): ?string
-    {
-        $pin = trim((string) $pin);
-
-        if ($pin === '') {
-            return null;
-        }
-
-        if (! preg_match('/^\d{4}$/', $pin)) {
-            $this->command->warn("Ignoring invalid pin for user {$user->firstname} {$user->lastname} (pin must contain exactly 4 digits)");
-
-            return null;
-        }
-
-        return $pin;
     }
 }
