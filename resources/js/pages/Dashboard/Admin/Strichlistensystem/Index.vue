@@ -102,6 +102,31 @@
             </FormRow>
             <FormRow>
               <FormKit
+                type="file"
+                name="image"
+                label="Bild (optional)"
+                accept=".png,.jpg,.jpeg,.webp"
+                help="PNG, JPG oder WebP, höchstens 2 MB. Das Bild wird statt des Icons angezeigt. Ein PNG mit transparentem Hintergrund passt zum hellen und dunklen Design."
+              />
+              <img
+                v-if="imagePreviewUrl"
+                :src="imagePreviewUrl"
+                alt="Vorschau"
+                class="h-16 w-16 flex-shrink-0 self-end object-contain"
+              />
+            </FormRow>
+            <FormRow
+              v-if="articleToEdit?.image_url && !articleForm.image.length"
+            >
+              <FormKit
+                type="checkbox"
+                name="remove_image"
+                label="Bild entfernen"
+                help="Danach wird wieder das Icon angezeigt."
+              />
+            </FormRow>
+            <FormRow>
+              <FormKit
                 type="number"
                 name="show_order"
                 label="Reihenfolge"
@@ -176,7 +201,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref } from "vue";
+import { computed, PropType, ref, watch } from "vue";
 import { router } from "@inertiajs/vue3";
 import { reset } from "@formkit/core";
 import {
@@ -218,6 +243,9 @@ type ArticleForm = {
   // price in euro as entered, e.g. "1,50"
   price: string;
   is_active: boolean;
+  // selected files of the formkit file input, only the first one is uploaded
+  image: { name: string; file?: File }[];
+  remove_image: boolean;
 };
 
 const emptyArticleForm = (): ArticleForm => ({
@@ -227,10 +255,33 @@ const emptyArticleForm = (): ArticleForm => ({
   max_order_amount: 1,
   price: "",
   is_active: true,
+  image: [],
+  remove_image: false,
 });
 
 const articleForm = ref<ArticleForm>(emptyArticleForm());
 const articleToEdit = ref<App.Models.Article | null>(null);
+
+// preview of the selected image, otherwise of the current image of the edited article
+const selectedImageUrl = ref<string | null>(null);
+watch(
+  () => articleForm.value.image?.[0]?.file,
+  (file) => {
+    if (selectedImageUrl.value) {
+      URL.revokeObjectURL(selectedImageUrl.value);
+    }
+    selectedImageUrl.value = file ? URL.createObjectURL(file) : null;
+  },
+);
+const imagePreviewUrl = computed(() => {
+  if (selectedImageUrl.value) {
+    return selectedImageUrl.value;
+  }
+
+  return articleForm.value.remove_image
+    ? null
+    : (articleToEdit.value?.image_url ?? null);
+});
 
 const resetArticleForm = () => {
   articleToEdit.value = null;
@@ -248,6 +299,8 @@ const editArticle = (article: App.Models.Article) => {
     max_order_amount: article.max_order_amount,
     price: centsToPriceInput(article.price).replace(".", ","),
     is_active: article.is_active,
+    image: [],
+    remove_image: false,
   };
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
@@ -257,10 +310,14 @@ const submitArticleHandler = () => {
     ? `/dashboard/admin/strichlistensystem/article/${articleToEdit.value.id}`
     : "/dashboard/admin/strichlistensystem/article";
 
-  // the price is sent in cents
+  // the price is sent in cents, with an image the data is sent as form data
   router.post(
     url,
-    { ...articleForm.value, price: parsePriceToCents(articleForm.value.price) },
+    {
+      ...articleForm.value,
+      price: parsePriceToCents(articleForm.value.price),
+      image: articleForm.value.image?.[0]?.file ?? null,
+    },
     {
       preserveScroll: true,
       preserveState: true,
@@ -322,8 +379,11 @@ const getColumns = (): TableColumn[] => [
   new TableColumn({
     name: "icon",
     sortKey: "icon",
-    text: "Icon",
-    valueFunction: (article: App.Models.Article) => escapeHtml(article.icon),
+    text: "Icon / Bild",
+    valueFunction: (article: App.Models.Article) =>
+      article.image_url
+        ? `<img src="${escapeHtml(article.image_url)}" alt="" class="h-8 w-8 object-contain" />`
+        : escapeHtml(article.icon),
   }),
   new TableColumn({
     name: "show_order",

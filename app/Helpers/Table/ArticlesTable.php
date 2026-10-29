@@ -30,6 +30,7 @@ class ArticlesTable extends Table
             'id' => $model->id,
             'name' => $model->name,
             'icon' => $model->icon,
+            'image_url' => $model->image_url,
             'show_order' => $model->show_order,
             'max_order_amount' => $model->max_order_amount,
             'price' => $model->price,

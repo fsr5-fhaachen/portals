@@ -139,6 +139,9 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
 
 // strichlistensystem
 Route::prefix('strichlistensystem')->middleware(ActiveModule::class.':strichlistensystem')->group(function () {
+    // images of the articles are no personal data, so they are available in the kiosk, the self service and the admin
+    Route::get('/article/{article}/image', [StrichlistensystemController::class, 'articleImage'])->name('strichlistensystem.articleImage');
+
     // pairing of a tablet with the pairing url (or qr code) of a kiosk device
     Route::get('/kiosk/pair/{device}', [StrichlistensystemKioskController::class, 'pair'])->middleware('throttle:10,1')->name('strichlistensystem.kiosk.pair');
 

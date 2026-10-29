@@ -103,7 +103,12 @@ Unabhängig vom Strichlistensystem ist der Schlüssel für die öffentliche API 
 
 Unter `/dashboard/admin/strichlistensystem` (Menüpunkt „Strichliste“ im roten Admin-Bereich):
 
-- **Artikel anlegen und bearbeiten:** Name (eindeutig, max. 50 Zeichen), Icon, Reihenfolge, maximale Anzahl (1–100), Preis (0–1000 €, Eingabe in Euro mit Komma oder Punkt), aktiv.
+- **Artikel anlegen und bearbeiten:** Name (eindeutig, max. 50 Zeichen), Icon, optional ein Bild, Reihenfolge, maximale Anzahl (1–100), Preis (0–1000 €, Eingabe in Euro mit Komma oder Punkt), aktiv.
+- **Artikelbilder:**
+  - Erlaubt sind PNG, JPG und WebP mit höchstens 2 MB. SVG ist nicht erlaubt, weil es Scripte enthalten kann.
+  - Hat ein Artikel ein Bild, wird es am Kiosk, im Selbstzugriff und in der Artikeltabelle statt des Icons angezeigt. Das Icon bleibt Pflicht und dient als Fallback.
+  - Das Bild steht ohne farbigen Hintergrund auf der Karte, ein PNG mit transparentem Hintergrund passt deshalb zum hellen und dunklen Design.
+  - Der Upload läuft über den Server (Validierung vor dem Speichern) in den Portals-S3 unter `articles/`. Beim Ersetzen, Entfernen („Bild entfernen“) und Löschen des Artikels wird die alte Datei gelöscht.
 - **Aktivieren/Deaktivieren:** Deaktivierte Artikel werden am Kiosk und im Selbstzugriff nicht mehr angezeigt und können nicht mehr gebucht werden. Bisherige Buchungen bleiben erhalten und erscheinen weiterhin im Export.
 - **Löschen:** nur für Artikel ohne Buchungen (auch stornierte zählen). Artikel mit Buchungen sollten deaktiviert werden.
 - **Abrechnung** (`/dashboard/admin/strichlistensystem/billing`, Link „Zur Abrechnung“): Tabelle aller Personen mit Anzahl der Buchungen, Gesamt, Bezahlt und Offen (Suche, Sortierung, Live-Update). Über „Zahlungen“ öffnet sich ein Dialog, in dem ein bezahlter Betrag eingetragen (vorausgefüllt mit dem offenen Betrag, Teilzahlungen möglich) und die letzte Zahlung rückgängig gemacht werden kann.
@@ -151,6 +156,7 @@ Unter `/dashboard/admin/strichlistensystem` (Menüpunkt „Strichliste“ im rot
 | [`2026_10_27_141723_add_strichlistensystem_module_and_permission.php`](../database/migrations/2026_10_27_141723_add_strichlistensystem_module_and_permission.php) | Modul-Eintrag `strichlistensystem` (inaktiv) und Berechtigung `manage strichlistensystem` für `admin` und `super admin` |
 | [`2026_10_27_142004_hash_pins_on_users_table.php`](../database/migrations/2026_10_27_142004_hash_pins_on_users_table.php) | Vergrößert `users.pin` und hasht bestehende PINs. Rollback löscht alle PINs, da Hashes nicht umkehrbar sind |
 | [`2026_10_27_142333_create_strichlistensystem_kiosk_devices_table.php`](../database/migrations/2026_10_27_142333_create_strichlistensystem_kiosk_devices_table.php) | Tabelle `strichlistensystem_kiosk_devices` |
+| [`2026_10_29_193015_add_image_to_articles_table.php`](../database/migrations/2026_10_29_193015_add_image_to_articles_table.php) | Spalte `articles.image` (S3-Pfad, `NULL` = kein Bild) |
 
 ### Tabellen
 
@@ -170,6 +176,7 @@ Unter `/dashboard/admin/strichlistensystem` (Menüpunkt „Strichliste“ im rot
 |---|---|---|
 | `name` | `string(50)` | Name des Artikels |
 | `icon` | `string(50)` | Font-Awesome-Icon (aus `strichlistensystem.icons`) |
+| `image` | `string`, nullable | Pfad des hochgeladenen Bildes im S3-Bucket. Wird statt des Icons angezeigt |
 | `show_order` | `integer` | Sortierung (aufsteigend) |
 | `max_order_amount` | `integer` | Maximale Anzahl pro Kiosk-Anmeldung bzw. pro Zeitfenster im Selbstzugriff |
 | `price` | `unsigned integer`, nullable | Preis in Cent. `NULL` bedeutet, dass noch kein Preis festgelegt ist |
@@ -225,6 +232,7 @@ Alle Routen liegen in [`routes/web.php`](../routes/web.php) und stehen hinter de
 
 | Methode | URI | Name |
 |---|---|---|
+| GET | `/strichlistensystem/article/{article}/image?v=…` | `strichlistensystem.articleImage` (ohne Login und ohne Kiosk-Cookie, `Cache-Control: public, max-age=31536000, immutable`; `v` ändert sich mit jedem neuen Bild) |
 | GET | `/strichlistensystem/kiosk/pair/{device}?token=…` | `strichlistensystem.kiosk.pair` |
 | GET | `/strichlistensystem/kiosk` | `strichlistensystem.kiosk.index` |
 | POST | `/strichlistensystem/kiosk/logout` | `strichlistensystem.kiosk.logout` |
@@ -272,7 +280,7 @@ Middleware-Kette:
 | `app/Http/Controllers/StrichlistensystemKioskController.php` | Kiosk: Übersicht, PIN, Buchen, Storno, Abmelden, Bilder |
 | `app/Http/Controllers/StrichlistensystemController.php` | Selbstzugriff: PIN setzen/ändern, Buchen, Storno |
 | `app/Http/Controllers/DashboardAdminStrichlistensystemController.php` | Admin: Artikel, Aktivieren/Deaktivieren, Export |
-| `app/Models/Article.php` | Artikel (inkl. Scope `active()`, auditiert) |
+| `app/Models/Article.php` | Artikel (inkl. Scope `active()`, `image_url`, `deleteImage()`, auditiert) |
 | `app/Models/ArticleActionLog.php` | Buchung (Soft Delete, `cancel_until`, `isCancellable()`) |
 | `database/factories/ArticleFactory.php`, `ArticleActionLogFactory.php` | Factories (State `inactive()`) |
 | `database/seeders/ArticleSeeder.php` | Standard-Artikel |
@@ -287,7 +295,7 @@ Middleware-Kette:
 | `app/Models/StrichlistensystemPayment.php` | Zahlung (Soft Delete, auditiert) |
 | `app/Helpers/Price.php` | Formatierung von Cent-Beträgen (`1,50` bzw. `1,50 €`) |
 | `app/Helpers/Table/StrichlistensystemBillingTable.php` | Tabelle der Abrechnung (Summen per Unterabfrage, Live-Update auch bei neuen Buchungen und Zahlungen) |
-| `resources/js/components/strichlistensystem/ArticleCard.vue` | Artikelkarte mit Mengenregler, Limit-Hinweis und Countdown |
+| `resources/js/components/strichlistensystem/ArticleCard.vue` | Artikelkarte mit Bild oder Icon, Mengenregler, Limit-Hinweis und Countdown |
 | `resources/js/components/strichlistensystem/ActionLogList.vue` | Liste der letzten Buchungen mit Storno |
 | `resources/js/components/strichlistensystem/PersonCard.vue` | Personenkarte am Kiosk |
 | `resources/js/components/strichlistensystem/PinPad.vue` | Ziffernblock für die PIN-Eingabe |

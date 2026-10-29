@@ -10,9 +10,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StrichlistensystemController extends Controller
 {
@@ -56,6 +58,21 @@ class StrichlistensystemController extends Controller
         Session::flash('success', $hadPin ? 'Deine PIN wurde geändert.' : 'Deine PIN wurde gespeichert. Du kannst jetzt Striche machen.');
 
         return Redirect::route('strichlistensystem.index');
+    }
+
+    /**
+     * Stream the image of an article from the s3 storage. The url contains a version of the image,
+     * so the image can be cached for a long time.
+     */
+    public function articleImage(Article $article): StreamedResponse
+    {
+        if (! $article->image || ! Storage::disk('s3')->exists($article->image)) {
+            abort(404);
+        }
+
+        return Storage::disk('s3')->response($article->image, null, [
+            'Cache-Control' => 'public, max-age=31536000, immutable',
+        ]);
     }
 
     /**

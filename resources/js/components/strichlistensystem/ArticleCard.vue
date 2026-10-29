@@ -2,7 +2,14 @@
   <CardBase>
     <div class="flex flex-col gap-6">
       <div class="flex items-center gap-4">
-        <div class="rounded-md bg-fhac-mint-dark p-3">
+        <!-- without a colored background, a transparent png fits the light and the dark mode -->
+        <img
+          v-if="article.image_url"
+          :src="article.image_url"
+          :alt="article.name"
+          class="h-14 w-14 flex-shrink-0 object-contain"
+        />
+        <div v-else class="rounded-md bg-fhac-mint-dark p-3">
           <div
             class="flex h-8 w-8 items-center justify-center text-2xl text-white"
           >

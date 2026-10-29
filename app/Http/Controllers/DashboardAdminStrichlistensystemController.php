@@ -13,10 +13,13 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -45,7 +48,7 @@ class DashboardAdminStrichlistensystemController extends Controller
      */
     public function storeArticle(Request $request): RedirectResponse
     {
-        $article = Article::create($this->validateArticle($request));
+        $article = Article::create($this->storeArticleImage($this->validateArticle($request)));
 
         Session::flash('success', 'Der Artikel <strong>'.e($article->name).'</strong> wurde erstellt.');
 
@@ -58,7 +61,8 @@ class DashboardAdminStrichlistensystemController extends Controller
      */
     public function updateArticle(Request $request, Article $article): RedirectResponse
     {
-        $validated = $this->validateArticle($request, $article);
+        $validated = $this->storeArticleImage($this->validateArticle($request, $article));
+        $oldImage = $article->image;
 
         $pricedBookingsCount = DB::transaction(function () use ($article, $validated) {
             // lock the article so that parallel bookings use either the old or the new price
@@ -68,6 +72,11 @@ class DashboardAdminStrichlistensystemController extends Controller
 
             return $article->applyPriceToBookingsWithoutPrice();
         });
+
+        // the old image is only deleted after the article was saved with the new one
+        if ($oldImage && $oldImage !== $article->image) {
+            Storage::disk('s3')->delete($oldImage);
+        }
 
         $message = 'Der Artikel <strong>'.e($article->name).'</strong> wurde gespeichert.';
         if ($pricedBookingsCount > 0) {
@@ -104,6 +113,7 @@ class DashboardAdminStrichlistensystemController extends Controller
         }
 
         $article->delete();
+        $article->deleteImage();
 
         Session::flash('success', 'Der Artikel <strong>'.e($article->name).'</strong> wurde gelöscht.');
 
@@ -356,9 +366,31 @@ class DashboardAdminStrichlistensystemController extends Controller
     }
 
     /**
+     * Upload the image of an article to the s3 storage and replace the uploaded file in the validated data by its path.
+     * Without a new image the image is kept, unless it should be removed.
+     *
+     * @param  array<string, mixed>  $validated
+     * @return array<string, mixed>
+     */
+    private function storeArticleImage(array $validated): array
+    {
+        $image = $validated['image'] ?? null;
+        $removeImage = $validated['remove_image'] ?? false;
+        unset($validated['image'], $validated['remove_image']);
+
+        if ($image instanceof UploadedFile) {
+            $validated['image'] = $image->store('articles', 's3');
+        } elseif ($removeImage) {
+            $validated['image'] = null;
+        }
+
+        return $validated;
+    }
+
+    /**
      * Validate the request data of an article.
      *
-     * @return array{name: string, icon: string, show_order: int, max_order_amount: int, price: int, is_active: bool}
+     * @return array{name: string, icon: string, show_order: int, max_order_amount: int, price: int, is_active: bool, image?: UploadedFile|null, remove_image?: bool}
      */
     private function validateArticle(Request $request, ?Article $article = null): array
     {
@@ -370,7 +402,12 @@ class DashboardAdminStrichlistensystemController extends Controller
             // price in cents
             'price' => ['required', 'integer', 'min:0', 'max:100000'],
             'is_active' => ['required', 'boolean'],
+            // no svg, it can contain scripts. png keeps the transparency for the light and dark mode
+            'image' => ['nullable', File::types(['png', 'jpg', 'jpeg', 'webp'])->max(2 * 1024)],
+            'remove_image' => ['boolean'],
         ], [
+            'image.mimes' => 'Das Bild muss eine PNG-, JPG- oder WebP-Datei sein.',
+            'image.max' => 'Das Bild darf höchstens 2 MB groß sein.',
             'price.required' => 'Bitte gib einen Preis an.',
             'price.min' => 'Der Preis darf nicht negativ sein.',
             'price.max' => 'Der Preis darf höchstens 1000,00 € sein.',
