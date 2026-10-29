@@ -157,7 +157,11 @@ Route::prefix('api')->middleware([Authenticate::class, 'throttle:api'])->group(f
 
         Route::middleware('can:manage users')->group(function () {
             Route::get('/users', [ApiController::class, 'users'])->name('api.users');
-            Route::get('/users/{user}/registrations', [ApiController::class, 'userRegistrations'])->name('api.user.registrations');
+            Route::get('/users/{user}/details', [ApiController::class, 'userDetails'])->name('api.user.details');
+            Route::scopeBindings()->group(function () {
+                Route::put('/users/{user}/registrations/{registration}', [ApiController::class, 'userRegistrationUpdate'])->name('api.user.registrations.update');
+                Route::delete('/users/{user}/registrations/{registration}', [ApiController::class, 'userRegistrationDestroy'])->name('api.user.registrations.destroy');
+            });
             Route::post('/user/presigned-avatar-url', [ApiController::class, 'generatePresignedUrlForAvatarUpload'])->name('api.user.presignedAvatarUrl');
         });
     });

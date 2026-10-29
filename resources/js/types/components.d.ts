@@ -44,10 +44,11 @@ declare module 'vue' {
     UiH2: typeof import('./../components/ui/H2.vue')['default']
     UiMessage: typeof import('./../components/ui/Message.vue')['default']
     UiTimeString: typeof import('./../components/ui/TimeString.vue')['default']
+    UserAuditList: typeof import('./../components/user/AuditList.vue')['default']
     UserBox: typeof import('./../components/user/Box.vue')['default']
     UserDeleteModal: typeof import('./../components/user/DeleteModal.vue')['default']
     UserEditModal: typeof import('./../components/user/EditModal.vue')['default']
-    UserInfoModal: typeof import('./../components/user/InfoModal.vue')['default']
+    UserRegistrationForm: typeof import('./../components/user/RegistrationForm.vue')['default']
     UserTable: typeof import('./../components/user/Table.vue')['default']
   }
 }

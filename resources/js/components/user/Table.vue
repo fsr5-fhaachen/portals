@@ -31,14 +31,6 @@
     @close="clearUserToDelete"
     @submit="submitUserDelete"
   />
-
-  <UserInfoModal
-    v-if="userToView"
-    :user="userToView"
-    :courses="courses"
-    :roles="roles"
-    @close="clearUserToView"
-  />
 </template>
 
 <script setup lang="ts">
@@ -74,7 +66,6 @@ watch(props, (props) => {
 
 const userToEdit = ref<Models.User | null>(null);
 const userToDelete = ref<Models.User | null>(null);
-const userToView = ref<Models.User | null>(null);
 
 const clearUserToEdit = () => {
   userToEdit.value = null;
@@ -94,13 +85,6 @@ const selectUserToDelete = async (user: Models.User) => {
 };
 const submitUserDelete = async () => {
   clearUserToDelete();
-};
-
-const clearUserToView = () => {
-  userToView.value = null;
-};
-const selectUserToView = async (user: Models.User) => {
-  userToView.value = user;
 };
 
 function getColumns(): Array<TableColumn> {
@@ -202,15 +186,6 @@ function getColumns(): Array<TableColumn> {
 
 function getFunctions(): Array<TableFunction> {
   let functions: Array<TableFunction> = [];
-
-  const viewInfoButton = new TableButton({
-    name: "view",
-    text: "Info",
-    buttonFunction: (user) => selectUserToView(user),
-    disabledFunction: () => false,
-    theme: "default",
-  });
-  functions.push(viewInfoButton);
 
   const editButton = new TableButton({
     name: "edit",

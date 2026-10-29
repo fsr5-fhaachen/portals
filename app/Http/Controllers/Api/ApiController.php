@@ -10,8 +10,12 @@ use App\Models\State;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use OwenIt\Auditing\Models\Audit;
 
 class ApiController extends Controller
 {
@@ -410,15 +414,119 @@ class ApiController extends Controller
     }
 
     /**
-     * Registrations for a specific user
+     * Details for a specific user: registrations, tutor assignments and audits
      */
-    public function userRegistrations(User $user): JsonResponse
+    public function userDetails(User $user): JsonResponse
     {
-        $registrations = $user->registrations()->with(['event', 'group'])->get();
+        $registrations = $user->registrations()
+            ->with(['event.groups', 'event.slots', 'slot', 'group'])
+            ->get();
+
+        $groupTutors = $user->groupTutors()->with('group.event')->get();
+        $stationTutors = $user->stationTutors()->with('station.event')->get();
 
         return response()->json([
             'registrations' => $registrations,
+            'groupTutors' => $groupTutors,
+            'stationTutors' => $stationTutors,
+            'audits' => $this->userAudits($user, $registrations->pluck('id')),
         ]);
+    }
+
+    /**
+     * Update a registration of a specific user
+     */
+    public function userRegistrationUpdate(Request $request, User $user, Registration $registration): JsonResponse
+    {
+        $validated = $request->validate([
+            'group_id' => ['nullable', 'integer', Rule::exists('groups', 'id')->where('event_id', $registration->event_id)],
+            'slot_id' => ['nullable', 'integer', Rule::exists('slots', 'id')->where('event_id', $registration->event_id)],
+            'is_present' => ['required', 'boolean'],
+            'drinks_alcohol' => ['nullable', 'boolean'],
+            'fulfils_requirements' => ['nullable', 'boolean'],
+            'queue_position' => ['nullable', 'integer', 'min:-1'],
+            'form_responses' => ['nullable', 'array'],
+        ]);
+
+        if (array_key_exists('form_responses', $validated) && empty($validated['form_responses'])) {
+            $validated['form_responses'] = null;
+        }
+
+        $registration->update($validated);
+
+        return response()->json([
+            'registration' => $registration->fresh(['event.groups', 'event.slots', 'slot', 'group']),
+        ]);
+    }
+
+    /**
+     * Delete a registration of a specific user
+     */
+    public function userRegistrationDestroy(User $user, Registration $registration): JsonResponse
+    {
+        $registration->delete();
+
+        return response()->json(['message' => 'Registration deleted']);
+    }
+
+    /**
+     * Collect the latest audits of a user and of all registrations the user ever had
+     *
+     * @param  Collection<int, int>  $registrationIds
+     * @return Collection<int, array{id: int, event: string, type: string, label: string, old_values: array<string, mixed>, new_values: array<string, mixed>, causer: ?string, created_at: string}>
+     */
+    private function userAudits(User $user, Collection $registrationIds): Collection
+    {
+        $hiddenAttributes = ['remember_token', 'pin'];
+
+        // include registrations that were deleted in the meantime
+        $registrationIds = Audit::where('auditable_type', Registration::class)
+            ->where('event', 'created')
+            ->where('new_values->user_id', $user->id)
+            ->pluck('auditable_id')
+            ->merge($registrationIds)
+            ->unique();
+
+        $audits = Audit::with('user')
+            ->where(function ($query) use ($user, $registrationIds) {
+                $query->where(function ($query) use ($user) {
+                    $query->where('auditable_type', User::class)->where('auditable_id', $user->id);
+                })->orWhere(function ($query) use ($registrationIds) {
+                    $query->where('auditable_type', Registration::class)->whereIn('auditable_id', $registrationIds);
+                });
+            })
+            ->latest('id')
+            ->limit(100)
+            ->get();
+
+        $registrationEventIds = Registration::whereIn('id', $registrationIds)->pluck('event_id', 'id');
+        $eventIds = $audits->flatMap(fn (Audit $audit) => [
+            $audit->old_values['event_id'] ?? null,
+            $audit->new_values['event_id'] ?? null,
+        ])->merge($registrationEventIds)->filter()->unique();
+        $eventNames = Event::whereIn('id', $eventIds)->pluck('name', 'id');
+
+        return $audits->map(function (Audit $audit) use ($hiddenAttributes, $eventNames, $registrationEventIds) {
+            $label = 'User';
+            if ($audit->auditable_type === Registration::class) {
+                $eventId = $audit->new_values['event_id']
+                    ?? $audit->old_values['event_id']
+                    ?? $registrationEventIds[$audit->auditable_id]
+                    ?? null;
+                $label = 'Anmeldung '.($eventNames[$eventId] ?? '#'.$audit->auditable_id);
+            }
+
+            return [
+                'id' => $audit->id,
+                'event' => $audit->event,
+                'type' => class_basename($audit->auditable_type),
+                'label' => $label,
+                'old_values' => Arr::except($audit->old_values, $hiddenAttributes),
+                'new_values' => Arr::except($audit->new_values, $hiddenAttributes),
+                'causer' => $audit->user ? $audit->user->firstname.' '.$audit->user->lastname : null,
+                'created_at' => $audit->created_at->toISOString(),
+            ];
+        })->values();
     }
 
     /**

@@ -30,118 +30,257 @@
               leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <DialogPanel
-                class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all dark:bg-gray-900 sm:my-8 sm:w-full sm:max-w-sm sm:p-6"
+                class="relative w-full transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all dark:bg-gray-900 sm:my-8 sm:max-w-4xl sm:p-6"
               >
-                <FormKit
-                  type="form"
-                  id="edit"
-                  @submit="editSubmitHandler"
-                  :actions="false"
-                  v-model="editForm"
-                >
-                  <FormContainer>
-                    <FormRow>
-                      <UiH2>User bearbeiten</UiH2>
-                    </FormRow>
+                <div class="mb-4 flex items-start justify-between gap-4">
+                  <UiH2>
+                    {{ user.firstname }} {{ user.lastname }} bearbeiten
+                  </UiH2>
+                  <button
+                    type="button"
+                    class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                    @click="close"
+                  >
+                    <span class="sr-only">Schließen</span>
+                    <FontAwesomeIcon :icon="['fas', 'x']" class="h-5 w-5" />
+                  </button>
+                </div>
 
-                    <FormRow>
-                      <FormKit
-                        type="text"
-                        name="firstname"
-                        label="Vorname"
-                        :placeholder="randomPlaceholderPerson.firstname"
-                        validation="required|length:2,255"
-                      />
-                    </FormRow>
-                    <FormRow>
-                      <FormKit
-                        type="text"
-                        name="lastname"
-                        label="Nachname"
-                        :placeholder="randomPlaceholderPerson.lastname"
-                        validation="required|length:2,255"
-                      />
-                    </FormRow>
-                    <FormRow>
-                      <FormKit
-                        type="email"
-                        name="email"
-                        label="E-Mail"
-                        :placeholder="randomPlaceholderPerson.email"
-                        validation="required|email|length:3,255"
-                      />
-                    </FormRow>
-                    <FormRow>
-                      <FormKit
-                        type="email"
-                        name="email_confirm"
-                        label="E-Mail bestätigen"
-                        :placeholder="randomPlaceholderPerson.email"
-                        validation="required|confirm"
-                      />
-                    </FormRow>
-                    <FormRow>
-                      <FormKit
-                        type="select"
-                        name="course_id"
-                        label="Studiengang"
-                        placeholder="Wähle einen Studiengang aus"
-                        validation="required"
-                        :options="selectFormCourseOptions"
-                      />
-                    </FormRow>
-
-                    <FormRow
-                      v-if="
-                        !user.roles.length ||
-                        !user.roles
-                          .map((role) => role.name)
-                          .includes('super admin')
-                      "
+                <TabGroup>
+                  <TabList
+                    class="mb-4 flex flex-wrap gap-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-800"
+                  >
+                    <Tab
+                      v-for="tab in tabs"
+                      :key="tab"
+                      as="template"
+                      v-slot="{ selected }"
                     >
-                      <FormKit
-                        type="checkbox"
-                        name="role_id"
-                        label="Rollen"
-                        placeholder="Wähle eine oder mehrere Rollen aus"
-                        :options="selectFormRoleOptions"
-                        multiple
-                      />
-                    </FormRow>
+                      <button
+                        type="button"
+                        :class="[
+                          'flex-1 rounded-md px-3 py-2 text-sm font-medium focus:outline-none',
+                          selected
+                            ? 'bg-fhac-mint-dark text-white shadow'
+                            : 'text-gray-700 hover:bg-white dark:text-gray-300 dark:hover:bg-gray-700',
+                        ]"
+                      >
+                        {{ tab }}
+                        <span
+                          v-if="tabCounts[tab] !== undefined"
+                          class="ml-1 opacity-75"
+                          >({{ tabCounts[tab] }})</span
+                        >
+                      </button>
+                    </Tab>
+                  </TabList>
 
-                    <div v-if="user.avatarUrl">
-                      <img :src="user.avatarUrl" class="mx-auto" />
-                    </div>
-
-                    <FormRow v-if="user.avatarUrl">
+                  <TabPanels>
+                    <TabPanel>
                       <FormKit
-                        type="checkbox"
-                        name="remove_avatar"
-                        label="Avatar entfernen"
-                      />
-                    </FormRow>
+                        type="form"
+                        id="edit"
+                        @submit="editSubmitHandler"
+                        :actions="false"
+                        v-model="editForm"
+                      >
+                        <FormContainer>
+                          <FormRow>
+                            <FormKit
+                              type="text"
+                              name="firstname"
+                              label="Vorname"
+                              :placeholder="randomPlaceholderPerson.firstname"
+                              validation="required|length:2,255"
+                            />
+                          </FormRow>
+                          <FormRow>
+                            <FormKit
+                              type="text"
+                              name="lastname"
+                              label="Nachname"
+                              :placeholder="randomPlaceholderPerson.lastname"
+                              validation="required|length:2,255"
+                            />
+                          </FormRow>
+                          <FormRow>
+                            <FormKit
+                              type="email"
+                              name="email"
+                              label="E-Mail"
+                              :placeholder="randomPlaceholderPerson.email"
+                              validation="required|email|length:3,255"
+                            />
+                          </FormRow>
+                          <FormRow>
+                            <FormKit
+                              type="email"
+                              name="email_confirm"
+                              label="E-Mail bestätigen"
+                              :placeholder="randomPlaceholderPerson.email"
+                              validation="required|confirm"
+                            />
+                          </FormRow>
+                          <FormRow>
+                            <FormKit
+                              type="select"
+                              name="course_id"
+                              label="Studiengang"
+                              placeholder="Wähle einen Studiengang aus"
+                              validation="required"
+                              :options="selectFormCourseOptions"
+                            />
+                          </FormRow>
 
-                    <FormRow v-if="!editForm.remove_avatar">
-                      <FormKit
-                        type="file"
-                        name="avatar"
-                        label="Avatar hochladen"
-                        validation="file|image|mimes:jpeg,jpg,png,gif"
-                      />
-                    </FormRow>
+                          <FormRow
+                            v-if="
+                              !user.roles.length ||
+                              !user.roles
+                                .map((role) => role.name)
+                                .includes('super admin')
+                            "
+                          >
+                            <FormKit
+                              type="checkbox"
+                              name="role_id"
+                              label="Rollen"
+                              placeholder="Wähle eine oder mehrere Rollen aus"
+                              :options="selectFormRoleOptions"
+                              multiple
+                            />
+                          </FormRow>
 
-                    <FormRow>
-                      <FormKit
-                        type="checkbox"
-                        name="is_disabled"
-                        label="Deaktiviert"
+                          <div v-if="user.avatarUrl">
+                            <img :src="user.avatarUrl" class="mx-auto" />
+                          </div>
+
+                          <FormRow v-if="user.avatarUrl">
+                            <FormKit
+                              type="checkbox"
+                              name="remove_avatar"
+                              label="Avatar entfernen"
+                            />
+                          </FormRow>
+
+                          <FormRow v-if="!editForm.remove_avatar">
+                            <FormKit
+                              type="file"
+                              name="avatar"
+                              label="Avatar hochladen"
+                              validation="file|image|mimes:jpeg,jpg,png,gif"
+                            />
+                          </FormRow>
+
+                          <FormRow>
+                            <FormKit
+                              type="checkbox"
+                              name="is_disabled"
+                              label="Deaktiviert"
+                            />
+                          </FormRow>
+                          <FormRow>
+                            <FormKit type="submit" label="Speichern" />
+                          </FormRow>
+                        </FormContainer>
+                      </FormKit>
+                    </TabPanel>
+
+                    <TabPanel>
+                      <div v-if="!details" class="flex flex-col gap-4">
+                        <div
+                          v-for="index in 2"
+                          :key="index"
+                          class="h-40 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700"
+                        />
+                      </div>
+                      <div v-else class="flex flex-col gap-4">
+                        <p
+                          v-if="!details.registrations.length"
+                          class="text-sm text-gray-500 dark:text-gray-400"
+                        >
+                          Keine Anmeldungen vorhanden.
+                        </p>
+                        <UserRegistrationForm
+                          v-for="registration in details.registrations"
+                          :key="registration.id"
+                          :registration="registration"
+                          :userId="user.id"
+                          @updated="fetchDetails"
+                          @deleted="fetchDetails"
+                        />
+                      </div>
+                    </TabPanel>
+
+                    <TabPanel>
+                      <div
+                        v-if="!details"
+                        class="h-24 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700"
                       />
-                    </FormRow>
-                    <FormRow>
-                      <FormKit type="submit" label="Speichern" />
-                    </FormRow>
-                  </FormContainer>
-                </FormKit>
+                      <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                          <h3
+                            class="mb-2 font-medium text-gray-900 dark:text-gray-100"
+                          >
+                            Gruppen
+                          </h3>
+                          <ul
+                            v-if="details.groupTutors.length"
+                            class="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
+                          >
+                            <li
+                              v-for="groupTutor in details.groupTutors"
+                              :key="groupTutor.id"
+                              class="rounded-md border border-gray-200 px-3 py-2 dark:border-gray-700"
+                            >
+                              {{ groupTutor.group?.event?.name || "–" }} –
+                              {{ groupTutor.group?.name || "–" }}
+                            </li>
+                          </ul>
+                          <p
+                            v-else
+                            class="text-sm text-gray-500 dark:text-gray-400"
+                          >
+                            Keine Gruppen zugewiesen.
+                          </p>
+                        </div>
+                        <div>
+                          <h3
+                            class="mb-2 font-medium text-gray-900 dark:text-gray-100"
+                          >
+                            Stationen
+                          </h3>
+                          <ul
+                            v-if="details.stationTutors.length"
+                            class="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300"
+                          >
+                            <li
+                              v-for="stationTutor in details.stationTutors"
+                              :key="stationTutor.id"
+                              class="rounded-md border border-gray-200 px-3 py-2 dark:border-gray-700"
+                            >
+                              {{ stationTutor.station?.event?.name || "–" }} –
+                              {{ stationTutor.station?.name || "–" }}
+                            </li>
+                          </ul>
+                          <p
+                            v-else
+                            class="text-sm text-gray-500 dark:text-gray-400"
+                          >
+                            Keine Stationen zugewiesen.
+                          </p>
+                        </div>
+                      </div>
+                    </TabPanel>
+
+                    <TabPanel>
+                      <div
+                        v-if="!details"
+                        class="h-24 animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700"
+                      />
+                      <UserAuditList v-else :audits="details.audits" />
+                    </TabPanel>
+                  </TabPanels>
+                </TabGroup>
               </DialogPanel>
             </TransitionChild>
           </div>
@@ -155,11 +294,32 @@
 import {
   Dialog,
   DialogPanel,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
   TransitionChild,
   TransitionRoot,
 } from "@headlessui/vue";
-import { PropType, ref } from "vue";
+import { computed, onMounted, PropType, ref } from "vue";
 import { router } from "@inertiajs/vue3";
+
+type UserDetails = {
+  registrations: App.Models.Registration[];
+  groupTutors: App.Models.GroupTutor[];
+  stationTutors: App.Models.StationTutor[];
+  audits: {
+    id: number;
+    event: string;
+    type: string;
+    label: string;
+    old_values: Record<string, unknown>;
+    new_values: Record<string, unknown>;
+    causer: string | null;
+    created_at: string;
+  }[];
+};
 
 const { user, courses, roles } = defineProps({
   user: {
@@ -198,6 +358,33 @@ const selectFormRoleOptions = useSelectFormRoleOptions(roles);
 const randomPlaceholderPerson = usePlaceholderPerson();
 
 const { uploadFileByPresignedUrl } = useS3();
+
+const tabs = ["Stammdaten", "Anmeldungen", "Tutor", "Verlauf"];
+
+const details = ref<UserDetails | null>(null);
+
+const tabCounts = computed<Record<string, number | undefined>>(() => ({
+  Anmeldungen: details.value?.registrations.length,
+  Tutor: details.value
+    ? details.value.groupTutors.length + details.value.stationTutors.length
+    : undefined,
+}));
+
+const fetchDetails = async () => {
+  const response = await fetch(`/api/users/${user.id}/details`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (response.ok) {
+    details.value = await response.json();
+  }
+};
+
+onMounted(fetchDetails);
 
 const close = () => {
   emits("close");
