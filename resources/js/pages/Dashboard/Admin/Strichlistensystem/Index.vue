@@ -302,7 +302,12 @@ const editArticle = (article: App.Models.Article) => {
     image: [],
     remove_image: false,
   };
-  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  const elem = document.getElementById("article");
+  const offset = 40;
+
+  const y = elem.getBoundingClientRect().top + window.scrollY - offset;
+  window.scrollTo({ top: y, behavior: "smooth" });
 };
 
 const submitArticleHandler = () => {
