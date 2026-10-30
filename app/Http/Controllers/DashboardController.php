@@ -60,9 +60,11 @@ class DashboardController extends Controller
                 session(['tutor' => true]);
                 Session::flash('success', $successMessage);
                 $intendedUrl = session('url.intended');
+
                 return redirect()->to($intendedUrl ?: route('dashboard.index'));
             } else {
                 Session::flash('error', 'Das Passwort ist falsch.');
+
                 return redirect()->back();
             }
         }
