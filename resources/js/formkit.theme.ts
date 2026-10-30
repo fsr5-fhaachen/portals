@@ -27,12 +27,38 @@ const checkboxClassification = {
 
 const fileUploadClassification = {
   label: "block text-sm font-medium text-gray-700 dark:text-gray-200",
-  inner: "max-w-md cursor-pointer",
+
+  // Container: Zeile mit Upload-Button und rotem X-Button
+  inner:
+    "group relative w-full mb-1 flex items-stretch gap-2 rounded-md ",
+    //"focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-fhac-mint",
+
+  // Natives Input unsichtbar über den Container legen
   input:
-    "text-gray-600 text-sm mb-1 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-blue-500 file:text-white hover:file:bg-blue-600",
-  noFiles: "block text-sm font-medium text-gray-700 dark:text-gray-200",
-  fileItem: "block text-sm font-medium text-gray-700 dark:text-gray-200",
-  removeFiles: "block text-sm font-medium text-gray-700 dark:text-gray-200",
+    "absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0 " +
+    "file:pointer-events-none file:h-0 file:w-0 file:overflow-hidden",
+
+  // Zustand: keine Datei gewählt -> mintfarbener Upload-Button
+  noFiles:
+    "flex w-full items-center justify-center gap-2 py-2 px-4 border border-transparent rounded-md shadow-sm " +
+    "text-sm font-medium text-white bg-fhac-mint-dark group-hover:bg-fhac-mint",
+  noFilesIcon: "block w-4 h-4 shrink-0",
+
+  // Zustand: Datei gewählt
+  fileList: "flex w-full min-w-0",
+  fileItem: "flex w-full min-w-0 items-stretch gap-2",
+  fileItemIcon: "hidden",
+
+  // Dateiname im Upload-Button-Stil (nimmt den restlichen Platz ein)
+  fileName:
+    "flex min-w-0 flex-1 items-center justify-center py-2 px-4 border border-transparent rounded-md shadow-sm " +
+    "text-sm font-medium text-white bg-fhac-mint-dark group-hover:bg-fhac-mint truncate",
+
+  // Roter X-Button rechts daneben (z-20, damit er über dem unsichtbaren Input klickbar bleibt)
+  fileRemove:
+    "relative z-20 flex shrink-0 cursor-pointer items-center justify-center px-3 border border-transparent rounded-md shadow-sm " +
+    "text-[0px] text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500",
+  fileRemoveIcon: "block w-4 h-4 text-base inline-grid items-center",
 };
 
 export default {
