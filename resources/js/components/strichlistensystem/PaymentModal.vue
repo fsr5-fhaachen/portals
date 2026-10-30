@@ -193,13 +193,19 @@
                                 :value="payment.created_at"
                                 withClockSuffix
                               />
-                              <template v-if="payment.created_by">
-                                · {{ payment.created_by.firstname }}
-                                {{ payment.created_by.lastname }}
-                              </template>
-                              <template v-if="payment.deleted_at">
-                                · rückgängig gemacht
-                              </template>
+                            </span>
+                            <span
+                              v-if="payment.created_by"
+                              class="text-sm text-gray-500 dark:text-gray-400"
+                            >
+                              {{ payment.created_by.firstname }}
+                              {{ payment.created_by.lastname }}
+                            </span>
+                            <span
+                              v-if="payment.deleted_at"
+                              class="text-sm text-gray-500 dark:text-gray-400"
+                            >
+                              Rückgängig gemacht
                             </span>
                           </div>
                           <AppButton
