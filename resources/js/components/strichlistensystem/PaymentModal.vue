@@ -106,6 +106,33 @@
                           />
                         </FormRow>
                         <FormRow>
+                          <FormKit
+                            type="text"
+                            name="given"
+                            label="Gegebenes Geld in € (optional)"
+                            inputmode="decimal"
+                            autocomplete="off"
+                            help="Nur zum Ausrechnen des Rückgelds, wird nicht gespeichert."
+                            :validation="[['matches', amountInputPattern]]"
+                            :validation-messages="{
+                              matches:
+                                'Bitte gib einen Betrag mit höchstens 2 Nachkommastellen an, z. B. 20 oder 20,50.',
+                            }"
+                          />
+                        </FormRow>
+                        <FormRow v-if="change !== null">
+                          <UiMessage
+                            v-if="change >= 0"
+                            type="success"
+                            :message="`Rückgeld: <strong>${formatPrice(change)}</strong>`"
+                          />
+                          <UiMessage
+                            v-else
+                            type="warning"
+                            :message="`Das gegebene Geld reicht nicht, es fehlen <strong>${formatPrice(-change)}</strong>.`"
+                          />
+                        </FormRow>
+                        <FormRow>
                           <UiMessage
                             v-if="paymentError"
                             type="error"
@@ -208,7 +235,7 @@ import {
   TransitionChild,
   TransitionRoot,
 } from "@headlessui/vue";
-import { onMounted, PropType, ref } from "vue";
+import { computed, onMounted, PropType, ref } from "vue";
 import { router } from "@inertiajs/vue3";
 
 import {
@@ -240,7 +267,15 @@ const details = ref<PaymentDetails | null>(null);
 const loadError = ref(false);
 const paymentError = ref<string | null>(null);
 const isSubmitting = ref(false);
-const paymentForm = ref({ amount: "" });
+const paymentForm = ref({ amount: "", given: "" });
+
+// change for the given cash, null until a valid amount and given cash are entered
+const change = computed(() => {
+  const amount = parsePriceToCents(paymentForm.value.amount);
+  const given = parsePriceToCents(paymentForm.value.given);
+
+  return amount === null || given === null ? null : given - amount;
+});
 
 const close = () => {
   emits("close");
@@ -263,10 +298,13 @@ const loadDetails = async () => {
 
     details.value = await response.json();
     // the open amount is suggested as paid amount
-    paymentForm.value.amount =
-      details.value && details.value.balance.open > 0
-        ? centsToPriceInput(details.value.balance.open).replace(".", ",")
-        : "";
+    paymentForm.value = {
+      amount:
+        details.value && details.value.balance.open > 0
+          ? centsToPriceInput(details.value.balance.open).replace(".", ",")
+          : "",
+      given: "",
+    };
   } catch (error) {
     console.error("Failed to load the payments", error);
     loadError.value = true;
