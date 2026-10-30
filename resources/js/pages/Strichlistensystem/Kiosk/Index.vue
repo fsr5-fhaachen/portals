@@ -11,12 +11,18 @@
       <AppMessage :message="message" class="!mb-0" />
 
       <CardBase>
+        <!-- without form rows, a single (last) form row gets a large top margin -->
         <FormKit type="form" id="filter" :actions="false" v-model="filterForm">
-          <FormContainer>
-            <FormRow>
-              <FormKit type="text" name="search" label="Suche" />
-            </FormRow>
-          </FormContainer>
+          <!-- larger than the default inputs, so it is easy to use on the tablets -->
+          <FormKit
+            type="search"
+            name="search"
+            label="Suche"
+            placeholder="Name suchen"
+            autocomplete="off"
+            label-class="!text-base"
+            input-class="!py-3 !text-lg"
+          />
         </FormKit>
 
         <div class="mt-6 flex flex-wrap gap-3">
