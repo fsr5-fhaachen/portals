@@ -4,10 +4,11 @@ namespace Database\Factories;
 
 use App\Models\Course;
 use App\Models\Event;
+use App\Models\Group;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Group>
+ * @extends Factory<Group>
  */
 class GroupFactory extends Factory
 {
@@ -21,7 +22,16 @@ class GroupFactory extends Factory
         return [
             'name' => $this->faker->word(),
             'event_id' => Event::all(['id'])->random(),
-            'course_id' => Course::all(['id'])->random(),
         ];
+    }
+
+    /**
+     * Configure the model factory. The course of a group is stored in the pivot table course_group.
+     */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (Group $group) {
+            $group->courses()->attach(Course::all(['id'])->random());
+        });
     }
 }
