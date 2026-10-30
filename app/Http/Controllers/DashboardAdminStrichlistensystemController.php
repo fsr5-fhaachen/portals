@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Csv;
 use App\Helpers\Price;
 use App\Helpers\Table\ArticlesTable;
 use App\Helpers\Table\StrichlistensystemBillingTable;
@@ -280,13 +281,13 @@ class DashboardAdminStrichlistensystemController extends Controller
             $file = fopen('php://output', 'w');
 
             // add BOM so that excel detects utf-8
-            fwrite($file, "\xEF\xBB\xBF");
+            fwrite($file, Csv::BOM);
             fputcsv($file, $columns, ';');
 
             // the id makes the order unique, otherwise users with the same name can be skipped or repeated between the chunks
             User::orderBy('lastname')->orderBy('firstname')->orderBy('id')->chunk(500, function ($users) use ($file, $articles, $amounts, $totals, $payments) {
                 foreach ($users as $user) {
-                    $row = [$this->escapeCsvCell($user->lastname), $this->escapeCsvCell($user->firstname)];
+                    $row = [Csv::escapeCell($user->lastname), Csv::escapeCell($user->firstname)];
                     foreach ($articles as $article) {
                         $row[] = $amounts[$user->id][$article->id] ?? 0;
                     }
@@ -368,19 +369,6 @@ class DashboardAdminStrichlistensystemController extends Controller
         Session::flash('success', 'Das Gerät <strong>'.e($device->name).'</strong> wurde gelöscht.');
 
         return Redirect::route('dashboard.admin.strichlistensystem.kioskDevices');
-    }
-
-    /**
-     * Escape a text cell of the csv export. Spreadsheet programs run cells that start with =, +, -, @, tab
-     * or carriage return as formula, a leading ' makes them plain text. Only used for free text like names.
-     */
-    private function escapeCsvCell(string $value): string
-    {
-        if ($value !== '' && in_array($value[0], ['=', '+', '-', '@', "\t", "\r"], true)) {
-            return "'".$value;
-        }
-
-        return $value;
     }
 
     /**
