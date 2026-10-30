@@ -14,6 +14,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia as Assert;
 use Mockery;
+use RuntimeException;
 use Tests\TestCase;
 
 class StrichlistensystemArticleImageTest extends TestCase
@@ -204,6 +205,44 @@ class StrichlistensystemArticleImageTest extends TestCase
 
         unlink($root.'/articles');
         rmdir($root);
+    }
+
+    public function test_uploaded_image_is_deleted_if_creating_the_article_fails(): void
+    {
+        Article::creating(fn () => throw new RuntimeException('Saving failed'));
+
+        $this->expectException(RuntimeException::class);
+
+        try {
+            $this->withoutExceptionHandling()
+                ->actingAsAdmin()
+                ->post(route('dashboard.admin.strichlistensystem.storeArticle'), $this->articleData([
+                    'image' => $this->fakeImage('mate.png'),
+                ]));
+        } finally {
+            $this->assertSame([], Storage::disk('s3')->allFiles('articles'));
+            $this->assertSame(0, Article::count());
+        }
+    }
+
+    public function test_uploaded_image_is_deleted_and_the_old_one_kept_if_updating_the_article_fails(): void
+    {
+        $article = $this->articleWithImage();
+        $oldImage = $article->image;
+        Article::updating(fn () => throw new RuntimeException('Saving failed'));
+
+        $this->expectException(RuntimeException::class);
+
+        try {
+            $this->withoutExceptionHandling()
+                ->actingAsAdmin()
+                ->post(route('dashboard.admin.strichlistensystem.updateArticle', $article), $this->articleData([
+                    'image' => $this->fakeImage('neu.png'),
+                ]));
+        } finally {
+            $this->assertSame([$oldImage], Storage::disk('s3')->allFiles('articles'));
+            $this->assertSame($oldImage, $article->fresh()->image);
+        }
     }
 
     public function test_new_image_replaces_and_deletes_the_old_image(): void

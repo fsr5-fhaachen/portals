@@ -26,6 +26,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use League\Flysystem\FilesystemException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
 class DashboardAdminStrichlistensystemController extends Controller
 {
@@ -51,7 +52,15 @@ class DashboardAdminStrichlistensystemController extends Controller
      */
     public function storeArticle(Request $request): RedirectResponse
     {
-        $article = Article::create($this->storeArticleImage($this->validateArticle($request)));
+        $validated = $this->storeArticleImage($this->validateArticle($request));
+
+        try {
+            $article = Article::create($validated);
+        } catch (Throwable $exception) {
+            $this->deleteUploadedArticleImage($validated);
+
+            throw $exception;
+        }
 
         Session::flash('success', 'Der Artikel <strong>'.e($article->name).'</strong> wurde erstellt.');
 
@@ -67,14 +76,20 @@ class DashboardAdminStrichlistensystemController extends Controller
         $validated = $this->storeArticleImage($this->validateArticle($request, $article));
         $oldImage = $article->image;
 
-        $pricedBookingsCount = DB::transaction(function () use ($article, $validated) {
-            // lock the article so that parallel bookings use either the old or the new price
-            Article::whereKey($article->id)->lockForUpdate()->first();
+        try {
+            $pricedBookingsCount = DB::transaction(function () use ($article, $validated) {
+                // lock the article so that parallel bookings use either the old or the new price
+                Article::whereKey($article->id)->lockForUpdate()->first();
 
-            $article->update($validated);
+                $article->update($validated);
 
-            return $article->applyPriceToBookingsWithoutPrice();
-        });
+                return $article->applyPriceToBookingsWithoutPrice();
+            });
+        } catch (Throwable $exception) {
+            $this->deleteUploadedArticleImage($validated, $oldImage);
+
+            throw $exception;
+        }
 
         // the old image is only deleted after the article was saved with the new one
         if ($oldImage && $oldImage !== $article->image) {
@@ -406,6 +421,19 @@ class DashboardAdminStrichlistensystemController extends Controller
         }
 
         return $validated;
+    }
+
+    /**
+     * Delete a newly uploaded article image if saving the article failed, so that no unreferenced file stays on s3.
+     *
+     * @param  array<string, mixed>  $validated
+     */
+    private function deleteUploadedArticleImage(array $validated, ?string $oldImage = null): void
+    {
+        $newImage = $validated['image'] ?? null;
+        if (is_string($newImage) && $newImage !== $oldImage) {
+            Storage::disk('s3')->delete($newImage);
+        }
     }
 
     /**
