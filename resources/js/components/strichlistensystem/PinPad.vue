@@ -13,34 +13,36 @@
       />
     </div>
 
+    <!-- no AppButton: touchscreens keep the hover state of the last tapped key, which would show the pin to others -->
     <div class="grid grid-cols-3 gap-3">
-      <AppButton
+      <button
         v-for="digit in ['1', '2', '3', '4', '5', '6', '7', '8', '9']"
         :key="digit"
-        theme="gray"
-        class="py-4 text-center text-2xl"
+        type="button"
+        :class="keyClass"
         :disabled="disabled"
-        @click="addDigit(digit)"
+        @click="addDigit(digit, $event)"
       >
         {{ digit }}
-      </AppButton>
+      </button>
       <div />
-      <AppButton
-        theme="gray"
-        class="py-4 text-center text-2xl"
+      <button
+        type="button"
+        :class="keyClass"
         :disabled="disabled"
-        @click="addDigit('0')"
+        @click="addDigit('0', $event)"
       >
         0
-      </AppButton>
-      <AppButton
-        theme="gray"
-        class="py-4 text-center text-2xl"
+      </button>
+      <button
+        type="button"
+        :class="keyClass"
         :disabled="disabled || !pin.length"
-        @click="removeDigit"
+        aria-label="Letzte Ziffer löschen"
+        @click="removeDigit($event)"
       >
         <FontAwesomeIcon :icon="['fas', 'delete-left']" />
-      </AppButton>
+      </button>
     </div>
   </div>
 </template>
@@ -62,7 +64,18 @@ const emit = defineEmits<{
 const pinLength = 4;
 const pin = ref("");
 
-const addDigit = (digit: string) => {
+// only highlighted while pressed (active), never by hover or focus
+const keyClass =
+  "touch-manipulation select-none rounded-md bg-gray-500 py-4 text-center text-2xl text-white focus:outline-none active:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50";
+
+// a tapped button keeps the focus, which some browsers show
+const releaseKey = (event: MouseEvent) => {
+  (event.currentTarget as HTMLElement | null)?.blur();
+};
+
+const addDigit = (digit: string, event: MouseEvent) => {
+  releaseKey(event);
+
   if (props.disabled || pin.value.length >= pinLength) {
     return;
   }
@@ -74,7 +87,8 @@ const addDigit = (digit: string) => {
   }
 };
 
-const removeDigit = () => {
+const removeDigit = (event: MouseEvent) => {
+  releaseKey(event);
   pin.value = pin.value.slice(0, -1);
 };
 
