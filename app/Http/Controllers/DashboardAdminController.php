@@ -344,10 +344,17 @@ class DashboardAdminController extends Controller
     }
 
     /**
-     * Reset the strichlistensystem pin of a user, the user has to set a new pin in the self service
+     * Reset the strichlistensystem pin of a user, the user has to set a new pin in the self service.
+     * The pin of a super admin can only be reset by the super admin themself.
      */
-    public function resetUserPin(User $user): RedirectResponse
+    public function resetUserPin(IlluminateRequest $request, User $user): RedirectResponse
     {
+        if ($user->hasRole('super admin') && $request->user()->id !== $user->id) {
+            Session::flash('error', 'Die PIN eines Super Admins kann nur von ihm selbst zurückgesetzt werden.');
+
+            return Redirect::back();
+        }
+
         $user->pin = null;
         $user->save();
 
