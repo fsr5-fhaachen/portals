@@ -355,6 +355,31 @@ class StrichlistensystemSelfServiceTest extends TestCase
         $this->assertSoftDeleted($articleActionLog);
     }
 
+    public function test_disabled_user_can_not_cancel_a_booking(): void
+    {
+        $user = User::factory()->create(['is_disabled' => true]);
+        $articleActionLog = ArticleActionLog::factory()->for($user)->create();
+
+        $this->actingAs($user)
+            ->post(route('strichlistensystem.cancel', $articleActionLog))
+            ->assertRedirect(route('strichlistensystem.index'))
+            ->assertSessionHas('error', 'Du kannst aktuell keine Buchungen stornieren.');
+
+        $this->assertNotSoftDeleted($articleActionLog);
+    }
+
+    public function test_user_without_pin_can_not_cancel_a_booking(): void
+    {
+        $user = User::factory()->withoutPin()->create();
+        $articleActionLog = ArticleActionLog::factory()->for($user)->create();
+
+        $this->actingAs($user)
+            ->post(route('strichlistensystem.cancel', $articleActionLog))
+            ->assertSessionHas('error', 'Du kannst aktuell keine Buchungen stornieren.');
+
+        $this->assertNotSoftDeleted($articleActionLog);
+    }
+
     public function test_user_can_not_cancel_booking_of_another_user(): void
     {
         $user = User::factory()->create();

@@ -138,6 +138,12 @@ class StrichlistensystemController extends Controller
      */
     public function cancel(Request $request, ArticleActionLog $articleActionLog): RedirectResponse
     {
+        if (! $request->user()->canUseStrichlistensystem()) {
+            Session::flash('error', 'Du kannst aktuell keine Buchungen stornieren.');
+
+            return Redirect::route('strichlistensystem.index');
+        }
+
         if (! $request->user()->cancelArticleActionLog($articleActionLog)) {
             Session::flash('error', 'Die Buchung kann nicht mehr storniert werden.');
 

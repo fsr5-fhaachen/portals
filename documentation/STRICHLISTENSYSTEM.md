@@ -225,6 +225,7 @@ Index auf `(user_id, created_at)`.
   - Rate-Limit pro Person (`pin_max_attempts` pro Minute), unabhängig von der IP, da alle Tablets dieselbe IP haben können.
   - Zusätzlich ein Limit pro Kiosk-Gerät über alle Personen (`kiosk_device_max_failed_pins` in `kiosk_device_lock_seconds`). So kann niemand gängige PINs bei vielen Personen durchprobieren. Andere Geräte bleiben nutzbar.
 - **Kiosk-Anmeldung:** Gilt nur für die angemeldete Person. Buchungen oder Stornos für andere Personen werden abgelehnt.
+- **Stornieren im Selbstzugriff:** Erfordert denselben Zugriff wie das Buchen (User nicht deaktiviert, PIN gesetzt).
 - **Selbstzugriff:** Der Portals-Login hat kein Passwort. Die PIN schützt deshalb vor allem die Buchungen am Kiosk.
 
 ## Routen
