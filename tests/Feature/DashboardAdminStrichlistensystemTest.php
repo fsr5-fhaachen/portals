@@ -519,6 +519,47 @@ class DashboardAdminStrichlistensystemTest extends TestCase
         $this->assertFalse($user->fresh()->hasPin());
     }
 
+    public function test_admin_can_not_reset_the_pin_of_a_super_admin(): void
+    {
+        $superAdmin = User::factory()->create();
+        $superAdmin->assignRole('super admin');
+
+        $this->actingAsAdmin()
+            ->post(route('dashboard.admin.resetUserPin', $superAdmin))
+            ->assertRedirect()
+            ->assertSessionHas('error', 'Die PIN eines Super Admins kann nur von ihm selbst zurückgesetzt werden.');
+
+        $this->assertTrue($superAdmin->fresh()->hasPin());
+    }
+
+    public function test_super_admin_can_reset_their_own_pin(): void
+    {
+        $superAdmin = User::factory()->create();
+        $superAdmin->assignRole(['super admin', 'tutor']);
+
+        $this->actingAs($superAdmin)->withSession(['tutor' => true])
+            ->post(route('dashboard.admin.resetUserPin', $superAdmin))
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $this->assertFalse($superAdmin->fresh()->hasPin());
+    }
+
+    public function test_super_admin_can_not_reset_the_pin_of_another_super_admin(): void
+    {
+        $superAdmin = User::factory()->create();
+        $superAdmin->assignRole(['super admin', 'tutor']);
+        $otherSuperAdmin = User::factory()->create();
+        $otherSuperAdmin->assignRole('super admin');
+
+        $this->actingAs($superAdmin)->withSession(['tutor' => true])
+            ->post(route('dashboard.admin.resetUserPin', $otherSuperAdmin))
+            ->assertRedirect()
+            ->assertSessionHas('error');
+
+        $this->assertTrue($otherSuperAdmin->fresh()->hasPin());
+    }
+
     public function test_user_without_permission_can_not_reset_the_pin(): void
     {
         $tutor = User::factory()->create();

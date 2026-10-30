@@ -104,7 +104,7 @@
                             {{ user.has_pin ? "Gesetzt" : "Nicht gesetzt" }}
                           </div>
                           <AppButton
-                            v-if="user.has_pin"
+                            v-if="canResetPin"
                             @click="resetPin"
                             theme="danger"
                             class="text-center"
@@ -182,7 +182,7 @@ import {
   TransitionChild,
   TransitionRoot,
 } from "@headlessui/vue";
-import { PropType, ref } from "vue";
+import { computed, PropType, ref } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 
 const { user, courses, roles } = defineProps({
@@ -220,6 +220,14 @@ const editForm = ref({
 
 const strichlistensystemEnabled =
   usePage().props.modules?.strichlistensystem?.active ?? false;
+
+// the pin of a super admin can only be reset by the super admin themself
+const canResetPin = computed(
+  () =>
+    user.has_pin &&
+    (!user.roles.some((role) => role.name === "super admin") ||
+      usePage().props.user?.id === user.id),
+);
 
 const selectFormCourseOptions = useSelectFormCourseOptions(courses, true);
 const selectFormRoleOptions = useSelectFormRoleOptions(roles);
