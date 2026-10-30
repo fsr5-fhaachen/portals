@@ -163,6 +163,16 @@ class StrichlistensystemKioskTest extends TestCase
         $this->assertStringNotContainsString('"pin":', $response->getContent());
     }
 
+    public function test_kiosk_contains_the_self_service_url_as_qr_code(): void
+    {
+        $this->asKiosk()
+            ->get(route('strichlistensystem.kiosk.index'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('selfServiceUrl', route('strichlistensystem.index'))
+                ->where('selfServiceQrCode', fn (string $svg) => str_starts_with($svg, '<svg') && str_ends_with($svg, '</svg>'))
+            );
+    }
+
     public function test_correct_pin_unlocks_the_person_page(): void
     {
         $user = User::factory()->create(['pin' => '0123']);
