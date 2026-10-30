@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ArticleBooking;
 use App\Helpers\QrCode;
 use App\Helpers\Table\KioskPersonsTable;
 use App\Models\Article;
@@ -122,51 +123,27 @@ class StrichlistensystemKioskController extends Controller
     /**
      * Book an article for the unlocked person
      */
-    public function buy(Request $request, User $user, Article $article): RedirectResponse
+    public function buy(Request $request, User $user, Article $article, ArticleBooking $articleBooking): RedirectResponse
     {
         if (! $this->isUnlockedFor($user)) {
             return $this->redirectToIndex();
         }
 
-        if (! $article->is_active) {
-            Session::flash('error', 'Der Artikel <strong>'.e($article->name).'</strong> ist nicht mehr verfügbar.');
+        $error = $articleBooking->book(
+            $request,
+            $user,
+            $article,
+            $this->unlockedAt(),
+            'Du hast die maximale Anzahl für <strong>'.e($article->name).'</strong> in dieser Anmeldung erreicht.',
+            'Du kannst von '.$article->name.' in dieser Anmeldung nur noch :max Stück buchen.',
+        );
+        if ($error !== null) {
+            Session::flash('error', $error);
 
             return Redirect::route('strichlistensystem.kiosk.show', ['user' => $user->id]);
         }
 
-        $remainingAmount = $user->remainingArticleAmount($article, $this->unlockedAt());
-        if ($remainingAmount < 1) {
-            Session::flash('error', 'Du hast die maximale Anzahl für <strong>'.e($article->name).'</strong> in dieser Anmeldung erreicht.');
-
-            return Redirect::route('strichlistensystem.kiosk.show', ['user' => $user->id]);
-        }
-
-        $validated = $request->validate([
-            'amount' => ['required', 'integer', 'min:1', 'max:'.$remainingAmount],
-            // the price the person saw, the booking is rejected if the price changed in the meantime
-            'price' => ['present', 'nullable', 'integer'],
-        ], [
-            'amount.max' => 'Du kannst von '.$article->name.' in dieser Anmeldung nur noch :max Stück buchen.',
-        ]);
-        $expectedPrice = $validated['price'] === null ? null : (int) $validated['price'];
-
-        if ($article->price !== $expectedPrice) {
-            Session::flash('error', 'Der Preis von <strong>'.e($article->name).'</strong> hat sich geändert. Bitte prüfe den neuen Preis und buche erneut.');
-
-            return Redirect::route('strichlistensystem.kiosk.show', ['user' => $user->id]);
-        }
-
-        if (! $user->buyArticle($article, $validated['amount'], $request->ip(), $this->unlockedAt(), $expectedPrice)) {
-            if ($article->refresh()->price !== $expectedPrice) {
-                Session::flash('error', 'Der Preis von <strong>'.e($article->name).'</strong> hat sich geändert. Bitte prüfe den neuen Preis und buche erneut.');
-            } else {
-                Session::flash('error', 'Du hast die maximale Anzahl für <strong>'.e($article->name).'</strong> in dieser Anmeldung erreicht.');
-            }
-
-            return Redirect::route('strichlistensystem.kiosk.show', ['user' => $user->id]);
-        }
-
-        Session::flash('success', 'Du hast <strong>'.$validated['amount'].'x '.e($article->name).'</strong> gebucht.');
+        Session::flash('success', 'Du hast <strong>'.$request->integer('amount').'x '.e($article->name).'</strong> gebucht.');
 
         return Redirect::route('strichlistensystem.kiosk.show', ['user' => $user->id]);
     }
