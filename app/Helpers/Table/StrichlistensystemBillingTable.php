@@ -76,15 +76,28 @@ class StrichlistensystemBillingTable extends Table
             'total' => fn (Builder $query, string $direction) => $query->orderBy($this->totalQuery(), $direction),
             'paid' => fn (Builder $query, string $direction) => $query->orderBy($this->paidQuery(), $direction),
             'open' => function (Builder $query, string $direction) {
-                $totalQuery = $this->totalQuery()->toBase();
-                $paidQuery = $this->paidQuery()->toBase();
+                [$openSql, $openBindings] = $this->openAmountSql();
 
-                $query->orderByRaw(
-                    "(({$totalQuery->toSql()}) - ({$paidQuery->toSql()})) {$direction}",
-                    [...$totalQuery->getBindings(), ...$paidQuery->getBindings()],
-                );
+                $query->orderByRaw("{$openSql} {$direction}", $openBindings);
             },
         ];
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * With "open" only persons with an open amount are shown. The search always finds every person,
+     * also persons without an open amount.
+     */
+    protected function applyFilters(Builder $query): void
+    {
+        if (! $this->request->boolean('open') || trim((string) $this->request->query('search', '')) !== '') {
+            return;
+        }
+
+        [$openSql, $openBindings] = $this->openAmountSql();
+
+        $query->whereRaw("{$openSql} > 0", $openBindings);
     }
 
     /**
@@ -107,6 +120,22 @@ class StrichlistensystemBillingTable extends Table
     protected function rowVersion(Model $model): int
     {
         return now()->timestamp;
+    }
+
+    /**
+     * Open amount of the user (bookings - payments) as sql expression with its bindings.
+     *
+     * @return array{0: string, 1: array<int, mixed>}
+     */
+    private function openAmountSql(): array
+    {
+        $totalQuery = $this->totalQuery()->toBase();
+        $paidQuery = $this->paidQuery()->toBase();
+
+        return [
+            "(({$totalQuery->toSql()}) - ({$paidQuery->toSql()}))",
+            [...$totalQuery->getBindings(), ...$paidQuery->getBindings()],
+        ];
     }
 
     /**
