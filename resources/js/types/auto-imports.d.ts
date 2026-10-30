@@ -10,6 +10,7 @@ declare global {
   const formatPrice: (typeof import("../composables/usePrice"))["formatPrice"];
   const parsePriceToCents: (typeof import("../composables/usePrice"))["parsePriceToCents"];
   const roleColors: (typeof import("../composables/useRoleColors"))["roleColors"];
+  const sanitizeHtml: (typeof import("../composables/useSafeHtml"))["sanitizeHtml"];
   const useAppEventType: (typeof import("../composables/useAppEventType"))["default"];
   const useColorMode: (typeof import("../composables/useColorMode"))["default"];
   const usePagesAsNavigation: (typeof import("../composables/usePagesAsNavigation"))["default"];
