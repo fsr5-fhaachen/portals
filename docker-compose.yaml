@@ -54,8 +54,8 @@ services:
     image: mariadb
     container_name: portals-mariadb
     restart: unless-stopped
-#    ports:
-#      - "3306:3306"
+    ports:
+      - "3306:3306"
     environment:
       MARIADB_DATABASE: portals
       MARIADB_ROOT_PASSWORD: secret-root-password

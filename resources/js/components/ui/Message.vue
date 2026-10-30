@@ -44,7 +44,7 @@
           class="text-sm font-medium"
         >
           <slot name="message">
-            <div v-html="message"></div>
+            <div v-html="safeMessage"></div>
           </slot>
         </div>
       </div>
@@ -54,8 +54,9 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { sanitizeHtml } from "../../composables/useSafeHtml";
 
-const { type } = defineProps({
+const { message, type } = defineProps({
   message: {
     type: String,
   },
@@ -70,6 +71,9 @@ const { type } = defineProps({
 defineSlots<{
   message?: HTMLElement;
 }>();
+
+// messages often contain user input like names, only the formatting is rendered as html
+const safeMessage = computed(() => sanitizeHtml(message));
 
 const icon = computed(() => {
   if (type === "success") return "circle-check";

@@ -60,7 +60,7 @@ initColorMode();
 const packageName = __PACKAGE_NAME__;
 const packageRepositoryUrl = __PACKAGE_REPOSITORY_URL__;
 
-const { pages, user } = defineProps({
+const { pages, user, modules } = defineProps({
   message: {
     type: Object,
     default: () => ({}),
@@ -87,6 +87,9 @@ const navigation = [
     title: "Veranstaltungen",
     href: "/dashboard" + (isTutorPage.value ? "/tutor" : ""),
   },
+  ...(modules["strichlistensystem"]?.active
+    ? [{ title: "Strichliste", href: "/strichlistensystem" }]
+    : []),
   ...usePagesAsNavigation(pages, "/dashboard/"),
 ];
 </script>

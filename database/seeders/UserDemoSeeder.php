@@ -13,7 +13,7 @@ class UserDemoSeeder extends Seeder
     public function run(): void
     {
         // create one super admin user
-        $superAdminUser = User::factory()->create([
+        $superAdminUser = User::factory()->withoutPin()->create([
             'firstname' => 'Super',
             'lastname' => 'Admin',
             'email' => 'superadmin@example.com',
@@ -21,7 +21,7 @@ class UserDemoSeeder extends Seeder
         $superAdminUser->assignRole(['super admin', 'admin', 'tutor', 'special']);
 
         // create one admin user
-        $adminUser = User::factory()->create([
+        $adminUser = User::factory()->withoutPin()->create([
             'firstname' => 'Admin',
             'lastname' => 'User',
             'email' => 'admin@example.com',
@@ -29,7 +29,7 @@ class UserDemoSeeder extends Seeder
         $adminUser->assignRole(['admin', 'tutor']);
 
         // create one esa user
-        $esaUser = User::factory()->create([
+        $esaUser = User::factory()->withoutPin()->create([
             'firstname' => 'ESA',
             'lastname' => 'User',
             'email' => 'esa@exampe.com',
@@ -37,7 +37,7 @@ class UserDemoSeeder extends Seeder
         $esaUser->assignRole(['esa', 'tutor']);
 
         // create one stage tutor user
-        $stageTutorUser = User::factory()->create([
+        $stageTutorUser = User::factory()->withoutPin()->create([
             'firstname' => 'Stage',
             'lastname' => 'Tutor',
             'email' => 'stagetutor@example.com',
@@ -45,14 +45,14 @@ class UserDemoSeeder extends Seeder
         $stageTutorUser->assignRole(['stage tutor', 'tutor']);
 
         // create one tutor user
-        $tutorUser = User::factory()->create([
+        $tutorUser = User::factory()->withoutPin()->create([
             'firstname' => 'Tutor',
             'lastname' => 'User',
             'email' => 'tutor@example.com',
         ]);
         $tutorUser->assignRole(['tutor']);
 
-        // create 800 student users
-        User::factory()->count(800)->create();
+        // create 800 student users, like all users they have to set their pin in the self service
+        User::factory()->withoutPin()->count(800)->create();
     }
 }

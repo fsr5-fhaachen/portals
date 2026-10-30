@@ -196,7 +196,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { computed, ref, onBeforeUnmount, PropType } from "vue";
+import { computed, ref, PropType } from "vue";
 
 const { event, registration } = defineProps({
   event: {
@@ -241,8 +241,5 @@ const fetchRegistration = async () => {
 
   isFetchingRegistration.value = false;
 };
-const registrationInterval = setInterval(fetchRegistration, 5000);
-onBeforeUnmount(() => {
-  clearInterval(registrationInterval);
-});
+usePolling(fetchRegistration, 5000);
 </script>

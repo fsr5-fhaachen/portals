@@ -35,34 +35,32 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        // get all modules and store them in a array with $module->key => $module
-        $modules = Module::all();
-        $modulesArray = [];
-        foreach ($modules as $module) {
-            $modulesArray[$module->key] = $module;
-        }
-
-        // get user
-        $user = $request->user();
-        if ($user) {
-            // get all roles of the user
-            $user->rolesArray = $user->roles->pluck('name')->toArray();
-
-            // get all permissions of the user
-            $user->permissionsArray = $user->getAllPermissions()->pluck('name')->toArray();
-        }
-
+        // the props are lazy (closures), so that partial reloads (e.g. infinite scroll of tables) do not execute the queries
         return array_merge(parent::share($request), [
             'appEventType' => config('app.event_type'),
-            'user' => $user,
-            'modules' => $modulesArray,
+            'user' => function () use ($request) {
+                $user = $request->user();
+                if ($user) {
+                    // get all roles of the user
+                    $user->rolesArray = $user->roles->pluck('name')->toArray();
+
+                    // get all permissions of the user
+                    $user->permissionsArray = $user->getAllPermissions()->pluck('name')->toArray();
+                }
+
+                return $user;
+            },
+            // get all modules and store them in a array with $module->key => $module
+            'modules' => fn () => Module::all()->keyBy('key')->all(),
+            // start time for the live update of tables
+            'serverTime' => fn () => now()->timestamp,
             'message' => [
-                'success' => fn() => $request->session()->get('success'),
-                'error' => fn() => $request->session()->get('error'),
-                'warning' => fn() => $request->session()->get('warning'),
-                'info' => fn() => $request->session()->get('info'),
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+                'warning' => fn () => $request->session()->get('warning'),
+                'info' => fn () => $request->session()->get('info'),
             ],
-            'pages' => Page::orderBy('sort_order')->get(),
+            'pages' => fn () => Page::orderBy('sort_order')->get(),
         ]);
     }
 }
