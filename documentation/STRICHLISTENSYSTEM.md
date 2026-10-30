@@ -278,6 +278,9 @@ Middleware-Kette:
 | `config/strichlistensystem.php` | Konfiguration |
 | `app/Http/Middleware/StrichlistensystemKiosk.php` | Prüfung des Kiosk-Cookies |
 | `app/Models/StrichlistensystemKioskDevice.php` | Kiosk-Gerät mit Token, Cookie-Wert, Pairing-URL und QR-Code |
+| `app/Helpers/ArticleBooking.php` | Gemeinsamer Buchungsablauf von Kiosk und Selbstzugriff (Prüfung von Artikel, Limit und Preis, Buchung) |
+| `app/Helpers/Csv.php` | BOM und Formel-Escaping für die CSV-Exporte |
+| `app/Helpers/QrCode.php` | QR-Codes als SVG (Pairing-URL, Selbstzugriff) |
 | `resources/js/pages/Dashboard/Admin/Strichlistensystem/KioskDevices.vue` | Verwaltung der Kiosk-Geräte |
 | `app/Http/Controllers/StrichlistensystemKioskController.php` | Kiosk: Übersicht, PIN, Buchen, Storno, Abmelden, Bilder |
 | `app/Http/Controllers/StrichlistensystemController.php` | Selbstzugriff: PIN setzen/ändern, Buchen, Storno |

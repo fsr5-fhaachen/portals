@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ArticleBooking;
 use App\Models\Article;
 use App\Models\ArticleActionLog;
 use App\Models\User;
@@ -78,7 +79,7 @@ class StrichlistensystemController extends Controller
     /**
      * Book an article for the logged in user
      */
-    public function buy(Request $request, Article $article): RedirectResponse
+    public function buy(Request $request, Article $article, ArticleBooking $articleBooking): RedirectResponse
     {
         $user = $request->user();
 
@@ -88,47 +89,23 @@ class StrichlistensystemController extends Controller
             return Redirect::route('strichlistensystem.index');
         }
 
-        if (! $article->is_active) {
-            Session::flash('error', 'Der Artikel <strong>'.e($article->name).'</strong> ist nicht mehr verfügbar.');
-
-            return Redirect::route('strichlistensystem.index');
-        }
-
         $limitWindow = config('strichlistensystem.self_service_limit_window');
 
-        $remainingAmount = $user->remainingArticleAmount($article, $this->limitSince());
-        if ($remainingAmount < 1) {
-            Session::flash('error', 'Du hast die maximale Anzahl für <strong>'.e($article->name).'</strong> erreicht. Bitte warte bis zu '.$limitWindow.' Sekunden.');
+        $error = $articleBooking->book(
+            $request,
+            $user,
+            $article,
+            $this->limitSince(),
+            'Du hast die maximale Anzahl für <strong>'.e($article->name).'</strong> erreicht. Bitte warte bis zu '.$limitWindow.' Sekunden.',
+            'Du kannst von '.$article->name.' innerhalb von '.$limitWindow.' Sekunden nur noch :max Stück buchen.',
+        );
+        if ($error !== null) {
+            Session::flash('error', $error);
 
             return Redirect::route('strichlistensystem.index');
         }
 
-        $validated = $request->validate([
-            'amount' => ['required', 'integer', 'min:1', 'max:'.$remainingAmount],
-            // the price the user saw, the booking is rejected if the price changed in the meantime
-            'price' => ['present', 'nullable', 'integer'],
-        ], [
-            'amount.max' => 'Du kannst von '.$article->name.' innerhalb von '.$limitWindow.' Sekunden nur noch :max Stück buchen.',
-        ]);
-        $expectedPrice = $validated['price'] === null ? null : (int) $validated['price'];
-
-        if ($article->price !== $expectedPrice) {
-            Session::flash('error', 'Der Preis von <strong>'.e($article->name).'</strong> hat sich geändert. Bitte prüfe den neuen Preis und buche erneut.');
-
-            return Redirect::route('strichlistensystem.index');
-        }
-
-        if (! $user->buyArticle($article, $validated['amount'], $request->ip(), $this->limitSince(), $expectedPrice)) {
-            if ($article->refresh()->price !== $expectedPrice) {
-                Session::flash('error', 'Der Preis von <strong>'.e($article->name).'</strong> hat sich geändert. Bitte prüfe den neuen Preis und buche erneut.');
-            } else {
-                Session::flash('error', 'Du hast die maximale Anzahl für <strong>'.e($article->name).'</strong> erreicht. Bitte warte bis zu '.$limitWindow.' Sekunden.');
-            }
-
-            return Redirect::route('strichlistensystem.index');
-        }
-
-        Session::flash('success', 'Du hast <strong>'.$validated['amount'].'x '.e($article->name).'</strong> gebucht.');
+        Session::flash('success', 'Du hast <strong>'.$request->integer('amount').'x '.e($article->name).'</strong> gebucht.');
 
         return Redirect::route('strichlistensystem.index');
     }
