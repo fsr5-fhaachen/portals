@@ -39,7 +39,7 @@ Copy `.env.example` to `.env` and fill in the database credentials.
 cp .env.example .env
 ```
 
-When using the S3 Self-Host Storage please use the ``.env.with.s3.example`` instead.
+When using the S3 Self-Host Storage please use the `.env.with.s3.example` instead.
 
 For a quick setup: Change the Database connection details in the .env to only the following. Create the file `database.sqlite` in the `database` folder.
 
