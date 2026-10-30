@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\QrCode;
 use App\Helpers\Table\KioskPersonsTable;
 use App\Models\Article;
 use App\Models\ArticleActionLog;
@@ -41,6 +42,9 @@ class StrichlistensystemKioskController extends Controller
             'persons' => (new KioskPersonsTable($request))->scroll(),
             // only courses with active persons are shown as filter
             'courses' => fn () => Course::whereHas('users', fn ($query) => $query->where('is_disabled', false))->orderBy('name')->get(),
+            // persons without a pin set it in the self service on their phone, the qr code saves typing the url
+            'selfServiceUrl' => fn () => route('strichlistensystem.index'),
+            'selfServiceQrCode' => fn () => QrCode::svg(route('strichlistensystem.index')),
         ]);
     }
 

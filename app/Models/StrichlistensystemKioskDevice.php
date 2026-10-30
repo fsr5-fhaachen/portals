@@ -2,10 +2,7 @@
 
 namespace App\Models;
 
-use BaconQrCode\Renderer\Image\SvgImageBackEnd;
-use BaconQrCode\Renderer\ImageRenderer;
-use BaconQrCode\Renderer\RendererStyle\RendererStyle;
-use BaconQrCode\Writer;
+use App\Helpers\QrCode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -128,9 +125,7 @@ class StrichlistensystemKioskDevice extends Model implements Auditable
      */
     public function pairingQrCodeSvg(): string
     {
-        $writer = new Writer(new ImageRenderer(new RendererStyle(240, 1), new SvgImageBackEnd));
-
-        return trim(preg_replace('/^<\?xml[^>]*\?>/', '', $writer->writeString($this->pairingUrl())));
+        return QrCode::svg($this->pairingUrl());
     }
 
     /**
