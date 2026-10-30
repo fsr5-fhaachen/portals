@@ -32,6 +32,15 @@
         } noch keinen Preis. Buchungen dieser Artikel werden erst berechnet, wenn ein Preis festgelegt ist.`"
       />
 
+      <CardBase>
+        <FormKit
+          type="checkbox"
+          v-model="onlyOpen"
+          label="Nur Personen mit offenem Betrag anzeigen"
+          help="Die Suche findet weiterhin alle Personen."
+        />
+      </CardBase>
+
       <AppTable
         ref="table"
         data="balances"
@@ -57,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { formatPrice } from "../../../../composables/usePrice";
 import { TableColumn } from "../../../../types/table-column";
 import { TableFunction } from "../../../../types/table-function";
@@ -70,12 +79,23 @@ defineProps({
   },
 });
 
-const table = ref<{ refresh: () => void } | null>(null);
+const table = ref<{
+  refresh: () => void;
+  reload: (changes: Record<string, string | null>) => void;
+} | null>(null);
 const personToPay = ref<Strichlistensystem.BillingRow | null>(null);
 
 const refreshTable = () => {
   table.value?.refresh();
 };
+
+// the filter is applied on the server and kept in the url, so the live update and reloads use it too
+const onlyOpen = ref(
+  new URLSearchParams(window.location.search).get("open") === "1",
+);
+watch(onlyOpen, (value) => {
+  table.value?.reload({ open: value ? "1" : null });
+});
 
 const downloadExport = () => {
   window.open("/dashboard/admin/strichlistensystem/export", "_blank");

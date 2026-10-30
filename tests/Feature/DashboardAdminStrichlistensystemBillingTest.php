@@ -112,6 +112,61 @@ class DashboardAdminStrichlistensystemBillingTest extends TestCase
             );
     }
 
+    public function test_balances_can_be_filtered_by_an_open_amount(): void
+    {
+        $open = $this->userWithBookings(300, 1, ['firstname' => 'Offen']);
+        $paid = $this->userWithBookings(500, 1, ['firstname' => 'Bezahlt']);
+        StrichlistensystemPayment::factory()->for($paid)->create(['amount' => 500]);
+        $credit = $this->userWithBookings(100, 1, ['firstname' => 'Guthaben']);
+        ArticleActionLog::where('user_id', $credit->id)->first()->delete();
+        StrichlistensystemPayment::factory()->for($credit)->create(['amount' => 100]);
+
+        $this->actingAsAdmin()
+            ->get(route('dashboard.admin.strichlistensystem.billing', ['open' => '1']))
+            ->assertInertia(fn (Assert $page) => $page
+                ->has('balances.data', 1)
+                ->where('balances.data.0.id', $open->id)
+            );
+
+        // without the filter everybody is shown, including the admin without bookings
+        $this->actingAsAdmin()
+            ->get(route('dashboard.admin.strichlistensystem.billing', ['open' => '0']))
+            ->assertInertia(fn (Assert $page) => $page->has('balances.data', 4));
+    }
+
+    public function test_search_finds_everybody_even_with_the_open_filter(): void
+    {
+        $paid = $this->userWithBookings(500, 1, ['firstname' => 'Zacharias']);
+        StrichlistensystemPayment::factory()->for($paid)->create(['amount' => 500]);
+
+        $this->actingAsAdmin()
+            ->get(route('dashboard.admin.strichlistensystem.billing', ['open' => '1', 'search' => 'zachar']))
+            ->assertInertia(fn (Assert $page) => $page
+                ->has('balances.data', 1)
+                ->where('balances.data.0.id', $paid->id)
+            );
+    }
+
+    public function test_live_update_removes_paid_persons_with_the_open_filter(): void
+    {
+        $user = $this->userWithBookings(300);
+        $this->travel(10)->seconds();
+        $since = now()->timestamp;
+
+        StrichlistensystemPayment::factory()->for($user)->create(['amount' => 300]);
+
+        $changes = $this->actingAsAdmin()
+            ->getJson(route('dashboard.admin.strichlistensystem.billing', [
+                'open' => '1',
+                'changes_since' => $since,
+                'loaded_ids' => (string) $user->id,
+            ]))
+            ->assertOk()
+            ->json();
+
+        $this->assertSame([$user->id], $changes['removed_ids']);
+    }
+
     public function test_live_update_contains_rows_with_new_bookings_and_payments(): void
     {
         $bookingUser = User::factory()->create();
