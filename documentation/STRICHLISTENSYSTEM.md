@@ -69,7 +69,7 @@ Unabhängig vom Strichlistensystem ist der Schlüssel für die öffentliche API 
 
 ### Kiosk
 
-1. Die Übersicht `/strichlistensystem/kiosk` zeigt alle nicht deaktivierten User mit Bild, Name und Studiengang. Gefiltert werden kann nach Studiengang, Tutor*innen (Rolle `tutor`), Special (Rolle `special`) und per Suche.
+1. Die Übersicht `/strichlistensystem/kiosk` zeigt alle nicht deaktivierten User mit Bild, Name und Studiengang. Gefiltert werden kann nach Studiengang, Tutor*innen (Rolle `tutor`), Special (Rolle `special`) und per Suche. Nach 60 Sekunden ohne Antippen oder Eingabe wird die Suche geleert und die Bildschirmtastatur geschlossen.
 2. Beim Antippen einer Person öffnet sich ein PIN-Dialog. Ohne Eingabe schließt er sich nach 30 Sekunden.
    - Hat die Person noch keine PIN, wird ein Hinweis auf den Selbstzugriff angezeigt. Am Kiosk kann keine PIN gesetzt werden.
 3. Nach korrekter PIN wird die Person in der Session als angemeldet gespeichert (`strichlistensystem.kiosk` mit `user_id`, `unlocked_at`, `last_activity`). Die Personenseite zeigt die Artikel und die letzten 20 Buchungen.

@@ -186,7 +186,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, PropType, ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, PropType, ref, watch } from "vue";
 import { InfiniteScroll, router, useForm } from "@inertiajs/vue3";
 import {
   Dialog,
@@ -224,6 +224,9 @@ const props = defineProps({
 
 // close the pin dialog automatically if nobody enters a pin
 const pinDialogTimeoutSeconds = 30;
+
+// reset the search and close the keyboard if nobody uses the kiosk, so the next person starts fresh
+const idleResetSeconds = 60;
 
 const initialQuery = new URLSearchParams(window.location.search);
 
@@ -339,9 +342,50 @@ const submitPin = (pin: string) => {
   );
 };
 
+let idleTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const resetIdleTimeout = () => {
+  if (idleTimeout) {
+    clearTimeout(idleTimeout);
+  }
+  idleTimeout = setTimeout(resetSearchWhenIdle, idleResetSeconds * 1000);
+};
+
+const resetSearchWhenIdle = () => {
+  // the pin dialog closes itself, the search is reset afterwards
+  if (isPinDialogOpen.value) {
+    resetIdleTimeout();
+    return;
+  }
+
+  // without focus the on-screen keyboard of the tablet is closed
+  if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur();
+  }
+
+  // the watcher of the search reloads the persons
+  filterForm.value.search = "";
+};
+
+// every touch, click or key press counts as activity
+const activityEvents = ["pointerdown", "keydown", "input"] as const;
+
+onMounted(() => {
+  activityEvents.forEach((event) =>
+    window.addEventListener(event, resetIdleTimeout, { passive: true }),
+  );
+  resetIdleTimeout();
+});
+
 onBeforeUnmount(() => {
   if (pinDialogTimeout) {
     clearTimeout(pinDialogTimeout);
   }
+  if (idleTimeout) {
+    clearTimeout(idleTimeout);
+  }
+  activityEvents.forEach((event) =>
+    window.removeEventListener(event, resetIdleTimeout),
+  );
 });
 </script>
