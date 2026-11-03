@@ -1,25 +1,25 @@
-// Sortable value of a table (see components/app/Table.vue)
+// Sortable value of a table that is not a column (see components/app/Table.vue)
 export class TableSortValue {
-  // internal name of the column (must be unique per table)
+  // internal name of the sort value (must be unique per table)
   public name: string;
 
-  // Displayed column header
+  // Displayed text
   public text: string;
 
-  // Function to compare two elements. Used for sorting. Returns either -1, 0 or 1
-  public compareFunction: (element1: any, element2: any) => number;
+  // Sort key on the server (see app/Helpers/Table)
+  public sortKey: string;
 
   constructor({
     name,
     text,
-    compareFunction,
+    sortKey,
   }: {
     name: string;
     text: string;
-    compareFunction: (element1: any, element2: any) => number;
+    sortKey: string;
   }) {
     this.name = name;
     this.text = text;
-    this.compareFunction = compareFunction;
+    this.sortKey = sortKey;
   }
 }
