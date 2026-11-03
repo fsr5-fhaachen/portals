@@ -28,6 +28,11 @@
                 loading="lazy"
               />
             </InertiaLink>
+            <p
+              class="ml-4 hidden text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100 sm:block"
+            >
+              {{ eventTitle }}
+            </p>
           </div>
         </div>
 
@@ -178,7 +183,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { Link as InertiaLink } from "@inertiajs/vue3";
+import { Link as InertiaLink, usePage } from "@inertiajs/vue3";
 import {
   Disclosure,
   DisclosureButton,
@@ -189,6 +194,15 @@ import {
 } from "@headlessui/vue";
 
 const { groups, isLinkActive } = useNavigation();
+
+const page = usePage();
+const eventTitle = computed(() => {
+  const appEventType = useAppEventType(
+    page.props.appEventType as Parameters<typeof useAppEventType>[0],
+  );
+
+  return `${appEventType.title} ${new Date().getFullYear()}`;
+});
 
 const generalGroups = computed(() =>
   groups.value.filter((group) => !group.isAdmin),
