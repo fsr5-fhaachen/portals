@@ -32,7 +32,7 @@
         </div>
 
         <p
-          class="pointer-events-none absolute inset-x-0 top-1/2 hidden -translate-y-1/2 text-center text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100 sm:block"
+          class="pointer-events-none absolute inset-x-0 top-1/2 hidden -translate-y-1/2 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:block"
         >
           {{ eventTitle }}
         </p>
