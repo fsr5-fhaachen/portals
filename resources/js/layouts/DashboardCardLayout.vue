@@ -6,7 +6,7 @@
       <AppMessage :message="message" />
     </div>
 
-    <div class="sm:mx-auto sm:w-full sm:max-w-lg">
+    <div class="px-4 sm:mx-auto sm:w-full sm:max-w-lg sm:px-0">
       <slot />
     </div>
 
