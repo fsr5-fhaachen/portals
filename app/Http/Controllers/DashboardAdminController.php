@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\AuditRecorder;
 use App\Helpers\Csv;
 use App\Helpers\GroupBalancedDivision;
 use App\Helpers\GroupCourseDivision;
@@ -270,9 +271,16 @@ class DashboardAdminController extends Controller
         // update the user
         $user->update($validated);
 
-        // sync roles
+        // sync roles and audit the change, because pivot changes are not audited automatically
         if (! $user->hasRole('super admin')) {
+            $oldRoleNames = $user->getRoleNames()->sort()->values()->all();
+
             $user->syncRoles($roles);
+
+            $newRoleNames = $user->getRoleNames()->sort()->values()->all();
+            if ($oldRoleNames !== $newRoleNames) {
+                AuditRecorder::record($user, 'rolesUpdated', ['roles' => $oldRoleNames], ['roles' => $newRoleNames]);
+            }
         }
 
         // role changes do not change the user itself, touch it for the live update of the user table

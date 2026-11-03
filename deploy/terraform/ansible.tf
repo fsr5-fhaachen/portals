@@ -11,11 +11,11 @@ resource "local_file" "ansible_inventory" {
           }
         }
         monitoring = {
-          hosts = {
+          hosts = var.monitoring_enabled ? {
             "${var.monitoring_domain_name}" = {
-              ansible_host = hcloud_primary_ip.monitoring_ipv4.ip_address
+              ansible_host = hcloud_primary_ip.monitoring_ipv4[0].ip_address
             }
-          }
+          } : {}
         }
       }
     }

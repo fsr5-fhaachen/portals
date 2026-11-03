@@ -13,6 +13,13 @@ class CourseGroup extends Pivot implements Auditable
     use \OwenIt\Auditing\Auditable;
 
     /**
+     * The pivot table has an auto incrementing id, which the audit needs as auditable_id.
+     *
+     * @var bool
+     */
+    public $incrementing = true;
+
+    /**
      * The attributes that aren't mass assignable.
      *
      * @var array

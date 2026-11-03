@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class GroupFactory extends Factory
 {
     /**
-     * Define the model's default state. Expects that the events and courses tables are already pre-populated.
+     * Define the model's default state.
      *
      * @return array<string, mixed>
      */
@@ -21,7 +21,7 @@ class GroupFactory extends Factory
     {
         return [
             'name' => $this->faker->word(),
-            'event_id' => Event::all(['id'])->random(),
+            'event_id' => Event::factory(),
         ];
     }
 
@@ -31,7 +31,11 @@ class GroupFactory extends Factory
     public function configure(): static
     {
         return $this->afterCreating(function (Group $group) {
-            $group->courses()->attach(Course::all(['id'])->random());
+            $courseId = Course::inRandomOrder()->value('id');
+
+            if ($courseId) {
+                $group->courses()->attach($courseId);
+            }
         });
     }
 }

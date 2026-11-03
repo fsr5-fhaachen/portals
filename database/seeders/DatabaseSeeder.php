@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
                 ModuleDemoSeeder::class,
                 EventsDemoSeeder::class,
                 PageDemoSeeder::class,
+                ScoringDemoSeeder::class,
             ];
         } elseif (config('app.event_type') == 'erstiwoche') {
             $seeders = [
