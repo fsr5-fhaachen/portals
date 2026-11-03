@@ -6,13 +6,7 @@
   >
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="relative flex h-16 justify-between">
-        <div class="w-10 sm:hidden">
-          <div class="flex h-full items-center justify-start px-4">
-            <ColorModeButton class="block h-6 w-6" />
-          </div>
-        </div>
-
-        <div class="flex grow justify-center sm:justify-start">
+        <div class="flex grow justify-start">
           <div class="flex flex-shrink-0 items-center">
             <InertiaLink href="/">
               <img
@@ -32,7 +26,7 @@
         </div>
 
         <p
-          class="pointer-events-none absolute inset-x-0 top-1/2 hidden -translate-y-1/2 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:block"
+          class="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 text-center text-lg font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-2xl"
         >
           {{ eventTitle }}
         </p>
@@ -135,7 +129,9 @@
           </Popover>
         </div>
 
-        <div class="-mr-2 flex w-10 items-center sm:hidden">
+        <div class="-mr-2 flex items-center gap-2 sm:hidden">
+          <ColorModeButton />
+
           <!-- Mobile menu button -->
           <DisclosureButton
             class="inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-fhac-mint focus:ring-offset-2 dark:bg-black dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-gray-100"
