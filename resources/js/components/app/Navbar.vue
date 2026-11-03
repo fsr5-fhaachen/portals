@@ -129,7 +129,7 @@
           </Popover>
         </div>
 
-        <div class="-mr-2 flex items-center gap-2 sm:hidden">
+        <div class="-mr-2 flex items-center gap-4 sm:hidden">
           <ColorModeButton />
 
           <!-- Mobile menu button -->
