@@ -34,7 +34,7 @@
     <div class="px-4 sm:px-6 lg:px-8">
       <!-- no flex container here, otherwise infinite scroll detects the horizontal scroll container as scrollable parent -->
       <div>
-        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div class="inline-block min-w-full py-2 align-middle">
             <div
               v-if="sortValues.length > 0"
