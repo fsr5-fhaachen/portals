@@ -48,6 +48,7 @@ import {
   faIceCream,
   faUser,
   faDeleteLeft,
+  faMap,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
@@ -104,6 +105,7 @@ library.add(
   faIceCream,
   faUser,
   faDeleteLeft,
+  faMap,
 );
 
 createInertiaApp({
