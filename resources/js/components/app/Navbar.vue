@@ -69,7 +69,7 @@
                       class="flex flex-col gap-2"
                     >
                       <p
-                        class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+                        class="text-xs font-semibold uppercase tracking-wide text-fhac-mint-dark dark:text-fhac-mint"
                       >
                         {{ group.title }}
                       </p>
@@ -104,7 +104,7 @@
                         class="flex flex-col gap-2"
                       >
                         <p
-                          class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+                          class="text-xs font-semibold uppercase tracking-wide text-fhac-mint-dark dark:text-fhac-mint"
                         >
                           {{ group.title }}
                         </p>
@@ -154,11 +154,9 @@
 
     <DisclosurePanel class="sm:hidden">
       <div class="flex flex-col gap-1 pb-3 pt-2">
-        <template v-for="(group, index) in groups" :key="group.title">
-          <!-- the first group needs no heading -->
+        <template v-for="group in groups" :key="group.title">
           <p
-            v-if="index > 0"
-            class="px-4 pt-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+            class="px-4 pt-3 text-xs font-semibold uppercase tracking-wide text-fhac-mint-dark dark:text-fhac-mint"
           >
             {{ group.title }}
           </p>
