@@ -73,7 +73,7 @@ export default () => {
         ]),
       },
       {
-        title: "Module",
+        title: "Funktionen",
         isAdmin: true,
         links: visible([
           {
