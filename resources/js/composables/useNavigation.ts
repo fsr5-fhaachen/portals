@@ -89,18 +89,18 @@ export default () => {
             matchPrefix: true,
             visible: isModuleActive("scoring") && can("manage scoring"),
           },
+        ]),
+      },
+      {
+        title: "Bühne",
+        isAdmin: true,
+        links: visible([
           {
             title: "Punktesystem",
             href: "/dashboard/admin/score-system",
             visible:
               isModuleActive("scoreSystem") && can("manage score system"),
           },
-        ]),
-      },
-      {
-        title: "Werkzeuge",
-        isAdmin: true,
-        links: visible([
           {
             title: "Zufallsgenerator",
             href: "/dashboard/admin/random-generator",
