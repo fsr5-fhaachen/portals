@@ -5,7 +5,7 @@
     v-slot="{ open }"
   >
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="flex h-16 justify-between">
+      <div class="relative flex h-16 justify-between">
         <div class="w-10 sm:hidden">
           <div class="flex h-full items-center justify-start px-4">
             <ColorModeButton class="block h-6 w-6" />
@@ -28,13 +28,14 @@
                 loading="lazy"
               />
             </InertiaLink>
-            <p
-              class="ml-4 hidden text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100 sm:block"
-            >
-              {{ eventTitle }}
-            </p>
           </div>
         </div>
+
+        <p
+          class="pointer-events-none absolute inset-x-0 top-1/2 hidden -translate-y-1/2 text-center text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100 sm:block"
+        >
+          {{ eventTitle }}
+        </p>
 
         <!-- Desktop menu -->
         <div class="hidden items-center gap-4 sm:flex">
