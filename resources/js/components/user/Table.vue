@@ -1,7 +1,9 @@
 <template>
   <AppTable
+    ref="table"
+    data="users"
+    searchable
     :columns="getColumns()"
-    :elements="usersData"
     :idFunction="(user) => user.id"
     :functions="getFunctions()"
     :rowClass="
@@ -23,6 +25,7 @@
     :roles="roles"
     @close="clearUserToEdit"
     @submit="submitUserEdit"
+    @saved="refreshTable"
   />
 
   <UserDeleteModal
@@ -30,11 +33,12 @@
     :user="userToDelete"
     @close="clearUserToDelete"
     @submit="submitUserDelete"
+    @saved="refreshTable"
   />
 </template>
 
 <script setup lang="ts">
-import { ref, PropType, watch } from "vue";
+import { ref, PropType } from "vue";
 import { TableColumn } from "../../types/table-column";
 import { TableFunction } from "../../types/table-function";
 import { TableButton } from "../../types/table-button";
@@ -44,10 +48,6 @@ const props = defineProps({
   user: {
     type: Object as PropType<Models.User>,
     default: null,
-  },
-  users: {
-    type: Array as PropType<Models.User[]>,
-    required: true,
   },
   courses: {
     type: Array as PropType<Models.Course[]>,
@@ -59,10 +59,11 @@ const props = defineProps({
   },
 });
 
-const usersData = ref(props.users);
-watch(props, (props) => {
-  usersData.value = props.users;
-});
+const table = ref<{ refresh: () => void } | null>(null);
+
+const refreshTable = () => {
+  table.value?.refresh();
+};
 
 const userToEdit = ref<Models.User | null>(null);
 const userToDelete = ref<Models.User | null>(null);
@@ -94,8 +95,7 @@ function getColumns(): Array<TableColumn> {
     name: "firstName",
     text: "Vorname",
     valueFunction: (user) => user.firstname,
-    compareFunction: (user1, user2) =>
-      user1.firstname.localeCompare(user2.firstname),
+    sortKey: "firstname",
   });
   columns.push(firstNameCol);
 
@@ -103,8 +103,7 @@ function getColumns(): Array<TableColumn> {
     name: "lastName",
     text: "Nachname",
     valueFunction: (user) => user.lastname,
-    compareFunction: (user1, user2) =>
-      user1.lastname.localeCompare(user2.lastname),
+    sortKey: "lastname",
   });
   columns.push(lastNameCol);
 
@@ -112,7 +111,7 @@ function getColumns(): Array<TableColumn> {
     name: "email",
     text: "E-Mail",
     valueFunction: (user) => user.email,
-    compareFunction: (user1, user2) => user1.email.localeCompare(user2.email),
+    sortKey: "email",
   });
   columns.push(emailCol);
 
@@ -131,11 +130,7 @@ function getColumns(): Array<TableColumn> {
       }
       return "";
     },
-    compareFunction: (user1, user2) => {
-      if (!user1.course?.id) return -1;
-      if (!user2.course?.id) return 1;
-      return user1.course.abbreviation.localeCompare(user2.course.abbreviation);
-    },
+    sortKey: "course",
   });
   columns.push(courseCol);
 
@@ -146,7 +141,7 @@ function getColumns(): Array<TableColumn> {
       let ret = "";
       if (user.roles.length) {
         ret += '<div class="flex flex-col gap-2">';
-        for (const role of user.roles.sort((a, b) =>
+        for (const role of [...user.roles].sort((a, b) =>
           a.name.localeCompare(b.name),
         )) {
           const color = roleColors[role.name] ?? "bg-slate-500";
@@ -161,14 +156,7 @@ function getColumns(): Array<TableColumn> {
       }
       return ret;
     },
-    compareFunction: (user1, user2) => {
-      if (!user1.roles.length) return -1;
-      if (!user2.roles.length) return 1;
-      return user1.roles
-        .map((role) => role.name)
-        .join("")
-        .localeCompare(user2.roles.map((role) => role.name).join(""));
-    },
+    sortKey: "roles",
   });
   columns.push(roleCol);
 
@@ -176,8 +164,7 @@ function getColumns(): Array<TableColumn> {
     name: "avatar",
     text: "Hat ein Bild",
     valueFunction: (user) => (user.avatarUrl ? "Ja" : "Nein"),
-    compareFunction: (user1, user2) =>
-      user1.avatarUrl && user2.avatarUrl ? 0 : user1.avatarUrl ? 1 : -1,
+    sortKey: "avatar",
   });
   columns.push(avatarCol);
 

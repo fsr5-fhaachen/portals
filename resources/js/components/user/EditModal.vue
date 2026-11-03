@@ -132,6 +132,32 @@
                             />
                           </FormRow>
 
+                          <FormRow v-if="strichlistensystemEnabled">
+                            <div class="flex flex-col w-full">
+                              <label
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+                                >PIN (Strichliste)</label
+                              >
+                              <div class="flex gap-2">
+                                <div
+                                  class="shadow-sm flex-1 sm:text-sm border border-gray-300 rounded-md px-3 py-2 dark:bg-gray-700 dark:border-gray-700 dark:text-gray-300"
+                                >
+                                  {{
+                                    user.has_pin ? "Gesetzt" : "Nicht gesetzt"
+                                  }}
+                                </div>
+                                <AppButton
+                                  v-if="canResetPin"
+                                  @click="resetPin"
+                                  theme="danger"
+                                  class="text-center"
+                                >
+                                  PIN zurücksetzen
+                                </AppButton>
+                              </div>
+                            </div>
+                          </FormRow>
+
                           <FormRow
                             v-if="
                               !user.roles.length ||
@@ -303,7 +329,7 @@ import {
   TransitionRoot,
 } from "@headlessui/vue";
 import { computed, onMounted, PropType, ref } from "vue";
-import { router } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
 
 type UserDetails = {
   registrations: App.Models.Registration[];
@@ -339,6 +365,7 @@ const { user, courses, roles } = defineProps({
 const emits = defineEmits<{
   close: [];
   submit: [];
+  saved: [];
 }>();
 
 const editForm = ref({
@@ -352,6 +379,17 @@ const editForm = ref({
   avatar: null,
   is_disabled: user.is_disabled == 1 ? true : false,
 });
+
+const strichlistensystemEnabled =
+  usePage().props.modules?.strichlistensystem?.active ?? false;
+
+// the pin of a super admin can only be reset by the super admin themself
+const canResetPin = computed(
+  () =>
+    user.has_pin &&
+    (!user.roles.some((role) => role.name === "super admin") ||
+      usePage().props.user?.id === user.id),
+);
 
 const selectFormCourseOptions = useSelectFormCourseOptions(courses, true);
 const selectFormRoleOptions = useSelectFormRoleOptions(roles);
@@ -388,6 +426,28 @@ onMounted(fetchDetails);
 
 const close = () => {
   emits("close");
+};
+const resetPin = () => {
+  if (
+    !window.confirm(
+      `Soll die PIN von ${user.firstname} ${user.lastname} zurückgesetzt werden? Danach muss eine neue PIN im Selbstzugriff gesetzt werden.`,
+    )
+  ) {
+    return;
+  }
+
+  // only the message is reloaded, the table updates the user by its live update
+  router.post(
+    `/dashboard/admin/user/${user.id}/reset-pin`,
+    {},
+    {
+      only: ["message"],
+      preserveState: true,
+      preserveScroll: true,
+      onSuccess: () => emits("saved"),
+    },
+  );
+  emits("submit");
 };
 const editSubmitHandler = async () => {
   const avatarPath = ref<string | undefinded>();
@@ -427,10 +487,20 @@ const editSubmitHandler = async () => {
     }
   }
 
-  router.post(`/dashboard/admin/user/${user.id}`, {
-    ...editForm.value,
-    avatar: avatarPath.value,
-  });
+  // only the message is reloaded, the table updates the user by its live update
+  router.post(
+    `/dashboard/admin/user/${user.id}`,
+    {
+      ...editForm.value,
+      avatar: avatarPath.value,
+    },
+    {
+      only: ["message"],
+      preserveState: true,
+      preserveScroll: true,
+      onSuccess: () => emits("saved"),
+    },
+  );
   emits("submit");
 };
 </script>

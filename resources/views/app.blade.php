@@ -11,6 +11,7 @@
 
     <title>{{ config('app.name') }}</title>
 
+    @inertiaHead
     @vite(['resources/js/app.js'])
 
     <!-- import css when not in development -->

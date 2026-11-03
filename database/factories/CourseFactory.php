@@ -20,7 +20,7 @@ class CourseFactory extends Factory
         return [
             'name' => $this->faker->word(),
             'abbreviation' => $this->faker->lexify('????'),
-            'classes' => 'bg-blue-500',
+            'classes' => 'bg-gray-500 text-white',
             'icon' => $this->faker->word(),
         ];
     }

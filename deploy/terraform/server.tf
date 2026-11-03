@@ -39,6 +39,7 @@ resource "hcloud_server" "this" {
 }
 
 resource "hcloud_server" "monitoring" {
+  count       = var.monitoring_enabled ? 1 : 0
   name        = var.monitoring_domain_name
   image       = var.base_image
   server_type = var.monitoring_server_type
@@ -55,9 +56,9 @@ resource "hcloud_server" "monitoring" {
   )
   public_net {
     ipv4_enabled = true
-    ipv4         = hcloud_primary_ip.monitoring_ipv4.id
+    ipv4         = hcloud_primary_ip.monitoring_ipv4[0].id
     ipv6_enabled = true
-    ipv6         = hcloud_primary_ip.monitoring_ipv6.id
+    ipv6         = hcloud_primary_ip.monitoring_ipv6[0].id
   }
   provisioner "remote-exec" {
     connection {

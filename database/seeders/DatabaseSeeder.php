@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             ModuleSeeder::class,
             CourseSeeder::class,
             TutorSeeder::class,
+            ArticleSeeder::class,
         ];
 
         // add seder by event
@@ -29,6 +30,7 @@ class DatabaseSeeder extends Seeder
                 ModuleDemoSeeder::class,
                 EventsDemoSeeder::class,
                 PageDemoSeeder::class,
+                ScoringDemoSeeder::class,
             ];
         } elseif (config('app.event_type') == 'erstiwoche') {
             $seeders = [
