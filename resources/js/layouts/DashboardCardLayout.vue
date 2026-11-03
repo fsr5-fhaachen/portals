@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-full">
-    <AppNavbar :navigation="navigation" :user="user" />
+    <AppNavbar />
 
     <div class="px-4 pt-6 sm:mx-auto sm:w-full sm:max-w-lg sm:px-6 lg:px-8">
       <AppMessage :message="message" />
@@ -60,7 +60,8 @@ initColorMode();
 const packageName = __PACKAGE_NAME__;
 const packageRepositoryUrl = __PACKAGE_REPOSITORY_URL__;
 
-const { pages } = defineProps({
+// the props are only declared, so that they are not passed to the root element as attributes
+defineProps({
   message: {
     type: Object,
     default: () => ({}),
@@ -74,9 +75,4 @@ const { pages } = defineProps({
     required: true,
   },
 });
-
-const navigation = [
-  { title: "Veranstaltungen", href: "/dashboard" },
-  ...usePagesAsNavigation(pages, "/dashboard/"),
-];
 </script>
