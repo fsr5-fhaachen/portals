@@ -90,13 +90,8 @@
 
                   <div
                     v-if="adminGroups.length > 0"
-                    class="flex grow flex-col gap-4 border-t border-gray-200 pt-6 dark:border-gray-700 md:border-l md:border-t-0 md:pl-6 md:pt-0"
+                    class="grow border-t border-gray-200 pt-6 dark:border-gray-700 md:border-l md:border-t-0 md:pl-6 md:pt-0"
                   >
-                    <p
-                      class="text-xs font-semibold uppercase tracking-wide text-red-500"
-                    >
-                      Administration
-                    </p>
                     <div class="grid grid-cols-2 gap-6">
                       <div
                         v-for="group in adminGroups"
