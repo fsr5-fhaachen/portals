@@ -61,7 +61,7 @@ initColorMode();
 const packageName = __PACKAGE_NAME__;
 const packageRepositoryUrl = __PACKAGE_REPOSITORY_URL__;
 
-const { pages, user } = defineProps({
+const { pages, user, modules } = defineProps({
   message: {
     type: Object,
     default: () => ({}),
@@ -94,7 +94,10 @@ const navigation = computed<NavbarLink[]>(() => [
     title: "Veranstaltungen",
     href: "/dashboard" + (isTutorPage.value ? "/tutor" : ""),
   },
-  ...(page.props.modules?.["scoring"]?.active && isTutor.value
+  ...(modules["strichlistensystem"]?.active
+    ? [{ title: "Strichliste", href: "/strichlistensystem" }]
+    : []),
+  ...(modules["scoring"]?.active && isTutor.value
     ? [{ title: "Scoring", href: "/dashboard/tutor/scoring" }]
     : []),
   ...usePagesAsNavigation(pages, "/dashboard/"),

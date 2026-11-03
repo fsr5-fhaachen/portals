@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             ModuleSeeder::class,
             CourseSeeder::class,
             TutorSeeder::class,
+            ArticleSeeder::class,
         ];
 
         // add seder by event

@@ -13,12 +13,16 @@ abstract class TestCase extends BaseTestCase
 {
     /**
      * Set up the test environment.
+     *
+     * Inertia sends every page to the ssr server of a running vite dev server (public/hot). Tests must not
+     * depend on it, an unreachable dev server delays every page by the connection timeout.
      */
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->withoutVite();
+        config(['inertia.ssr.enabled' => false]);
     }
 
     /**

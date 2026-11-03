@@ -25,6 +25,7 @@ class RoleSeeder extends Seeder
                 'manage random generator',
                 'manage score system',
                 'manage countdown',
+                'manage strichlistensystem',
                 'view audit log',
                 'manage scoring',
             ] as $permission
@@ -70,6 +71,7 @@ class RoleSeeder extends Seeder
         $adminRole->givePermissionTo($permissions['manage score system']);
         $adminRole->givePermissionTo($permissions['manage countdown']);
         $adminRole->givePermissionTo($permissions['manage users']);
+        $adminRole->givePermissionTo($permissions['manage strichlistensystem']);
         $adminRole->givePermissionTo($permissions['view audit log']);
         $adminRole->givePermissionTo($permissions['manage scoring']);
 
@@ -86,6 +88,7 @@ class RoleSeeder extends Seeder
         $superAdminRole->givePermissionTo($permissions['manage countdown']);
         $superAdminRole->givePermissionTo($permissions['manage users']);
         $superAdminRole->givePermissionTo($permissions['delete users']);
+        $superAdminRole->givePermissionTo($permissions['manage strichlistensystem']);
         $superAdminRole->givePermissionTo($permissions['view audit log']);
         $superAdminRole->givePermissionTo($permissions['manage scoring']);
 

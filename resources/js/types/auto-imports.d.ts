@@ -6,12 +6,17 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const centsToPriceInput: (typeof import("../composables/usePrice"))["centsToPriceInput"];
+  const formatPrice: (typeof import("../composables/usePrice"))["formatPrice"];
+  const parsePriceToCents: (typeof import("../composables/usePrice"))["parsePriceToCents"];
   const roleColors: (typeof import("../composables/useRoleColors"))["roleColors"];
+  const sanitizeHtml: (typeof import("../composables/useSafeHtml"))["sanitizeHtml"];
   const useAppEventType: (typeof import("../composables/useAppEventType"))["default"];
   const useColorMode: (typeof import("../composables/useColorMode"))["default"];
   const useEscapeHtml: (typeof import("../composables/useEscapeHtml"))["default"];
   const usePagesAsNavigation: (typeof import("../composables/usePagesAsNavigation"))["default"];
   const usePlaceholderPerson: (typeof import("../composables/usePlaceholderPerson"))["default"];
+  const usePolling: (typeof import("../composables/usePolling"))["default"];
   const useS3: (typeof import("../composables/useS3"))["default"];
   const useSelectFormCourseOptions: (typeof import("../composables/useSelectFormCourseOptions"))["default"];
   const useSelectFormEventOptions: (typeof import("../composables/useSelectFormEventOptions"))["default"];

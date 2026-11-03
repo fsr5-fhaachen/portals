@@ -34,6 +34,11 @@ class ModuleDemoSeeder extends Seeder
                 'expose_public' => false,
             ],
             [
+                'key' => 'strichlistensystem',
+                'active' => true,
+                'expose_public' => false,
+            ],
+            [
                 'key' => 'scoring',
                 'active' => true,
                 'expose_public' => false,
