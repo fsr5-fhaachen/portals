@@ -6,7 +6,7 @@
       hier findest du eine Übersicht über alle Veranstaltungen.
     </template>
 
-    <EventTable :events="events" :user="user" />
+    <EventTable :user="user" />
   </LayoutDashboardContent>
 </template>
 
@@ -14,10 +14,6 @@
 import { PropType } from "vue";
 
 defineProps({
-  events: {
-    type: Array as PropType<App.Models.Event[]>,
-    required: true,
-  },
   user: {
     type: Object as PropType<Models.User>,
     required: true,

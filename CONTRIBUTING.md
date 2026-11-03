@@ -81,3 +81,17 @@ Every change to the `dev` branch will be merged to the `main` branch later on.
 We are using [Semantic Versioning](https://semver.org/) for our releases.
 
 Releases are created from the `main` branch.
+
+## Automated and AI-assisted contributions
+
+- Pull requests must be opened and **understood by a human** who is
+  responsible for them. You must be able to explain every change in your PR
+  and respond to review feedback yourself.
+- **Fully automated accounts and agents are not allowed** to comment on
+  issues, claim issues, or open pull requests in this repository without prior
+  written permission from the maintainers.
+- AI-assisted code is fine if you have reviewed, tested, and understood it.
+  Please disclose significant AI assistance in the PR description.
+- This repository is not part of any external benchmark, evaluation, or
+  ranking program. Contributions made to improve statistics or rankings are
+  not accepted.

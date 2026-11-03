@@ -48,27 +48,20 @@
       </AppButton>
     </div>
 
-    <GroupTable
-      v-if="event.type == 'group_phase' && event.groups"
-      :event="event"
-      :groups="event.groups"
-    />
-    <SlotTable
-      v-else-if="event.type == 'slot_booking' && event.slots"
-      :slots="event.slots"
-    />
+    <GroupTable v-if="event.type == 'group_phase'" />
+    <SlotTable v-else-if="event.type == 'slot_booking'" />
     <RegistrationTable
-      v-else-if="event.type == 'event_registration' && registrations"
+      v-else-if="event.type == 'event_registration'"
       :courses="courses"
       :event="event"
-      :registrations="registrations"
+      :hasFormResponses="hasFormResponses"
       :user="user"
     />
   </LayoutDashboardContent>
 </template>
 
 <script setup lang="ts">
-import { ref, PropType, onBeforeUnmount } from "vue";
+import { ref, PropType } from "vue";
 import { router } from "@inertiajs/vue3";
 
 const { courses, event } = defineProps({
@@ -80,31 +73,15 @@ const { courses, event } = defineProps({
     type: Object as PropType<App.Models.Event>,
     required: true,
   },
+  hasFormResponses: {
+    type: Boolean,
+    default: false,
+  },
   user: {
     type: Object as PropType<Models.User>,
     required: true,
   },
 });
-const registrations = ref(event.registrations);
-const fetchRegistrations = async () => {
-  const response = await fetch("/api/events/" + event.id + "/registrations", {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (response.ok) {
-    const data = await response.json();
-    registrations.value = data.registrations;
-  }
-};
-// TODO: Optimize this
-//const registrationsInterval = setInterval(fetchRegistrations, 2500);
-// onBeforeUnmount(() => {
-//   clearInterval(registrationsInterval);
-// });
 
 const coursesData = ref(courses);
 const isCoursesFetching = ref(false);
@@ -150,10 +127,6 @@ const fetchCourses = async () => {
 
 const statistics = ref([]);
 
-let statisticsTimer = setTimeout(() => {
-  fetchStatistics();
-}, 2500);
-
 const fetchStatistics = async () => {
   const response = await fetch("/api/events/" + event.id + "/statistics", {
     method: "GET",
@@ -167,16 +140,10 @@ const fetchStatistics = async () => {
     const data = await response.json();
     statistics.value = data;
   }
-  statisticsTimer = setTimeout(() => {
-    fetchStatistics();
-  }, 2500);
 };
 
-const coursesInterval = setInterval(fetchCourses, 2500);
-onBeforeUnmount(() => {
-  clearInterval(coursesInterval);
-  clearTimeout(statisticsTimer);
-});
+usePolling(fetchCourses, 2500);
+usePolling(fetchStatistics, 2500);
 
 const submit = () => {
   router.visit("/dashboard/admin/event/" + event.id + "/submit");

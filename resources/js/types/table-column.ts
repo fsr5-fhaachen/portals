@@ -9,23 +9,23 @@ export class TableColumn {
   // Function to get this columns value per element. Can be html
   public valueFunction: (element: any) => string;
 
-  // Function to compare two elements. Used for sorting. Returns either -1, 0 or 1
-  public compareFunction: (element1: any, element2: any) => number;
+  // Sort key of the column on the server (see app/Helpers/Table). Columns without sort key can not be sorted
+  public sortKey: string | null;
 
   constructor({
     name,
     text,
     valueFunction,
-    compareFunction,
+    sortKey = null,
   }: {
     name: string;
     text: string;
     valueFunction: (element: any) => string;
-    compareFunction: (element1: any, element2: any) => number;
+    sortKey?: string | null;
   }) {
     this.name = name;
     this.header = text;
     this.valueFunction = valueFunction;
-    this.compareFunction = compareFunction;
+    this.sortKey = sortKey;
   }
 }
