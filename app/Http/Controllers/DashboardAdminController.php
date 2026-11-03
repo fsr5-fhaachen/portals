@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\AuditRecorder;
 use App\Helpers\GroupBalancedDivision;
 use App\Helpers\GroupCourseDivision;
 use App\Helpers\SlotAssignment;
@@ -320,9 +321,16 @@ class DashboardAdminController extends Controller
         // update the user
         $user->update($validated);
 
-        // sync roles
+        // sync roles and audit the change, because pivot changes are not audited automatically
         if (! $user->hasRole('super admin')) {
+            $oldRoleNames = $user->getRoleNames()->sort()->values()->all();
+
             $user->syncRoles($roles);
+
+            $newRoleNames = $user->getRoleNames()->sort()->values()->all();
+            if ($oldRoleNames !== $newRoleNames) {
+                AuditRecorder::record($user, 'rolesUpdated', ['roles' => $oldRoleNames], ['roles' => $newRoleNames]);
+            }
         }
 
         Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich bearbeitet. Die Tabelle aktualisiert sich in wenigen Sekunden automatisch.');

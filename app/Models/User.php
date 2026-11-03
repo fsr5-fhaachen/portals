@@ -26,6 +26,25 @@ class User extends Authenticatable implements Auditable
     ];
 
     /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'remember_token',
+    ];
+
+    /**
+     * Attributes excluded from the audit log.
+     *
+     * @var list<string>
+     */
+    protected $auditExclude = [
+        'remember_token',
+        'pin',
+    ];
+
+    /**
      * Get station_tutors for the user.
      */
     public function stationTutors(): HasMany
