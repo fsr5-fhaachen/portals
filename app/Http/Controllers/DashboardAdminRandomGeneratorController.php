@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\RandomGenerator;
 use App\Models\Course;
 use App\Models\State;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -15,10 +19,10 @@ class DashboardAdminRandomGeneratorController extends Controller
     /**
      * Display the dashboard admin random generator page
      */
-    public function index(): Response
+    public function index(RandomGenerator $randomGenerator): Response
     {
         // get all users except tutors and admins
-        $users = User::doesntHave('roles')->orderBy('firstname')->with('course')->get()->map(function ($user) {
+        $users = $randomGenerator->participants()->orderBy('firstname')->with('course')->get()->map(function ($user) {
             $user->avatarUrl = $user->avatarUrlUnchecked();
 
             return $user;
@@ -27,33 +31,42 @@ class DashboardAdminRandomGeneratorController extends Controller
         // get all courses
         $courses = Course::all();
 
+        $state = State::where('key', 'randomGenerator')->value('value');
+
         return Inertia::render('Dashboard/Admin/RandomGenerator/Index', [
             'users' => $users,
             'courses' => $courses,
+            'settings' => $randomGenerator->settings(),
+            'poolCount' => $randomGenerator->pool()->count(),
+            'state' => $state ? json_decode($state) : ['state' => 'setup'],
         ]);
     }
 
     /**
      * Execute the dashboard admin random generator submit action
      */
-    public function indexExecuteSubmit(): JsonResponse
+    public function indexExecuteSubmit(RandomGenerator $randomGenerator): JsonResponse
     {
         // validate the request
         $request = Request::validate([
             'state' => ['required', 'string', 'in:setup,idle,running,stopped'],
-            'user_id' => ['integer', 'exists:users,id'],
+            'user_id' => ['nullable', 'integer', 'exists:users,id'],
         ]);
 
-        // get the user
+        // the display only shows the users of the pool while running
+        $userIds = $request['state'] == 'running' ? $randomGenerator->pool()->pluck('id')->all() : null;
+
+        // draw the user, a preselected user overrides the pool
         $user = null;
         if ($request['state'] == 'stopped') {
-            $user = User::find($request['user_id']);
+            $preselectedUser = isset($request['user_id']) ? User::find($request['user_id']) : null;
+            $user = $randomGenerator->draw($preselectedUser);
 
             // check if no user was found
             if (! $user) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'User not found',
+                    'message' => 'Es ist niemand mehr im Lostopf.',
                 ]);
             }
 
@@ -72,6 +85,7 @@ class DashboardAdminRandomGeneratorController extends Controller
             'state' => $request['state'],
             // return only id, firstname, lastname and avatarUrl
             'user' => $user ? $user->only(['id', 'firstname', 'lastname', 'avatarUrl']) : null,
+            'userIds' => $userIds,
         ]);
 
         // save the state
@@ -80,23 +94,75 @@ class DashboardAdminRandomGeneratorController extends Controller
         // return success
         return response()->json([
             'success' => true,
+            'user' => $user ? $user->only(['id', 'firstname', 'lastname']) : null,
         ]);
+    }
+
+    /**
+     * Update the settings of the random generator
+     */
+    public function updateSettings(RandomGenerator $randomGenerator): RedirectResponse
+    {
+        $validated = Request::validate([
+            'course_ids' => ['present', 'array'],
+            'course_ids.*' => ['integer', 'exists:courses,id'],
+            'opt_out_enabled' => ['required', 'boolean'],
+            'hide_opted_out' => ['required', 'boolean'],
+            'hide_other_courses' => ['required', 'boolean'],
+            'hide_drawn' => ['required', 'boolean'],
+        ]);
+
+        $randomGenerator->saveSettings([
+            'course_ids' => array_values(array_unique(array_map('intval', $validated['course_ids']))),
+            'opt_out_enabled' => (bool) $validated['opt_out_enabled'],
+            'hide_opted_out' => (bool) $validated['hide_opted_out'],
+            'hide_other_courses' => (bool) $validated['hide_other_courses'],
+            'hide_drawn' => (bool) $validated['hide_drawn'],
+        ]);
+
+        return Redirect::route('dashboard.admin.randomGenerator.index');
+    }
+
+    /**
+     * Reset the drawn state of all users
+     */
+    public function resetDrawn(RandomGenerator $randomGenerator): RedirectResponse
+    {
+        $randomGenerator->resetDrawn();
+
+        Session::flash('success', 'Alle Ziehungen wurden zurückgesetzt.');
+
+        return Redirect::route('dashboard.admin.randomGenerator.index');
+    }
+
+    /**
+     * Reset the drawn state of a user
+     */
+    public function resetDrawnUser(User $user): RedirectResponse
+    {
+        $user->random_generator_drawn_at = null;
+        $user->save();
+
+        Session::flash('success', '<strong>'.e($user->firstname.' '.$user->lastname).'</strong> kann wieder gezogen werden.');
+
+        return Redirect::route('dashboard.admin.randomGenerator.index');
     }
 
     /*
      * Display the dashboard admin random generator display page
     */
-    public function display(): Response
+    public function display(RandomGenerator $randomGenerator): Response
     {
-        // get all users except tutors and admins
-        $users = User::doesntHave('roles')->with('course')->get()->map(function ($user) {
+        // get all users except tutors, admins and users that opted out
+        $users = $randomGenerator->participants()->where('random_generator_opt_out', false)->get()->map(function ($user) {
             $user->avatarUrl = $user->avatarUrlUnchecked();
 
-            return $user;
+            // the display is public, so only the shown attributes are sent
+            return $user->only(['id', 'firstname', 'lastname', 'avatarUrl']);
         });
 
         // shuffle the users
-        $users = $users->shuffle();
+        $users = $users->shuffle()->values();
 
         return Inertia::render('Dashboard/Admin/RandomGenerator/Display', [
             'users' => $users,

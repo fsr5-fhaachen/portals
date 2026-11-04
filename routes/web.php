@@ -13,6 +13,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
 use App\Http\Controllers\DashboardTutorScoringController;
+use App\Http\Controllers\RandomGeneratorController;
 use App\Http\Controllers\StrichlistensystemController;
 use App\Http\Controllers\StrichlistensystemKioskController;
 use App\Http\Middleware\ActiveModule;
@@ -58,6 +59,11 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
             Route::post('/register', [DashboardEventController::class, 'registerUser'])->name('dashboard.event.registerUser');
             Route::get('/unregister', [DashboardEventController::class, 'unregister'])->name('dashboard.event.unregister');
             Route::post('/unregister', [DashboardEventController::class, 'unregisterUser'])->name('dashboard.event.unregisterUser');
+        });
+
+        Route::middleware(ActiveModule::class.':randomGenerator')->group(function () {
+            Route::get('/random-generator', [RandomGeneratorController::class, 'index'])->name('dashboard.randomGenerator.index');
+            Route::post('/random-generator', [RandomGeneratorController::class, 'update'])->name('dashboard.randomGenerator.update');
         });
     });
 
@@ -111,6 +117,9 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
         Route::middleware(ActiveModule::class.':randomGenerator', 'can:manage random generator')->group(function () {
             Route::get('/random-generator', [DashboardAdminRandomGeneratorController::class, 'index'])->name('dashboard.admin.randomGenerator.index');
             Route::post('/random-generator', [DashboardAdminRandomGeneratorController::class, 'indexExecuteSubmit'])->name('dashboard.admin.randomGenerator.indexExecuteSubmit');
+            Route::post('/random-generator/settings', [DashboardAdminRandomGeneratorController::class, 'updateSettings'])->name('dashboard.admin.randomGenerator.updateSettings');
+            Route::post('/random-generator/reset-drawn', [DashboardAdminRandomGeneratorController::class, 'resetDrawn'])->name('dashboard.admin.randomGenerator.resetDrawn');
+            Route::post('/random-generator/user/{user}/reset-drawn', [DashboardAdminRandomGeneratorController::class, 'resetDrawnUser'])->name('dashboard.admin.randomGenerator.resetDrawnUser');
             Route::get('/random-generator/display', [DashboardAdminRandomGeneratorController::class, 'display'])->name('dashboard.admin.randomGenerator.display');
         });
 

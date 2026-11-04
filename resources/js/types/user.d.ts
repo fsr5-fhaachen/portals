@@ -9,6 +9,8 @@ declare namespace App.Models {
     course_id: number;
     remember_token: string | null;
     is_disabled: boolean;
+    random_generator_opt_out: boolean;
+    random_generator_drawn_at: string /* Date */ | null;
     avatar: string | null;
     article_action_logs?: ArticleActionLog[] | null;
     station_tutors?: StationTutor[] | null;

@@ -19,11 +19,14 @@
       >
         <div class="h-screen flex-1 overflow-hidden">
           <div
-            class="grid h-fit w-screen animate-fly justify-items-center space-y-32 overflow-hidden py-20"
+            ref="flyContainer"
+            class="grid h-fit w-screen translate-y-[100vh] justify-items-center space-y-32 overflow-hidden py-20 will-change-transform"
           >
+            <!-- users outside of the screen are not rendered (content-visibility), so only the visible users cost performance -->
             <RandomGeneratorUserAvatarCard
-              class="animate-wiggle"
-              v-for="user in users"
+              class="animate-wiggle [contain-intrinsic-size:auto_30rem_38rem] [content-visibility:auto]"
+              v-for="user in flyingUsers"
+              :key="user.id"
               :src="user.avatarUrl"
               :firstname="user.firstname"
               :lastname="user.lastname"
@@ -92,7 +95,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { ref, PropType, onBeforeUnmount } from "vue";
+import { nextTick, ref, PropType, onBeforeUnmount } from "vue";
 
 const props = defineProps({
   users: {
@@ -108,11 +111,84 @@ const randomGeneratorRunningSoundState = ref<
 const randomGeneratorState = ref<{
   state: "setup" | "idle" | "running" | "stopped";
   user?: Models.User;
+  // ids of the users in the pool, only these users are flying while running
+  userIds?: number[] | null;
 }>({
   state: "setup",
 });
 
 const isFetchingRandomGenerator = ref(false);
+
+// speed of the flying users in pixels per second, so the speed does not depend on the amount of users
+const FLY_SPEED_PIXELS_PER_SECOND = 450;
+
+const flyingUsers = ref<App.Models.User[]>([]);
+const flyContainer = ref<HTMLElement | null>(null);
+let flyAnimationFrame: number | null = null;
+let flyResizeObserver: ResizeObserver | null = null;
+
+// move the users from the bottom of the screen until the end of the list and back again
+const startFlying = () => {
+  stopFlying();
+
+  // vue clears the template ref directly on stop, but the container stays in the dom during the leave transition
+  const container = flyContainer.value;
+  if (!container) {
+    return;
+  }
+
+  let offset = window.innerHeight;
+  let direction = -1;
+  let lastTimestamp: number | null = null;
+
+  // reading the height in every frame forces a layout, so the height is only updated if it changes
+  let containerHeight = container.offsetHeight;
+  flyResizeObserver = new ResizeObserver(() => {
+    containerHeight = container.offsetHeight;
+  });
+  flyResizeObserver.observe(container);
+
+  const step = (timestamp: number) => {
+    // the container is removed after the leave transition
+    if (!container.isConnected) {
+      stopFlying();
+      return;
+    }
+
+    if (lastTimestamp !== null) {
+      offset +=
+        (direction *
+          FLY_SPEED_PIXELS_PER_SECOND *
+          (timestamp - lastTimestamp)) /
+        1000;
+
+      if (offset <= -containerHeight) {
+        offset = -containerHeight;
+        direction = 1;
+      } else if (offset >= window.innerHeight) {
+        offset = window.innerHeight;
+        direction = -1;
+      }
+    }
+
+    container.style.transform = `translateY(${offset}px)`;
+    lastTimestamp = timestamp;
+
+    flyAnimationFrame = requestAnimationFrame(step);
+  };
+
+  flyAnimationFrame = requestAnimationFrame(step);
+};
+
+const stopFlying = () => {
+  if (flyAnimationFrame !== null) {
+    cancelAnimationFrame(flyAnimationFrame);
+    flyAnimationFrame = null;
+  }
+
+  flyResizeObserver?.disconnect();
+  flyResizeObserver = null;
+};
 
 // functions
 const fetchRandomGeneratorState = async () => {
@@ -142,7 +218,13 @@ const fetchRandomGeneratorState = async () => {
       data.state == "running"
     ) {
       randomGeneratorRunningSoundState.value = "running";
-      props.users.sort(() => Math.random() - 0.5);
+
+      const userIds = Array.isArray(data.userIds) ? data.userIds : null;
+      flyingUsers.value = props.users
+        .filter((user) => !userIds || userIds.includes(user.id))
+        .sort(() => Math.random() - 0.5);
+
+      nextTick(startFlying);
     } else if (
       randomGeneratorState.value.state == "running" &&
       data.state == "stopped"
@@ -168,7 +250,10 @@ const fetchRandomGeneratorState = async () => {
       }
     }
 
-    randomGeneratorState.value = data;
+    // a new state object re-renders all flying users, so only replace the state if it changed
+    if (JSON.stringify(data) !== JSON.stringify(randomGeneratorState.value)) {
+      randomGeneratorState.value = data;
+    }
   }
 
   isFetchingRandomGenerator.value = false;
@@ -178,6 +263,7 @@ const randomGeneratorInterval = setInterval(fetchRandomGeneratorState, 500);
 
 onBeforeUnmount(() => {
   clearInterval(randomGeneratorInterval);
+  stopFlying();
 });
 </script>
 

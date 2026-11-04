@@ -4,139 +4,380 @@
 
     <CardContainer>
       <CardBase>
-        <UiH2>Aktionen</UiH2>
+        <FormContainer>
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <UiH2>Aktionen</UiH2>
+            <div class="flex items-center gap-2 text-sm font-medium">
+              <span
+                :class="stateBadges[currentState].classes"
+                class="rounded-md px-2 py-1 text-white"
+              >
+                {{ stateBadges[currentState].label }}
+              </span>
+              <span
+                title="Personen im Lostopf / alle Personen"
+                class="flex items-center gap-2 rounded-md bg-gray-100 px-2 py-1 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+              >
+                <FontAwesomeIcon :icon="['fas', 'user']" class="h-3 w-3" />
+                {{ poolCount }} / {{ users.length }}
+              </span>
+            </div>
+          </div>
 
-        <FormRow>
-          <AppButton
-            @click="updateStateAndSubmit('running')"
-            class="flex-1 text-center"
-          >
-            Zufallsgenerator starten
-          </AppButton>
-          <AppButton
-            @click="updateStateAndSubmit('stopped')"
-            theme="danger"
-            class="flex-1 text-center"
-          >
-            Zufallsgenerator stoppen
-          </AppButton>
-        </FormRow>
-        <FormRow>
-          <AppButton
-            @click="updateStateAndSubmit('idle')"
-            theme="gray"
-            class="flex-1 text-center"
-          >
-            Zufallsgenerator idle
-          </AppButton>
-        </FormRow>
+          <UiMessage v-if="preselectedUser" type="warning">
+            <template #message>
+              Vorausgewählt:
+              <strong>
+                {{ preselectedUser.firstname }} {{ preselectedUser.lastname }}
+              </strong>
+              . Die Person wird beim Stoppen unabhängig von allen Einstellungen
+              gezogen.
+            </template>
+          </UiMessage>
+          <UiMessage
+            v-else-if="!poolCount"
+            type="warning"
+            message="Es ist niemand im Lostopf. Wähle Fachbereiche aus, setze Ziehungen zurück oder wähle eine Person vor."
+          />
+          <UiMessage v-if="drawError" type="error" :message="drawError" />
+          <UiMessage v-if="lastDrawnUser" type="success">
+            <template #message>
+              Gezogen:
+              <strong>
+                {{ lastDrawnUser.firstname }} {{ lastDrawnUser.lastname }}
+              </strong>
+            </template>
+          </UiMessage>
+
+          <FormRow>
+            <AppButton
+              @click="updateStateAndSubmit('running')"
+              class="flex-1 text-center"
+            >
+              Zufallsgenerator starten
+            </AppButton>
+            <AppButton
+              @click="updateStateAndSubmit('stopped')"
+              theme="danger"
+              class="flex-1 text-center"
+            >
+              Zufallsgenerator stoppen
+            </AppButton>
+          </FormRow>
+          <FormRow>
+            <AppButton
+              @click="updateStateAndSubmit('idle')"
+              theme="gray"
+              class="flex-1 text-center"
+            >
+              Zufallsgenerator idle
+            </AppButton>
+            <AppButton
+              v-if="preselectedUser"
+              @click="preselectedUserId = null"
+              theme="gray"
+              class="flex-1 text-center"
+            >
+              Vorauswahl aufheben
+            </AppButton>
+          </FormRow>
+        </FormContainer>
       </CardBase>
 
       <CardBase>
-        <UiH2>DEBUG</UiH2>
+        <FormContainer>
+          <UiH2>Fachbereiche</UiH2>
 
-        <FormKit type="form" id="assign" :actions="false" v-model="form">
-          <FormContainer>
-            <FormRow>
-              <FormKit type="text" name="query" label="Suche" />
-            </FormRow>
-          </FormContainer>
-        </FormKit>
+          <p class="text-gray-500 dark:text-gray-400">
+            Nur Personen der ausgewählten Fachbereiche werden gezogen.
+          </p>
+          <!-- at most 5 courses per row, the courses of a row fill the whole width -->
+          <div class="flex flex-wrap gap-4">
+            <CourseToggleBox
+              v-for="course in courses"
+              :key="course.id"
+              :course="course"
+              :selected="settings.course_ids.includes(course.id)"
+              class="min-w-[12rem] flex-1 basis-[calc((100%_-_4rem)/5)]"
+              @toggle="toggleCourse(course.id)"
+            />
+          </div>
+          <FormRow>
+            <AppButton
+              @click="settings.course_ids = courses.map((course) => course.id)"
+              theme="gray"
+              class="flex-1 text-center"
+            >
+              Alle auswählen
+            </AppButton>
+            <AppButton
+              @click="settings.course_ids = []"
+              theme="gray"
+              class="flex-1 text-center"
+            >
+              Keine auswählen
+            </AppButton>
+          </FormRow>
+        </FormContainer>
       </CardBase>
+
+      <CardBase>
+        <FormContainer>
+          <UiH2>Personen</UiH2>
+
+          <FormKit type="text" label="Suche" v-model="query" />
+          <FormKit
+            type="checkbox"
+            label="Personen mit Opt-out ausblenden"
+            v-model="settings.hide_opted_out"
+          />
+          <FormKit
+            type="checkbox"
+            label="Personen anderer Fachbereiche ausblenden"
+            v-model="settings.hide_other_courses"
+          />
+          <FormKit
+            type="checkbox"
+            label="Bereits gezogene Personen ausblenden"
+            v-model="settings.hide_drawn"
+          />
+          <FormRow>
+            <AppButton
+              @click="showResetDrawn = true"
+              :disabled="!drawnCount"
+              theme="danger"
+              class="flex-1 text-center"
+            >
+              Alle Ziehungen zurücksetzen
+            </AppButton>
+          </FormRow>
+        </FormContainer>
+      </CardBase>
+
       <GridContainer :cols="3">
-        <UserBox
+        <RandomGeneratorUserCandidateCard
           v-for="filteredUser in filteredUsers"
-          @click="selectedDebugUser(filteredUser.id)"
+          :key="filteredUser.id"
           :user="filteredUser"
-          :class="{
-            'ring-2 ring-fhac-mint': filteredUser.id === selectedDebugUserId,
-          }"
-          class="select-none hover:cursor-pointer"
-        >
-        </UserBox>
+          :isSelected="filteredUser.id === preselectedUserId"
+          :isInSelectedCourses="isInSelectedCourses(filteredUser)"
+          @select="togglePreselectedUser(filteredUser.id)"
+          @resetDrawn="resetDrawnUser(filteredUser)"
+        />
       </GridContainer>
+
+      <CardBase>
+        <FormContainer>
+          <UiH2>Einstellungen</UiH2>
+
+          <FormKit
+            type="checkbox"
+            label="Opt-out für Studierende freischalten"
+            help="Studierende können sich dann auf einer eigenen Seite vom Zufallsgenerator abmelden."
+            v-model="settings.opt_out_enabled"
+          />
+        </FormContainer>
+      </CardBase>
     </CardContainer>
+
+    <UiConfirmModal
+      v-if="showResetDrawn"
+      title="Ziehungen zurücksetzen"
+      message="Sollen alle Ziehungen zurückgesetzt werden? Danach können alle Personen wieder gezogen werden."
+      confirmLabel="Zurücksetzen"
+      :processing="processing"
+      @close="showResetDrawn = false"
+      @confirm="resetDrawn"
+    />
   </LayoutDashboardContent>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, PropType, onBeforeUnmount } from "vue";
+import { computed, ref, PropType, watch } from "vue";
+import { router } from "@inertiajs/vue3";
 
-const selectedDebugUserId = ref<number | null>(null);
+type RandomGeneratorState = "setup" | "idle" | "running" | "stopped";
 
-const form = ref({
-  query: "",
-});
+type RandomGeneratorSettings = {
+  course_ids: number[];
+  opt_out_enabled: boolean;
+  hide_opted_out: boolean;
+  hide_other_courses: boolean;
+  hide_drawn: boolean;
+};
 
-const { users } = defineProps({
+const baseUrl = "/dashboard/admin/random-generator";
+
+const stateBadges: Record<
+  RandomGeneratorState,
+  { label: string; classes: string }
+> = {
+  setup: { label: "Setup", classes: "bg-gray-500" },
+  idle: { label: "Idle", classes: "bg-gray-500" },
+  running: { label: "Läuft", classes: "bg-fhac-mint-dark" },
+  stopped: { label: "Gestoppt", classes: "bg-red-700" },
+};
+
+const props = defineProps({
   users: {
     type: Array as PropType<Models.User[]>,
     required: true,
   },
+  courses: {
+    type: Array as PropType<App.Models.Course[]>,
+    required: true,
+  },
+  settings: {
+    type: Object as PropType<RandomGeneratorSettings>,
+    required: true,
+  },
+  poolCount: {
+    type: Number,
+    required: true,
+  },
+  state: {
+    type: Object as PropType<{ state: RandomGeneratorState }>,
+    required: true,
+  },
 });
 
+const query = ref("");
+const preselectedUserId = ref<number | null>(null);
+const currentState = ref<RandomGeneratorState>(props.state.state);
+const drawError = ref<string | null>(null);
+const lastDrawnUser = ref<{ firstname: string; lastname: string } | null>(null);
+const showResetDrawn = ref(false);
+const processing = ref(false);
+
+// local copy of the settings, every change is saved directly
+const settings = ref<RandomGeneratorSettings>({ ...props.settings });
+
+const toggleCourse = (courseId: number) => {
+  settings.value.course_ids = settings.value.course_ids.includes(courseId)
+    ? settings.value.course_ids.filter((id) => id !== courseId)
+    : [...settings.value.course_ids, courseId];
+};
+
+const preselectedUser = computed(
+  () => props.users.find((user) => user.id === preselectedUserId.value) ?? null,
+);
+
+const drawnCount = computed(
+  () => props.users.filter((user) => user.random_generator_drawn_at).length,
+);
+
+const isInSelectedCourses = (user: Models.User) =>
+  settings.value.course_ids.includes(user.course_id);
+
 const filteredUsers = computed(() => {
-  if (!form.value.query) {
-    return users;
-  }
+  const search = query.value.toLowerCase();
 
-  if (!users) {
-    return [];
-  }
+  return props.users.filter((user) => {
+    // the preselected user is always visible
+    if (user.id === preselectedUserId.value) {
+      return true;
+    }
 
-  return users.filter((user) => {
+    if (settings.value.hide_opted_out && user.random_generator_opt_out) {
+      return false;
+    }
+    if (settings.value.hide_other_courses && !isInSelectedCourses(user)) {
+      return false;
+    }
+    if (settings.value.hide_drawn && user.random_generator_drawn_at) {
+      return false;
+    }
+
     return (
-      user?.firstname.toLowerCase().includes(form.value.query.toLowerCase()) ||
-      user?.lastname.toLowerCase().includes(form.value.query.toLowerCase()) ||
-      user?.email.toLowerCase().includes(form.value.query.toLowerCase())
+      !search ||
+      user.firstname.toLowerCase().includes(search) ||
+      user.lastname.toLowerCase().includes(search) ||
+      user.email.toLowerCase().includes(search)
     );
   });
 });
 
-const state = ref<{
-  state: "setup" | "idle" | "running" | "stopped";
-  user_id?: number;
-}>({
-  state: "setup",
-});
+// save the settings shortly after the last change, so that fast clicks do not create many requests
+let saveSettingsTimeout: ReturnType<typeof setTimeout> | undefined;
+watch(
+  settings,
+  () => {
+    clearTimeout(saveSettingsTimeout);
+    saveSettingsTimeout = setTimeout(() => {
+      router.post(`${baseUrl}/settings`, settings.value, {
+        preserveScroll: true,
+        preserveState: true,
+        only: ["settings", "poolCount"],
+      });
+    }, 300);
+  },
+  { deep: true },
+);
 
-const selectedDebugUser = (userId: number) => {
-  selectedDebugUserId.value = userId;
+const togglePreselectedUser = (userId: number) => {
+  preselectedUserId.value = preselectedUserId.value === userId ? null : userId;
 };
 
-const updateStateAndSubmit = (
-  newState: "setup" | "idle" | "running" | "stopped",
-) => {
-  state.value.state = newState;
+const updateStateAndSubmit = async (newState: RandomGeneratorState) => {
+  drawError.value = null;
 
-  // check if new state is "stopped" and if so get random user
-  if (newState === "stopped") {
-    state.value.user_id =
-      selectedDebugUserId.value ??
-      users[Math.floor(Math.random() * users.length)].id;
-  }
-
-  submitRandomGeneratorHandler();
-};
-
-const submitRandomGeneratorHandler = async () => {
-  const response = await fetch("/dashboard/admin/random-generator", {
+  const response = await fetch(baseUrl, {
     method: "POST",
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
+      Accept: "application/json",
       "X-CSRF-TOKEN":
         document
           .querySelector("meta[name='csrf-token']")
           ?.getAttribute("content") || "",
     },
-    body: JSON.stringify(state.value),
+    body: JSON.stringify({
+      state: newState,
+      // the server draws the user, a preselected user overrides the pool
+      user_id: newState === "stopped" ? preselectedUserId.value : null,
+    }),
   });
 
-  if (response.ok && state.value.state === "stopped") {
-    setTimeout(() => {
-      selectedDebugUserId.value = null;
-    }, 5000);
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok || !data.success) {
+    drawError.value =
+      data.message ?? "Der Zufallsgenerator konnte nicht geändert werden.";
+    return;
   }
+
+  currentState.value = newState;
+
+  if (newState === "stopped") {
+    lastDrawnUser.value = data.user;
+    preselectedUserId.value = null;
+
+    router.reload({ only: ["users", "poolCount"] });
+  }
+};
+
+const resetDrawnUser = (user: Models.User) => {
+  router.post(
+    `${baseUrl}/user/${user.id}/reset-drawn`,
+    {},
+    { preserveScroll: true, preserveState: true },
+  );
+};
+
+const resetDrawn = () => {
+  processing.value = true;
+  router.post(
+    `${baseUrl}/reset-drawn`,
+    {},
+    {
+      preserveScroll: true,
+      preserveState: true,
+      onFinish: () => {
+        processing.value = false;
+        showResetDrawn.value = false;
+      },
+    },
+  );
 };
 </script>

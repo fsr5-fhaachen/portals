@@ -22,18 +22,9 @@ module.exports = {
             transform: "rotate(15deg)",
           },
         },
-        fly: {
-          from: {
-            transform: "translateY(100vh)",
-          },
-          to: {
-            transform: "translateY(-100%)",
-          },
-        },
       },
       animation: {
         wiggle: "wiggle 2s ease-in-out infinite",
-        fly: "fly 75s infinite linear alternate",
       },
       colors: {
         fhac: {

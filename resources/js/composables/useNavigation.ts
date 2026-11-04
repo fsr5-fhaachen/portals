@@ -45,6 +45,14 @@ export default () => {
             visible: isModuleActive("strichlistensystem"),
           },
           {
+            title: "Zufallsgenerator",
+            href: "/dashboard/random-generator",
+            visible:
+              isModuleActive("randomGenerator") &&
+              !!page.props.randomGeneratorOptOutEnabled &&
+              !isTutor,
+          },
+          {
             title: "Scoring",
             href: "/dashboard/tutor/scoring",
             matchPrefix: true,
