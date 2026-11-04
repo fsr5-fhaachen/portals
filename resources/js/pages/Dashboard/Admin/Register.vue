@@ -67,6 +67,7 @@
                 name="avatar"
                 label="Avatar hochladen"
                 validation="file|image|mimes:jpeg,jpg,png,gif"
+                help="Das Bild wird vor dem Upload automatisch verkleinert und komprimiert."
               />
             </FormRow>
             <FormRow>
@@ -217,6 +218,7 @@ const selectFormCourseOptions = useSelectFormCourseOptions(courses, true);
 const selectFormEventOptions = useSelectFormEventOptions(events);
 
 const { uploadFileByPresignedUrl } = useS3();
+const { compressImage } = useImageCompression();
 
 const selectFormSlotOptions = computed(() => {
   const event = getEventById(assignForm.value.event_id);
@@ -274,7 +276,10 @@ const registerSubmitHandler = async () => {
 
   if (registerForm.value.avatar?.length) {
     const formData = new FormData();
-    formData.append("avatar", registerForm.value.avatar[0].file);
+    formData.append(
+      "avatar",
+      await compressImage(registerForm.value.avatar[0].file),
+    );
 
     const response = await fetch(`/api/user/presigned-avatar-url`, {
       method: "POST",
