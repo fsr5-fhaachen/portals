@@ -38,6 +38,8 @@ class User extends Authenticatable implements Auditable
      */
     protected $casts = [
         'pin' => 'hashed',
+        'random_generator_opt_out' => 'boolean',
+        'random_generator_drawn_at' => 'datetime',
     ];
 
     /**
