@@ -14,6 +14,7 @@ declare global {
   const useAppEventType: (typeof import("../composables/useAppEventType"))["default"];
   const useColorMode: (typeof import("../composables/useColorMode"))["default"];
   const useEscapeHtml: (typeof import("../composables/useEscapeHtml"))["default"];
+  const useImageCompression: (typeof import("../composables/useImageCompression"))["default"];
   const useNavigation: (typeof import("../composables/useNavigation"))["default"];
   const usePagesAsNavigation: (typeof import("../composables/usePagesAsNavigation"))["default"];
   const usePlaceholderPerson: (typeof import("../composables/usePlaceholderPerson"))["default"];

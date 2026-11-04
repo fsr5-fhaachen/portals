@@ -151,6 +151,7 @@
                         name="avatar"
                         label="Avatar hochladen"
                         validation="file|image|mimes:jpeg,jpg,png,gif"
+                        help="Das Bild wird vor dem Upload automatisch verkleinert und komprimiert."
                       />
                     </FormRow>
 
@@ -234,6 +235,7 @@ const selectFormRoleOptions = useSelectFormRoleOptions(roles);
 const randomPlaceholderPerson = usePlaceholderPerson();
 
 const { uploadFileByPresignedUrl } = useS3();
+const { compressImage } = useImageCompression();
 
 const close = () => {
   emits("close");
@@ -265,7 +267,10 @@ const editSubmitHandler = async () => {
 
   if (editForm.value.avatar?.length) {
     const formData = new FormData();
-    formData.append("avatar", editForm.value.avatar[0].file);
+    formData.append(
+      "avatar",
+      await compressImage(editForm.value.avatar[0].file),
+    );
 
     const response = await fetch(`/api/user/presigned-avatar-url`, {
       method: "POST",
