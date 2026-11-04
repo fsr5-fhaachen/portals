@@ -15,9 +15,8 @@
             <FormRow>
               <p class="text-gray-500 dark:text-gray-400">
                 Beim Zufallsgenerator wird auf der Bühne zufällig eine Person
-                gezogen. Dabei werden dein Name und dein Bild auf der Leinwand
-                angezeigt. Wenn du nicht teilnehmen möchtest, entferne den Haken
-                und speichere.
+                gezogen, um am aktuellen Spiel teilzunehmen. Wenn du nicht
+                teilnehmen möchtest, entferne den Haken und speichere.
               </p>
             </FormRow>
             <FormRow>
