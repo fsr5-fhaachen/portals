@@ -17,7 +17,8 @@ class DatabaseSeeder extends Seeder
         $seeders = [
             RoleSeeder::class,
             ModuleSeeder::class,
-            CourseSeeder::class,
+            // only the faculties take part in gerolstein, not the single study programmes
+            config('app.event_type') == 'gerolstein' ? CourseFacultySeeder::class : CourseSeeder::class,
             TutorSeeder::class,
         ];
 

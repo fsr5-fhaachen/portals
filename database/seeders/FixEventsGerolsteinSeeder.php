@@ -10,30 +10,16 @@ use Illuminate\Database\Seeder;
 class FixEventsGerolsteinSeeder extends Seeder
 {
     /**
-     * Run the events seeds.
+     * Register all students for the "Spieleolympiade" that are not registered yet, e.g. before the teams are divided.
      */
     public function run(): void
     {
-        // check if event with name "Spieleolympiade" exists
-        $event = Event::where('name', 'Spieleolympiade')->first();
+        $event = Event::where('name', 'Spieleolympiade')->firstOrFail();
 
-        // register all students for the event
-        $this->registerStudents($event);
-
-        // check if event with name "Gruppenphase" exists
-        $event = Event::where('name', 'Gruppenphase')->first();
-
-        // register all students for the event
-        $this->registerStudents($event);
-    }
-
-    /**
-     * Register all students for the given event.
-     */
-    private function registerStudents(Event $event): void
-    {
-        // get all students
-        $students = User::doesntHave('roles')->get();
+        // get all students without a registration for the event
+        $students = User::doesntHave('roles')
+            ->whereDoesntHave('registrations', fn ($query) => $query->where('event_id', $event->id))
+            ->get();
 
         // create registration
         foreach ($students as $student) {

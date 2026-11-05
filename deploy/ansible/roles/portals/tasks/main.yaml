@@ -45,7 +45,8 @@
     owner: root
     group: root
     mode: "0644"
-  when: portals_seed_database | default(false) or portals_seed_students | default(false)
+  # the students can also register themselves instead (registration module), then there is no students.csv
+  when: (portals_seed_database | default(false) or portals_seed_students | default(false)) and (playbook_dir + '/students.csv') is file
 - name: create telegram.csv
   ansible.builtin.copy:
     dest: "{{ portals_local_path }}/database/seeders/telegram.csv"
@@ -53,7 +54,7 @@
     owner: root
     group: root
     mode: "0644"
-  when: portals_seed_database | default(false) or portals_seed_telegram | default(false)
+  when: (portals_seed_database | default(false) or portals_seed_telegram | default(false)) and (playbook_dir + '/telegram.csv') is file
 - name: create avatars
   ansible.builtin.copy:
     dest: "{{ portals_local_path }}/database/seeders/images"

@@ -38,7 +38,8 @@ class EventsGerolsteinSeeder extends Seeder
     }
 
     /**
-     * Run the "Spieleolympiade" event seeds (friday from 10:00).
+     * Run the "Spieleolympiade" event seeds (friday from 10:00). The students register themselves until the morning, so
+     * the teams can be divided before the start.
      */
     public function runSpieleolympiade(): void
     {
@@ -53,7 +54,7 @@ class EventsGerolsteinSeeder extends Seeder
         $event->name = 'Spieleolympiade';
         $event->type = 'group_phase';
         $event->registration_from = new DateTime('2026-11-05 8:00:00');
-        $event->registration_to = new DateTime('2026-11-05 8:00:00');
+        $event->registration_to = new DateTime('2026-11-06 9:00:00');
         $event->has_requirements = false;
         $event->consider_alcohol = false;
         $event->sort_order = 110;
