@@ -14,6 +14,11 @@ class ModuleGerolsteinSeeder extends Seeder
     {
         $modules = [
             [
+                'key' => 'registration',
+                'active' => true,
+                'expose_public' => false,
+            ],
+            [
                 'key' => 'randomGenerator',
                 'active' => true,
                 'expose_public' => true,
@@ -27,6 +32,11 @@ class ModuleGerolsteinSeeder extends Seeder
                 'key' => 'countdown',
                 'active' => true,
                 'expose_public' => true,
+            ],
+            [
+                'key' => 'strichlistensystem',
+                'active' => true,
+                'expose_public' => false,
             ],
             [
                 'key' => 'scoring',

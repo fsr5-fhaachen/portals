@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
             ModuleSeeder::class,
             CourseSeeder::class,
             TutorSeeder::class,
-            ArticleSeeder::class,
         ];
 
         // add seder by event
@@ -27,6 +26,7 @@ class DatabaseSeeder extends Seeder
             $seeders = [
                 ...$seeders,
                 UserDemoSeeder::class,
+                ArticleSeeder::class,
                 ModuleDemoSeeder::class,
                 EventsDemoSeeder::class,
                 PageDemoSeeder::class,
@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
         } elseif (config('app.event_type') == 'erstiwoche') {
             $seeders = [
                 ...$seeders,
+                ArticleSeeder::class,
                 ModuleErstiwocheSeeder::class,
                 EventsErstiwocheSeeder::class,
                 PageErstiwocheSeeder::class,
@@ -43,6 +44,7 @@ class DatabaseSeeder extends Seeder
             $seeders = [
                 ...$seeders,
                 StudentSeeder::class,
+                ArticleGerolsteinSeeder::class,
                 ModuleGerolsteinSeeder::class,
                 EventsGerolsteinSeeder::class,
                 PageGerolsteinSeeder::class,

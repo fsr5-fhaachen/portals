@@ -109,6 +109,8 @@ return [
         'pizza-slice',
         'hotdog',
         'ice-cream',
+        'candy-cane',
+        'bowl-food',
     ],
 
 ];
