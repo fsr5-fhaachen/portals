@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardAdminRandomGeneratorController;
 use App\Http\Controllers\DashboardAdminScoreSystemController;
 use App\Http\Controllers\DashboardAdminScoringController;
 use App\Http\Controllers\DashboardAdminStrichlistensystemController;
+use App\Http\Controllers\DashboardAdminWorkshopController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
 use App\Http\Controllers\DashboardTutorController;
@@ -112,6 +113,21 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
             Route::get('/event/{event}/registrations', [DashboardAdminController::class, 'registrations'])->name('dashboard.admin.event.registrations');
             Route::get('/event/{event}/submit', [DashboardAdminController::class, 'eventSubmit'])->name('dashboard.admin.event.submit');
             Route::post('/event/{event}/submit', [DashboardAdminController::class, 'eventExecuteSubmit'])->name('dashboard.admin.event.executeSubmit');
+
+            Route::prefix('/event/{event}/workshops')->scopeBindings()->group(function () {
+                Route::get('/', [DashboardAdminWorkshopController::class, 'index'])->name('dashboard.admin.workshops.index');
+                Route::post('/settings', [DashboardAdminWorkshopController::class, 'updateSettings'])->name('dashboard.admin.workshops.updateSettings');
+                Route::post('/block', [DashboardAdminWorkshopController::class, 'storeBlock'])->name('dashboard.admin.workshops.storeBlock');
+                Route::post('/block/{workshopBlock}', [DashboardAdminWorkshopController::class, 'updateBlock'])->name('dashboard.admin.workshops.updateBlock');
+                Route::delete('/block/{workshopBlock}', [DashboardAdminWorkshopController::class, 'deleteBlock'])->name('dashboard.admin.workshops.deleteBlock');
+                Route::post('/workshop', [DashboardAdminWorkshopController::class, 'storeWorkshop'])->name('dashboard.admin.workshops.storeWorkshop');
+                Route::post('/workshop/{workshop}', [DashboardAdminWorkshopController::class, 'updateWorkshop'])->name('dashboard.admin.workshops.updateWorkshop');
+                Route::delete('/workshop/{workshop}', [DashboardAdminWorkshopController::class, 'deleteWorkshop'])->name('dashboard.admin.workshops.deleteWorkshop');
+                Route::post('/run', [DashboardAdminWorkshopController::class, 'run'])->name('dashboard.admin.workshops.run');
+                Route::post('/publish', [DashboardAdminWorkshopController::class, 'publish'])->name('dashboard.admin.workshops.publish');
+                Route::post('/unpublish', [DashboardAdminWorkshopController::class, 'unpublish'])->name('dashboard.admin.workshops.unpublish');
+                Route::post('/assign', [DashboardAdminWorkshopController::class, 'assign'])->name('dashboard.admin.workshops.assign');
+            });
         });
 
         Route::middleware(ActiveModule::class.':randomGenerator', 'can:manage random generator')->group(function () {

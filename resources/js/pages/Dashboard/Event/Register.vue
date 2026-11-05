@@ -63,6 +63,49 @@
               />
             </FormRow>
 
+            <template v-if="event.type == 'workshop_booking'">
+              <FormDivider />
+
+              <FormRow>
+                <UiH2>Deine Workshop-Wünsche</UiH2>
+              </FormRow>
+              <UiMessage
+                v-for="(error, field) in priorityErrors"
+                :key="field"
+                type="error"
+                :message="error"
+              />
+              <UiMessage
+                v-if="!hasEnoughWorkshops"
+                type="warning"
+                message="Für dieses Event gibt es noch nicht genug Workshops. Die Anmeldung ist bald möglich."
+              />
+              <template v-else>
+                <FormRow>
+                  <p class="text-gray-500 dark:text-gray-400">
+                    Wähle {{ event.workshop_priority_count }} verschiedene
+                    Workshops nach Priorität aus. Wir teilen dich pro Zeitblock
+                    in einen Workshop ein und versuchen dabei, deine höchsten
+                    Wünsche zu erfüllen.
+                  </p>
+                </FormRow>
+                <FormKit type="list" name="priorities">
+                  <FormRow
+                    v-for="index in event.workshop_priority_count"
+                    :key="index"
+                  >
+                    <FormKit
+                      type="select"
+                      :label="`Priorität ${index}`"
+                      placeholder="Wähle einen Workshop aus"
+                      validation="required"
+                      :options="workshopOptions(index - 1)"
+                    />
+                  </FormRow>
+                </FormKit>
+              </template>
+            </template>
+
             <template v-if="event.consider_alcohol || dynamicFormSchema.length">
               <FormDivider />
 
@@ -83,10 +126,41 @@
             </template>
 
             <FormRow>
-              <FormKit type="submit" label="Anmelden" />
+              <FormKit
+                type="submit"
+                label="Anmelden"
+                :disabled="
+                  event.type == 'workshop_booking' && !hasEnoughWorkshops
+                "
+              />
             </FormRow>
           </FormContainer>
         </FormKit>
+      </CardBase>
+
+      <CardBase v-if="event.type == 'workshop_booking'">
+        <FormContainer>
+          <UiH2>Workshops</UiH2>
+
+          <div v-for="workshop in event.workshops" :key="workshop.id">
+            <p class="font-medium text-gray-900 dark:text-gray-100">
+              {{ workshop.name }}
+            </p>
+            <p
+              v-if="workshop.description"
+              class="text-sm text-gray-500 dark:text-gray-400"
+            >
+              {{ workshop.description }}
+            </p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              {{
+                workshop.sessions
+                  ?.map((session) => session.block?.name)
+                  .join(", ")
+              }}
+            </p>
+          </div>
+        </FormContainer>
       </CardBase>
 
       <CardBase v-if="event.description">
@@ -110,7 +184,7 @@ export default {
 <script setup lang="ts">
 import { computed, ref, PropType } from "vue";
 import { FormKitSchemaNode } from "@formkit/core";
-import { router } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
 
 const { event } = defineProps({
   event: {
@@ -123,10 +197,41 @@ const selectFormSlotOptions = useSelectFormSlotOptions(
   event.slots as App.Models.Slot[],
 );
 
-const form = ref({
+const form = ref<{
+  slot: number;
+  drinks_no_alcohol: boolean;
+  // workshop ids ordered by priority, only for a workshop booking
+  priorities?: (number | undefined)[];
+}>({
   slot: 0,
   drinks_no_alcohol: false,
 });
+
+// every priority needs another workshop
+const hasEnoughWorkshops = computed(
+  () => (event.workshops?.length ?? 0) >= event.workshop_priority_count,
+);
+
+const page = usePage();
+const priorityErrors = computed(() =>
+  Object.fromEntries(
+    Object.entries((page.props.errors ?? {}) as Record<string, string>).filter(
+      ([field]) => field.startsWith("priorities"),
+    ),
+  ),
+);
+
+// every workshop can only be chosen once, so the workshops of the other priorities are left out
+const workshopOptions = (priorityIndex: number) =>
+  (event.workshops ?? [])
+    .filter(
+      (workshop) =>
+        !(form.value.priorities ?? []).some(
+          (workshopId, index) =>
+            index !== priorityIndex && workshopId === workshop.id,
+        ),
+    )
+    .map((workshop) => ({ label: workshop.name, value: workshop.id }));
 
 const slotData = computed(() => {
   if (event.slots?.length && form.value.slot) {

@@ -163,6 +163,61 @@
           />
         </template>
 
+        <template v-else-if="event.type == 'workshop_booking'">
+          <CardBase v-if="registration.workshop_assignments">
+            <FormContainer>
+              <UiH2>Deine Workshops</UiH2>
+              <UiDl>
+                <template
+                  v-for="block in event.workshop_blocks"
+                  :key="block.id"
+                >
+                  <UiDt>
+                    {{ block.name }},
+                    <UiDateTimeString
+                      :value="block.starts_at"
+                      :withClockSuffix="true"
+                    />
+                  </UiDt>
+                  <UiDd>
+                    <template v-if="sessionsByBlock[block.id]">
+                      <strong>{{
+                        sessionsByBlock[block.id].workshop?.name
+                      }}</strong>
+                      <template v-if="sessionsByBlock[block.id].location">
+                        ({{ sessionsByBlock[block.id].location }})
+                      </template>
+                    </template>
+                    <template v-else>
+                      In diesem Block konnten wir dich leider nicht einteilen.
+                    </template>
+                  </UiDd>
+                </template>
+              </UiDl>
+            </FormContainer>
+          </CardBase>
+          <template v-else>
+            <UiMessage
+              message="Die Einteilung in deine Workshops folgt bald."
+            />
+            <CardBase v-if="registration.workshop_priorities?.length">
+              <FormContainer>
+                <UiH2>Deine Wünsche</UiH2>
+                <ol
+                  class="list-inside list-decimal text-gray-900 dark:text-gray-100"
+                >
+                  <li
+                    v-for="priority in registration.workshop_priorities"
+                    :key="priority.id"
+                  >
+                    {{ priority.workshop?.name }}
+                  </li>
+                </ol>
+              </FormContainer>
+            </CardBase>
+          </template>
+        </template>
+
         <UiMessage
           v-if="
             userRegistration.queue_position &&
@@ -216,6 +271,16 @@ const slotData = computed(() => {
 
   return null;
 });
+
+// the assigned sessions are only loaded after the workshops were published
+const sessionsByBlock = computed(() =>
+  Object.fromEntries(
+    (registration?.workshop_assignments ?? []).map((assignment) => [
+      assignment.workshop_block_id,
+      assignment.session,
+    ]),
+  ),
+);
 
 const userRegistration = ref(registration);
 const isFetchingRegistration = ref(false);

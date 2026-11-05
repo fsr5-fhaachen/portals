@@ -20,6 +20,11 @@ use App\Models\Station;
 use App\Models\StationTutor;
 use App\Models\Stop;
 use App\Models\User;
+use App\Models\Workshop;
+use App\Models\WorkshopAssignment;
+use App\Models\WorkshopBlock;
+use App\Models\WorkshopPriority;
+use App\Models\WorkshopSession;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use OwenIt\Auditing\Models\Audit;
@@ -55,6 +60,11 @@ class AuditLogFormatter
         'CompetitionTeam' => ['class' => CompetitionTeam::class, 'label' => 'Team'],
         'Duel' => ['class' => Duel::class, 'label' => 'Duell'],
         'ExtraPoint' => ['class' => ExtraPoint::class, 'label' => 'Sonderpunkte'],
+        'WorkshopBlock' => ['class' => WorkshopBlock::class, 'label' => 'Zeitblock'],
+        'Workshop' => ['class' => Workshop::class, 'label' => 'Workshop'],
+        'WorkshopSession' => ['class' => WorkshopSession::class, 'label' => 'Workshop-Termin'],
+        'WorkshopPriority' => ['class' => WorkshopPriority::class, 'label' => 'Workshop-Wunsch'],
+        'WorkshopAssignment' => ['class' => WorkshopAssignment::class, 'label' => 'Workshop-Einteilung'],
     ];
 
     /**
@@ -72,6 +82,7 @@ class AuditLogFormatter
         'adminLogin' => 'Admin-Login',
         'tutorLoginFailed' => 'Tutor-Login fehlgeschlagen',
         'adminLoginFailed' => 'Admin-Login fehlgeschlagen',
+        'workshopsAssigned' => 'Workshops eingeteilt',
     ];
 
     /**
@@ -105,6 +116,7 @@ class AuditLogFormatter
         'bonus_per_team',
         'is_tutor',
         'is_admin',
+        'is_cancelled',
     ];
 
     /**
@@ -125,6 +137,8 @@ class AuditLogFormatter
         'team_a_id' => CompetitionTeam::class,
         'team_b_id' => CompetitionTeam::class,
         'competition_team_id' => CompetitionTeam::class,
+        'workshop_id' => Workshop::class,
+        'workshop_block_id' => WorkshopBlock::class,
     ];
 
     /**
@@ -192,6 +206,21 @@ class AuditLogFormatter
         'note' => 'Notiz',
         'points' => 'Punkte',
         'reason' => 'Grund',
+        'workshop_priority_count' => 'Anzahl Prioritäten',
+        'workshops_published_at' => 'Workshops veröffentlicht',
+        'starts_at' => 'Beginn',
+        'ends_at' => 'Ende',
+        'location' => 'Ort',
+        'minimum_participants' => 'Min. Teilnehmende',
+        'is_cancelled' => 'Fällt aus',
+        'priority' => 'Priorität',
+        'registration_id' => 'Anmeldung',
+        'workshop_id' => 'Workshop',
+        'workshop_block_id' => 'Zeitblock',
+        'workshop_session_id' => 'Workshop-Termin',
+        'assigned' => 'Eingeteilt',
+        'unassigned' => 'Ohne Workshop',
+        'cancelled_sessions' => 'Ausgefallene Termine',
     ];
 
     /**
@@ -438,6 +467,9 @@ class AuditLogFormatter
             CourseGroup::class => $reference('course_id').' · '.$reference('group_id'),
             Duel::class => $reference('team_a_id').' vs. '.$reference('team_b_id'),
             ExtraPoint::class => $reference('competition_team_id').' ('.sprintf('%+d', (int) ($attributes['points'] ?? 0)).')',
+            WorkshopSession::class => $reference('workshop_id').' · '.$reference('workshop_block_id'),
+            WorkshopPriority::class => $reference('workshop_id').' (Prio '.($attributes['priority'] ?? '?').')',
+            WorkshopAssignment::class => $reference('workshop_block_id'),
             Page::class => (string) ($attributes['title'] ?? ''),
             State::class => (string) ($attributes['key'] ?? ''),
             default => (string) ($attributes['name'] ?? ''),

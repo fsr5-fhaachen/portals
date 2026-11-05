@@ -16,6 +16,8 @@ declare namespace App.Models {
     user?: User | null;
     slot?: Slot | null;
     group?: Group | null;
+    workshop_priorities?: WorkshopPriority[] | null;
+    workshop_assignments?: WorkshopAssignment[] | null;
     use_factory?: any | null;
   };
 }

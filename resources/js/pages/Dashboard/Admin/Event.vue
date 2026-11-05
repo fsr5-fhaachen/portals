@@ -42,6 +42,12 @@
       </AppButton>
     </div>
 
+    <div v-if="event.type == 'workshop_booking'" class="mb-16">
+      <AppButton @click="workshops()" class="text-center text-2xl uppercase">
+        Workshops verwalten
+      </AppButton>
+    </div>
+
     <div class="mb-16">
       <AppButton @click="view()" class="text-center text-2xl uppercase">
         Registrierungen anzeigen
@@ -51,7 +57,9 @@
     <GroupTable v-if="event.type == 'group_phase'" />
     <SlotTable v-else-if="event.type == 'slot_booking'" />
     <RegistrationTable
-      v-else-if="event.type == 'event_registration'"
+      v-else-if="
+        ['event_registration', 'workshop_booking'].includes(event.type)
+      "
       :courses="courses"
       :event="event"
       :hasFormResponses="hasFormResponses"
@@ -147,6 +155,9 @@ usePolling(fetchStatistics, 2500);
 
 const submit = () => {
   router.visit("/dashboard/admin/event/" + event.id + "/submit");
+};
+const workshops = () => {
+  router.visit("/dashboard/admin/event/" + event.id + "/workshops");
 };
 const view = () => {
   router.visit("/dashboard/admin/event/" + event.id + "/registrations");
