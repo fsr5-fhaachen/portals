@@ -72,5 +72,10 @@ declare module 'vue' {
     UserInfoModal: typeof import('./../components/user/InfoModal.vue')['default']
     UserRoleBadges: typeof import('./../components/user/RoleBadges.vue')['default']
     UserTable: typeof import('./../components/user/Table.vue')['default']
+    WorkshopAssignment: typeof import('./../components/workshop/Assignment.vue')['default']
+    WorkshopAssignmentRow: typeof import('./../components/workshop/AssignmentRow.vue')['default']
+    WorkshopBlockManager: typeof import('./../components/workshop/BlockManager.vue')['default']
+    WorkshopForm: typeof import('./../components/workshop/Form.vue')['default']
+    WorkshopManager: typeof import('./../components/workshop/Manager.vue')['default']
   }
 }

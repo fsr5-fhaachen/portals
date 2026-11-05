@@ -81,8 +81,7 @@ export default {
   text: textClassification,
   textarea: {
     ...textClassification,
-    input:
-      "shadow-sm focus:ring-fhac-mint focus:border-fhac-mint block w-full sm:text-sm border-gray-300 rounded-md",
+    input: `${textClassification.input} min-h-24`,
   },
   time: textClassification,
   url: textClassification,

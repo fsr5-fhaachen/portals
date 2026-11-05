@@ -16,15 +16,19 @@ use App\Models\Group;
 use App\Models\Registration;
 use App\Models\Slot;
 use App\Models\User;
+use App\Models\WorkshopSession;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request as IlluminateRequest;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Role;
@@ -496,8 +500,8 @@ class DashboardAdminController extends Controller
         // get courses ordered by name
         $courses = Course::orderBy('name')->get();
 
-        // get all events with slots
-        $events = Event::with('slots', 'groups')->get();
+        // get all events with slots and workshops
+        $events = Event::with('slots', 'groups', 'workshopBlocks', 'workshops.sessions')->get();
 
         return Inertia::render('Dashboard/Admin/Register', [
             'courses' => $courses,
@@ -637,23 +641,36 @@ class DashboardAdminController extends Controller
             }
         }
 
+        // the admin places the user directly in the workshops of a workshop booking, the user has no wishes
+        $workshopSessions = $event->type == 'workshop_booking' ? $this->validatedWorkshopSessions($event) : collect();
+
         // get all other inputs
-        $form_responses = Request::except(['_token', 'slot_id', 'email', 'event_id', 'drinks_no_alcohol']);
+        $form_responses = Request::except(['_token', 'slot_id', 'email', 'event_id', 'drinks_no_alcohol', 'workshop_sessions']);
         if ($form_responses) {
             $userRegistration['form_responses'] = $form_responses;
         }
 
         // create registration
         try {
-            Registration::create([
-                'user_id' => $user->id,
-                'event_id' => $userRegistration['event_id'],
-                'slot_id' => (array_key_exists('slot_id', $userRegistration) ? $userRegistration['slot_id'] : null),
-                'group_id' => (array_key_exists('group_id', $userRegistration) ? $userRegistration['group_id'] : null),
-                'drinks_alcohol' => (array_key_exists('drinks_alcohol', $userRegistration) ? $userRegistration['drinks_alcohol'] : null),
-                'form_responses' => (array_key_exists('form_responses', $userRegistration) ? $userRegistration['form_responses'] : null),
-                'queue_position' => $queuePosition,
-            ]);
+            DB::transaction(function () use ($user, $userRegistration, $queuePosition, $workshopSessions) {
+                $registration = Registration::create([
+                    'user_id' => $user->id,
+                    'event_id' => $userRegistration['event_id'],
+                    'slot_id' => (array_key_exists('slot_id', $userRegistration) ? $userRegistration['slot_id'] : null),
+                    'group_id' => (array_key_exists('group_id', $userRegistration) ? $userRegistration['group_id'] : null),
+                    'drinks_alcohol' => (array_key_exists('drinks_alcohol', $userRegistration) ? $userRegistration['drinks_alcohol'] : null),
+                    'form_responses' => (array_key_exists('form_responses', $userRegistration) ? $userRegistration['form_responses'] : null),
+                    'queue_position' => $queuePosition,
+                ]);
+
+                foreach ($workshopSessions as $blockId => $session) {
+                    if (! $registration->assignWorkshopSession($session)) {
+                        throw ValidationException::withMessages([
+                            "workshop_sessions.{$blockId}" => 'Jeder Workshop kann nur einmal belegt werden.',
+                        ]);
+                    }
+                }
+            });
         } catch (UniqueConstraintViolationException) {
             Session::flash('error', 'Der Account ist bereits für dieses Event registriert.');
 
@@ -663,6 +680,38 @@ class DashboardAdminController extends Controller
         Session::flash('success', 'Der Account <strong>'.$user->email.'</strong> wurde erfolgreich für das Event <strong>'.$event->name.'</strong>'.(array_key_exists('slot_id', $userRegistration) ? ' zu dem Slot <strong>'.$slot->name.'</strong>' : '').(array_key_exists('group_id', $userRegistration) ? ' zu der Gruppe <strong>'.$group->name.'</strong>' : '').' zugewiesen.');
 
         return Redirect::back();
+    }
+
+    /**
+     * Validate the workshop sessions an admin places a user in, one session of the event per block. The sessions are
+     * assigned with Registration::assignWorkshopSession, which checks the rules of the assignment.
+     *
+     * @return Collection<int, WorkshopSession> the sessions by block id
+     *
+     * @throws ValidationException
+     */
+    private function validatedWorkshopSessions(Event $event): Collection
+    {
+        $sessionsById = $event->workshopSessions()->get()->keyBy('id');
+
+        $validated = Request::validate([
+            'workshop_sessions' => ['nullable', 'array'],
+            'workshop_sessions.*' => ['nullable', 'integer', Rule::in($sessionsById->keys()->all())],
+        ], [
+            'workshop_sessions.*.in' => 'Der Workshop gehört nicht zu diesem Event.',
+        ]);
+
+        $sessions = collect(array_filter($validated['workshop_sessions'] ?? []))->map(fn ($sessionId) => $sessionsById[$sessionId]);
+
+        foreach ($sessions as $blockId => $session) {
+            if ($session->workshop_block_id !== (int) $blockId) {
+                throw ValidationException::withMessages([
+                    "workshop_sessions.{$blockId}" => 'Der Workshop findet nicht in diesem Zeitblock statt.',
+                ]);
+            }
+        }
+
+        return $sessions;
     }
 
     private function getCourseCollections(Event $event): array

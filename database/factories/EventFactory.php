@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Event;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Event>
+ * @extends Factory<Event>
  */
 class EventFactory extends Factory
 {
@@ -27,5 +28,18 @@ class EventFactory extends Factory
             'consider_alcohol' => $this->faker->boolean(),
             'sort_order' => $this->faker->numberBetween(0, 255),
         ];
+    }
+
+    /**
+     * Indicate that the event is a workshop booking with the given amount of priorities.
+     */
+    public function workshopBooking(int $priorityCount = 3): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => 'workshop_booking',
+            'has_requirements' => false,
+            'consider_alcohol' => false,
+            'workshop_priority_count' => $priorityCount,
+        ]);
     }
 }

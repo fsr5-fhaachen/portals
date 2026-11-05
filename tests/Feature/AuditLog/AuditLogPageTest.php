@@ -6,6 +6,9 @@ use App\Models\Event;
 use App\Models\Group;
 use App\Models\Registration;
 use App\Models\User;
+use App\Models\Workshop;
+use App\Models\WorkshopBlock;
+use App\Models\WorkshopSession;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -280,6 +283,23 @@ class AuditLogPageTest extends TestCase
         $this->assertSame([], $entries[0]['changes']);
         $this->assertSame('Rollen geändert', $entries[1]['action_label']);
         $this->assertSame([['field' => 'roles', 'label' => 'Rollen', 'old' => 'keine', 'new' => 'esa, tutor']], $entries[1]['changes']);
+    }
+
+    public function test_workshop_sessions_are_labelled(): void
+    {
+        $event = Event::factory()->workshopBooking()->create();
+        $session = WorkshopSession::factory()
+            ->for(Workshop::factory()->for($event)->state(['name' => 'Löten']))
+            ->for(WorkshopBlock::factory()->for($event)->state(['name' => 'Vormittag']), 'block')
+            ->create();
+        $this->makeAudit(['auditable' => $session, 'old_values' => ['is_cancelled' => false], 'new_values' => ['is_cancelled' => true]]);
+
+        $entries = $this->auditLogEntries(['subject_type' => 'WorkshopSession']);
+
+        $this->assertCount(1, $entries);
+        $this->assertSame('Workshop-Termin', $entries[0]['subject_type_label']);
+        $this->assertSame('Löten · Vormittag', $entries[0]['subject_label']);
+        $this->assertSame('Fällt aus', $entries[0]['changes'][0]['label']);
     }
 
     public function test_sensitive_fields_are_never_shown(): void

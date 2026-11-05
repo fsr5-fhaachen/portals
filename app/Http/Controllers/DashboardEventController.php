@@ -8,8 +8,12 @@ use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -113,6 +117,15 @@ class DashboardEventController extends Controller
             $registration->group = $registration->group()->first();
         }
 
+        if ($event->type == 'workshop_booking') {
+            $event->load('workshopBlocks');
+
+            // the users only see their workshops after the assignment was published
+            $registration?->load($event->areWorkshopsPublished()
+                ? ['workshopPriorities.workshop', 'workshopAssignments.session.workshop']
+                : ['workshopPriorities.workshop']);
+        }
+
         return Inertia::render('Dashboard/Event/Index', [
             'event' => $event,
             'registration' => $registration,
@@ -133,6 +146,10 @@ class DashboardEventController extends Controller
             return $registrationIsPossible;
         }
         $event->slots = $event->slots()->get();
+
+        if ($event->type == 'workshop_booking') {
+            $event->load(['workshops.sessions.block', 'workshopBlocks']);
+        }
 
         return Inertia::render('Dashboard/Event/Register', [
             'event' => $event,
@@ -232,15 +249,27 @@ class DashboardEventController extends Controller
             }
         }
 
+        // the user chooses the workshops of a workshop booking by priority
+        $workshopIds = $event->type == 'workshop_booking' ? $this->validatedWorkshopPriorities($request, $event) : [];
+
         // get all other inputs
-        $form_responses = $request->except(['_token', 'drinks_no_alcohol', 'slot']);
+        $form_responses = $request->except(['_token', 'drinks_no_alcohol', 'slot', 'priorities']);
         if ($form_responses) {
             $userRegistration['form_responses'] = $form_responses;
         }
 
         // register the user to the event
         try {
-            $event->registrations()->create($userRegistration);
+            DB::transaction(function () use ($event, $userRegistration, $workshopIds) {
+                $registration = $event->registrations()->create($userRegistration);
+
+                foreach ($workshopIds as $index => $workshopId) {
+                    $registration->workshopPriorities()->create([
+                        'workshop_id' => $workshopId,
+                        'priority' => $index + 1,
+                    ]);
+                }
+            });
         } catch (UniqueConstraintViolationException) {
             Session::flash('info', 'Du bist bereits für dieses Event angemeldet.');
 
@@ -250,6 +279,38 @@ class DashboardEventController extends Controller
         Session::flash('success', 'Du wurdest erfolgreich für das Event angemeldet.');
 
         return $this->redirectToEvent($event);
+    }
+
+    /**
+     * Validate the workshop priorities of the request. The user has to choose as many different workshops of the event as
+     * the event has priorities, so the event needs at least that many workshops.
+     *
+     * @return list<int> the workshop ids ordered by priority
+     *
+     * @throws ValidationException
+     */
+    protected function validatedWorkshopPriorities(Request $request, Event $event): array
+    {
+        $workshopIds = $event->workshops()->pluck('id')->all();
+        $requiredCount = $event->workshop_priority_count;
+
+        if (count($workshopIds) < $requiredCount) {
+            throw ValidationException::withMessages([
+                'priorities' => 'Für dieses Event gibt es noch nicht genug Workshops. Die Anmeldung ist erst möglich, wenn es mindestens '.$requiredCount.' Workshops gibt.',
+            ]);
+        }
+
+        $message = 'Wähle '.$requiredCount.' verschiedene Workshops aus.';
+
+        $validated = Validator::make($request->only('priorities'), [
+            'priorities' => ['required', 'array', 'size:'.$requiredCount],
+            'priorities.*' => ['required', 'integer', 'distinct', Rule::in($workshopIds)],
+        ], [
+            'priorities.*' => $message,
+            'priorities.*.*' => $message,
+        ])->validate();
+
+        return array_map('intval', array_values($validated['priorities']));
     }
 
     /**

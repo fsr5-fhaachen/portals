@@ -139,6 +139,44 @@
 
             <template
               v-if="
+                getEventById(assignForm.event_id)?.type == 'workshop_booking'
+              "
+            >
+              <FormDivider />
+
+              <FormRow>
+                <UiH2>Workshops</UiH2>
+              </FormRow>
+              <FormRow>
+                <p class="text-gray-500 dark:text-gray-400">
+                  Der User wird direkt in die Workshops eingeteilt und behält
+                  sie, auch wenn die Einteilung neu gestartet wird.
+                </p>
+              </FormRow>
+              <UiMessage
+                v-for="(error, field) in workshopErrors"
+                :key="field"
+                type="error"
+                :message="error"
+              />
+              <FormKit type="group" name="workshop_sessions">
+                <FormRow
+                  v-for="block in getEventById(assignForm.event_id)
+                    ?.workshop_blocks"
+                  :key="block.id"
+                >
+                  <FormKit
+                    type="select"
+                    :name="String(block.id)"
+                    :label="block.name"
+                    :options="selectFormWorkshopSessionOptions(block.id)"
+                  />
+                </FormRow>
+              </FormKit>
+            </template>
+
+            <template
+              v-if="
                 (getEventById(assignForm.event_id) &&
                   getEventById(assignForm.event_id)?.consider_alcohol) ||
                 dynamicFormSchema.length
@@ -190,7 +228,7 @@
 
 <script setup lang="ts">
 import { FormKitSchemaNode } from "@formkit/core";
-import { router } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
 import { computed, ref, PropType } from "vue";
 
 const registerForm = ref({});
@@ -239,6 +277,29 @@ const selectFormGroupOptions = computed(() => {
   return useSelectFormGroupOptions(event.groups);
 });
 const randomPlaceholderPerson = usePlaceholderPerson();
+
+// the sessions of a block of the selected workshop booking
+const selectFormWorkshopSessionOptions = (blockId: number) => [
+  { label: "Kein Workshop", value: "" },
+  ...(getEventById(assignForm.value.event_id)?.workshops ?? []).flatMap(
+    (workshop) =>
+      (workshop.sessions ?? [])
+        .filter((session) => session.workshop_block_id === blockId)
+        .map((session) => ({
+          label: workshop.name + (session.is_cancelled ? " (fällt aus)" : ""),
+          value: session.id,
+        })),
+  ),
+];
+
+const page = usePage();
+const workshopErrors = computed(() =>
+  Object.fromEntries(
+    Object.entries((page.props.errors ?? {}) as Record<string, string>).filter(
+      ([field]) => field.startsWith("workshop_sessions"),
+    ),
+  ),
+);
 
 /**
  * Handle multiple forms for events

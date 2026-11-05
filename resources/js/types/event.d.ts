@@ -12,11 +12,15 @@ declare namespace App.Models {
     consider_alcohol: boolean;
     form: any | null; // NOT FOUND;
     sort_order: number;
+    workshop_priority_count: number;
+    workshops_published_at: string /* Date */ | null;
     groups?: Group[] | null;
     registrations?: Registration[] | null;
     slots?: Slot[] | null;
     stations?: Station[] | null;
     courses?: Course[] | null;
+    workshops?: Workshop[] | null;
+    workshop_blocks?: WorkshopBlock[] | null;
     use_factory?: any | null;
   };
 }

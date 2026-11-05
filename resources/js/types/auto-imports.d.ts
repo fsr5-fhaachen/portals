@@ -26,4 +26,5 @@ declare global {
   const useSelectFormRoleOptions: (typeof import("../composables/useSelectFormRoleOptions"))["default"];
   const useSelectFormSlotOptions: (typeof import("../composables/useSelectFormSlotOptions"))["default"];
   const useSelectFormTeamOptions: (typeof import("../composables/useSelectFormTeamOptions"))["default"];
+  const useWorkshopChangeWarning: (typeof import("../composables/useWorkshopChangeWarning"))["default"];
 }
