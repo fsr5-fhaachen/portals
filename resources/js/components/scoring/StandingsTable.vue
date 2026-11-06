@@ -4,18 +4,56 @@
     type="info"
     message="Lege zuerst Teams an, um die Rangliste zu sehen."
   />
-  <AppTable
-    v-else
-    :columns="columns"
-    :elements="standings"
-    :idFunction="(row: Scoring.StandingRow) => row.team_id"
-  />
+  <div v-else class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
+      <thead class="bg-gray-50 dark:bg-gray-900">
+        <tr>
+          <th
+            v-for="header in headers"
+            :key="header"
+            scope="col"
+            class="whitespace-nowrap px-3 py-3.5 text-left text-sm font-semibold text-gray-900 first:pl-6 last:pr-6 dark:text-gray-300"
+          >
+            {{ header }}
+          </th>
+        </tr>
+      </thead>
+      <tbody
+        class="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800"
+      >
+        <tr v-for="row in standings" :key="row.team_id">
+          <td
+            class="whitespace-nowrap py-4 pl-6 pr-3 text-sm font-bold text-gray-900 dark:text-gray-100"
+          >
+            {{ row.rank }}.
+          </td>
+          <td
+            class="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900 dark:text-gray-100"
+          >
+            {{ row.team_name }}
+          </td>
+          <td :class="cellClass">{{ row.duels }}</td>
+          <td :class="cellClass">
+            {{ row.wins }}/{{ row.draws }}/{{ row.losses }}
+          </td>
+          <td :class="cellClass">{{ row.duel_points }}</td>
+          <td :class="cellClass">{{ row.bonus }}</td>
+          <td :class="cellClass">{{ row.extra_points }}</td>
+          <td
+            class="whitespace-nowrap py-4 pl-3 pr-6 text-sm font-bold text-gray-900 dark:text-gray-100"
+          >
+            {{ row.total }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { PropType } from "vue";
-import { TableColumn } from "../../types/table-column";
 
+// the standings are already ordered by rank on the server (see app/Helpers/ScoringStandings)
 defineProps({
   standings: {
     type: Array as PropType<Scoring.StandingRow[]>,
@@ -23,51 +61,17 @@ defineProps({
   },
 });
 
-const compareNumbers =
-  (key: keyof Scoring.StandingRow) =>
-  (a: Scoring.StandingRow, b: Scoring.StandingRow) =>
-    (a[key] as number) - (b[key] as number);
-
-const numberColumn = (name: keyof Scoring.StandingRow, text: string) =>
-  new TableColumn({
-    name,
-    text,
-    valueFunction: (row: Scoring.StandingRow) => String(row[name]),
-    compareFunction: compareNumbers(name),
-  });
-
-const columns = [
-  new TableColumn({
-    name: "rank",
-    text: "Platz",
-    valueFunction: (row: Scoring.StandingRow) =>
-      `<strong>${row.rank}.</strong>`,
-    compareFunction: compareNumbers("rank"),
-  }),
-  new TableColumn({
-    name: "team_name",
-    text: "Team",
-    valueFunction: (row: Scoring.StandingRow) => useEscapeHtml(row.team_name),
-    compareFunction: (a: Scoring.StandingRow, b: Scoring.StandingRow) =>
-      a.team_name.localeCompare(b.team_name),
-  }),
-  numberColumn("duels", "Duelle"),
-  new TableColumn({
-    name: "record",
-    text: "S/U/N",
-    valueFunction: (row: Scoring.StandingRow) =>
-      `${row.wins}/${row.draws}/${row.losses}`,
-    compareFunction: compareNumbers("wins"),
-  }),
-  numberColumn("duel_points", "Duellpunkte"),
-  numberColumn("bonus", "Bonus"),
-  numberColumn("extra_points", "Sonderpunkte"),
-  new TableColumn({
-    name: "total",
-    text: "Gesamt",
-    valueFunction: (row: Scoring.StandingRow) =>
-      `<strong>${row.total}</strong>`,
-    compareFunction: compareNumbers("total"),
-  }),
+const headers = [
+  "Platz",
+  "Team",
+  "Duelle",
+  "S/U/N",
+  "Duellpunkte",
+  "Bonus",
+  "Sonderpunkte",
+  "Gesamt",
 ];
+
+const cellClass =
+  "whitespace-nowrap px-3 py-4 text-sm text-gray-700 dark:text-gray-300";
 </script>
