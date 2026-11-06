@@ -685,7 +685,7 @@ class StrichlistensystemKioskTest extends TestCase
             ->assertSessionHas('error');
     }
 
-    public function test_avatar_is_only_delivered_with_bearer_token(): void
+    public function test_avatar_redirects_to_a_temporary_url_only_with_bearer_token(): void
     {
         Storage::fake('s3');
         Storage::disk('s3')->put('avatars/test.jpg', 'image-content');
@@ -694,22 +694,23 @@ class StrichlistensystemKioskTest extends TestCase
         $this->get(route('strichlistensystem.kiosk.avatar', $user))->assertUnauthorized();
 
         $response = $this->asKiosk()->get(route('strichlistensystem.kiosk.avatar', $user));
-        $response->assertOk();
-        $this->assertSame('image-content', $response->getContent());
+        $response->assertRedirect();
+        $this->assertStringContainsString('avatars/test.jpg', $response->headers->get('Location'));
+        $this->assertStringContainsString('private', $response->headers->get('Cache-Control'));
     }
 
-    public function test_missing_avatar_returns_not_found(): void
+    public function test_avatar_of_a_user_without_avatar_or_a_disabled_user_returns_not_found(): void
     {
         Storage::fake('s3');
         $userWithoutAvatar = User::factory()->create(['avatar' => null]);
-        $userWithMissingFile = User::factory()->create(['avatar' => 'avatars/missing.jpg']);
+        $disabledUser = User::factory()->create(['avatar' => 'avatars/test.jpg', 'is_disabled' => true]);
 
         $this->asKiosk()
             ->get(route('strichlistensystem.kiosk.avatar', $userWithoutAvatar))
             ->assertNotFound();
 
         $this->asKiosk()
-            ->get(route('strichlistensystem.kiosk.avatar', $userWithMissingFile))
+            ->get(route('strichlistensystem.kiosk.avatar', $disabledUser))
             ->assertNotFound();
     }
 }

@@ -13,7 +13,6 @@ use App\Models\StrichlistensystemKioskDevice;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\RateLimiter;
@@ -199,11 +198,11 @@ class StrichlistensystemKioskController extends Controller
     }
 
     /**
-     * Deliver the avatar of a person from the s3 storage
+     * Redirect to the avatar of a person in the s3 storage
      */
-    public function avatar(User $user): HttpResponse
+    public function avatar(User $user): RedirectResponse
     {
-        return StorageImage::response($user->is_disabled ? null : $user->avatar, 'private, max-age=3600');
+        return StorageImage::redirect($user->is_disabled ? null : $user->avatar, 3600, false);
     }
 
     /**

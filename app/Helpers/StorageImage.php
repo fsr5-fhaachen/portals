@@ -2,8 +2,7 @@
 
 namespace App\Helpers;
 
-use finfo;
-use Illuminate\Http\Response;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -12,19 +11,18 @@ use Illuminate\Support\Facades\Storage;
 class StorageImage
 {
     /**
-     * Get the image of the s3 storage as response, aborts with 404 if it does not exist. The image is loaded completely
-     * instead of streamed: a streamed s3 response blocks the octane worker until the request times out.
+     * Redirect to a temporary url of the image in the s3 storage, aborts with 404 without an image. The browser loads the
+     * image directly from the storage: creating the url needs no request to the storage, so a slow storage can not block
+     * the octane workers. The redirect is cached for half of the lifetime of the url, so a cached url is always valid.
      */
-    public static function response(?string $path, string $cacheControl): Response
+    public static function redirect(?string $path, int $lifetimeInSeconds, bool $isPublic): RedirectResponse
     {
-        $content = $path ? Storage::disk('s3')->get($path) : null;
-        if ($content === null) {
+        if (! $path) {
             abort(404);
         }
 
-        return response($content, 200, [
-            'Content-Type' => (new finfo(FILEINFO_MIME_TYPE))->buffer($content),
-            'Cache-Control' => $cacheControl,
-        ]);
+        $url = Storage::disk('s3')->temporaryUrl($path, now()->addSeconds($lifetimeInSeconds));
+
+        return redirect()->away($url)->header('Cache-Control', ($isPublic ? 'public' : 'private').', max-age='.intdiv($lifetimeInSeconds, 2));
     }
 }

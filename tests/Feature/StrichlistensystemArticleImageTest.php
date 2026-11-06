@@ -300,14 +300,15 @@ class StrichlistensystemArticleImageTest extends TestCase
         Storage::disk('s3')->assertMissing($article->image);
     }
 
-    public function test_image_is_delivered_with_a_long_cache(): void
+    public function test_image_redirects_to_a_temporary_url(): void
     {
         $article = $this->articleWithImage();
 
         $response = $this->get($article->image_url);
 
-        $response->assertOk()->assertHeader('Content-Type', 'image/png');
-        $this->assertStringContainsString('max-age=31536000', $response->headers->get('Cache-Control'));
+        $response->assertRedirect();
+        $this->assertStringContainsString($article->image, $response->headers->get('Location'));
+        $this->assertStringContainsString('public', $response->headers->get('Cache-Control'));
     }
 
     public function test_image_url_changes_with_a_new_image(): void

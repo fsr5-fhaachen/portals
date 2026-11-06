@@ -9,7 +9,6 @@ use App\Models\ArticleActionLog;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
@@ -62,12 +61,11 @@ class StrichlistensystemController extends Controller
     }
 
     /**
-     * Deliver the image of an article from the s3 storage. The url contains a version of the image,
-     * so the image can be cached for a long time.
+     * Redirect to the image of an article in the s3 storage.
      */
-    public function articleImage(Article $article): HttpResponse
+    public function articleImage(Article $article): RedirectResponse
     {
-        return StorageImage::response($article->image, 'public, max-age=31536000, immutable');
+        return StorageImage::redirect($article->image, 86400, true);
     }
 
     /**
