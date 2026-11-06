@@ -67,7 +67,7 @@ const { state } = defineProps({
   },
 });
 
-const teamAmount = ref(2);
+const teamAmount = ref(3);
 
 const form = ref<{
   teams: {

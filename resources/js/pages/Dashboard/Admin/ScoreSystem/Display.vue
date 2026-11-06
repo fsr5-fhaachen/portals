@@ -3,14 +3,34 @@
     <div
       class="m-auto bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text font-['EIGHTY_MILES'] text-transparent"
     >
-      <div v-if="scoreSystemState.teams" class="flex flex-row gap-64">
+      <div
+        v-if="scoreSystemState.teams"
+        :class="hasManyTeams ? 'gap-24' : 'gap-64'"
+        class="flex flex-row"
+      >
         <div
           v-for="(team, index) in scoreSystemState.teams"
           :key="index"
           class="flex flex-col items-center"
         >
-          <div class="text-[10rem] leading-[10rem]">{{ team.name }}</div>
-          <div class="text-[15rem] leading-[15rem]">{{ team.score }}</div>
+          <div
+            :class="
+              hasManyTeams
+                ? 'text-[7rem] leading-[7rem]'
+                : 'text-[10rem] leading-[10rem]'
+            "
+          >
+            {{ team.name }}
+          </div>
+          <div
+            :class="
+              hasManyTeams
+                ? 'text-[12rem] leading-[12rem]'
+                : 'text-[15rem] leading-[15rem]'
+            "
+          >
+            {{ team.score }}
+          </div>
         </div>
       </div>
     </div>
@@ -32,7 +52,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { ref, PropType, onBeforeUnmount } from "vue";
+import { computed, ref, PropType, onBeforeUnmount } from "vue";
 
 // locale state variables
 const scoreSystemState = ref<{
@@ -43,6 +63,9 @@ const scoreSystemState = ref<{
 }>({
   teams: [],
 });
+
+// more than two teams need a smaller font, so they fit next to each other on the screen
+const hasManyTeams = computed(() => scoreSystemState.value.teams.length > 2);
 
 const isFetchingScoreSystem = ref(false);
 
