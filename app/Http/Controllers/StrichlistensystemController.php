@@ -3,19 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ArticleBooking;
+use App\Helpers\StorageImage;
 use App\Models\Article;
 use App\Models\ArticleActionLog;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StrichlistensystemController extends Controller
 {
@@ -62,18 +62,12 @@ class StrichlistensystemController extends Controller
     }
 
     /**
-     * Stream the image of an article from the s3 storage. The url contains a version of the image,
+     * Deliver the image of an article from the s3 storage. The url contains a version of the image,
      * so the image can be cached for a long time.
      */
-    public function articleImage(Article $article): StreamedResponse
+    public function articleImage(Article $article): HttpResponse
     {
-        if (! $article->image || ! Storage::disk('s3')->exists($article->image)) {
-            abort(404);
-        }
-
-        return Storage::disk('s3')->response($article->image, null, [
-            'Cache-Control' => 'public, max-age=31536000, immutable',
-        ]);
+        return StorageImage::response($article->image, 'public, max-age=31536000, immutable');
     }
 
     /**

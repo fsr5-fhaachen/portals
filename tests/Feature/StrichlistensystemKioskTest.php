@@ -695,7 +695,7 @@ class StrichlistensystemKioskTest extends TestCase
 
         $response = $this->asKiosk()->get(route('strichlistensystem.kiosk.avatar', $user));
         $response->assertOk();
-        $this->assertSame('image-content', $response->streamedContent());
+        $this->assertSame('image-content', $response->getContent());
     }
 
     public function test_missing_avatar_returns_not_found(): void

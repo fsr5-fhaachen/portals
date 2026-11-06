@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ArticleBooking;
 use App\Helpers\QrCode;
+use App\Helpers\StorageImage;
 use App\Helpers\Table\KioskPersonsTable;
 use App\Models\Article;
 use App\Models\ArticleActionLog;
@@ -12,15 +13,14 @@ use App\Models\StrichlistensystemKioskDevice;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StrichlistensystemKioskController extends Controller
 {
@@ -199,17 +199,11 @@ class StrichlistensystemKioskController extends Controller
     }
 
     /**
-     * Stream the avatar of a person from the s3 storage
+     * Deliver the avatar of a person from the s3 storage
      */
-    public function avatar(User $user): StreamedResponse
+    public function avatar(User $user): HttpResponse
     {
-        if ($user->is_disabled || ! $user->avatar || ! Storage::disk('s3')->exists($user->avatar)) {
-            abort(404);
-        }
-
-        return Storage::disk('s3')->response($user->avatar, null, [
-            'Cache-Control' => 'private, max-age=3600',
-        ]);
+        return StorageImage::response($user->is_disabled ? null : $user->avatar, 'private, max-age=3600');
     }
 
     /**
