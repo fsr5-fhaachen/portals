@@ -66,6 +66,14 @@ class ArticleActionLog extends Model
     }
 
     /**
+     * Get the invoice of the action log, null if it is not invoiced yet.
+     */
+    public function invoice(): BelongsTo
+    {
+        return $this->belongsTo(StrichlistensystemInvoice::class, 'invoice_id');
+    }
+
+    /**
      * Get the article of the action log.
      */
     public function article(): BelongsTo
@@ -86,7 +94,8 @@ class ArticleActionLog extends Model
      */
     public function isCancellable(): bool
     {
-        if ($this->trashed() || ! $this->created_at) {
+        // a booking on an invoice can not be cancelled, the invoice would not match the bookings anymore
+        if ($this->trashed() || ! $this->created_at || $this->invoice_id !== null) {
             return false;
         }
 

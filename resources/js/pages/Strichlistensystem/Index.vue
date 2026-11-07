@@ -50,6 +50,13 @@
         />
 
         <CardBase>
+          <UiH2 class="mb-6">Bezahlen per Überweisung</UiH2>
+          <StrichlistensystemBillingDetailsForm
+            :billingDetails="billingDetails"
+          />
+        </CardBase>
+
+        <CardBase>
           <UiH2 class="mb-6">PIN ändern</UiH2>
           <StrichlistensystemPinForm submitLabel="PIN ändern" />
         </CardBase>
@@ -97,6 +104,10 @@ defineProps({
   },
   limitWindow: {
     type: Number,
+    required: true,
+  },
+  billingDetails: {
+    type: Object as PropType<Strichlistensystem.BillingDetails>,
     required: true,
   },
 });

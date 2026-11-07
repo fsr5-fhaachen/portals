@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Csv;
 use App\Helpers\Price;
+use App\Helpers\StrichlistensystemInvoicing;
 use App\Helpers\Table\ArticlesTable;
 use App\Helpers\Table\StrichlistensystemBillingTable;
 use App\Helpers\Table\StrichlistensystemBookingsTable;
 use App\Models\Article;
 use App\Models\ArticleActionLog;
+use App\Models\StrichlistensystemInvoice;
 use App\Models\StrichlistensystemKioskDevice;
 use App\Models\StrichlistensystemPayment;
 use App\Models\User;
@@ -175,12 +177,29 @@ class DashboardAdminStrichlistensystemController extends Controller
     /**
      * Get the balance and the payments of a user (for the payment dialog)
      */
-    public function billingUser(User $user): JsonResponse
+    public function billingUser(User $user, StrichlistensystemInvoicing $invoicing): JsonResponse
     {
         $latestPayment = $user->latestStrichlistensystemPayment();
 
         return response()->json([
             'balance' => $user->strichlistensystemBalance(),
+            // the address is shown to check it before an invoice is created
+            'billing' => [
+                'wants_bank_transfer' => (bool) $user->wants_bank_transfer,
+                'details' => $user->billingDetails(),
+                'problems' => $invoicing->problems($user),
+                'preview' => $invoicing->preview($user),
+                'invoices' => $user->strichlistensystemInvoices()
+                    ->orderByDesc('sequence')
+                    ->get()
+                    ->map(fn (StrichlistensystemInvoice $invoice) => [
+                        'id' => $invoice->id,
+                        'number' => $invoice->number,
+                        'issued_on' => $invoice->issued_on->toDateString(),
+                        'amount_due' => $invoice->amount_due,
+                        'is_cancelled' => $invoice->isCancelled(),
+                    ]),
+            ],
             'payments' => $user->strichlistensystemPayments()
                 ->withTrashed()
                 ->with('createdBy:id,firstname,lastname')

@@ -40,6 +40,7 @@ class User extends Authenticatable implements Auditable
         'pin' => 'hashed',
         'random_generator_opt_out' => 'boolean',
         'random_generator_drawn_at' => 'datetime',
+        'wants_bank_transfer' => 'boolean',
     ];
 
     /**
@@ -108,6 +109,54 @@ class User extends Authenticatable implements Auditable
     public function strichlistensystemPayments(): HasMany
     {
         return $this->hasMany(StrichlistensystemPayment::class);
+    }
+
+    /**
+     * Get the invoices of the strichlistensystem for the user.
+     */
+    public function strichlistensystemInvoices(): HasMany
+    {
+        return $this->hasMany(StrichlistensystemInvoice::class);
+    }
+
+    /**
+     * Get the address of the user for invoices.
+     *
+     * @return array{name: string, street: string, postal_code: string, city: string}
+     */
+    public function billingDetails(): array
+    {
+        return [
+            'name' => (string) $this->billing_name,
+            'street' => (string) $this->billing_street,
+            'postal_code' => (string) $this->billing_postal_code,
+            'city' => (string) $this->billing_city,
+        ];
+    }
+
+    /**
+     * Check if the address of the user for invoices is complete.
+     */
+    public function hasCompleteBillingDetails(): bool
+    {
+        foreach ($this->billingDetails() as $value) {
+            if (trim($value) === '') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Get the suggested name for invoices: first name and last name, every word starting with an upper case letter.
+     */
+    public function suggestedBillingName(): string
+    {
+        $name = trim(preg_replace('/\s+/u', ' ', $this->firstname.' '.$this->lastname));
+
+        // only the first letter of a word (also after a hyphen) is changed, e.g. "anna-lena mcdonald" -> "Anna-Lena Mcdonald"
+        return preg_replace_callback('/(^|[\s-])(\p{Ll})/u', fn (array $match) => $match[1].mb_strtoupper($match[2]), $name);
     }
 
     /**

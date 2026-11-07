@@ -155,6 +155,102 @@
                       message="Es gibt keinen offenen Betrag."
                     />
 
+                    <div
+                      class="flex flex-col gap-3 rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+                    >
+                      <h3
+                        class="font-semibold text-gray-900 dark:text-gray-100"
+                      >
+                        Rechnung
+                      </h3>
+
+                      <template v-if="details.billing.wants_bank_transfer">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                          Rechnungsadresse (bitte prüfen):
+                        </p>
+                        <address
+                          class="not-italic text-gray-900 dark:text-gray-100"
+                        >
+                          {{ details.billing.details.name || "–" }}<br />
+                          {{ details.billing.details.street || "–" }}<br />
+                          {{ details.billing.details.postal_code }}
+                          {{ details.billing.details.city }}
+                        </address>
+                      </template>
+
+                      <UiMessage
+                        v-for="problem in details.billing.problems"
+                        :key="problem"
+                        type="info"
+                        :message="problem"
+                      />
+
+                      <template v-if="!details.billing.problems.length">
+                        <p class="text-gray-700 dark:text-gray-300">
+                          Neue Rechnung über
+                          <strong>{{
+                            formatPrice(details.billing.preview.amount_due)
+                          }}</strong>
+                          <template v-if="details.billing.preview.paid > 0">
+                            ({{ formatPrice(details.billing.preview.subtotal) }}
+                            abzüglich
+                            {{ formatPrice(details.billing.preview.paid) }}
+                            bereits bezahlt)
+                          </template>
+                          mit
+                          {{ details.billing.preview.items.length }}
+                          Posten.
+                        </p>
+                        <AppButton
+                          class="text-center"
+                          :disabled="isSubmitting"
+                          @click="createInvoice"
+                        >
+                          Rechnung erstellen
+                        </AppButton>
+                      </template>
+
+                      <ul
+                        v-if="details.billing.invoices.length"
+                        class="divide-y divide-gray-200 dark:divide-gray-700"
+                      >
+                        <li
+                          v-for="invoice in details.billing.invoices"
+                          :key="invoice.id"
+                          class="flex items-center justify-between gap-4 py-2"
+                        >
+                          <div class="flex flex-col">
+                            <span
+                              :class="[
+                                invoice.is_cancelled
+                                  ? 'text-gray-400 line-through dark:text-gray-500'
+                                  : 'font-semibold text-gray-900 dark:text-gray-100',
+                              ]"
+                            >
+                              {{ invoice.number }} ·
+                              {{ formatPrice(invoice.amount_due) }}
+                            </span>
+                            <span
+                              class="text-sm text-gray-500 dark:text-gray-400"
+                            >
+                              <UiDateString :value="invoice.issued_on" />
+                              <template v-if="invoice.is_cancelled">
+                                · storniert
+                              </template>
+                            </span>
+                          </div>
+                          <a
+                            :href="`/dashboard/admin/strichlistensystem/invoice/${invoice.id}/pdf`"
+                            target="_blank"
+                            rel="noopener"
+                            class="text-fhac-mint-dark hover:underline dark:text-fhac-mint"
+                          >
+                            PDF
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+
                     <div class="flex flex-col gap-2">
                       <h3
                         class="font-semibold text-gray-900 dark:text-gray-100"
@@ -264,6 +360,7 @@ const emits = defineEmits<{
 type PaymentDetails = {
   balance: Strichlistensystem.Balance;
   payments: Strichlistensystem.Payment[];
+  billing: Strichlistensystem.PaymentBilling;
 };
 
 // amount in euro with max. 2 decimals, comma or dot as decimal separator
@@ -362,6 +459,33 @@ const undoPayment = (payment: Strichlistensystem.Payment) => {
   isSubmitting.value = true;
   router.delete(
     `/dashboard/admin/strichlistensystem/billing/payment/${payment.id}`,
+    {
+      only: ["message"],
+      preserveState: true,
+      preserveScroll: true,
+      onFinish: afterAction,
+    },
+  );
+};
+
+const createInvoice = () => {
+  if (!details.value) {
+    return;
+  }
+
+  const { name, street, postal_code, city } = details.value.billing.details;
+  if (
+    !window.confirm(
+      `Soll die Rechnung über ${formatPrice(details.value.billing.preview.amount_due)} an folgende Adresse erstellt werden?\n\n${name}\n${street}\n${postal_code} ${city}`,
+    )
+  ) {
+    return;
+  }
+
+  isSubmitting.value = true;
+  router.post(
+    `/dashboard/admin/strichlistensystem/billing/user/${props.person.id}/invoice`,
+    {},
     {
       only: ["message"],
       preserveState: true,
