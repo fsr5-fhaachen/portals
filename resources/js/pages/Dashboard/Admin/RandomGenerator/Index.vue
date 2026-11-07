@@ -86,6 +86,18 @@
 
       <CardBase>
         <FormContainer>
+          <UiH2>Wer wird gezogen?</UiH2>
+
+          <FormKit
+            type="radio"
+            v-model="settings.participants"
+            :options="participantOptions"
+          />
+        </FormContainer>
+      </CardBase>
+
+      <CardBase>
+        <FormContainer>
           <UiH2>Fachbereiche</UiH2>
 
           <p class="text-gray-500 dark:text-gray-400">
@@ -198,7 +210,10 @@ import { router } from "@inertiajs/vue3";
 
 type RandomGeneratorState = "setup" | "idle" | "running" | "stopped";
 
+type RandomGeneratorParticipants = "first_years" | "tutors";
+
 type RandomGeneratorSettings = {
+  participants: RandomGeneratorParticipants;
   course_ids: number[];
   opt_out_enabled: boolean;
   hide_opted_out: boolean;
@@ -207,6 +222,14 @@ type RandomGeneratorSettings = {
 };
 
 const baseUrl = "/dashboard/admin/random-generator";
+
+const participantOptions: {
+  value: RandomGeneratorParticipants;
+  label: string;
+}[] = [
+  { value: "first_years", label: "Erstis" },
+  { value: "tutors", label: "Tutoren" },
+];
 
 const stateBadges: Record<
   RandomGeneratorState,
@@ -298,16 +321,27 @@ const filteredUsers = computed(() => {
 });
 
 // save the settings shortly after the last change, so that fast clicks do not create many requests
+// the users are only reloaded if the group (first-year students or tutors) changed
 let saveSettingsTimeout: ReturnType<typeof setTimeout> | undefined;
+let loadedParticipants = props.settings.participants;
 watch(
   settings,
   () => {
     clearTimeout(saveSettingsTimeout);
     saveSettingsTimeout = setTimeout(() => {
+      const participantsChanged =
+        settings.value.participants !== loadedParticipants;
+      if (participantsChanged) {
+        preselectedUserId.value = null;
+        loadedParticipants = settings.value.participants;
+      }
+
       router.post(`${baseUrl}/settings`, settings.value, {
         preserveScroll: true,
         preserveState: true,
-        only: ["settings", "poolCount"],
+        only: participantsChanged
+          ? ["settings", "poolCount", "users"]
+          : ["settings", "poolCount"],
       });
     }, 300);
   },

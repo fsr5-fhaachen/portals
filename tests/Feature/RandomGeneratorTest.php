@@ -55,6 +55,7 @@ class RandomGeneratorTest extends TestCase
     private function saveSettings(array $overrides = []): void
     {
         app(RandomGenerator::class)->saveSettings(array_merge([
+            'participants' => RandomGenerator::PARTICIPANTS_FIRST_YEARS,
             'course_ids' => [$this->course->id],
             'opt_out_enabled' => false,
             'hide_opted_out' => false,
@@ -205,6 +206,7 @@ class RandomGeneratorTest extends TestCase
     {
         $this->actingAsAdmin()
             ->post(route('dashboard.admin.randomGenerator.updateSettings'), [
+                'participants' => 'tutors',
                 'course_ids' => [$this->otherCourse->id],
                 'opt_out_enabled' => true,
                 'hide_opted_out' => true,
@@ -214,6 +216,7 @@ class RandomGeneratorTest extends TestCase
             ->assertRedirect(route('dashboard.admin.randomGenerator.index'));
 
         $this->assertSame([
+            'participants' => 'tutors',
             'course_ids' => [$this->otherCourse->id],
             'opt_out_enabled' => true,
             'hide_opted_out' => true,
@@ -228,6 +231,7 @@ class RandomGeneratorTest extends TestCase
 
         $this->actingAsAdmin()
             ->postJson(route('dashboard.admin.randomGenerator.updateSettings'), [
+                'participants' => 'first_years',
                 'course_ids' => [],
                 'opt_out_enabled' => false,
                 'hide_opted_out' => false,
@@ -244,6 +248,7 @@ class RandomGeneratorTest extends TestCase
     {
         $this->actingAsAdmin()
             ->post(route('dashboard.admin.randomGenerator.updateSettings'), [
+                'participants' => 'first_years',
                 'course_ids' => [999999],
                 'opt_out_enabled' => false,
                 'hide_opted_out' => false,
@@ -283,6 +288,8 @@ class RandomGeneratorTest extends TestCase
 
     public function test_display_excludes_users_that_opted_out_and_only_sends_public_attributes(): void
     {
+        $this->admin->removeRole('tutor');
+        $this->admin->givePermissionTo('manage random generator');
         $user = User::factory()->create();
         User::factory()->create(['random_generator_opt_out' => true]);
 
@@ -299,6 +306,83 @@ class RandomGeneratorTest extends TestCase
                     ->where('avatarUrl', null)
                 )
             );
+    }
+
+    public function test_first_years_take_part_without_stored_settings(): void
+    {
+        $this->assertSame(RandomGenerator::PARTICIPANTS_FIRST_YEARS, app(RandomGenerator::class)->settings()['participants']);
+    }
+
+    public function test_tutors_can_be_drawn_instead_of_first_years(): void
+    {
+        $this->saveSettings(['participants' => RandomGenerator::PARTICIPANTS_TUTORS, 'course_ids' => [$this->course->id, $this->admin->course_id]]);
+
+        $tutor = User::factory()->create(['course_id' => $this->course->id]);
+        $tutor->assignRole('tutor');
+        $stageTutor = User::factory()->create(['course_id' => $this->course->id]);
+        $stageTutor->assignRole('stage tutor');
+        $drawnTutor = User::factory()->create(['course_id' => $this->course->id, 'random_generator_drawn_at' => now()]);
+        $drawnTutor->assignRole('tutor');
+        $tutorOfOtherCourse = User::factory()->create(['course_id' => $this->otherCourse->id]);
+        $tutorOfOtherCourse->assignRole('tutor');
+        User::factory()->create(['course_id' => $this->course->id]);
+        User::factory()->create()->assignRole('esa');
+
+        $randomGenerator = app(RandomGenerator::class);
+
+        // the admin is also a tutor
+        $this->assertEqualsCanonicalizing(
+            [$this->admin->id, $tutor->id, $stageTutor->id, $drawnTutor->id, $tutorOfOtherCourse->id],
+            $randomGenerator->participants()->pluck('id')->all(),
+        );
+        $this->assertEqualsCanonicalizing(
+            [$this->admin->id, $tutor->id, $stageTutor->id],
+            $randomGenerator->pool()->pluck('id')->all(),
+        );
+
+        $this->actingAsAdmin()
+            ->get(route('dashboard.admin.randomGenerator.index'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->has('users', 5)
+                ->where('poolCount', 3)
+                ->where('settings.participants', 'tutors')
+            );
+
+        $this->actingAsAdmin()
+            ->postJson(route('dashboard.admin.randomGenerator.indexExecuteSubmit'), ['state' => 'stopped'])
+            ->assertJson(['success' => true]);
+
+        $this->assertContains($this->randomGeneratorState()['user']['id'], [$this->admin->id, $tutor->id, $stageTutor->id]);
+    }
+
+    public function test_display_contains_first_years_and_tutors(): void
+    {
+        $firstYear = User::factory()->create();
+        $tutor = User::factory()->create();
+        $tutor->assignRole('tutor');
+        User::factory()->create()->assignRole('esa');
+
+        $this->actingAsAdmin()
+            ->get(route('dashboard.admin.randomGenerator.display'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('users', fn ($users) => collect($users)->pluck('id')->sort()->values()->all() === collect([$this->admin->id, $firstYear->id, $tutor->id])->sort()->values()->all())
+            );
+    }
+
+    public function test_settings_with_unknown_participants_are_rejected(): void
+    {
+        $this->actingAsAdmin()
+            ->post(route('dashboard.admin.randomGenerator.updateSettings'), [
+                'participants' => 'admins',
+                'course_ids' => [],
+                'opt_out_enabled' => false,
+                'hide_opted_out' => false,
+                'hide_other_courses' => false,
+                'hide_drawn' => false,
+            ])
+            ->assertSessionHasErrors('participants');
+
+        $this->assertNull(State::where('key', RandomGenerator::SETTINGS_KEY)->first());
     }
 
     public function test_opt_out_page_is_not_reachable_if_the_opt_out_is_disabled(): void

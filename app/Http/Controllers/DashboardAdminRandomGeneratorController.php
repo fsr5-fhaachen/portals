@@ -21,7 +21,7 @@ class DashboardAdminRandomGeneratorController extends Controller
      */
     public function index(RandomGenerator $randomGenerator): Response
     {
-        // get all users except tutors and admins
+        // get the participants of the selected group (first-year students or tutors)
         $users = $randomGenerator->participants()->orderBy('firstname')->with('course')->get()->map(function ($user) {
             $user->avatarUrl = $user->avatarUrlUnchecked();
 
@@ -104,6 +104,7 @@ class DashboardAdminRandomGeneratorController extends Controller
     public function updateSettings(RandomGenerator $randomGenerator): RedirectResponse
     {
         $validated = Request::validate([
+            'participants' => ['required', 'string', 'in:'.RandomGenerator::PARTICIPANTS_FIRST_YEARS.','.RandomGenerator::PARTICIPANTS_TUTORS],
             'course_ids' => ['present', 'array'],
             'course_ids.*' => ['integer', 'exists:courses,id'],
             'opt_out_enabled' => ['required', 'boolean'],
@@ -113,6 +114,7 @@ class DashboardAdminRandomGeneratorController extends Controller
         ]);
 
         $randomGenerator->saveSettings([
+            'participants' => $validated['participants'],
             'course_ids' => array_values(array_unique(array_map('intval', $validated['course_ids']))),
             'opt_out_enabled' => (bool) $validated['opt_out_enabled'],
             'hide_opted_out' => (bool) $validated['hide_opted_out'],
@@ -153,8 +155,9 @@ class DashboardAdminRandomGeneratorController extends Controller
     */
     public function display(RandomGenerator $randomGenerator): Response
     {
-        // get all users except tutors, admins and users that opted out
-        $users = $randomGenerator->participants()->where('random_generator_opt_out', false)->get()->map(function ($user) {
+        // get the users of both groups (without users that opted out), because the display is not reloaded when the
+        // group changes, the running state contains the ids of the pool
+        $users = $randomGenerator->candidates()->where('random_generator_opt_out', false)->get()->map(function ($user) {
             $user->avatarUrl = $user->avatarUrlUnchecked();
 
             // the display is public, so only the shown attributes are sent
