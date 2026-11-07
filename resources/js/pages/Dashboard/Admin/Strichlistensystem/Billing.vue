@@ -7,22 +7,30 @@
         <div
           class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
         >
-          <div>
+          <div class="space-y-2">
             <UiH2>Abrechnung</UiH2>
             <p class="text-gray-500 dark:text-gray-400">
               Gesamt ist die Summe aller Buchungen (ohne Stornierungen) mit dem
               Preis zum Zeitpunkt der Buchung. Offen ist Gesamt abzüglich der
               Zahlungen.
             </p>
-          </div>
-          <div class="flex flex-wrap gap-3">
             <AppLink href="/dashboard/admin/strichlistensystem" theme="gray">
-              Zur Artikelverwaltung
+              &larr; Zur Artikelverwaltung
             </AppLink>
-            <AppLink href="/dashboard/admin/strichlistensystem/bookings">
+          </div>
+          <div class="flex shrink-0 flex-wrap gap-3">
+            <AppButton
+              theme="gray"
+              class="text-center"
+              @click="
+                router.visit('/dashboard/admin/strichlistensystem/bookings')
+              "
+            >
               Buchungsliste
-            </AppLink>
-            <AppButton @click="downloadExport">Export herunterladen</AppButton>
+            </AppButton>
+            <AppButton class="text-center" @click="downloadExport">
+              Export herunterladen
+            </AppButton>
           </div>
         </div>
       </CardBase>
@@ -70,6 +78,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import { router } from "@inertiajs/vue3";
 import { formatPrice } from "../../../../composables/usePrice";
 import { TableColumn } from "../../../../types/table-column";
 import { TableFunction } from "../../../../types/table-function";

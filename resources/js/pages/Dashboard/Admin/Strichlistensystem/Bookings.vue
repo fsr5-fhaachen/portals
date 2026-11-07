@@ -7,7 +7,7 @@
         <div
           class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
         >
-          <div>
+          <div class="space-y-2">
             <UiH2>
               {{
                 person
@@ -20,21 +20,23 @@
               der Buchung, die neuesten zuerst. Stornierte Buchungen werden
               nicht berechnet.
             </p>
-          </div>
-          <div class="flex flex-wrap gap-3">
-            <AppLink
-              v-if="person"
-              href="/dashboard/admin/strichlistensystem/bookings"
-              theme="gray"
-            >
-              Alle Buchungen
-            </AppLink>
             <AppLink
               href="/dashboard/admin/strichlistensystem/billing"
               theme="gray"
             >
-              Zur Abrechnung
+              &larr; Zur Abrechnung
             </AppLink>
+          </div>
+          <div v-if="person" class="flex shrink-0 flex-wrap gap-3">
+            <AppButton
+              theme="gray"
+              class="text-center"
+              @click="
+                router.visit('/dashboard/admin/strichlistensystem/bookings')
+              "
+            >
+              Alle Buchungen anzeigen
+            </AppButton>
           </div>
         </div>
       </CardBase>
@@ -56,6 +58,7 @@
 
 <script setup lang="ts">
 import { PropType } from "vue";
+import { router } from "@inertiajs/vue3";
 import { formatPrice } from "../../../../composables/usePrice";
 import { TableColumn } from "../../../../types/table-column";
 
