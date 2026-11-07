@@ -87,6 +87,30 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
         });
     });
 
+    // the stage functions are also used by the stage tutors, so only the permission is checked and not the admin role
+    Route::prefix('admin')->middleware(IsLoggedInTutor::class)->group(function () {
+        Route::middleware(ActiveModule::class.':randomGenerator', 'can:manage random generator')->group(function () {
+            Route::get('/random-generator', [DashboardAdminRandomGeneratorController::class, 'index'])->name('dashboard.admin.randomGenerator.index');
+            Route::post('/random-generator', [DashboardAdminRandomGeneratorController::class, 'indexExecuteSubmit'])->name('dashboard.admin.randomGenerator.indexExecuteSubmit');
+            Route::post('/random-generator/settings', [DashboardAdminRandomGeneratorController::class, 'updateSettings'])->name('dashboard.admin.randomGenerator.updateSettings');
+            Route::post('/random-generator/reset-drawn', [DashboardAdminRandomGeneratorController::class, 'resetDrawn'])->name('dashboard.admin.randomGenerator.resetDrawn');
+            Route::post('/random-generator/user/{user}/reset-drawn', [DashboardAdminRandomGeneratorController::class, 'resetDrawnUser'])->name('dashboard.admin.randomGenerator.resetDrawnUser');
+            Route::get('/random-generator/display', [DashboardAdminRandomGeneratorController::class, 'display'])->name('dashboard.admin.randomGenerator.display');
+        });
+
+        Route::middleware(ActiveModule::class.':scoreSystem', 'can:manage score system')->group(function () {
+            Route::get('/score-system', [DashboardAdminScoreSystemController::class, 'index'])->name('dashboard.admin.scoreSystem.index');
+            Route::post('/score-system', [DashboardAdminScoreSystemController::class, 'indexExecuteSubmit'])->name('dashboard.admin.scoreSystem.indexExecuteSubmit');
+            Route::get('/score-system/display', [DashboardAdminScoreSystemController::class, 'display'])->name('dashboard.admin.scoreSystem.display');
+        });
+
+        Route::middleware(ActiveModule::class.':countdown', 'can:manage countdown')->group(function () {
+            Route::get('/countdown', [DashboardAdminCountdownController::class, 'index'])->name('dashboard.admin.countdown.index');
+            Route::post('/countdown', [DashboardAdminCountdownController::class, 'indexExecuteSubmit'])->name('dashboard.admin.countdown.indexExecuteSubmit');
+            Route::get('/countdown/display', [DashboardAdminCountdownController::class, 'display'])->name('dashboard.admin.countdown.display');
+        });
+    });
+
     Route::prefix('admin')->middleware(IsLoggedInAdmin::class)->group(function () {
 
         Route::middleware('can:view statistics')->group(function () {
@@ -128,27 +152,6 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
                 Route::post('/unpublish', [DashboardAdminWorkshopController::class, 'unpublish'])->name('dashboard.admin.workshops.unpublish');
                 Route::post('/assign', [DashboardAdminWorkshopController::class, 'assign'])->name('dashboard.admin.workshops.assign');
             });
-        });
-
-        Route::middleware(ActiveModule::class.':randomGenerator', 'can:manage random generator')->group(function () {
-            Route::get('/random-generator', [DashboardAdminRandomGeneratorController::class, 'index'])->name('dashboard.admin.randomGenerator.index');
-            Route::post('/random-generator', [DashboardAdminRandomGeneratorController::class, 'indexExecuteSubmit'])->name('dashboard.admin.randomGenerator.indexExecuteSubmit');
-            Route::post('/random-generator/settings', [DashboardAdminRandomGeneratorController::class, 'updateSettings'])->name('dashboard.admin.randomGenerator.updateSettings');
-            Route::post('/random-generator/reset-drawn', [DashboardAdminRandomGeneratorController::class, 'resetDrawn'])->name('dashboard.admin.randomGenerator.resetDrawn');
-            Route::post('/random-generator/user/{user}/reset-drawn', [DashboardAdminRandomGeneratorController::class, 'resetDrawnUser'])->name('dashboard.admin.randomGenerator.resetDrawnUser');
-            Route::get('/random-generator/display', [DashboardAdminRandomGeneratorController::class, 'display'])->name('dashboard.admin.randomGenerator.display');
-        });
-
-        Route::middleware(ActiveModule::class.':scoreSystem', 'can:manage score system')->group(function () {
-            Route::get('/score-system', [DashboardAdminScoreSystemController::class, 'index'])->name('dashboard.admin.scoreSystem.index');
-            Route::post('/score-system', [DashboardAdminScoreSystemController::class, 'indexExecuteSubmit'])->name('dashboard.admin.scoreSystem.indexExecuteSubmit');
-            Route::get('/score-system/display', [DashboardAdminScoreSystemController::class, 'display'])->name('dashboard.admin.scoreSystem.display');
-        });
-
-        Route::middleware(ActiveModule::class.':countdown', 'can:manage countdown')->group(function () {
-            Route::get('/countdown', [DashboardAdminCountdownController::class, 'index'])->name('dashboard.admin.countdown.index');
-            Route::post('/countdown', [DashboardAdminCountdownController::class, 'indexExecuteSubmit'])->name('dashboard.admin.countdown.indexExecuteSubmit');
-            Route::get('/countdown/display', [DashboardAdminCountdownController::class, 'display'])->name('dashboard.admin.countdown.display');
         });
 
         Route::prefix('strichlistensystem')->middleware(ActiveModule::class.':strichlistensystem', 'can:manage strichlistensystem')->group(function () {
