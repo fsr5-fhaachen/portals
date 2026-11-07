@@ -1,5 +1,7 @@
 <template>
+  <!-- the inertia links overwrite the click handler that closes the menus, so the menus are recreated (closed) after every visit -->
   <Disclosure
+    :key="page.url"
     as="nav"
     class="bg-white shadow-sm dark:bg-black"
     v-slot="{ open }"

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-full flex-col py-8 sm:px-6 lg:px-8 lg:py-16">
+  <div class="flex min-h-full flex-col px-4 py-8 sm:px-6 lg:px-8 lg:py-16">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <img
         class="mx-auto h-48 w-auto dark:hidden"
@@ -22,7 +22,7 @@
 
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
       <div
-        class="bg-white px-4 py-8 shadow dark:bg-gray-900 sm:rounded-lg sm:px-10"
+        class="rounded-lg bg-white px-4 py-8 shadow dark:bg-gray-900 sm:px-10"
       >
         <div class="flex justify-end">
           <ColorModeButton />
