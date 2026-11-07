@@ -5,30 +5,18 @@
     >
       <div
         v-if="scoreSystemState.teams"
-        :class="hasManyTeams ? 'gap-24' : 'gap-64'"
-        class="flex flex-row"
+        :class="sizeClasses.gap"
+        class="flex flex-row flex-wrap justify-center"
       >
         <div
           v-for="(team, index) in scoreSystemState.teams"
           :key="index"
           class="flex flex-col items-center"
         >
-          <div
-            :class="
-              hasManyTeams
-                ? 'text-[7rem] leading-[7rem]'
-                : 'text-[10rem] leading-[10rem]'
-            "
-          >
+          <div :class="sizeClasses.name">
             {{ team.name }}
           </div>
-          <div
-            :class="
-              hasManyTeams
-                ? 'text-[12rem] leading-[12rem]'
-                : 'text-[15rem] leading-[15rem]'
-            "
-          >
+          <div :class="sizeClasses.score">
             {{ team.score }}
           </div>
         </div>
@@ -64,8 +52,38 @@ const scoreSystemState = ref<{
   teams: [],
 });
 
-// more than two teams need a smaller font, so they fit next to each other on the screen
-const hasManyTeams = computed(() => scoreSystemState.value.teams.length > 2);
+// more teams need a smaller font, so they fit next to each other on the screen
+const sizeClasses = computed(() => {
+  const teamAmount = scoreSystemState.value.teams.length;
+
+  if (teamAmount <= 2) {
+    return {
+      gap: "gap-64",
+      name: "text-[10rem] leading-[10rem]",
+      score: "text-[15rem] leading-[15rem]",
+    };
+  }
+  if (teamAmount === 3) {
+    return {
+      gap: "gap-24",
+      name: "text-[7rem] leading-[7rem]",
+      score: "text-[12rem] leading-[12rem]",
+    };
+  }
+  if (teamAmount === 4) {
+    return {
+      gap: "gap-16",
+      name: "text-[5rem] leading-[5rem]",
+      score: "text-[9rem] leading-[9rem]",
+    };
+  }
+
+  return {
+    gap: "gap-x-12 gap-y-8",
+    name: "text-[4rem] leading-[4rem]",
+    score: "text-[7rem] leading-[7rem]",
+  };
+});
 
 const isFetchingScoreSystem = ref(false);
 

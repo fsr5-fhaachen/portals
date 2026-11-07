@@ -11,6 +11,11 @@ use Inertia\Response;
 class DashboardAdminScoreSystemController extends Controller
 {
     /**
+     * Maximum amount of teams, more do not fit next to each other on the display.
+     */
+    public const MAXIMUM_TEAM_AMOUNT = 8;
+
+    /**
      * Display the dashboard admin score system page
      */
     public function index(): Response
@@ -34,6 +39,7 @@ class DashboardAdminScoreSystemController extends Controller
     {
         // validate the request
         $request = Request::validate([
+            'teams' => ['required', 'array', 'min:1', 'max:'.self::MAXIMUM_TEAM_AMOUNT],
             'teams.*.name' => ['required', 'string'],
             'teams.*.score' => ['required', 'string'],
         ]);

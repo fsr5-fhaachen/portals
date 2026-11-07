@@ -15,9 +15,25 @@
             <FormRow>
               <UiH2>Einstellungen</UiH2>
             </FormRow>
+            <FormRow>
+              <FormKit
+                type="number"
+                v-model="teamAmount"
+                :ignore="true"
+                number="integer"
+                label="Anzahl der Teams"
+                :min="1"
+                :max="maximumTeamAmount"
+                :validation="`required|min:1|max:${maximumTeamAmount}`"
+              />
+            </FormRow>
             <FormKit type="list" name="teams">
-              <GridContainer :cols="teamAmount">
-                <FormKit v-for="index in teamAmount" type="group" :key="index">
+              <GridContainer :cols="Math.min(shownTeamAmount, 3)">
+                <FormKit
+                  v-for="index in shownTeamAmount"
+                  type="group"
+                  :key="index"
+                >
                   <FormContainer>
                     <FormRow>
                       <FormKit
@@ -53,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, PropType } from "vue";
+import { computed, ref, PropType } from "vue";
 
 const { state } = defineProps({
   state: {
@@ -67,7 +83,16 @@ const { state } = defineProps({
   },
 });
 
-const teamAmount = ref(3);
+// keep in sync with the validation in DashboardAdminScoreSystemController
+const maximumTeamAmount = 8;
+
+// the amount of the saved teams, three teams for a new score system
+const teamAmount = ref<number | undefined>(state?.teams?.length || 3);
+
+// the input can be empty or out of range while typing
+const shownTeamAmount = computed(() =>
+  Math.min(Math.max(teamAmount.value || 1, 1), maximumTeamAmount),
+);
 
 const form = ref<{
   teams: {
@@ -89,7 +114,10 @@ const submitScoreSystemHandler = async () => {
           .querySelector("meta[name='csrf-token']")
           ?.getAttribute("content") || "",
     },
-    body: JSON.stringify(form.value),
+    // the values of removed teams are not saved
+    body: JSON.stringify({
+      teams: form.value.teams.slice(0, shownTeamAmount.value),
+    }),
   });
 };
 </script>
