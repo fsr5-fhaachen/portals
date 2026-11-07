@@ -221,17 +221,24 @@ const priorityErrors = computed(() =>
   ),
 );
 
-// every workshop can only be chosen once, so the workshops of the other priorities are left out
+// every workshop can only be chosen once, so the workshops of the other priorities are disabled. They are not left
+// out: the options are reused by their position, so a shorter list would shift the selection of the other priorities
 const workshopOptions = (priorityIndex: number) =>
-  (event.workshops ?? [])
-    .filter(
-      (workshop) =>
-        !(form.value.priorities ?? []).some(
-          (workshopId, index) =>
-            index !== priorityIndex && workshopId === workshop.id,
-        ),
-    )
-    .map((workshop) => ({ label: workshop.name, value: workshop.id }));
+  (event.workshops ?? []).map((workshop) => {
+    const otherIndex = (form.value.priorities ?? []).findIndex(
+      (workshopId, index) =>
+        index !== priorityIndex && workshopId === workshop.id,
+    );
+
+    return {
+      label:
+        otherIndex === -1
+          ? workshop.name
+          : `${workshop.name} (schon Prio ${otherIndex + 1})`,
+      value: workshop.id,
+      attrs: { disabled: otherIndex !== -1 },
+    };
+  });
 
 const slotData = computed(() => {
   if (event.slots?.length && form.value.slot) {
