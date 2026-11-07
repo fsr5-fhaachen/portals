@@ -20,7 +20,8 @@ class EventPageTable
         return match ($event->type) {
             'group_phase' => ['groups', new GroupsTable($request, $event->id)],
             'slot_booking' => ['slots', new SlotsTable($request, $event->id)],
-            'event_registration', 'workshop_booking' => ['registrations', new RegistrationsTable($request, eventId: $event->id)],
+            'event_registration' => ['registrations', new RegistrationsTable($request, eventId: $event->id)],
+            'workshop_booking' => ['workshopSessions', new WorkshopSessionsTable($request, $event->id)],
             default => null,
         };
     }

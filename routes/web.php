@@ -77,6 +77,7 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
         Route::get('/', [DashboardTutorController::class, 'index'])->name('dashboard.tutor.index');
         Route::get('/event/{event}', [DashboardTutorController::class, 'event'])->name('dashboard.tutor.event.index');
         Route::get('/slot/{slot}', [DashboardTutorController::class, 'slot'])->name('dashboard.tutor.slot.index');
+        Route::get('/workshop-session/{workshopSession}', [DashboardTutorController::class, 'workshopSession'])->name('dashboard.tutor.workshopSession.index');
         Route::get('/group/{group}', [DashboardTutorController::class, 'group'])->name('dashboard.tutor.group.index');
 
         Route::middleware(ActiveModule::class.':scoring')->prefix('scoring')->group(function () {

@@ -13,7 +13,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Registrations of an event, a slot or a group.
+ * Registrations of an event, a slot, a group or a workshop session.
  */
 class RegistrationsTable extends Table
 {
@@ -22,6 +22,7 @@ class RegistrationsTable extends Table
         protected ?int $eventId = null,
         protected ?int $slotId = null,
         protected ?int $groupId = null,
+        protected ?int $workshopSessionId = null,
     ) {
         parent::__construct($request);
     }
@@ -43,7 +44,8 @@ class RegistrationsTable extends Table
             ->with('user:id,firstname,lastname,email,course_id,updated_at')
             ->when($this->eventId !== null, fn (Builder $query) => $query->where('registrations.event_id', $this->eventId))
             ->when($this->slotId !== null, fn (Builder $query) => $query->where('registrations.slot_id', $this->slotId))
-            ->when($this->groupId !== null, fn (Builder $query) => $query->where('registrations.group_id', $this->groupId));
+            ->when($this->groupId !== null, fn (Builder $query) => $query->where('registrations.group_id', $this->groupId))
+            ->when($this->workshopSessionId !== null, fn (Builder $query) => $query->whereHas('workshopAssignments', fn (Builder $assignmentQuery) => $assignmentQuery->where('workshop_assignments.workshop_session_id', $this->workshopSessionId)));
     }
 
     /**

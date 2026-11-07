@@ -67,10 +67,9 @@
 
     <GroupTable v-if="event.type == 'group_phase'" />
     <SlotTable v-else-if="event.type == 'slot_booking'" />
+    <WorkshopSessionTable v-else-if="event.type == 'workshop_booking'" />
     <RegistrationTable
-      v-else-if="
-        ['event_registration', 'workshop_booking'].includes(event.type)
-      "
+      v-else-if="event.type == 'event_registration'"
       :courses="courses"
       :event="event"
       :hasFormResponses="hasFormResponses"

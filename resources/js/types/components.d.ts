@@ -77,5 +77,6 @@ declare module 'vue' {
     WorkshopBlockManager: typeof import('./../components/workshop/BlockManager.vue')['default']
     WorkshopForm: typeof import('./../components/workshop/Form.vue')['default']
     WorkshopManager: typeof import('./../components/workshop/Manager.vue')['default']
+    WorkshopSessionTable: typeof import('./../components/workshop/SessionTable.vue')['default']
   }
 }

@@ -9,6 +9,7 @@ use App\Models\Course;
 use App\Models\Event;
 use App\Models\Group;
 use App\Models\Slot;
+use App\Models\WorkshopSession;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -101,6 +102,30 @@ class DashboardTutorController extends Controller
         return Inertia::render('Dashboard/Tutor/Group', [
             'group' => $group,
             'courses' => $courses,
+            'registrations' => $registrationsTable->scroll(),
+            'hasFormResponses' => $registrationsTable->hasFormResponses(),
+        ]);
+    }
+
+    /**
+     * Display the dashboard tutor workshop session page with the assigned participants
+     */
+    public function workshopSession(Request $request): Response|JsonResponse
+    {
+        $workshopSession = WorkshopSession::with(['workshop.event', 'block'])->find($request->workshopSession);
+        if (! $workshopSession) {
+            return Inertia::render('Dashboard/404');
+        }
+
+        $registrationsTable = new RegistrationsTable($request, workshopSessionId: $workshopSession->id);
+        if ($registrationsTable->wantsChanges()) {
+            return $registrationsTable->changesResponse();
+        }
+
+        return Inertia::render('Dashboard/Tutor/WorkshopSession', [
+            'workshopSession' => $workshopSession,
+            'event' => $workshopSession->workshop->event,
+            'courses' => Course::all(),
             'registrations' => $registrationsTable->scroll(),
             'hasFormResponses' => $registrationsTable->hasFormResponses(),
         ]);
