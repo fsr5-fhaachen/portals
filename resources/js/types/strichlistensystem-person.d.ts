@@ -26,9 +26,21 @@ declare namespace Strichlistensystem {
     email: string;
     is_disabled: boolean;
     article_action_logs_count: number;
+    // booked amount per article (without cancelled bookings)
+    articles: { name: string; amount: number }[];
     total: number;
     paid: number;
     open: number;
+  };
+
+  // booking of a person (see app/Helpers/Table/StrichlistensystemBookingsTable)
+  type BookingRow = {
+    id: number;
+    created_at: string;
+    is_cancelled: boolean;
+    price: number | null;
+    user: { id: number; firstname: string; lastname: string } | null;
+    article: { id: number; name: string } | null;
   };
 
   // payment of a person (see DashboardAdminStrichlistensystemController::billingUser)

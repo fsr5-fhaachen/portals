@@ -19,6 +19,9 @@
             <AppLink href="/dashboard/admin/strichlistensystem" theme="gray">
               Zur Artikelverwaltung
             </AppLink>
+            <AppLink href="/dashboard/admin/strichlistensystem/bookings">
+              Buchungsliste
+            </AppLink>
             <AppButton @click="downloadExport">Export herunterladen</AppButton>
           </div>
         </div>
@@ -71,6 +74,7 @@ import { formatPrice } from "../../../../composables/usePrice";
 import { TableColumn } from "../../../../types/table-column";
 import { TableFunction } from "../../../../types/table-function";
 import { TableButton } from "../../../../types/table-button";
+import { TableLink } from "../../../../types/table-link";
 
 defineProps({
   articlesWithoutPriceCount: {
@@ -130,6 +134,14 @@ const getColumns = (): TableColumn[] => [
       `${balance.article_action_logs_count}`,
   }),
   new TableColumn({
+    name: "articles",
+    text: "Artikel",
+    valueFunction: (balance: Strichlistensystem.BillingRow) =>
+      balance.articles
+        .map((article) => `${article.amount}×&nbsp;${escapeHtml(article.name)}`)
+        .join("<br>") || "–",
+  }),
+  new TableColumn({
     name: "total",
     sortKey: "total",
     text: "Gesamt",
@@ -162,6 +174,13 @@ const getColumns = (): TableColumn[] => [
 ];
 
 const getFunctions = (): TableFunction[] => [
+  new TableLink({
+    name: "bookings",
+    text: "Buchungen",
+    theme: "gray",
+    linkFunction: (balance: Strichlistensystem.BillingRow) =>
+      `/dashboard/admin/strichlistensystem/bookings?user=${balance.id}`,
+  }),
   new TableButton({
     name: "payment",
     text: "Zahlungen",

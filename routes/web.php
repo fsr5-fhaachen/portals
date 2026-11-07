@@ -158,6 +158,7 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
             Route::get('/', [DashboardAdminStrichlistensystemController::class, 'index'])->name('dashboard.admin.strichlistensystem.index');
             Route::get('/export', [DashboardAdminStrichlistensystemController::class, 'export'])->name('dashboard.admin.strichlistensystem.export');
             Route::get('/billing', [DashboardAdminStrichlistensystemController::class, 'billing'])->name('dashboard.admin.strichlistensystem.billing');
+            Route::get('/bookings', [DashboardAdminStrichlistensystemController::class, 'bookings'])->name('dashboard.admin.strichlistensystem.bookings');
             Route::get('/billing/user/{user}', [DashboardAdminStrichlistensystemController::class, 'billingUser'])->name('dashboard.admin.strichlistensystem.billingUser');
             Route::post('/billing/user/{user}/payment', [DashboardAdminStrichlistensystemController::class, 'storePayment'])->name('dashboard.admin.strichlistensystem.storePayment');
             Route::delete('/billing/payment/{payment}', [DashboardAdminStrichlistensystemController::class, 'deletePayment'])->name('dashboard.admin.strichlistensystem.deletePayment');

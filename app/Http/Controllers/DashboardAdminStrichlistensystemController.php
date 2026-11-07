@@ -6,6 +6,7 @@ use App\Helpers\Csv;
 use App\Helpers\Price;
 use App\Helpers\Table\ArticlesTable;
 use App\Helpers\Table\StrichlistensystemBillingTable;
+use App\Helpers\Table\StrichlistensystemBookingsTable;
 use App\Models\Article;
 use App\Models\ArticleActionLog;
 use App\Models\StrichlistensystemKioskDevice;
@@ -152,6 +153,22 @@ class DashboardAdminStrichlistensystemController extends Controller
         return Inertia::render('Dashboard/Admin/Strichlistensystem/Billing', [
             'balances' => $billingTable->scroll(),
             'articlesWithoutPriceCount' => fn () => Article::whereNull('price')->count(),
+        ]);
+    }
+
+    /**
+     * Display every booking with person, article and time, optionally only of one person
+     */
+    public function bookings(Request $request): Response|JsonResponse
+    {
+        $bookingsTable = new StrichlistensystemBookingsTable($request);
+        if ($bookingsTable->wantsChanges()) {
+            return $bookingsTable->changesResponse();
+        }
+
+        return Inertia::render('Dashboard/Admin/Strichlistensystem/Bookings', [
+            'bookings' => $bookingsTable->scroll(),
+            'person' => $request->filled('user') ? User::find($request->integer('user'), ['id', 'firstname', 'lastname']) : null,
         ]);
     }
 

@@ -371,4 +371,91 @@ class DashboardAdminStrichlistensystemBillingTest extends TestCase
 
         $this->assertSame(['total' => 150, 'paid' => 0, 'open' => 150, 'bookings_without_price' => 1], $user->strichlistensystemBalance());
     }
+
+    public function test_balances_contain_the_amount_per_article(): void
+    {
+        $beer = Article::factory()->create(['name' => 'Bier', 'price' => 100, 'show_order' => 1]);
+        $cola = Article::factory()->create(['name' => 'Cola', 'price' => 50, 'show_order' => 2]);
+        $user = User::factory()->create(['lastname' => 'Bauer']);
+        ArticleActionLog::factory()->count(2)->for($user)->for($cola)->create();
+        ArticleActionLog::factory()->count(3)->for($user)->for($beer)->create();
+        ArticleActionLog::factory()->for($user)->for($beer)->create()->delete();
+
+        $this->actingAsAdmin()
+            ->get(route('dashboard.admin.strichlistensystem.billing'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('balances.data.0.lastname', 'Admin')
+                ->where('balances.data.0.articles', [])
+                ->where('balances.data.1.id', $user->id)
+                ->where('balances.data.1.articles', [
+                    ['name' => 'Bier', 'amount' => 3],
+                    ['name' => 'Cola', 'amount' => 2],
+                ])
+            );
+    }
+
+    public function test_admin_can_view_all_bookings_with_the_newest_first(): void
+    {
+        $beer = Article::factory()->create(['name' => 'Bier', 'price' => 100]);
+        $anna = User::factory()->create(['firstname' => 'Anna', 'lastname' => 'Bauer']);
+        $ben = User::factory()->create(['firstname' => 'Ben', 'lastname' => 'Koch']);
+        $older = ArticleActionLog::factory()->for($anna)->for($beer)->create(['created_at' => now()->subHour()]);
+        $cancelled = ArticleActionLog::factory()->for($ben)->for($beer)->create();
+        $cancelled->delete();
+
+        $this->actingAsAdmin()
+            ->get(route('dashboard.admin.strichlistensystem.bookings'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Dashboard/Admin/Strichlistensystem/Bookings')
+                ->where('person', null)
+                ->has('bookings.data', 2)
+                ->where('bookings.data.0.id', $cancelled->id)
+                ->where('bookings.data.0.is_cancelled', true)
+                ->where('bookings.data.0.user.firstname', 'Ben')
+                ->where('bookings.data.1.id', $older->id)
+                ->where('bookings.data.1.is_cancelled', false)
+                ->where('bookings.data.1.price', 100)
+                ->where('bookings.data.1.article.name', 'Bier')
+                ->missing('bookings.data.1.ip')
+            );
+    }
+
+    public function test_bookings_can_be_filtered_by_a_person_and_searched(): void
+    {
+        $beer = Article::factory()->create(['name' => 'Bier', 'price' => 100]);
+        $cola = Article::factory()->create(['name' => 'Cola', 'price' => 50]);
+        $anna = User::factory()->create(['firstname' => 'Anna', 'lastname' => 'Bauer']);
+        $ben = User::factory()->create(['firstname' => 'Ben', 'lastname' => 'Koch']);
+        ArticleActionLog::factory()->for($anna)->for($beer)->create();
+        ArticleActionLog::factory()->for($anna)->for($cola)->create();
+        ArticleActionLog::factory()->for($ben)->for($beer)->create();
+
+        $this->actingAsAdmin()
+            ->get(route('dashboard.admin.strichlistensystem.bookings', ['user' => $anna->id]))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('person.firstname', 'Anna')
+                ->has('bookings.data', 2)
+                ->where('bookings.data.0.user.id', $anna->id)
+                ->where('bookings.data.1.user.id', $anna->id)
+            );
+
+        $this->actingAsAdmin()
+            ->get(route('dashboard.admin.strichlistensystem.bookings', ['search' => 'koch bier']))
+            ->assertInertia(fn (Assert $page) => $page
+                ->has('bookings.data', 1)
+                ->where('bookings.data.0.user.id', $ben->id)
+            );
+    }
+
+    public function test_bookings_are_not_reachable_without_permission(): void
+    {
+        $tutor = User::factory()->create();
+        $tutor->assignRole('tutor');
+
+        $this->actingAs($tutor)->withSession(['tutor' => true])
+            ->get(route('dashboard.admin.strichlistensystem.bookings'))
+            ->assertRedirect(route('dashboard.index'));
+    }
 }

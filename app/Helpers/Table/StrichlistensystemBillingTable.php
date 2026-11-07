@@ -2,12 +2,14 @@
 
 namespace App\Helpers\Table;
 
+use App\Models\Article;
 use App\Models\ArticleActionLog;
 use App\Models\StrichlistensystemPayment;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 /**
  * Balances (bookings, payments and open amount) of all users of the strichlistensystem (admin).
@@ -15,11 +17,22 @@ use Illuminate\Support\Carbon;
 class StrichlistensystemBillingTable extends Table
 {
     /**
+     * Articles by id in the order of the articles (see articles()).
+     *
+     * @var Collection<int, Article>|null
+     */
+    private ?Collection $articles = null;
+
+    /**
      * {@inheritDoc}
      */
     protected function query(): Builder
     {
         return User::query()
+            // amount per article of the bookings (without cancelled ones), loaded grouped for all users of the page
+            ->with(['articleActionLogs' => fn ($query) => $query
+                ->selectRaw('user_id, article_id, count(*) as amount')
+                ->groupBy('user_id', 'article_id')])
             ->withSum('articleActionLogs as article_action_logs_total', 'price')
             ->withCount('articleActionLogs')
             ->withSum('strichlistensystemPayments as strichlistensystem_payments_total', 'amount');
@@ -42,10 +55,41 @@ class StrichlistensystemBillingTable extends Table
             'email' => $model->email,
             'is_disabled' => (bool) $model->is_disabled,
             'article_action_logs_count' => $model->article_action_logs_count,
+            'articles' => $this->articleAmounts($model),
             'total' => $total,
             'paid' => $paid,
             'open' => $total - $paid,
         ];
+    }
+
+    /**
+     * Get the booked amount per article of the user in the order of the articles.
+     *
+     * @return list<array{name: string, amount: int}>
+     */
+    private function articleAmounts(User $user): array
+    {
+        $articles = $this->articles();
+
+        return $user->articleActionLogs
+            ->filter(fn (ArticleActionLog $amount) => $articles->has($amount->article_id))
+            ->sortBy(fn (ArticleActionLog $amount) => $articles->keys()->search($amount->article_id))
+            ->map(fn (ArticleActionLog $amount) => [
+                'name' => $articles[$amount->article_id]->name,
+                'amount' => (int) $amount->amount,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Get the articles by id in the order of the articles, loaded once per table.
+     *
+     * @return Collection<int, Article>
+     */
+    private function articles(): Collection
+    {
+        return $this->articles ??= Article::orderBy('show_order')->orderBy('name')->get(['id', 'name'])->keyBy('id');
     }
 
     /**
