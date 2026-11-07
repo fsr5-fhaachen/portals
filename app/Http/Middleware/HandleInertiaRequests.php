@@ -55,6 +55,7 @@ class HandleInertiaRequests extends Middleware
             'modules' => fn () => Module::all()->keyBy('key')->all(),
             // users can only opt out of the random generator if it is enabled in the dashboard
             'randomGeneratorOptOutEnabled' => fn () => app(RandomGenerator::class)->isOptOutEnabled(),
+            'randomGeneratorTutorOptOutEnabled' => fn () => app(RandomGenerator::class)->isTutorOptOutEnabled(),
             // start time for the live update of tables
             'serverTime' => fn () => now()->timestamp,
             'message' => [

@@ -39,7 +39,7 @@ class RandomGenerator
     /**
      * Get the settings. Without stored settings all courses are selected.
      *
-     * @return array{participants: string, course_ids: list<int>, opt_out_enabled: bool, hide_opted_out: bool, hide_other_courses: bool, hide_drawn: bool}
+     * @return array{participants: string, course_ids: list<int>, opt_out_enabled: bool, tutor_opt_out_enabled: bool, hide_opted_out: bool, hide_other_courses: bool, hide_drawn: bool}
      */
     public function settings(): array
     {
@@ -49,6 +49,7 @@ class RandomGenerator
             'participants' => ($stored['participants'] ?? null) === self::PARTICIPANTS_TUTORS ? self::PARTICIPANTS_TUTORS : self::PARTICIPANTS_FIRST_YEARS,
             'course_ids' => array_map('intval', $stored['course_ids'] ?? Course::pluck('id')->all()),
             'opt_out_enabled' => (bool) ($stored['opt_out_enabled'] ?? false),
+            'tutor_opt_out_enabled' => (bool) ($stored['tutor_opt_out_enabled'] ?? false),
             'hide_opted_out' => (bool) ($stored['hide_opted_out'] ?? false),
             'hide_other_courses' => (bool) ($stored['hide_other_courses'] ?? false),
             'hide_drawn' => (bool) ($stored['hide_drawn'] ?? false),
@@ -58,7 +59,7 @@ class RandomGenerator
     /**
      * Store the settings.
      *
-     * @param  array{participants: string, course_ids: list<int>, opt_out_enabled: bool, hide_opted_out: bool, hide_other_courses: bool, hide_drawn: bool}  $settings
+     * @param  array{participants: string, course_ids: list<int>, opt_out_enabled: bool, tutor_opt_out_enabled: bool, hide_opted_out: bool, hide_other_courses: bool, hide_drawn: bool}  $settings
      */
     public function saveSettings(array $settings): void
     {
@@ -66,11 +67,19 @@ class RandomGenerator
     }
 
     /**
-     * Check if the users can opt out of the random generator on their own page.
+     * Check if the first-year students can opt out of the random generator on their own page.
      */
     public function isOptOutEnabled(): bool
     {
         return $this->settings()['opt_out_enabled'];
+    }
+
+    /**
+     * Check if the tutors can opt out of the random generator on their own page.
+     */
+    public function isTutorOptOutEnabled(): bool
+    {
+        return $this->settings()['tutor_opt_out_enabled'];
     }
 
     /**

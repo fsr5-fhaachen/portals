@@ -53,6 +53,14 @@ export default () => {
               !isTutor,
           },
           {
+            title: "Zufallsgenerator",
+            href: "/dashboard/tutor/random-generator",
+            visible:
+              isModuleActive("randomGenerator") &&
+              !!page.props.randomGeneratorTutorOptOutEnabled &&
+              isTutor,
+          },
+          {
             title: "Scoring",
             href: "/dashboard/tutor/scoring",
             matchPrefix: true,

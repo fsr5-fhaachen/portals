@@ -88,11 +88,18 @@
         <FormContainer>
           <UiH2>Wer wird gezogen?</UiH2>
 
-          <FormKit
-            type="radio"
-            v-model="settings.participants"
-            :options="participantOptions"
-          />
+          <div class="flex flex-wrap gap-4">
+            <RandomGeneratorGroupToggleBox
+              v-for="option in participantOptions"
+              :key="option.value"
+              :label="option.label"
+              :icon="option.icon"
+              :iconClasses="option.iconClasses"
+              :selected="settings.participants === option.value"
+              class="min-w-[12rem] flex-1"
+              @toggle="settings.participants = option.value"
+            />
+          </div>
         </FormContainer>
       </CardBase>
 
@@ -184,9 +191,15 @@
 
           <FormKit
             type="checkbox"
-            label="Opt-out für Studierende freischalten"
-            help="Studierende können sich dann auf einer eigenen Seite vom Zufallsgenerator abmelden."
+            label="Opt-out für Erstis freischalten"
+            help="Erstis können sich dann auf einer eigenen Seite vom Zufallsgenerator abmelden."
             v-model="settings.opt_out_enabled"
+          />
+          <FormKit
+            type="checkbox"
+            label="Opt-out für Tutoren freischalten"
+            help="Tutoren können sich dann im Tutor-Bereich vom Zufallsgenerator abmelden."
+            v-model="settings.tutor_opt_out_enabled"
           />
         </FormContainer>
       </CardBase>
@@ -216,6 +229,7 @@ type RandomGeneratorSettings = {
   participants: RandomGeneratorParticipants;
   course_ids: number[];
   opt_out_enabled: boolean;
+  tutor_opt_out_enabled: boolean;
   hide_opted_out: boolean;
   hide_other_courses: boolean;
   hide_drawn: boolean;
@@ -226,9 +240,21 @@ const baseUrl = "/dashboard/admin/random-generator";
 const participantOptions: {
   value: RandomGeneratorParticipants;
   label: string;
+  icon: string;
+  iconClasses: string;
 }[] = [
-  { value: "first_years", label: "Erstis" },
-  { value: "tutors", label: "Tutoren" },
+  {
+    value: "first_years",
+    label: "Erstis",
+    icon: "fa-user-graduate",
+    iconClasses: "bg-fhac-mint-dark",
+  },
+  {
+    value: "tutors",
+    label: "Tutoren",
+    icon: "fa-chalkboard-user",
+    iconClasses: "bg-gray-600 dark:bg-gray-700",
+  },
 ];
 
 const stateBadges: Record<

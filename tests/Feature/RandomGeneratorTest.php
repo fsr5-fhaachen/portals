@@ -58,6 +58,7 @@ class RandomGeneratorTest extends TestCase
             'participants' => RandomGenerator::PARTICIPANTS_FIRST_YEARS,
             'course_ids' => [$this->course->id],
             'opt_out_enabled' => false,
+            'tutor_opt_out_enabled' => false,
             'hide_opted_out' => false,
             'hide_other_courses' => false,
             'hide_drawn' => false,
@@ -209,6 +210,7 @@ class RandomGeneratorTest extends TestCase
                 'participants' => 'tutors',
                 'course_ids' => [$this->otherCourse->id],
                 'opt_out_enabled' => true,
+                'tutor_opt_out_enabled' => true,
                 'hide_opted_out' => true,
                 'hide_other_courses' => false,
                 'hide_drawn' => true,
@@ -219,6 +221,7 @@ class RandomGeneratorTest extends TestCase
             'participants' => 'tutors',
             'course_ids' => [$this->otherCourse->id],
             'opt_out_enabled' => true,
+            'tutor_opt_out_enabled' => true,
             'hide_opted_out' => true,
             'hide_other_courses' => false,
             'hide_drawn' => true,
@@ -234,6 +237,7 @@ class RandomGeneratorTest extends TestCase
                 'participants' => 'first_years',
                 'course_ids' => [],
                 'opt_out_enabled' => false,
+                'tutor_opt_out_enabled' => false,
                 'hide_opted_out' => false,
                 'hide_other_courses' => false,
                 'hide_drawn' => false,
@@ -251,6 +255,7 @@ class RandomGeneratorTest extends TestCase
                 'participants' => 'first_years',
                 'course_ids' => [999999],
                 'opt_out_enabled' => false,
+                'tutor_opt_out_enabled' => false,
                 'hide_opted_out' => false,
                 'hide_other_courses' => false,
                 'hide_drawn' => false,
@@ -376,6 +381,7 @@ class RandomGeneratorTest extends TestCase
                 'participants' => 'admins',
                 'course_ids' => [],
                 'opt_out_enabled' => false,
+                'tutor_opt_out_enabled' => false,
                 'hide_opted_out' => false,
                 'hide_other_courses' => false,
                 'hide_drawn' => false,
@@ -425,6 +431,7 @@ class RandomGeneratorTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->component('Dashboard/RandomGenerator')
                 ->where('isParticipating', true)
+                ->where('submitUrl', '/dashboard/random-generator')
                 ->where('randomGeneratorOptOutEnabled', true)
             );
 
@@ -465,5 +472,82 @@ class RandomGeneratorTest extends TestCase
         $this->actingAs($tutor)
             ->get(route('dashboard.randomGenerator.index'))
             ->assertRedirect(route('dashboard.tutor.index'));
+    }
+
+    public function test_tutor_can_opt_out_and_in_again(): void
+    {
+        $this->saveSettings(['tutor_opt_out_enabled' => true]);
+
+        $tutor = User::factory()->create();
+        $tutor->assignRole('tutor');
+
+        $this->actingAs($tutor)->withSession(['tutor' => true])
+            ->get(route('dashboard.tutor.randomGenerator.index'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('Dashboard/RandomGenerator')
+                ->where('isParticipating', true)
+                ->where('submitUrl', '/dashboard/tutor/random-generator')
+                ->where('randomGeneratorTutorOptOutEnabled', true)
+            );
+
+        $this->actingAs($tutor)->withSession(['tutor' => true])
+            ->post(route('dashboard.tutor.randomGenerator.update'), ['is_participating' => false])
+            ->assertRedirect(route('dashboard.tutor.randomGenerator.index'))
+            ->assertSessionHas('success');
+
+        $this->assertTrue($tutor->fresh()->random_generator_opt_out);
+
+        // a tutor that opted out is not drawn
+        $this->saveSettings(['participants' => RandomGenerator::PARTICIPANTS_TUTORS, 'course_ids' => [$tutor->course_id, $this->admin->course_id], 'tutor_opt_out_enabled' => true]);
+        $this->assertNotContains($tutor->id, app(RandomGenerator::class)->pool()->pluck('id')->all());
+
+        $this->actingAs($tutor)->withSession(['tutor' => true])
+            ->post(route('dashboard.tutor.randomGenerator.update'), ['is_participating' => true])
+            ->assertRedirect(route('dashboard.tutor.randomGenerator.index'));
+
+        $this->assertFalse($tutor->fresh()->random_generator_opt_out);
+        $this->assertContains($tutor->id, app(RandomGenerator::class)->pool()->pluck('id')->all());
+    }
+
+    public function test_tutor_opt_out_has_its_own_setting(): void
+    {
+        // the opt out of the first-year students does not enable the opt out of the tutors
+        $this->saveSettings(['opt_out_enabled' => true, 'tutor_opt_out_enabled' => false]);
+
+        $tutor = User::factory()->create();
+        $tutor->assignRole('tutor');
+
+        $this->actingAs($tutor)->withSession(['tutor' => true])
+            ->get(route('dashboard.tutor.randomGenerator.index'))
+            ->assertRedirect(route('dashboard.tutor.index'))
+            ->assertSessionHas('info');
+
+        $this->actingAs($tutor)->withSession(['tutor' => true])
+            ->post(route('dashboard.tutor.randomGenerator.update'), ['is_participating' => false])
+            ->assertRedirect(route('dashboard.tutor.index'));
+
+        $this->assertFalse($tutor->fresh()->random_generator_opt_out);
+
+        // and the opt out of the tutors does not enable the opt out of the first-year students
+        $this->saveSettings(['opt_out_enabled' => false, 'tutor_opt_out_enabled' => true]);
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('dashboard.randomGenerator.index'))
+            ->assertRedirect(route('dashboard.index'));
+    }
+
+    public function test_first_year_student_can_not_use_the_tutor_opt_out(): void
+    {
+        $this->saveSettings(['tutor_opt_out_enabled' => true]);
+
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->post(route('dashboard.tutor.randomGenerator.update'), ['is_participating' => false])
+            ->assertRedirect(route('dashboard.index'));
+
+        $this->assertFalse($user->fresh()->random_generator_opt_out);
     }
 }

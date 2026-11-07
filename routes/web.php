@@ -80,6 +80,11 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
         Route::get('/workshop-session/{workshopSession}', [DashboardTutorController::class, 'workshopSession'])->name('dashboard.tutor.workshopSession.index');
         Route::get('/group/{group}', [DashboardTutorController::class, 'group'])->name('dashboard.tutor.group.index');
 
+        Route::middleware(ActiveModule::class.':randomGenerator')->group(function () {
+            Route::get('/random-generator', [RandomGeneratorController::class, 'tutorIndex'])->name('dashboard.tutor.randomGenerator.index');
+            Route::post('/random-generator', [RandomGeneratorController::class, 'tutorUpdate'])->name('dashboard.tutor.randomGenerator.update');
+        });
+
         Route::middleware(ActiveModule::class.':scoring')->prefix('scoring')->group(function () {
             Route::get('/', [DashboardTutorScoringController::class, 'index'])->name('dashboard.tutor.scoring.index');
             Route::post('/competition/{competition}/duel', [DashboardTutorScoringController::class, 'storeDuel'])->name('dashboard.tutor.scoring.storeDuel');

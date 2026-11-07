@@ -40,9 +40,14 @@
 import { ref } from "vue";
 import { router } from "@inertiajs/vue3";
 
-const { isParticipating } = defineProps({
+const { isParticipating, submitUrl } = defineProps({
   isParticipating: {
     type: Boolean,
+    required: true,
+  },
+  // the first-year students and the tutors have their own url
+  submitUrl: {
+    type: String,
     required: true,
   },
 });
@@ -52,7 +57,7 @@ const form = ref({
 });
 
 const submitHandler = () => {
-  router.post("/dashboard/random-generator", form.value, {
+  router.post(submitUrl, form.value, {
     preserveScroll: true,
   });
 };

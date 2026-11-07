@@ -52,6 +52,8 @@ import {
   faUser,
   faDeleteLeft,
   faMap,
+  faUserGraduate,
+  faChalkboardUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import {
@@ -112,6 +114,8 @@ library.add(
   faUser,
   faDeleteLeft,
   faMap,
+  faUserGraduate,
+  faChalkboardUser,
 );
 
 createInertiaApp({

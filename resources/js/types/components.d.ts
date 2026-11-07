@@ -36,6 +36,7 @@ declare module 'vue' {
     GridContainer: typeof import('./../components/grid/Container.vue')['default']
     GroupTable: typeof import('./../components/group/Table.vue')['default']
     LayoutDashboardContent: typeof import('./../components/layout/DashboardContent.vue')['default']
+    RandomGeneratorGroupToggleBox: typeof import('./../components/random/generator/GroupToggleBox.vue')['default']
     RandomGeneratorUserAvatarCard: typeof import('./../components/random/generator/user/AvatarCard.vue')['default']
     RandomGeneratorUserCandidateCard: typeof import('./../components/random/generator/user/CandidateCard.vue')['default']
     RegistrationTable: typeof import('./../components/registration/Table.vue')['default']
