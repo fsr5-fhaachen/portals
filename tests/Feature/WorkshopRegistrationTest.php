@@ -100,6 +100,20 @@ class WorkshopRegistrationTest extends TestCase
         $this->assertSame(0, $this->event->registrations()->count());
     }
 
+    public function test_registration_is_not_possible_without_priorities(): void
+    {
+        $this->actingAs($this->user)
+            ->from(route('dashboard.event.register', $this->event))
+            ->post(route('dashboard.event.registerUser', $this->event))
+            ->assertRedirect(route('dashboard.event.register', $this->event))
+            ->assertSessionHasErrors('priorities');
+
+        $this->registerWithPriorities([])
+            ->assertSessionHasErrors('priorities');
+
+        $this->assertSame(0, $this->event->registrations()->count());
+    }
+
     public function test_priorities_must_be_workshops_of_the_event(): void
     {
         $otherWorkshop = Workshop::factory()->create();
