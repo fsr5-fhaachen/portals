@@ -6,6 +6,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faHandLizard } from "@fortawesome/free-regular-svg-icons";
 import {
   faBars,
+  faCheck,
   faCircleCheck,
   faCircleXmark,
   faCircleInfo,
@@ -64,6 +65,7 @@ import PrimeVue from "primevue/config";
 
 library.add(
   faBars,
+  faCheck,
   faCircleCheck,
   faCircleXmark,
   faCircleInfo,

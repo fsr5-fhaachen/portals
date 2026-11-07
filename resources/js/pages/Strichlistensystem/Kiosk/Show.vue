@@ -97,12 +97,26 @@ const logout = () => {
   router.post("/strichlistensystem/kiosk/logout");
 };
 
-const buy = (article: App.Models.Article, amount: number) => {
+// an error of the booking is flashed as message, the booking was only successful without it
+const buy = (
+  article: App.Models.Article,
+  amount: number,
+  onBooked: (isBooked: boolean) => void,
+) => {
+  let isBooked = false;
   redirectCountdown.value = countdownSecondsAfterAction;
   router.post(
     `/strichlistensystem/kiosk/user/${props.person.id}/buy/${article.id}`,
     { amount, price: article.price },
-    { preserveScroll: true, preserveState: true },
+    {
+      preserveScroll: true,
+      preserveState: true,
+      onSuccess: (page) => {
+        isBooked = !(page.props.message as { error?: string } | undefined)
+          ?.error;
+      },
+      onFinish: () => onBooked(isBooked),
+    },
   );
 };
 

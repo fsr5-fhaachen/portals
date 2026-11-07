@@ -69,11 +69,19 @@
       <UiMessage v-if="isLimitReached" type="info" :message="limitMessage" />
 
       <AppButton
+        :theme="bookingState === 'booked' ? 'success' : 'default'"
         class="mt-auto text-center text-lg font-semibold"
-        :disabled="isDisabled || disabled || isLimitReached"
+        :disabled="bookingState !== 'idle' || disabled || isLimitReached"
         @click="buy"
       >
-        Buchen
+        <span
+          v-if="bookingState === 'booked'"
+          class="inline-flex items-center gap-2"
+        >
+          <FontAwesomeIcon :icon="['fas', 'check']" />
+          Gebucht
+        </span>
+        <template v-else>Buchen</template>
       </AppButton>
     </div>
   </CardBase>
@@ -100,12 +108,18 @@ const props = defineProps({
 });
 
 const emit = defineEmits<{
-  (e: "buy", article: App.Models.Article, amount: number): void;
+  // the parent books the article and calls onBooked with the result
+  (
+    e: "buy",
+    article: App.Models.Article,
+    amount: number,
+    onBooked: (isBooked: boolean) => void,
+  ): void;
   (e: "limitReset", article: App.Models.Article): void;
 }>();
 
-// cooldown after a booking to prevent accidental double bookings
-const cooldownSeconds = 3;
+// the button stays green after a booking, this also prevents accidental double bookings
+const bookedSeconds = 3;
 
 // the remaining amount is calculated by the server (limit per kiosk login or per time window)
 const remainingAmount = computed(() =>
@@ -114,8 +128,8 @@ const remainingAmount = computed(() =>
 const isLimitReached = computed(() => remainingAmount.value < 1);
 
 const amount = ref(1);
-const isDisabled = ref(false);
-let cooldownTimeout: ReturnType<typeof setTimeout> | null = null;
+const bookingState = ref<"idle" | "booking" | "booked">("idle");
+let bookedTimeout: ReturnType<typeof setTimeout> | null = null;
 
 // keep the amount within the remaining amount after bookings and cancellations
 watch(remainingAmount, (newRemainingAmount) => {
@@ -183,19 +197,28 @@ const buy = () => {
     return;
   }
 
-  isDisabled.value = true;
-  emit("buy", props.article, amount.value);
+  bookingState.value = "booking";
+  emit("buy", props.article, amount.value, onBooked);
   amount.value = 1;
+};
 
-  cooldownTimeout = setTimeout(() => {
-    isDisabled.value = false;
-  }, cooldownSeconds * 1000);
+// after a failed booking the button is available again at once, the error is shown in the banner
+const onBooked = (isBooked: boolean) => {
+  if (!isBooked) {
+    bookingState.value = "idle";
+    return;
+  }
+
+  bookingState.value = "booked";
+  bookedTimeout = setTimeout(() => {
+    bookingState.value = "idle";
+  }, bookedSeconds * 1000);
 };
 
 onBeforeUnmount(() => {
   clearInterval(nowInterval);
-  if (cooldownTimeout) {
-    clearTimeout(cooldownTimeout);
+  if (bookedTimeout) {
+    clearTimeout(bookedTimeout);
   }
 });
 </script>

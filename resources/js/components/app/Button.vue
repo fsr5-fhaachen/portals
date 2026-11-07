@@ -17,7 +17,7 @@ const props = defineProps({
     type: String,
     default: "default",
     validator: (value: string) =>
-      ["default", "gray", "warning", "danger"].includes(value),
+      ["default", "gray", "warning", "danger", "success"].includes(value),
   },
 });
 
@@ -53,6 +53,12 @@ const rootClasses = computed(() => {
     if (!props.disabled) {
       classes.push("hover:bg-red-700 dark:hover:bg-red-900");
     }
+  } else if (props.theme === "success") {
+    classes.push("bg-green-600 dark:bg-green-700");
+
+    if (!props.disabled) {
+      classes.push("hover:bg-green-700 dark:hover:bg-green-800");
+    }
   } else if (props.theme === "warning") {
     classes.push("bg-orange-500 dark:bg-orange-700");
 
@@ -62,7 +68,12 @@ const rootClasses = computed(() => {
   }
 
   if (props.disabled) {
-    classes.push("opacity-50 hover:cursor-not-allowed");
+    // a disabled success button confirms an action, so it is not faded
+    classes.push(
+      props.theme === "success"
+        ? "hover:cursor-not-allowed"
+        : "opacity-50 hover:cursor-not-allowed",
+    );
   } else {
     classes.push("hover:cursor-pointer");
   }

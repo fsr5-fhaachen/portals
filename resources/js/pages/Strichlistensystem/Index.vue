@@ -106,11 +106,25 @@ const reloadArticles = () => {
   router.reload({ only: ["articles"] });
 };
 
-const buy = (article: App.Models.Article, amount: number) => {
+// an error of the booking is flashed as message, the booking was only successful without it
+const buy = (
+  article: App.Models.Article,
+  amount: number,
+  onBooked: (isBooked: boolean) => void,
+) => {
+  let isBooked = false;
   router.post(
     `/strichlistensystem/buy/${article.id}`,
     { amount, price: article.price },
-    { preserveScroll: true, preserveState: true },
+    {
+      preserveScroll: true,
+      preserveState: true,
+      onSuccess: (page) => {
+        isBooked = !(page.props.message as { error?: string } | undefined)
+          ?.error;
+      },
+      onFinish: () => onBooked(isBooked),
+    },
   );
 };
 
