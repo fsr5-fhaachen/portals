@@ -332,8 +332,9 @@ const submitPin = (pin: string) => {
   pinForm.post(
     `/strichlistensystem/kiosk/user/${selectedPerson.value.id}/pin`,
     {
-      preserveScroll: true,
-      preserveState: true,
+      // only a wrong pin stays on the list, a correct pin opens the page of the person from the top
+      preserveScroll: "errors",
+      preserveState: "errors",
       onError: () => {
         pinForm.reset();
         pinPad.value?.clear();

@@ -76,10 +76,10 @@
       >
         <span
           v-if="bookingState === 'booked'"
-          class="inline-flex items-center gap-2"
+          class="flex items-center justify-center gap-2"
         >
           <FontAwesomeIcon :icon="['fas', 'check']" />
-          Gebucht
+          {{ bookedAmount }}× Gebucht
         </span>
         <template v-else>Buchen</template>
       </AppButton>
@@ -129,6 +129,8 @@ const isLimitReached = computed(() => remainingAmount.value < 1);
 
 const amount = ref(1);
 const bookingState = ref<"idle" | "booking" | "booked">("idle");
+// the amount of the last booking, shown on the button after the booking
+const bookedAmount = ref(1);
 let bookedTimeout: ReturnType<typeof setTimeout> | null = null;
 
 // keep the amount within the remaining amount after bookings and cancellations
@@ -198,6 +200,7 @@ const buy = () => {
   }
 
   bookingState.value = "booking";
+  bookedAmount.value = amount.value;
   emit("buy", props.article, amount.value, onBooked);
   amount.value = 1;
 };
