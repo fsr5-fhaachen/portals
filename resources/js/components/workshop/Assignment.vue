@@ -63,6 +63,7 @@
               :block="block"
               :options="sessionOptions(block.id, registration)"
               :priority="priorityOf(registration, session.workshop_id)"
+              :priorityDetails="priorityDetails(registration, block.id)"
               @assign="assign"
             />
           </ul>
@@ -96,6 +97,7 @@
               :registration="registration"
               :block="block"
               :options="sessionOptions(block.id, registration)"
+              :priorityDetails="priorityDetails(registration, block.id)"
               @assign="assign"
             />
           </ul>
@@ -208,6 +210,81 @@ const priorityOf = (
   const index = registration.priorities.indexOf(workshopId);
 
   return index === -1 ? null : index + 1;
+};
+
+const blockNameById = computed(
+  () =>
+    Object.fromEntries(
+      props.blocks.map((block) => [block.id, block.name]),
+    ) as Record<number, string>,
+);
+
+const sessionById = computed(
+  () =>
+    Object.fromEntries(
+      props.workshops
+        .flatMap((workshop) => workshop.sessions ?? [])
+        .map((session) => [session.id, session]),
+    ) as Record<number, App.Models.WorkshopSession>,
+);
+
+/**
+ * Describe all priorities of the registration with their state in the given block, so the admin sees why a wish was
+ * not fulfilled (e.g. full, cancelled or not offered in the block).
+ */
+const priorityDetails = (
+  registration: Workshops.RegistrationRow,
+  blockId: number,
+): string[] => {
+  if (!registration.priorities.length) {
+    return ["Keine Prios abgegeben (von Hand eingetragen)"];
+  }
+
+  const assignedSessions = Object.values(
+    registration.assignments as Record<number, number>,
+  )
+    .map((sessionId) => sessionById.value[sessionId])
+    .filter(Boolean);
+
+  return registration.priorities.map((workshopId, index) => {
+    const prefix = `${index + 1}. ${workshopName(workshopId)}: `;
+
+    const assignedSession = assignedSessions.find(
+      (session) => session.workshop_id === workshopId,
+    );
+    if (assignedSession) {
+      return `${prefix}zugeteilt (${blockNameById.value[assignedSession.workshop_block_id]})`;
+    }
+
+    const session = sessionsOfBlock(blockId).find(
+      (session) => session.workshop_id === workshopId,
+    );
+    if (!session) {
+      const otherBlocks = props.blocks
+        .filter((block) =>
+          sessionsOfBlock(block.id).some(
+            (session) => session.workshop_id === workshopId,
+          ),
+        )
+        .map((block) => block.name);
+
+      return `${prefix}nicht in diesem Block (nur ${otherBlocks.join(", ") || "keinem Block"})`;
+    }
+
+    const count = participantsOf(session.id).length;
+    const limit = `${count}/${session.maximum_participants ?? "∞"}`;
+    if (session.is_cancelled) {
+      return `${prefix}fällt in diesem Block aus`;
+    }
+    if (
+      session.maximum_participants !== null &&
+      count >= session.maximum_participants
+    ) {
+      return `${prefix}in diesem Block voll (${limit})`;
+    }
+
+    return `${prefix}in diesem Block frei (${limit})`;
+  });
 };
 
 // the sessions of the block with the priority of the registration and the current amount of participants
