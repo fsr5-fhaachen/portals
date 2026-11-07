@@ -10,7 +10,7 @@ import {
 import Chart from "primevue/chart";
 import colors from "tailwindcss/colors";
 
-const { stats, chartType } = defineProps({
+const { stats, chartType, percentageOf } = defineProps({
   stats: {
     type: [Object, Number] as PropType<object | number>,
     required: true,
@@ -19,7 +19,18 @@ const { stats, chartType } = defineProps({
     type: String,
     default: "pie",
   },
+  // only for the total: the amount the total is a share of (e.g. all participants)
+  percentageOf: {
+    type: Number,
+    default: null,
+  },
 });
+
+const percentage = computed(() =>
+  typeof stats === "number" && percentageOf
+    ? Math.round((stats / percentageOf) * 100)
+    : null,
+);
 
 const backgroundColors = [
   "#609ffc",
@@ -117,6 +128,12 @@ const chartOptions = computed(() => ({
     >
       <p class="dark:text-grey-400 text-gray-500">Total User Count:</p>
       <p class="text-2xl font-bold text-center dark:text-white">{{ stats }}</p>
+      <p
+        v-if="percentage !== null"
+        class="text-center text-sm text-gray-500 dark:text-gray-400"
+      >
+        {{ percentage }} % von {{ percentageOf }} Erstis
+      </p>
     </div>
   </div>
 </template>

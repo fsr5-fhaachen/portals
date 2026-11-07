@@ -8,6 +8,7 @@ use App\Helpers\GroupBalancedDivision;
 use App\Helpers\GroupCourseDivision;
 use App\Helpers\SlotAssignment;
 use App\Helpers\Table\EventPageTable;
+use App\Helpers\Table\NotRegisteredUsersTable;
 use App\Helpers\Table\RegistrationsTable;
 use App\Helpers\Table\UsersTable;
 use App\Models\Course;
@@ -397,8 +398,31 @@ class DashboardAdminController extends Controller
         return Inertia::render('Dashboard/Admin/Event', [
             'event' => $event,
             'courses' => $courses,
+            // the share of all participants (users without a role) that registered is shown in the statistics
+            'participantsCount' => User::doesntHave('roles')->count(),
             ...($eventPageTable ? [$eventPageTable[0] => $eventPageTable[1]->scroll()] : []),
             'hasFormResponses' => $eventPageTable && $eventPageTable[1] instanceof RegistrationsTable && $eventPageTable[1]->hasFormResponses(),
+        ]);
+    }
+
+    /**
+     * Display the participants (users without a role) that are not registered for the event (negative list)
+     */
+    public function notRegistered(IlluminateRequest $request): Response|JsonResponse
+    {
+        $event = Event::find($request->event);
+        if (! $event) {
+            return Inertia::render('Dashboard/404');
+        }
+
+        $notRegisteredUsersTable = new NotRegisteredUsersTable($request, $event->id);
+        if ($notRegisteredUsersTable->wantsChanges()) {
+            return $notRegisteredUsersTable->changesResponse();
+        }
+
+        return Inertia::render('Dashboard/Admin/NotRegistered', [
+            'event' => $event->only(['id', 'name']),
+            'users' => $notRegisteredUsersTable->scroll(),
         ]);
     }
 

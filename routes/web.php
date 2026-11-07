@@ -135,6 +135,7 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
         Route::middleware('can:manage events')->group(function () {
             Route::get('/event/{event}', [DashboardAdminController::class, 'event'])->name('dashboard.admin.event.index');
             Route::get('/event/{event}/registrations', [DashboardAdminController::class, 'registrations'])->name('dashboard.admin.event.registrations');
+            Route::get('/event/{event}/not-registered', [DashboardAdminController::class, 'notRegistered'])->name('dashboard.admin.event.notRegistered');
             Route::get('/event/{event}/submit', [DashboardAdminController::class, 'eventSubmit'])->name('dashboard.admin.event.submit');
             Route::post('/event/{event}/submit', [DashboardAdminController::class, 'eventExecuteSubmit'])->name('dashboard.admin.event.executeSubmit');
 

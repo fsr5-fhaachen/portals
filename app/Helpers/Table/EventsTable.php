@@ -3,6 +3,7 @@
 namespace App\Helpers\Table;
 
 use App\Models\Event;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -13,13 +14,22 @@ use Illuminate\Support\Facades\DB;
 class EventsTable extends Table
 {
     /**
+     * Amount of all participants (see participantsCount()).
+     */
+    private ?int $participantsCount = null;
+
+    /**
      * {@inheritDoc}
      */
     protected function query(): Builder
     {
         return Event::query()
             ->with('courses:id,abbreviation')
-            ->withCount('registrations');
+            ->withCount([
+                'registrations',
+                // the participants (users without a role) give the share of all participants that registered
+                'registrations as participant_registrations_count' => fn (Builder $query) => $query->whereHas('user', fn (Builder $userQuery) => $userQuery->doesntHave('roles')),
+            ]);
     }
 
     /**
@@ -39,7 +49,17 @@ class EventsTable extends Table
             'registration_to' => $model->registration_to,
             'courses' => $model->courses->map(fn ($course) => $course->only(['id', 'abbreviation']))->values()->all(),
             'registrations_count' => $model->registrations_count,
+            'participant_registrations_count' => $model->participant_registrations_count,
+            'participants_count' => $this->participantsCount(),
         ];
+    }
+
+    /**
+     * Get the amount of all participants (users without a role), counted once per table.
+     */
+    private function participantsCount(): int
+    {
+        return $this->participantsCount ??= User::doesntHave('roles')->count();
     }
 
     /**

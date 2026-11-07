@@ -27,7 +27,11 @@
       class="flex bg-white dark:bg-gray-800 mb-16 pb-5 justify-center rounded-lg flex-row flex-wrap flex-grow"
     >
       <ChartContainer v-for="stats in statistics" :stats :chartType="'pie'" />
-      <ChartContainer :stats="courseTotal" chartType="total" />
+      <ChartContainer
+        :stats="courseTotal"
+        chartType="total"
+        :percentageOf="participantsCount"
+      />
     </div>
     <div
       v-if="['group_phase', 'slot_booking'].includes(event.type)"
@@ -48,9 +52,16 @@
       </AppButton>
     </div>
 
-    <div class="mb-16">
+    <div class="mb-16 flex flex-col gap-4">
       <AppButton @click="view()" class="text-center text-2xl uppercase">
         Registrierungen anzeigen
+      </AppButton>
+      <AppButton
+        theme="gray"
+        @click="notRegistered()"
+        class="text-center text-2xl uppercase"
+      >
+        Nicht angemeldet anzeigen
       </AppButton>
     </div>
 
@@ -72,7 +83,7 @@
 import { ref, PropType } from "vue";
 import { router } from "@inertiajs/vue3";
 
-const { courses, event } = defineProps({
+const { courses, event, participantsCount } = defineProps({
   courses: {
     type: Array as PropType<App.Models.Course[]>,
     required: true,
@@ -84,6 +95,11 @@ const { courses, event } = defineProps({
   hasFormResponses: {
     type: Boolean,
     default: false,
+  },
+  // all participants (users without a role)
+  participantsCount: {
+    type: Number,
+    required: true,
   },
   user: {
     type: Object as PropType<Models.User>,
@@ -161,5 +177,8 @@ const workshops = () => {
 };
 const view = () => {
   router.visit("/dashboard/admin/event/" + event.id + "/registrations");
+};
+const notRegistered = () => {
+  router.visit("/dashboard/admin/event/" + event.id + "/not-registered");
 };
 </script>

@@ -107,7 +107,21 @@ function getColumns(): Array<TableColumn> {
   let participantsCol = new TableColumn({
     name: "participants",
     text: "Teilnehmer",
-    valueFunction: (event) => (event.registrations_count ?? 0).toString(),
+    // the share is the part of all participants (users without a role), tutors are not counted
+    valueFunction: (event) => {
+      const count = (event.registrations_count ?? 0).toString();
+      if (!event.participants_count) {
+        return count;
+      }
+
+      const percentage = Math.round(
+        ((event.participant_registrations_count ?? 0) /
+          event.participants_count) *
+          100,
+      );
+
+      return `${count} <span class="text-gray-500 dark:text-gray-400" title="Anteil aller Erstis (ohne Tutoren)">(${percentage}&nbsp;%)</span>`;
+    },
     sortKey: "registrations_count",
   });
   columns.push(participantsCol);
