@@ -50,7 +50,7 @@ class StrichlistensystemInvoiceSettings
     /**
      * Get the settings with defaults for the missing ones.
      *
-     * @return array{club_name: string, club_street: string, club_postal_code: string, club_city: string, chairperson: string, deputy_chairperson: string, email: string, account_holder: string, iban: string, bic: string, bank_name: string, number_prefix: string, number_digits: int, start_number: int, title_template: string, payment_term_days: int, note: string}
+     * @return array{club_name: string, club_street: string, club_postal_code: string, club_city: string, chairperson: string, deputy_chairperson: string, email: string, charges_vat: bool, tax_number: string, vat_id: string, account_holder: string, iban: string, bic: string, bank_name: string, number_prefix: string, number_digits: int, start_number: int, title_template: string, payment_term_days: int, note: string}
      */
     public function settings(): array
     {
@@ -64,6 +64,9 @@ class StrichlistensystemInvoiceSettings
             'chairperson' => (string) ($stored['chairperson'] ?? ''),
             'deputy_chairperson' => (string) ($stored['deputy_chairperson'] ?? ''),
             'email' => (string) ($stored['email'] ?? ''),
+            'charges_vat' => (bool) ($stored['charges_vat'] ?? true),
+            'tax_number' => (string) ($stored['tax_number'] ?? ''),
+            'vat_id' => (string) ($stored['vat_id'] ?? ''),
             'account_holder' => (string) ($stored['account_holder'] ?? ''),
             'iban' => (string) ($stored['iban'] ?? ''),
             'bic' => (string) ($stored['bic'] ?? ''),
@@ -78,7 +81,7 @@ class StrichlistensystemInvoiceSettings
     }
 
     /**
-     * Store the settings. The iban and the bic are stored without spaces and in upper case.
+     * Store the settings. The iban, the bic and the vat id are stored without spaces and in upper case.
      *
      * @param  array<string, mixed>  $settings
      */
@@ -86,12 +89,17 @@ class StrichlistensystemInvoiceSettings
     {
         $settings['iban'] = self::normalizeIban((string) ($settings['iban'] ?? ''));
         $settings['bic'] = strtoupper(preg_replace('/\s+/', '', (string) ($settings['bic'] ?? '')));
+        $settings['vat_id'] = strtoupper(preg_replace('/\s+/', '', (string) ($settings['vat_id'] ?? '')));
+        if (array_key_exists('charges_vat', $settings)) {
+            $settings['charges_vat'] = filter_var($settings['charges_vat'], FILTER_VALIDATE_BOOLEAN);
+        }
 
         State::updateOrCreate(['key' => self::KEY], ['value' => json_encode(array_merge($this->settings(), $settings))]);
     }
 
     /**
-     * Get the labels of the required settings that are missing.
+     * Get the labels of the required settings that are missing. Invoices with vat need the tax number or the vat id
+     * of the club (§ 14 Abs. 4 Nr. 2 UStG).
      *
      * @return list<string>
      */
@@ -99,11 +107,17 @@ class StrichlistensystemInvoiceSettings
     {
         $settings = $this->settings();
 
-        return array_values(array_filter(
+        $missing = array_values(array_filter(
             self::REQUIRED,
             fn (string $label, string $key) => trim((string) $settings[$key]) === '',
             ARRAY_FILTER_USE_BOTH,
         ));
+
+        if ($settings['charges_vat'] && trim($settings['tax_number']) === '' && trim($settings['vat_id']) === '') {
+            $missing[] = 'Steuernummer oder Umsatzsteuer-ID';
+        }
+
+        return $missing;
     }
 
     /**

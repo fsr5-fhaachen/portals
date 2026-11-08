@@ -23,6 +23,7 @@ class ArticleFactory extends Factory
             'show_order' => $this->faker->numberBetween(1, 100),
             'max_order_amount' => $this->faker->numberBetween(1, 8),
             'price' => $this->faker->numberBetween(0, 500),
+            'vat_rate' => 19,
             'is_active' => true,
         ];
     }

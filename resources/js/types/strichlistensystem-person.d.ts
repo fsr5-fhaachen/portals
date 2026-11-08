@@ -48,6 +48,8 @@ declare namespace Strichlistensystem {
     quantity: number;
     unit_price: number;
     total: number;
+    // vat rate in percent that is included in the prices, 0 without vat (missing on old invoices)
+    vat_rate?: number;
   };
 
   // invoice data of a person in the payment dialog (see DashboardAdminStrichlistensystemController::billingUser)
@@ -113,9 +115,12 @@ declare namespace Strichlistensystem {
   };
 
   // payment of a person (see DashboardAdminStrichlistensystemController::billingUser)
+  type PaymentMethod = "cash" | "bank_transfer";
+
   type Payment = {
     id: number;
     amount: number;
+    method: PaymentMethod;
     created_at: string;
     deleted_at: string | null;
     created_by: { id: number; firstname: string; lastname: string } | null;

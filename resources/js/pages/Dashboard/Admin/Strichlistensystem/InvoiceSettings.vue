@@ -85,6 +85,30 @@
                   help="Steht in der Fußzeile der Rechnung."
                 />
               </FormRow>
+              <FormRow>
+                <FormKit
+                  type="checkbox"
+                  name="charges_vat"
+                  label="Mehrwertsteuer ausweisen"
+                  help="Die Preise sind Bruttopreise, die enthaltene Mehrwertsteuer wird mit dem Satz des Artikels ausgewiesen. Ohne Haken wird keine Mehrwertsteuer ausgewiesen, z. B. als Kleinunternehmer (§ 19 UStG)."
+                />
+              </FormRow>
+              <FormRow>
+                <FormKit
+                  type="text"
+                  name="tax_number"
+                  label="Steuernummer"
+                  autocomplete="off"
+                  help="z. B. 201/123/45678. Mit Mehrwertsteuer ist die Steuernummer oder die Umsatzsteuer-ID nötig, ohne sind beide optional."
+                />
+                <FormKit
+                  type="text"
+                  name="vat_id"
+                  label="Umsatzsteuer-ID"
+                  autocomplete="off"
+                  help="z. B. DE123456789. Steht wie die Steuernummer im Kopf und in der Fußzeile der Rechnung."
+                />
+              </FormRow>
             </FormContainer>
           </CardBase>
 
@@ -249,6 +273,9 @@ type InvoiceSettings = {
   chairperson: string;
   deputy_chairperson: string;
   email: string;
+  charges_vat: boolean;
+  tax_number: string;
+  vat_id: string;
   account_holder: string;
   iban: string;
   bic: string;

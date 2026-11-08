@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Helpers\EpcQrCode;
+use App\Helpers\StrichlistensystemInvoicePdf;
 use App\Helpers\StrichlistensystemInvoiceSettings;
 use App\Helpers\StrichlistensystemInvoicing;
 use App\Models\Article;
@@ -38,6 +39,9 @@ class StrichlistensystemInvoiceTest extends TestCase
         'chairperson' => 'Max Mustermann',
         'deputy_chairperson' => 'Erika Musterfrau',
         'email' => 'kasse@example.org',
+        'charges_vat' => true,
+        'tax_number' => '201/123/45678',
+        'vat_id' => 'de 123 456 789',
         'account_holder' => '',
         'iban' => 'DE89 3704 0044 0532 0130 00',
         'bic' => 'COBADEFFXXX',
@@ -47,7 +51,7 @@ class StrichlistensystemInvoiceTest extends TestCase
         'start_number' => 1,
         'title_template' => 'Gerolstein 2026 - Abrechnung Getränke - {vorname} {nachname} - {nummer}',
         'payment_term_days' => 14,
-        'note' => 'Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.',
+        'note' => 'Bei Fragen melde dich bei der Kasse.',
     ];
 
     protected function setUp(): void
@@ -173,6 +177,9 @@ class StrichlistensystemInvoiceTest extends TestCase
 
         $settings = app(StrichlistensystemInvoiceSettings::class);
         $this->assertSame('DE89370400440532013000', $settings->settings()['iban']);
+        $this->assertSame('DE123456789', $settings->settings()['vat_id']);
+        $this->assertSame('201/123/45678', $settings->settings()['tax_number']);
+        $this->assertTrue($settings->settings()['charges_vat']);
         $this->assertSame([], $settings->missing());
         $this->assertSame('Fachschaftsrat 5 e.V.', $settings->accountHolder());
 
@@ -193,8 +200,11 @@ class StrichlistensystemInvoiceTest extends TestCase
                 'iban' => 'DE89 3704 0044 0532 0130 01',
                 'bic' => 'NOBIC',
                 'number_prefix' => 'GER 26',
+                'vat_id' => '123456789',
+                'tax_number' => 'St-Nr. 201',
+                'charges_vat' => 'maybe',
             ]))
-            ->assertSessionHasErrors(['iban', 'bic', 'number_prefix']);
+            ->assertSessionHasErrors(['iban', 'bic', 'number_prefix', 'vat_id', 'tax_number', 'charges_vat']);
 
         $this->assertNotSame([], app(StrichlistensystemInvoiceSettings::class)->missing());
     }
@@ -224,15 +234,22 @@ class StrichlistensystemInvoiceTest extends TestCase
         $this->assertSame('GER26-0001', $invoice->number);
         $this->assertSame('Gerolstein 2026 - Abrechnung Getränke - Anna Müller - GER26-0001', $invoice->title);
         $this->assertSame([
-            ['name' => 'Bier', 'quantity' => 3, 'unit_price' => 100, 'total' => 300],
-            ['name' => 'Bier', 'quantity' => 1, 'unit_price' => 120, 'total' => 120],
-            ['name' => 'Cola', 'quantity' => 2, 'unit_price' => 50, 'total' => 100],
+            ['name' => 'Bier', 'quantity' => 3, 'unit_price' => 100, 'total' => 300, 'vat_rate' => 19],
+            ['name' => 'Bier', 'quantity' => 1, 'unit_price' => 120, 'total' => 120, 'vat_rate' => 19],
+            ['name' => 'Cola', 'quantity' => 2, 'unit_price' => 50, 'total' => 100, 'vat_rate' => 19],
         ], $invoice->items);
         $this->assertSame(520, $invoice->subtotal);
         $this->assertSame(0, $invoice->paid);
         $this->assertSame(520, $invoice->amount_due);
         $this->assertSame('Anna Müller', $invoice->recipient['name']);
         $this->assertSame('Fachschaftsrat 5 e.V.', $invoice->issuer['account_holder']);
+        $this->assertSame('DE123456789', $invoice->issuer['vat_id']);
+        $this->assertSame('201/123/45678', $invoice->issuer['tax_number']);
+        // the prices are gross prices with 19 % vat included
+        $this->assertTrue($invoice->chargesVat());
+        $this->assertSame([['rate' => 19, 'gross' => 520, 'net' => 437, 'vat' => 83]], $invoice->vatBreakdown());
+        $this->assertSame(83, $invoice->vatAmount());
+        $this->assertSame(437, $invoice->netAmount());
         $this->assertSame(now()->addDays(14)->toDateString(), $invoice->due_on->toDateString());
         $this->assertSame($this->admin->id, $invoice->created_by_id);
         $this->assertSame(6, $invoice->articleActionLogs()->count());
@@ -420,6 +437,86 @@ class StrichlistensystemInvoiceTest extends TestCase
         $this->actingAsTutor($this->createUserWithRoles('tutor'))
             ->get(route('dashboard.admin.strichlistensystem.invoicePdf', $invoice))
             ->assertRedirect(route('dashboard.index'));
+    }
+
+    public function test_settings_without_vat(): void
+    {
+        $this->actingAsTutor($this->admin)
+            ->post(route('dashboard.admin.strichlistensystem.updateInvoiceSettings'), array_merge(self::SETTINGS, ['charges_vat' => false, 'tax_number' => '', 'vat_id' => '']))
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame([], app(StrichlistensystemInvoiceSettings::class)->missing());
+
+        $user = $this->payer();
+        $this->book($user, $this->beer, 2);
+        $invoice = $this->createInvoice($user);
+
+        $this->assertSame('', $invoice->issuer['vat_id']);
+        $this->assertFalse($invoice->chargesVat());
+        $this->assertSame(0, $invoice->items[0]['vat_rate']);
+        $this->assertSame([], $invoice->vatBreakdown());
+        $this->assertSame(0, $invoice->vatAmount());
+        $this->assertSame(200, $invoice->netAmount());
+        $this->assertStringStartsWith('%PDF-', StrichlistensystemInvoicePdf::render($invoice));
+    }
+
+    public function test_vat_needs_the_tax_number_or_the_vat_id(): void
+    {
+        $this->saveSettings(['tax_number' => '', 'vat_id' => '']);
+        $settings = app(StrichlistensystemInvoiceSettings::class);
+        $this->assertSame(['Steuernummer oder Umsatzsteuer-ID'], $settings->missing());
+
+        $user = $this->payer();
+        $this->book($user, $this->beer);
+        $this->assertNotSame([], app(StrichlistensystemInvoicing::class)->problems($user));
+
+        $this->saveSettings(['tax_number' => '', 'vat_id' => 'DE123456789']);
+        $this->assertSame([], $settings->missing());
+
+        $this->saveSettings(['tax_number' => '201/123/45678', 'vat_id' => '']);
+        $this->assertSame([], $settings->missing());
+    }
+
+    public function test_invoice_shows_the_vat_per_rate_of_the_articles(): void
+    {
+        $this->saveSettings();
+        $chips = Article::factory()->create(['name' => 'Chips', 'price' => 50, 'vat_rate' => 7, 'show_order' => 3]);
+        $user = $this->payer();
+        $this->book($user, $this->beer, 2);
+        $this->book($user, $chips, 3);
+
+        $invoice = $this->createInvoice($user);
+
+        $this->assertSame(19, $invoice->items[0]['vat_rate']);
+        $this->assertSame(7, $invoice->items[1]['vat_rate']);
+        $this->assertSame([
+            ['rate' => 19, 'gross' => 200, 'net' => 168, 'vat' => 32],
+            ['rate' => 7, 'gross' => 150, 'net' => 140, 'vat' => 10],
+        ], $invoice->vatBreakdown());
+        $this->assertSame(42, $invoice->vatAmount());
+        $this->assertSame(308, $invoice->netAmount());
+
+        // a later change of the rate does not change the issued invoice
+        $chips->update(['vat_rate' => 19]);
+        $this->assertSame(7, $invoice->fresh()->items[1]['vat_rate']);
+
+        $html = view('invoices.strichlistensystem', ['invoice' => $invoice, 'logo' => '', 'qrCode' => null])->render();
+        $this->assertStringContainsString('darin enthaltene 19 % MwSt. (netto 1,68 €)', $html);
+        $this->assertStringContainsString('darin enthaltene 7 % MwSt. (netto 1,40 €)', $html);
+        $this->assertStringNotContainsString('zzgl.', $html);
+        $this->assertStringContainsString('Steuernummer', $html);
+    }
+
+    public function test_sender_line_keeps_multibyte_characters_at_the_end(): void
+    {
+        $this->saveSettings(['club_city' => 'Bratislavà']);
+        $user = $this->payer();
+        $this->book($user, $this->beer);
+        $invoice = $this->createInvoice($user);
+
+        $html = view('invoices.strichlistensystem', ['invoice' => $invoice, 'logo' => '', 'qrCode' => null])->render();
+
+        $this->assertStringContainsString("Fachschaftsrat 5 e.V. · Eupener Straße 70, 52066\u{00A0}Bratislavà</div>", $html);
     }
 
     public function test_payment_qr_code_contains_the_transfer(): void

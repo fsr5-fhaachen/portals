@@ -158,6 +158,14 @@
                     'Bitte gib einen Preis zwischen 0 und 1000 € mit höchstens 2 Nachkommastellen an, z. B. 1,50.',
                 }"
               />
+              <FormKit
+                type="select"
+                name="vat_rate"
+                label="Mehrwertsteuersatz"
+                help="Ist im Preis enthalten und wird auf den Rechnungen ausgewiesen."
+                :options="vatRates"
+                validation="required"
+              />
             </FormRow>
             <FormRow>
               <FormKit
@@ -230,6 +238,10 @@ defineProps({
     type: Number,
     required: true,
   },
+  vatRates: {
+    type: Array as PropType<{ value: number; label: string }[]>,
+    required: true,
+  },
 });
 
 // 0 to 1000 euro with max. 2 decimals, comma or dot as decimal separator
@@ -242,6 +254,8 @@ type ArticleForm = {
   max_order_amount: number;
   // price in euro as entered, e.g. "1,50"
   price: string;
+  // vat rate in percent that is included in the price
+  vat_rate: number;
   is_active: boolean;
   // selected files of the formkit file input, only the first one is uploaded
   image: { name: string; file?: File }[];
@@ -254,6 +268,7 @@ const emptyArticleForm = (): ArticleForm => ({
   show_order: 0,
   max_order_amount: 1,
   price: "",
+  vat_rate: 19,
   is_active: true,
   image: [],
   remove_image: false,
@@ -298,6 +313,7 @@ const editArticle = (article: App.Models.Article) => {
     show_order: article.show_order,
     max_order_amount: article.max_order_amount,
     price: centsToPriceInput(article.price).replace(".", ","),
+    vat_rate: article.vat_rate,
     is_active: article.is_active,
     image: [],
     remove_image: false,
@@ -411,6 +427,12 @@ const getColumns = (): TableColumn[] => [
       article.price !== null
         ? formatPrice(article.price)
         : '<span class="text-red-600 dark:text-red-400">kein Preis</span>',
+  }),
+  new TableColumn({
+    name: "vat_rate",
+    sortKey: "vat_rate",
+    text: "MwSt.",
+    valueFunction: (article: App.Models.Article) => `${article.vat_rate} %`,
   }),
   new TableColumn({
     name: "is_active",

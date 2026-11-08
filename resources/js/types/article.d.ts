@@ -13,6 +13,8 @@ declare namespace App.Models {
     max_order_amount: number;
     // price in cents, null if no price is set yet
     price: number | null;
+    // vat rate in percent that is included in the price
+    vat_rate: number;
     is_active: boolean;
     remaining_amount?: number;
     limit_resets_at?: string | null;

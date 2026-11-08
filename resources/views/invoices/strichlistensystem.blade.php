@@ -3,7 +3,15 @@
     $issuer = $invoice->issuer;
     $recipient = $invoice->recipient;
     $price = fn (int $cents) => \App\Helpers\Price::format($cents);
-    $clubAddress = trim($issuer['club_street'].', '.$issuer['club_postal_code'].' '.$issuer['club_city'], ', ');
+    // the postal code and the city are not separated by a line break, empty parts are left out
+    $nonEmpty = fn (array $parts) => array_filter(array_map('trim', $parts), fn (string $part) => $part !== '');
+    $clubAddress = implode(', ', $nonEmpty([
+        $issuer['club_street'],
+        implode("\u{00A0}", $nonEmpty([$issuer['club_postal_code'], $issuer['club_city']])),
+    ]));
+    $vatBreakdown = $invoice->vatBreakdown();
+    // the columns before the amount column of the sum rows
+    $sumColspan = $invoice->chargesVat() ? 4 : 3;
 @endphp
 <!DOCTYPE html>
 <html lang="de">
@@ -43,22 +51,24 @@
             font-weight: bold;
         }
 
-        .sender-line {
+        /* the sender line and the recipient flow in one block, so a wrapped sender line moves the recipient down */
+        .address {
             position: absolute;
             top: 33mm;
             left: 0;
             width: 85mm;
-            font-size: 7pt;
+        }
+
+        .sender-line {
+            font-size: 6.5pt;
+            line-height: 1.25;
             color: #6b7280;
             border-bottom: 0.3pt solid #9ca3af;
             padding-bottom: 0.8mm;
         }
 
         .recipient {
-            position: absolute;
-            top: 39mm;
-            left: 0;
-            width: 85mm;
+            margin-top: 3mm;
             font-size: 10pt;
             line-height: 1.4;
         }
@@ -116,6 +126,15 @@
             border-bottom: none;
             padding-top: 1mm;
             padding-bottom: 1mm;
+        }
+
+        /* the included vat is a breakdown of the sum, not an addition */
+        table.items tr.vat td {
+            border-bottom: none;
+            padding-top: 0;
+            padding-bottom: 0.6mm;
+            font-size: 8pt;
+            color: #6b7280;
         }
 
         table.items tr.total td {
@@ -198,6 +217,12 @@
                     @if ($issuer['email'])
                         <br>{{ $issuer['email'] }}
                     @endif
+                    @if (! empty($issuer['tax_number']))
+                        <br>Steuernummer: {{ $issuer['tax_number'] }}
+                    @endif
+                    @if (! empty($issuer['vat_id']))
+                        <br>USt-IdNr.: {{ $issuer['vat_id'] }}
+                    @endif
                 </td>
                 <td>
                     <strong>Vorstand</strong><br>
@@ -222,11 +247,13 @@
     <div class="header">
         <img class="logo" src="{{ $logo }}" alt="Logo">
         <div class="club-name">{{ $issuer['club_name'] }}</div>
-        <div class="sender-line">{{ $issuer['club_name'] }} · {{ $clubAddress }}</div>
-        <div class="recipient">
-            {{ $recipient['name'] }}<br>
-            {{ $recipient['street'] }}<br>
-            {{ $recipient['postal_code'] }} {{ $recipient['city'] }}
+        <div class="address">
+            <div class="sender-line">{{ $issuer['club_name'] }} · {{ $clubAddress }}</div>
+            <div class="recipient">
+                {{ $recipient['name'] }}<br>
+                {{ $recipient['street'] }}<br>
+                {{ $recipient['postal_code'] }} {{ $recipient['city'] }}
+            </div>
         </div>
         <table class="info">
             <tr>
@@ -241,6 +268,18 @@
                 <td class="label">Zahlbar bis</td>
                 <td>{{ $invoice->due_on->format('d.m.Y') }}</td>
             </tr>
+            @if (! empty($issuer['tax_number']))
+                <tr>
+                    <td class="label">Steuernummer</td>
+                    <td>{{ $issuer['tax_number'] }}</td>
+                </tr>
+            @endif
+            @if (! empty($issuer['vat_id']))
+                <tr>
+                    <td class="label">USt-IdNr.</td>
+                    <td>{{ $issuer['vat_id'] }}</td>
+                </tr>
+            @endif
         </table>
     </div>
 
@@ -254,8 +293,11 @@
             <tr>
                 <th>Artikel</th>
                 <th class="number">Menge</th>
-                <th class="number">Einzelpreis</th>
-                <th class="number">Gesamt</th>
+                <th class="number">Einzelpreis{{ $invoice->chargesVat() ? ' (brutto)' : '' }}</th>
+                @if ($invoice->chargesVat())
+                    <th class="number">MwSt.</th>
+                @endif
+                <th class="number">Gesamt{{ $invoice->chargesVat() ? ' (brutto)' : '' }}</th>
             </tr>
         </thead>
         <tbody>
@@ -264,21 +306,31 @@
                     <td>{{ $item['name'] }}</td>
                     <td class="number">{{ $item['quantity'] }}</td>
                     <td class="number">{{ $price($item['unit_price']) }}</td>
+                    @if ($invoice->chargesVat())
+                        <td class="number">{{ (int) ($item['vat_rate'] ?? 0) }} %</td>
+                    @endif
                     <td class="number">{{ $price($item['total']) }}</td>
                 </tr>
             @endforeach
             <tr class="sum">
-                <td colspan="3" class="number">Summe</td>
+                <td colspan="{{ $sumColspan }}" class="number">{{ $invoice->chargesVat() ? 'Summe (brutto)' : 'Summe' }}</td>
                 <td class="number">{{ $price($invoice->subtotal) }}</td>
             </tr>
+            {{-- the prices are gross prices, so the vat is included and not added --}}
+            @foreach ($vatBreakdown as $vat)
+                <tr class="vat">
+                    <td colspan="{{ $sumColspan }}" class="number">darin enthaltene {{ $vat['rate'] }} % MwSt. (netto {{ $price($vat['net']) }})</td>
+                    <td class="number">{{ $price($vat['vat']) }}</td>
+                </tr>
+            @endforeach
             @if ($invoice->paid > 0)
                 <tr class="sum">
-                    <td colspan="3" class="number">Bereits bezahlt</td>
+                    <td colspan="{{ $sumColspan }}" class="number">Bereits bezahlt</td>
                     <td class="number">− {{ $price($invoice->paid) }}</td>
                 </tr>
             @endif
             <tr class="total">
-                <td colspan="3" class="number">Zu zahlen</td>
+                <td colspan="{{ $sumColspan }}" class="number">Zu zahlen</td>
                 <td class="number">{{ $price($invoice->amount_due) }}</td>
             </tr>
         </tbody>
@@ -325,6 +377,10 @@
         </div>
     @else
         <p>Der Betrag ist bereits vollständig bezahlt.</p>
+    @endif
+
+    @if ($invoice->chargesVat())
+        <div class="note">Alle Preise sind Bruttopreise und enthalten die angegebene Mehrwertsteuer.</div>
     @endif
 
     @if ($issuer['note'])

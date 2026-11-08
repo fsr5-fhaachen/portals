@@ -72,6 +72,10 @@ class DashboardAdminStrichlistensystemInvoiceController extends Controller
             'chairperson' => ['nullable', 'string', 'max:100'],
             'deputy_chairperson' => ['nullable', 'string', 'max:100'],
             'email' => ['nullable', 'email', 'max:100'],
+            // the vat rates are set per article, with vat the tax number or the vat id is required (see missing())
+            'charges_vat' => ['required', 'boolean'],
+            'tax_number' => ['nullable', 'string', 'max:30', 'regex:/^[0-9\/ -]*$/'],
+            'vat_id' => ['nullable', 'string', 'regex:/^\s*[A-Za-z]{2}(\s*[A-Za-z0-9]){2,13}\s*$/'],
             'account_holder' => ['nullable', 'string', 'max:70'],
             'iban' => ['nullable', 'string', 'max:42', function (string $attribute, mixed $value, \Closure $fail) {
                 if (! StrichlistensystemInvoiceSettings::isValidIban((string) $value)) {
@@ -88,6 +92,8 @@ class DashboardAdminStrichlistensystemInvoiceController extends Controller
             'note' => ['nullable', 'string', 'max:1000'],
         ], [
             'bic.regex' => 'Die BIC ist ungültig.',
+            'tax_number.regex' => 'Die Steuernummer darf nur Ziffern, Leerzeichen, / und - enthalten, z. B. 201/123/45678.',
+            'vat_id.regex' => 'Die Umsatzsteuer-ID ist ungültig, z. B. DE123456789.',
             'number_prefix.regex' => 'Der Präfix darf nur Buchstaben, Ziffern und . _ / - enthalten.',
         ]);
 

@@ -48,6 +48,8 @@ class DashboardAdminStrichlistensystemController extends Controller
             'articles' => $articlesTable->scroll(),
             'icons' => config('strichlistensystem.icons'),
             'limitWindow' => config('strichlistensystem.self_service_limit_window'),
+            // as list, an object with numeric keys would be sorted by the browser
+            'vatRates' => collect(Article::VAT_RATES)->map(fn (string $label, int $rate) => ['value' => $rate, 'label' => $label])->values(),
         ]);
     }
 
@@ -210,11 +212,14 @@ class DashboardAdminStrichlistensystemController extends Controller
                 ->map(fn (StrichlistensystemPayment $payment) => [
                     'id' => $payment->id,
                     'amount' => $payment->amount,
+                    'method' => $payment->method,
                     'created_at' => $payment->created_at,
                     'deleted_at' => $payment->deleted_at,
                     'created_by' => $payment->createdBy?->only(['id', 'firstname', 'lastname']),
                     'is_undoable' => $payment->id === $latestPayment?->id,
                 ]),
+            // the labels of the payment methods, keyed by the method
+            'payment_methods' => StrichlistensystemPayment::METHODS,
         ]);
     }
 
@@ -232,20 +237,23 @@ class DashboardAdminStrichlistensystemController extends Controller
 
         $validated = $request->validate([
             'amount' => ['required', 'integer', 'min:1', 'max:'.$open],
+            'method' => ['required', Rule::in(array_keys(StrichlistensystemPayment::METHODS))],
         ], [
             'amount.min' => 'Der Betrag muss mindestens 0,01 € sein.',
             'amount.max' => 'Der Betrag darf den offenen Betrag von '.Price::format($open).' nicht übersteigen.',
+            'method.required' => 'Bitte wähle die Zahlungsart.',
+            'method.in' => 'Bitte wähle die Zahlungsart.',
         ]);
 
         $amount = (int) $validated['amount'];
 
-        if (! $user->payStrichlistensystem($amount, $request->user())) {
+        if (! $user->payStrichlistensystem($amount, $request->user(), $validated['method'])) {
             Session::flash('error', 'Die Zahlung konnte nicht gespeichert werden, da sich der offene Betrag geändert hat. Bitte prüfe den Betrag erneut.');
 
             return Redirect::back();
         }
 
-        Session::flash('success', 'Die Zahlung von <strong>'.Price::format($amount).'</strong> für <strong>'.e($user->firstname.' '.$user->lastname).'</strong> wurde gespeichert.');
+        Session::flash('success', 'Die Zahlung von <strong>'.Price::format($amount).'</strong> ('.StrichlistensystemPayment::METHODS[$validated['method']].') für <strong>'.e($user->firstname.' '.$user->lastname).'</strong> wurde gespeichert.');
 
         return Redirect::back();
     }
@@ -271,6 +279,7 @@ class DashboardAdminStrichlistensystemController extends Controller
     /**
      * Download the bookings (without cancelled ones) and payments of all users as csv. The amounts use the
      * price of every booking at the time of the booking, so price changes do not change existing bookings.
+     * The paid amounts per payment method are appended, so the existing columns keep their position.
      */
     public function export(): StreamedResponse
     {
@@ -295,6 +304,9 @@ class DashboardAdminStrichlistensystemController extends Controller
             $columns[] = 'Betrag_'.$article->name;
         }
         array_push($columns, 'Gesamt', 'Bezahlt', 'Offen');
+        foreach (StrichlistensystemPayment::METHODS as $methodLabel) {
+            $columns[] = 'Bezahlt_'.$methodLabel;
+        }
 
         $callback = function () use ($columns, $articles) {
             // amounts and totals (in cents) by user id and article id
@@ -308,11 +320,16 @@ class DashboardAdminStrichlistensystemController extends Controller
                     $totals[$row->user_id][$row->article_id] = (int) $row->total;
                 });
 
-            // paid amounts (in cents) by user id
-            $payments = StrichlistensystemPayment::selectRaw('user_id, SUM(amount) as paid')
-                ->groupBy('user_id')
-                ->pluck('paid', 'user_id')
-                ->map(fn ($paid) => (int) $paid);
+            // paid amounts (in cents) by user id and by user id and payment method
+            $payments = [];
+            $paymentsByMethod = [];
+            StrichlistensystemPayment::selectRaw('user_id, method, SUM(amount) as paid')
+                ->groupBy('user_id', 'method')
+                ->get()
+                ->each(function ($row) use (&$payments, &$paymentsByMethod) {
+                    $payments[$row->user_id] = ($payments[$row->user_id] ?? 0) + (int) $row->paid;
+                    $paymentsByMethod[$row->user_id][$row->method] = (int) $row->paid;
+                });
 
             $file = fopen('php://output', 'w');
 
@@ -321,7 +338,7 @@ class DashboardAdminStrichlistensystemController extends Controller
             fputcsv($file, $columns, ';');
 
             // the id makes the order unique, otherwise users with the same name can be skipped or repeated between the chunks
-            User::orderBy('lastname')->orderBy('firstname')->orderBy('id')->chunk(500, function ($users) use ($file, $articles, $amounts, $totals, $payments) {
+            User::orderBy('lastname')->orderBy('firstname')->orderBy('id')->chunk(500, function ($users) use ($file, $articles, $amounts, $totals, $payments, $paymentsByMethod) {
                 foreach ($users as $user) {
                     $row = [Csv::escapeCell($user->lastname), Csv::escapeCell($user->firstname)];
                     foreach ($articles as $article) {
@@ -337,6 +354,9 @@ class DashboardAdminStrichlistensystemController extends Controller
 
                     $paid = $payments[$user->id] ?? 0;
                     array_push($row, Price::toDecimal($total), Price::toDecimal($paid), Price::toDecimal($total - $paid));
+                    foreach (array_keys(StrichlistensystemPayment::METHODS) as $method) {
+                        $row[] = Price::toDecimal($paymentsByMethod[$user->id][$method] ?? 0);
+                    }
 
                     fputcsv($file, $row, ';');
                 }
@@ -463,7 +483,7 @@ class DashboardAdminStrichlistensystemController extends Controller
     /**
      * Validate the request data of an article.
      *
-     * @return array{name: string, icon: string, show_order: int, max_order_amount: int, price: int, is_active: bool, image?: UploadedFile|null, remove_image?: bool}
+     * @return array{name: string, icon: string, show_order: int, max_order_amount: int, price: int, vat_rate: int, is_active: bool, image?: UploadedFile|null, remove_image?: bool}
      */
     private function validateArticle(Request $request, ?Article $article = null): array
     {
@@ -474,6 +494,8 @@ class DashboardAdminStrichlistensystemController extends Controller
             'max_order_amount' => ['required', 'integer', 'min:1', 'max:100'],
             // price in cents
             'price' => ['required', 'integer', 'min:0', 'max:100000'],
+            // included in the gross price, it is stored with the items of the invoices
+            'vat_rate' => ['required', 'integer', Rule::in(array_keys(Article::VAT_RATES))],
             'is_active' => ['required', 'boolean'],
             // no svg, it can contain scripts. png keeps the transparency for the light and dark mode
             'image' => ['nullable', File::types(['png', 'jpg', 'jpeg', 'webp'])->max(2 * 1024)],
@@ -484,6 +506,8 @@ class DashboardAdminStrichlistensystemController extends Controller
             'price.required' => 'Bitte gib einen Preis an.',
             'price.min' => 'Der Preis darf nicht negativ sein.',
             'price.max' => 'Der Preis darf höchstens 1000,00 € sein.',
+            'vat_rate.required' => 'Bitte wähle den Mehrwertsteuersatz.',
+            'vat_rate.in' => 'Bitte wähle den Mehrwertsteuersatz.',
         ]);
     }
 }

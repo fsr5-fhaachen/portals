@@ -34,6 +34,7 @@ class ArticlesTable extends Table
             'show_order' => $model->show_order,
             'max_order_amount' => $model->max_order_amount,
             'price' => $model->price,
+            'vat_rate' => $model->vat_rate,
             'is_active' => $model->is_active,
             'article_action_logs_count' => $model->article_action_logs_count,
         ];
@@ -66,6 +67,7 @@ class ArticlesTable extends Table
             'show_order' => 'articles.show_order',
             'max_order_amount' => 'articles.max_order_amount',
             'price' => 'articles.price',
+            'vat_rate' => 'articles.vat_rate',
             // ascending: active articles first
             'is_active' => fn (Builder $query, string $direction) => $this->orderByBoolean($query, 'is_active', $direction, true),
             'article_action_logs_count' => 'article_action_logs_count',

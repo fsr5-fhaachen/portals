@@ -288,10 +288,12 @@ class User extends Authenticatable implements Auditable
     /**
      * Record a payment of the user. The amount (in cents) must be between 1 and the open amount.
      * Returns null if the amount is not valid (anymore), e.g. because a parallel payment was recorded.
+     *
+     * @param  string  $method  one of StrichlistensystemPayment::METHODS
      */
-    public function payStrichlistensystem(int $amount, ?User $createdBy): ?StrichlistensystemPayment
+    public function payStrichlistensystem(int $amount, ?User $createdBy, string $method = StrichlistensystemPayment::METHOD_CASH): ?StrichlistensystemPayment
     {
-        return DB::transaction(function () use ($amount, $createdBy) {
+        return DB::transaction(function () use ($amount, $createdBy, $method) {
             // lock the user so that parallel payments can not exceed the open amount
             self::whereKey($this->id)->lockForUpdate()->first();
 
@@ -302,6 +304,7 @@ class User extends Authenticatable implements Auditable
             return $this->strichlistensystemPayments()->create([
                 'amount' => $amount,
                 'created_by_id' => $createdBy?->id,
+                'method' => $method,
             ]);
         });
     }

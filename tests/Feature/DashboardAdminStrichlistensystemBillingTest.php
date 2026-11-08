@@ -240,15 +240,16 @@ class DashboardAdminStrichlistensystemBillingTest extends TestCase
 
         $this->actingAsAdmin()
             ->from(route('dashboard.admin.strichlistensystem.billing', ['sort' => 'open']))
-            ->post(route('dashboard.admin.strichlistensystem.storePayment', $user), ['amount' => 120])
+            ->post(route('dashboard.admin.strichlistensystem.storePayment', $user), ['amount' => 120, 'method' => 'cash'])
             ->assertRedirect(route('dashboard.admin.strichlistensystem.billing', ['sort' => 'open']))
             ->assertSessionHasNoErrors()
-            ->assertSessionHas('success', 'Die Zahlung von <strong>1,20 €</strong> für <strong>Jörg Älter</strong> wurde gespeichert.');
+            ->assertSessionHas('success', 'Die Zahlung von <strong>1,20 €</strong> (Bar) für <strong>Jörg Älter</strong> wurde gespeichert.');
 
         $payment = StrichlistensystemPayment::sole();
         $this->assertSame($user->id, $payment->user_id);
         $this->assertSame($this->admin->id, $payment->created_by_id);
         $this->assertSame(120, $payment->amount);
+        $this->assertSame(StrichlistensystemPayment::METHOD_CASH, $payment->method);
         $this->assertSame(['total' => 300, 'paid' => 120, 'open' => 180, 'bookings_without_price' => 0], $user->strichlistensystemBalance());
     }
 
@@ -257,10 +258,40 @@ class DashboardAdminStrichlistensystemBillingTest extends TestCase
         $user = $this->userWithBookings(150, 2);
 
         $this->actingAsAdmin()
-            ->post(route('dashboard.admin.strichlistensystem.storePayment', $user), ['amount' => 300])
+            ->post(route('dashboard.admin.strichlistensystem.storePayment', $user), ['amount' => 300, 'method' => 'cash'])
             ->assertSessionHasNoErrors();
 
         $this->assertSame(0, $user->strichlistensystemBalance()['open']);
+    }
+
+    public function test_admin_can_record_a_bank_transfer(): void
+    {
+        $user = $this->userWithBookings(150, 2, ['firstname' => 'Jörg', 'lastname' => 'Älter']);
+
+        $this->actingAsAdmin()
+            ->post(route('dashboard.admin.strichlistensystem.storePayment', $user), ['amount' => 300, 'method' => 'bank_transfer'])
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('success', 'Die Zahlung von <strong>3,00 €</strong> (Überweisung) für <strong>Jörg Älter</strong> wurde gespeichert.');
+
+        $this->assertSame(StrichlistensystemPayment::METHOD_BANK_TRANSFER, StrichlistensystemPayment::sole()->method);
+
+        $this->actingAsAdmin()
+            ->getJson(route('dashboard.admin.strichlistensystem.billingUser', $user))
+            ->assertJsonPath('payments.0.method', 'bank_transfer')
+            ->assertJsonPath('payment_methods', ['cash' => 'Bar', 'bank_transfer' => 'Überweisung']);
+    }
+
+    public function test_payment_without_valid_method_is_rejected(): void
+    {
+        $user = $this->userWithBookings(150, 2);
+
+        foreach ([null, '', 'paypal'] as $method) {
+            $this->actingAsAdmin()
+                ->post(route('dashboard.admin.strichlistensystem.storePayment', $user), ['amount' => 100, 'method' => $method])
+                ->assertSessionHasErrors(['method' => 'Bitte wähle die Zahlungsart.']);
+        }
+
+        $this->assertSame(0, StrichlistensystemPayment::count());
     }
 
     public function test_invalid_payments_are_rejected(): void
@@ -269,12 +300,12 @@ class DashboardAdminStrichlistensystemBillingTest extends TestCase
 
         foreach ([0, -100, 301, 1.5, 'abc', null] as $amount) {
             $this->actingAsAdmin()
-                ->post(route('dashboard.admin.strichlistensystem.storePayment', $user), ['amount' => $amount])
+                ->post(route('dashboard.admin.strichlistensystem.storePayment', $user), ['amount' => $amount, 'method' => 'cash'])
                 ->assertSessionHasErrors('amount');
         }
 
         $this->actingAsAdmin()
-            ->post(route('dashboard.admin.strichlistensystem.storePayment', $user), ['amount' => 301])
+            ->post(route('dashboard.admin.strichlistensystem.storePayment', $user), ['amount' => 301, 'method' => 'cash'])
             ->assertSessionHasErrors(['amount' => 'Der Betrag darf den offenen Betrag von 3,00 € nicht übersteigen.']);
 
         $this->assertSame(0, StrichlistensystemPayment::count());
@@ -286,7 +317,7 @@ class DashboardAdminStrichlistensystemBillingTest extends TestCase
         StrichlistensystemPayment::factory()->for($user)->create(['amount' => 150]);
 
         $this->actingAsAdmin()
-            ->post(route('dashboard.admin.strichlistensystem.storePayment', $user), ['amount' => 1])
+            ->post(route('dashboard.admin.strichlistensystem.storePayment', $user), ['amount' => 1, 'method' => 'cash'])
             ->assertSessionHas('error');
 
         $this->assertSame(1, StrichlistensystemPayment::count());
@@ -354,6 +385,7 @@ class DashboardAdminStrichlistensystemBillingTest extends TestCase
             ->assertJsonCount(3, 'payments')
             ->assertJsonPath('payments.0.id', $latestPayment->id)
             ->assertJsonPath('payments.0.is_undoable', true)
+            ->assertJsonPath('payments.0.method', 'cash')
             ->assertJsonPath('payments.0.created_by', null)
             ->assertJsonPath('payments.1.id', $olderPayment->id)
             ->assertJsonPath('payments.1.is_undoable', false)

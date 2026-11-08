@@ -56,7 +56,7 @@ class StrichlistensystemInvoicing
     /**
      * Get the items and amounts of the next invoice of the user (amounts in cents).
      *
-     * @return array{items: list<array{name: string, quantity: int, unit_price: int, total: int}>, subtotal: int, paid: int, amount_due: int}
+     * @return array{items: list<array{name: string, quantity: int, unit_price: int, total: int, vat_rate: int}>, subtotal: int, paid: int, amount_due: int}
      */
     public function preview(User $user): array
     {
@@ -105,6 +105,9 @@ class StrichlistensystemInvoicing
                     'chairperson' => $settings['chairperson'],
                     'deputy_chairperson' => $settings['deputy_chairperson'],
                     'email' => $settings['email'],
+                    'charges_vat' => $settings['charges_vat'],
+                    'tax_number' => $settings['tax_number'],
+                    'vat_id' => $settings['vat_id'],
                     'account_holder' => $this->settings->accountHolder(),
                     'iban' => $settings['iban'],
                     'bic' => $settings['bic'],
@@ -170,18 +173,20 @@ class StrichlistensystemInvoicing
     }
 
     /**
-     * Group the bookings by article and price and deduct the payments that are not used by earlier invoices.
+     * Group the bookings by article and price and deduct the payments that are not used by earlier invoices. Every item
+     * gets the vat rate of its article (0 if the club does not charge vat), so an issued invoice keeps its rates.
      *
      * @param  Collection<int, ArticleActionLog>  $bookings
-     * @return array{items: list<array{name: string, quantity: int, unit_price: int, total: int}>, subtotal: int, paid: int, amount_due: int}
+     * @return array{items: list<array{name: string, quantity: int, unit_price: int, total: int, vat_rate: int}>, subtotal: int, paid: int, amount_due: int}
      */
     private function calculate(User $user, Collection $bookings): array
     {
-        $articles = Article::whereKey($bookings->pluck('article_id')->unique()->all())->get(['id', 'name', 'show_order'])->keyBy('id');
+        $articles = Article::whereKey($bookings->pluck('article_id')->unique()->all())->get(['id', 'name', 'show_order', 'vat_rate'])->keyBy('id');
+        $chargesVat = $this->settings->settings()['charges_vat'];
 
         $items = $bookings
             ->groupBy(fn (ArticleActionLog $booking) => $booking->article_id.'-'.$booking->price)
-            ->map(function (Collection $group) use ($articles) {
+            ->map(function (Collection $group) use ($articles, $chargesVat) {
                 $booking = $group->first();
                 $article = $articles->get($booking->article_id);
 
@@ -190,6 +195,7 @@ class StrichlistensystemInvoicing
                     'quantity' => $group->count(),
                     'unit_price' => (int) $booking->price,
                     'total' => $group->count() * (int) $booking->price,
+                    'vat_rate' => $chargesVat ? (int) ($article?->vat_rate ?? 0) : 0,
                     'show_order' => $article?->show_order ?? PHP_INT_MAX,
                 ];
             })

@@ -14,7 +14,7 @@ use OwenIt\Auditing\Contracts\Auditable;
  *
  * @property array{name: string, street: string, postal_code: string, city: string} $recipient
  * @property array<string, mixed> $issuer
- * @property list<array{name: string, quantity: int, unit_price: int, total: int}> $items
+ * @property list<array{name: string, quantity: int, unit_price: int, total: int, vat_rate?: int}> $items
  */
 class StrichlistensystemInvoice extends Model implements Auditable
 {
@@ -79,6 +79,55 @@ class StrichlistensystemInvoice extends Model implements Auditable
     public function isCancelled(): bool
     {
         return $this->cancelled_at !== null;
+    }
+
+    /**
+     * Check if the invoice shows the vat (snapshot of the settings), false for invoices without vat.
+     */
+    public function chargesVat(): bool
+    {
+        return ! empty($this->issuer['charges_vat']);
+    }
+
+    /**
+     * Get the gross, net and vat amounts (in cents) per vat rate, the highest rate first. The prices of the items are
+     * gross prices, the vat is included. Empty for invoices without vat.
+     *
+     * @return list<array{rate: int, gross: int, net: int, vat: int}>
+     */
+    public function vatBreakdown(): array
+    {
+        if (! $this->chargesVat()) {
+            return [];
+        }
+
+        return collect($this->items)
+            ->groupBy(fn (array $item) => max(0, (int) ($item['vat_rate'] ?? 0)))
+            ->map(function ($items, int $rate) {
+                $gross = (int) $items->sum('total');
+                $vat = (int) round($gross * $rate / (100 + $rate));
+
+                return ['rate' => $rate, 'gross' => $gross, 'net' => $gross - $vat, 'vat' => $vat];
+            })
+            ->sortByDesc('rate')
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Get the vat (in cents) that is included in the gross prices of the items.
+     */
+    public function vatAmount(): int
+    {
+        return array_sum(array_column($this->vatBreakdown(), 'vat'));
+    }
+
+    /**
+     * Get the net amount (in cents) of the items, the sum without the included vat.
+     */
+    public function netAmount(): int
+    {
+        return $this->subtotal - $this->vatAmount();
     }
 
     /**
