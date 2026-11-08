@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardAdminRandomGeneratorController;
 use App\Http\Controllers\DashboardAdminScoreSystemController;
 use App\Http\Controllers\DashboardAdminScoringController;
 use App\Http\Controllers\DashboardAdminStrichlistensystemController;
+use App\Http\Controllers\DashboardAdminStrichlistensystemInvoiceController;
 use App\Http\Controllers\DashboardAdminWorkshopController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardEventController;
@@ -169,6 +170,12 @@ Route::prefix('dashboard')->middleware(Authenticate::class)->group(function () {
             Route::get('/billing/user/{user}', [DashboardAdminStrichlistensystemController::class, 'billingUser'])->name('dashboard.admin.strichlistensystem.billingUser');
             Route::post('/billing/user/{user}/payment', [DashboardAdminStrichlistensystemController::class, 'storePayment'])->name('dashboard.admin.strichlistensystem.storePayment');
             Route::delete('/billing/payment/{payment}', [DashboardAdminStrichlistensystemController::class, 'deletePayment'])->name('dashboard.admin.strichlistensystem.deletePayment');
+            Route::post('/billing/user/{user}/invoice', [DashboardAdminStrichlistensystemInvoiceController::class, 'store'])->name('dashboard.admin.strichlistensystem.storeInvoice');
+            Route::get('/invoices', [DashboardAdminStrichlistensystemInvoiceController::class, 'index'])->name('dashboard.admin.strichlistensystem.invoices');
+            Route::get('/invoice/{invoice}/pdf', [DashboardAdminStrichlistensystemInvoiceController::class, 'pdf'])->name('dashboard.admin.strichlistensystem.invoicePdf');
+            Route::post('/invoice/{invoice}/cancel', [DashboardAdminStrichlistensystemInvoiceController::class, 'cancel'])->name('dashboard.admin.strichlistensystem.cancelInvoice');
+            Route::get('/invoice-settings', [DashboardAdminStrichlistensystemInvoiceController::class, 'settings'])->name('dashboard.admin.strichlistensystem.invoiceSettings');
+            Route::post('/invoice-settings', [DashboardAdminStrichlistensystemInvoiceController::class, 'updateSettings'])->name('dashboard.admin.strichlistensystem.updateInvoiceSettings');
             Route::post('/article', [DashboardAdminStrichlistensystemController::class, 'storeArticle'])->name('dashboard.admin.strichlistensystem.storeArticle');
             Route::post('/article/{article}', [DashboardAdminStrichlistensystemController::class, 'updateArticle'])->name('dashboard.admin.strichlistensystem.updateArticle');
             Route::post('/article/{article}/toggle-active', [DashboardAdminStrichlistensystemController::class, 'toggleArticleActive'])->name('dashboard.admin.strichlistensystem.toggleArticleActive');
@@ -232,6 +239,7 @@ Route::prefix('strichlistensystem')->middleware(ActiveModule::class.':strichlist
     Route::middleware(Authenticate::class)->group(function () {
         Route::get('/', [StrichlistensystemController::class, 'index'])->name('strichlistensystem.index');
         Route::post('/pin', [StrichlistensystemController::class, 'updatePin'])->name('strichlistensystem.updatePin');
+        Route::post('/billing-details', [StrichlistensystemController::class, 'updateBillingDetails'])->name('strichlistensystem.updateBillingDetails');
         Route::post('/buy/{article}', [StrichlistensystemController::class, 'buy'])->name('strichlistensystem.buy');
         Route::post('/cancel/{articleActionLog}', [StrichlistensystemController::class, 'cancel'])->withTrashed()->name('strichlistensystem.cancel');
     });

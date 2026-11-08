@@ -22,6 +22,7 @@ class StrichlistensystemPaymentFactory extends Factory
             'user_id' => User::factory(),
             'created_by_id' => null,
             'amount' => $this->faker->numberBetween(1, 5000),
+            'method' => StrichlistensystemPayment::METHOD_CASH,
         ];
     }
 }

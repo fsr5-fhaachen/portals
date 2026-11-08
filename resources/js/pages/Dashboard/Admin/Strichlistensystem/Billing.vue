@@ -28,6 +28,15 @@
             >
               Buchungsliste
             </AppButton>
+            <AppButton
+              theme="gray"
+              class="text-center"
+              @click="
+                router.visit('/dashboard/admin/strichlistensystem/invoices')
+              "
+            >
+              Rechnungen
+            </AppButton>
             <AppButton class="text-center" @click="downloadExport">
               Export herunterladen
             </AppButton>

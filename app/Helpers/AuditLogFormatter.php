@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\Article;
 use App\Models\Competition;
 use App\Models\CompetitionTeam;
 use App\Models\Course;
@@ -19,6 +20,8 @@ use App\Models\State;
 use App\Models\Station;
 use App\Models\StationTutor;
 use App\Models\Stop;
+use App\Models\StrichlistensystemInvoice;
+use App\Models\StrichlistensystemPayment;
 use App\Models\User;
 use App\Models\Workshop;
 use App\Models\WorkshopAssignment;
@@ -65,6 +68,9 @@ class AuditLogFormatter
         'WorkshopSession' => ['class' => WorkshopSession::class, 'label' => 'Workshop-Termin'],
         'WorkshopPriority' => ['class' => WorkshopPriority::class, 'label' => 'Workshop-Wunsch'],
         'WorkshopAssignment' => ['class' => WorkshopAssignment::class, 'label' => 'Workshop-Einteilung'],
+        'StrichlistensystemInvoice' => ['class' => StrichlistensystemInvoice::class, 'label' => 'Rechnung'],
+        'StrichlistensystemPayment' => ['class' => StrichlistensystemPayment::class, 'label' => 'Zahlung'],
+        'Article' => ['class' => Article::class, 'label' => 'Artikel'],
     ];
 
     /**
@@ -117,6 +123,7 @@ class AuditLogFormatter
         'is_tutor',
         'is_admin',
         'is_cancelled',
+        'wants_bank_transfer',
     ];
 
     /**
@@ -139,6 +146,7 @@ class AuditLogFormatter
         'competition_team_id' => CompetitionTeam::class,
         'workshop_id' => Workshop::class,
         'workshop_block_id' => WorkshopBlock::class,
+        'created_by_id' => User::class,
     ];
 
     /**
@@ -221,6 +229,25 @@ class AuditLogFormatter
         'assigned' => 'Eingeteilt',
         'unassigned' => 'Ohne Workshop',
         'cancelled_sessions' => 'Ausgefallene Termine',
+        'wants_bank_transfer' => 'Zahlt per Überweisung',
+        'billing_name' => 'Name (Rechnung)',
+        'billing_street' => 'Straße (Rechnung)',
+        'billing_postal_code' => 'PLZ (Rechnung)',
+        'billing_city' => 'Ort (Rechnung)',
+        'created_by_id' => 'Erstellt von',
+        'sequence' => 'Laufende Nummer',
+        'number' => 'Rechnungsnummer',
+        'recipient' => 'Empfänger',
+        'issuer' => 'Aussteller',
+        'items' => 'Posten',
+        'subtotal' => 'Summe',
+        'paid' => 'Bereits bezahlt',
+        'amount_due' => 'Zu zahlen',
+        'issued_on' => 'Rechnungsdatum',
+        'due_on' => 'Zahlbar bis',
+        'cancelled_at' => 'Storniert am',
+        'method' => 'Zahlungsart',
+        'vat_rate' => 'MwSt.-Satz (%)',
     ];
 
     /**
@@ -470,6 +497,7 @@ class AuditLogFormatter
             WorkshopSession::class => $reference('workshop_id').' · '.$reference('workshop_block_id'),
             WorkshopPriority::class => $reference('workshop_id').' (Prio '.($attributes['priority'] ?? '?').')',
             WorkshopAssignment::class => $reference('workshop_block_id'),
+            StrichlistensystemPayment::class => $reference('user_id').(isset($attributes['amount']) ? ' · '.Price::format((int) $attributes['amount']) : ''),
             Page::class => (string) ($attributes['title'] ?? ''),
             State::class => (string) ($attributes['key'] ?? ''),
             default => (string) ($attributes['name'] ?? ''),
@@ -574,6 +602,10 @@ class AuditLogFormatter
 
         if ($field === 'result' && is_string($value)) {
             return self::RESULT_LABELS[$value] ?? $value;
+        }
+
+        if ($field === 'method' && is_string($value)) {
+            return StrichlistensystemPayment::METHODS[$value] ?? $value;
         }
 
         if ($field === 'roles' && is_array($value)) {

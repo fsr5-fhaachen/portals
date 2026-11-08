@@ -32,7 +32,53 @@ class StrichlistensystemController extends Controller
             'articleActionLogs' => $user->latestArticleActionLogs(),
             'balance' => $user->strichlistensystemBalance(),
             'limitWindow' => config('strichlistensystem.self_service_limit_window'),
+            // the name is suggested from the first and last name until the user saved an own one
+            'billingDetails' => [
+                'wants_bank_transfer' => (bool) $user->wants_bank_transfer,
+                'name' => $user->billing_name ?: $user->suggestedBillingName(),
+                'street' => (string) $user->billing_street,
+                'postal_code' => (string) $user->billing_postal_code,
+                'city' => (string) $user->billing_city,
+            ],
         ]);
+    }
+
+    /**
+     * Save whether the logged in user wants to pay by bank transfer and the address for the invoice
+     */
+    public function updateBillingDetails(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'wants_bank_transfer' => ['required', 'boolean'],
+            'name' => ['exclude_unless:wants_bank_transfer,true', 'required', 'string', 'max:70'],
+            'street' => ['exclude_unless:wants_bank_transfer,true', 'required', 'string', 'max:100'],
+            'postal_code' => ['exclude_unless:wants_bank_transfer,true', 'required', 'string', 'max:20'],
+            'city' => ['exclude_unless:wants_bank_transfer,true', 'required', 'string', 'max:100'],
+        ], [
+            'name.required' => 'Bitte gib deinen vollständigen Namen an.',
+            'street.required' => 'Bitte gib deine Straße und Hausnummer an.',
+            'postal_code.required' => 'Bitte gib deine Postleitzahl an.',
+            'city.required' => 'Bitte gib deinen Ort an.',
+        ]);
+
+        // load a fresh instance, because HandleInertiaRequests adds non-database attributes (rolesArray, permissionsArray) to the authenticated user
+        $user = User::findOrFail($request->user()->id);
+
+        $user->wants_bank_transfer = (bool) $validated['wants_bank_transfer'];
+        // without bank transfer the address is kept, so it does not have to be entered again
+        if ($user->wants_bank_transfer) {
+            $user->billing_name = trim($validated['name']);
+            $user->billing_street = trim($validated['street']);
+            $user->billing_postal_code = trim($validated['postal_code']);
+            $user->billing_city = trim($validated['city']);
+        }
+        $user->save();
+
+        Session::flash('success', $user->wants_bank_transfer
+            ? 'Deine Rechnungsadresse wurde gespeichert. Die Orga kann dir jetzt eine Rechnung zum Überweisen erstellen.'
+            : 'Du zahlst nicht per Überweisung.');
+
+        return Redirect::route('strichlistensystem.index');
     }
 
     /**

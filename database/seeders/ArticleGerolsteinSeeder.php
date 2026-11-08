@@ -82,6 +82,8 @@ class ArticleGerolsteinSeeder extends Seeder
                 'show_order' => 10,
                 'max_order_amount' => 5,
                 'price' => 50,
+                // food has the reduced vat rate, drinks the regular one (default)
+                'vat_rate' => 7,
             ],
             [
                 'name' => 'Doppelkeks',
@@ -89,6 +91,8 @@ class ArticleGerolsteinSeeder extends Seeder
                 'show_order' => 11,
                 'max_order_amount' => 5,
                 'price' => 100,
+                // food has the reduced vat rate, drinks the regular one (default)
+                'vat_rate' => 7,
             ],
             [
                 'name' => 'Pringles',
@@ -96,6 +100,8 @@ class ArticleGerolsteinSeeder extends Seeder
                 'show_order' => 12,
                 'max_order_amount' => 5,
                 'price' => 50,
+                // food has the reduced vat rate, drinks the regular one (default)
+                'vat_rate' => 7,
             ],
         ];
 

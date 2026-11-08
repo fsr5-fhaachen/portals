@@ -5,6 +5,7 @@ namespace Tests\Feature\AuditLog;
 use App\Models\Event;
 use App\Models\Group;
 use App\Models\Registration;
+use App\Models\StrichlistensystemPayment;
 use App\Models\User;
 use App\Models\Workshop;
 use App\Models\WorkshopBlock;
@@ -300,6 +301,27 @@ class AuditLogPageTest extends TestCase
         $this->assertSame('Workshop-Termin', $entries[0]['subject_type_label']);
         $this->assertSame('Löten · Vormittag', $entries[0]['subject_label']);
         $this->assertSame('Fällt aus', $entries[0]['changes'][0]['label']);
+    }
+
+    public function test_payments_are_labelled_with_the_payment_method(): void
+    {
+        $student = $this->createUserWithRoles();
+        $payment = StrichlistensystemPayment::factory()->for($student)->create([
+            'amount' => 1250,
+            'method' => StrichlistensystemPayment::METHOD_BANK_TRANSFER,
+        ]);
+        $this->makeAudit([
+            'event' => 'created',
+            'auditable' => $payment,
+            'new_values' => ['method' => StrichlistensystemPayment::METHOD_BANK_TRANSFER],
+        ]);
+
+        $entries = $this->auditLogEntries(['subject_type' => 'StrichlistensystemPayment']);
+
+        $this->assertCount(1, $entries);
+        $this->assertSame('Zahlung', $entries[0]['subject_type_label']);
+        $this->assertSame($student->firstname.' '.$student->lastname.' · 12,50 €', $entries[0]['subject_label']);
+        $this->assertSame([['field' => 'method', 'label' => 'Zahlungsart', 'old' => null, 'new' => 'Überweisung']], $entries[0]['changes']);
     }
 
     public function test_sensitive_fields_are_never_shown(): void

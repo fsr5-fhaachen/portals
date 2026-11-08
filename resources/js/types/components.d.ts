@@ -51,6 +51,7 @@ declare module 'vue' {
     StrichlistensystemActionLogList: typeof import('./../components/strichlistensystem/ActionLogList.vue')['default']
     StrichlistensystemArticleCard: typeof import('./../components/strichlistensystem/ArticleCard.vue')['default']
     StrichlistensystemBalanceCard: typeof import('./../components/strichlistensystem/BalanceCard.vue')['default']
+    StrichlistensystemBillingDetailsForm: typeof import('./../components/strichlistensystem/BillingDetailsForm.vue')['default']
     StrichlistensystemPaymentModal: typeof import('./../components/strichlistensystem/PaymentModal.vue')['default']
     StrichlistensystemPersonCard: typeof import('./../components/strichlistensystem/PersonCard.vue')['default']
     StrichlistensystemPinForm: typeof import('./../components/strichlistensystem/PinForm.vue')['default']

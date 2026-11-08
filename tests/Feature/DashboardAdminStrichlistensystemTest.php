@@ -58,6 +58,7 @@ class DashboardAdminStrichlistensystemTest extends TestCase
             'show_order' => 7,
             'max_order_amount' => 4,
             'price' => 250,
+            'vat_rate' => 19,
             'is_active' => true,
         ], $overrides);
     }
@@ -153,6 +154,8 @@ class DashboardAdminStrichlistensystemTest extends TestCase
             ['price', $this->articleData(['price' => 100001])],
             ['price', $this->articleData(['price' => 1.5])],
             ['price', $this->articleData(['price' => '1,50'])],
+            ['vat_rate', $this->articleData(['vat_rate' => null])],
+            ['vat_rate', $this->articleData(['vat_rate' => 16])],
             ['is_active', $this->articleData(['is_active' => 'yes'])],
         ] as [$field, $data]) {
             $this->actingAsAdmin()
@@ -181,6 +184,15 @@ class DashboardAdminStrichlistensystemTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $this->assertSame(0, Article::first()->price);
+    }
+
+    public function test_article_can_have_the_reduced_vat_rate(): void
+    {
+        $this->actingAsAdmin()
+            ->post(route('dashboard.admin.strichlistensystem.storeArticle'), $this->articleData(['name' => 'Chips', 'vat_rate' => 7]))
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame(7, Article::first()->vat_rate);
     }
 
     public function test_price_change_does_not_change_existing_bookings(): void
@@ -302,7 +314,7 @@ class DashboardAdminStrichlistensystemTest extends TestCase
         $csv = $this->actingAsAdmin()->get(route('dashboard.admin.strichlistensystem.export'))->streamedContent();
 
         $this->assertStringContainsString(';Anz_Alt', $csv);
-        $this->assertStringContainsString("{$user->lastname};{$user->firstname};2;8,20;8,20;0,00;8,20\n", $csv);
+        $this->assertStringContainsString("{$user->lastname};{$user->firstname};2;8,20;8,20;0,00;8,20;0,00;0,00\n", $csv);
     }
 
     public function test_admin_can_delete_an_article_without_bookings(): void
@@ -338,6 +350,7 @@ class DashboardAdminStrichlistensystemTest extends TestCase
         ArticleActionLog::factory()->for($user)->for($water)->create();
         ArticleActionLog::factory()->for($user)->for($water)->create()->delete();
         StrichlistensystemPayment::factory()->for($user)->create(['amount' => 200]);
+        StrichlistensystemPayment::factory()->for($user)->create(['amount' => 100, 'method' => StrichlistensystemPayment::METHOD_BANK_TRANSFER]);
         StrichlistensystemPayment::factory()->for($user)->create(['amount' => 1000])->delete();
 
         $response = $this->actingAsAdmin()->get(route('dashboard.admin.strichlistensystem.export'));
@@ -345,9 +358,9 @@ class DashboardAdminStrichlistensystemTest extends TestCase
         $response->assertOk();
         $csv = $response->streamedContent();
 
-        $this->assertStringStartsWith("\xEF\xBB\xBFNachname;Vorname;Anz_Bier;Anz_Wasser;Betrag_Bier;Betrag_Wasser;Gesamt;Bezahlt;Offen\n", $csv);
-        $this->assertStringContainsString("Älter;Jörg;3;1;4,50;0,50;5,00;2,00;3,00\n", $csv);
-        $this->assertStringContainsString("{$this->admin->lastname};{$this->admin->firstname};0;0;0,00;0,00;0,00;0,00;0,00\n", $csv);
+        $this->assertStringStartsWith("\xEF\xBB\xBFNachname;Vorname;Anz_Bier;Anz_Wasser;Betrag_Bier;Betrag_Wasser;Gesamt;Bezahlt;Offen;Bezahlt_Bar;Bezahlt_Überweisung\n", $csv);
+        $this->assertStringContainsString("Älter;Jörg;3;1;4,50;0,50;5,00;3,00;2,00;2,00;1,00\n", $csv);
+        $this->assertStringContainsString("{$this->admin->lastname};{$this->admin->firstname};0;0;0,00;0,00;0,00;0,00;0,00;0,00;0,00\n", $csv);
     }
 
     public function test_export_uses_the_price_at_the_time_of_the_booking(): void
@@ -364,7 +377,7 @@ class DashboardAdminStrichlistensystemTest extends TestCase
 
         $csv = $this->actingAsAdmin()->get(route('dashboard.admin.strichlistensystem.export'))->streamedContent();
 
-        $this->assertStringContainsString("Älter;Jörg;2;3,50;3,50;0,00;3,50\n", $csv);
+        $this->assertStringContainsString("Älter;Jörg;2;3,50;3,50;0,00;3,50;0,00;0,00\n", $csv);
     }
 
     public function test_export_formats_a_negative_open_amount(): void
@@ -377,7 +390,7 @@ class DashboardAdminStrichlistensystemTest extends TestCase
 
         $csv = $this->actingAsAdmin()->get(route('dashboard.admin.strichlistensystem.export'))->streamedContent();
 
-        $this->assertStringContainsString("Älter;Jörg;1;1,50;1,50;3,00;-1,50\n", $csv);
+        $this->assertStringContainsString("Älter;Jörg;1;1,50;1,50;3,00;-1,50;3,00;0,00\n", $csv);
     }
 
     public function test_export_escapes_names_that_would_run_as_formula(): void

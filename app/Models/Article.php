@@ -17,6 +17,17 @@ class Article extends Model implements Auditable
     use \OwenIt\Auditing\Auditable;
 
     /**
+     * The German vat rates in percent with their label, the price of an article is a gross price including the rate.
+     *
+     * @var array<int, string>
+     */
+    public const VAT_RATES = [
+        19 => '19 % (Regelsteuersatz, z. B. Getränke)',
+        7 => '7 % (ermäßigt, z. B. Speisen und Snacks)',
+        0 => '0 % (steuerfrei)',
+    ];
+
+    /**
      * The attributes that aren't mass assignable.
      *
      * @var array
@@ -43,6 +54,7 @@ class Article extends Model implements Auditable
             'show_order' => 'integer',
             'max_order_amount' => 'integer',
             'price' => 'integer',
+            'vat_rate' => 'integer',
             'is_active' => 'boolean',
         ];
     }

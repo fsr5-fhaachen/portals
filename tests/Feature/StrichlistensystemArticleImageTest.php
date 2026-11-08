@@ -58,6 +58,7 @@ class StrichlistensystemArticleImageTest extends TestCase
             'show_order' => 7,
             'max_order_amount' => 4,
             'price' => 250,
+            'vat_rate' => 19,
             'is_active' => true,
         ], $overrides);
     }
