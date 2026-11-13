@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\AuditLogFormatter;
 use App\Helpers\AuditRecorder;
 use App\Helpers\Csv;
 use App\Helpers\GroupBalancedDivision;
@@ -210,6 +211,67 @@ class DashboardAdminController extends Controller
             'authenticated' => Session::get('tutor'),
             'users' => $usersTable->scroll(),
         ]);
+    }
+
+    /**
+     * Download all users as csv file, sorted by course, then tutors, first-year students and others, then by name.
+     * The course and the type are columns, so the rows can be split into one sheet per course in a spreadsheet.
+     */
+    public function exportUsers(): StreamedResponse
+    {
+        $headers = [
+            'Content-type' => 'text/csv; charset=UTF-8',
+            'Content-Encoding' => 'UTF-8',
+            'Content-Disposition' => 'attachment; filename=portals_users.csv',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $callback = function () {
+            // tutors have a staff role, first-year students no role (like in the statistics), others only other roles
+            $types = ['Tutor', 'Ersti', 'Sonstige'];
+            $typeOf = function (User $user): string {
+                if ($user->roles->pluck('name')->intersect(AuditLogFormatter::STAFF_ROLES)->isNotEmpty()) {
+                    return 'Tutor';
+                }
+
+                return $user->roles->isEmpty() ? 'Ersti' : 'Sonstige';
+            };
+
+            $users = User::with(['course:id,name', 'roles:id,name'])
+                ->get()
+                ->sortBy([
+                    fn (User $a, User $b) => strnatcasecmp((string) $a->course?->name, (string) $b->course?->name),
+                    fn (User $a, User $b) => array_search($typeOf($a), $types) <=> array_search($typeOf($b), $types),
+                    fn (User $a, User $b) => strnatcasecmp($a->lastname, $b->lastname),
+                    fn (User $a, User $b) => strnatcasecmp($a->firstname, $b->firstname),
+                    fn (User $a, User $b) => $a->id <=> $b->id,
+                ]);
+
+            $file = fopen('php://output', 'w');
+
+            // add BOM so that excel detects utf-8
+            fwrite($file, Csv::BOM);
+            fputcsv($file, ['Kurs', 'Typ', 'Nachname', 'Vorname', 'E-Mail', 'Rollen', 'Deaktiviert', 'Angelegt am'], ';');
+
+            foreach ($users as $user) {
+                fputcsv($file, [
+                    Csv::escapeCell((string) $user->course?->name),
+                    $typeOf($user),
+                    Csv::escapeCell((string) $user->lastname),
+                    Csv::escapeCell((string) $user->firstname),
+                    Csv::escapeCell((string) $user->email),
+                    $user->roles->pluck('name')->sort()->implode(', '),
+                    $user->is_disabled ? 'Ja' : 'Nein',
+                    $user->created_at?->format('d.m.Y H:i') ?? '',
+                ], ';');
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     /**
